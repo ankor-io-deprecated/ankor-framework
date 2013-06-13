@@ -10,7 +10,7 @@
 
     <artifactId>ankor-api</artifactId>
     <packaging>jar</packaging>
-    <name>Ankor API</name>
+    <name>Ankor - API</name>
 
     <dependencies>
 
