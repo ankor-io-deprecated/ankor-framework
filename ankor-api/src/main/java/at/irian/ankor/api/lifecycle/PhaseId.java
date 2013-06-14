@@ -36,5 +36,5 @@ public enum PhaseId {
     /**
      * Collect all relevant response information for the client and send them in a message to the client
      */
-    SendResponseMessages
+    EncodeResponseMessage
 }

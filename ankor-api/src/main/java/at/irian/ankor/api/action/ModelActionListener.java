@@ -1,9 +1,9 @@
 package at.irian.ankor.api.action;
 
-import at.irian.ankor.api.context.Context;
+import at.irian.ankor.api.context.ServerContext;
 
 /**
  */
 public interface ModelActionListener {
-    void handleAction(Context context, ModelAction action);
+    void handleAction(ServerContext context, ModelAction action);
 }

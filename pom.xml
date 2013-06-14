@@ -12,6 +12,7 @@
         <module>ankor-api</module>
         <module>ankor-impl</module>
         <module>ankor-sample</module>
+        <module>ankor-servlet</module>
     </modules>
 
     <dependencyManagement>

@@ -1,12 +1,12 @@
 package at.irian.ankor.api.application;
 
-import at.irian.ankor.api.context.Context;
+import at.irian.ankor.api.context.ServerContext;
 
 import java.io.Serializable;
 
 /**
  */
 public interface StateManager {
-    Serializable restoreModel(Context ctx);
-    void saveModel(Context ctx, Serializable model);
+    Object restoreModel(ServerContext ctx);
+    void saveModel(ServerContext ctx, Object model);
 }

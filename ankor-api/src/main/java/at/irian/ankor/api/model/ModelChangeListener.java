@@ -1,9 +1,9 @@
 package at.irian.ankor.api.model;
 
-import at.irian.ankor.api.context.Context;
+import at.irian.ankor.api.context.ServerContext;
 
 /**
  */
 public interface ModelChangeListener {
-    void handleModelChanged(Context context, ModelChange change);
+    void handleModelChanged(ServerContext context, ModelChange change);
 }
