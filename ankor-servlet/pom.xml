@@ -11,5 +11,19 @@
 
     <artifactId>ankor-servlet</artifactId>
 
+    <dependencies>
+
+        <dependency>
+            <groupId>org.apache.myfaces.core</groupId>
+            <artifactId>myfaces-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.myfaces.core</groupId>
+            <artifactId>myfaces-impl</artifactId>
+        </dependency>
+
+    </dependencies>
+
 
 </project>
