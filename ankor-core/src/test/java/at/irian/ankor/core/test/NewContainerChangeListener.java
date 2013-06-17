@@ -17,7 +17,7 @@ public class NewContainerChangeListener implements ModelChangeListener {
 
     @Override
     public void afterModelChange(ModelRef modelRef, Object oldValue, Object newValue) {
-        if (modelRef.getPath().startsWith("containers")) {
+        if (modelRef.toPath().startsWith("containers")) {
             modelRef.setValue(new AnimalSearchContainer());
         }
     }

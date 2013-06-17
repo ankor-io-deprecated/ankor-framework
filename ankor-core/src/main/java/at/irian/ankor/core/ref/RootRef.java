@@ -27,6 +27,11 @@ public class RootRef implements ModelRef {
     }
 
     @Override
+    public ModelRef parent() {
+        return null;
+    }
+
+    @Override
     public ModelRef unwatched() {
         return refFactory.unwatchedRootRef();
     }
@@ -67,20 +72,16 @@ public class RootRef implements ModelRef {
 
     @Override
     public String toString() {
-        return "RootRef";
+        return refFactory.toString(this);
     }
 
     @Override
-    public String getPath() {
-        return "";
+    public ModelRef sub(String subPath) {
+        return refFactory.ref(subPath, modelChangeWatcher);
     }
 
     @Override
-    public ModelRef with(String subPath) {
-        if (modelChangeWatcher != null) {
-            return refFactory.ref(subPath);
-        } else {
-            return refFactory.unwatchedRef(subPath);
-        }
+    public String toPath() {
+        return refFactory.toPath(this);
     }
 }

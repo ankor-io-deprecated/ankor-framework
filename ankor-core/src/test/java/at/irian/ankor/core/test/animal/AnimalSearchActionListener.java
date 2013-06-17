@@ -27,7 +27,7 @@ public class AnimalSearchActionListener implements ModelActionListener {
                     animals.add(new Animal("Adler", AnimalType.Bird));
                     animals.add(new Animal("Amsel", AnimalType.Bird));
 
-                    containerRef.with("resultList").setValue(animals);
+                    containerRef.sub("resultList").setValue(animals);
                 }
             }
 

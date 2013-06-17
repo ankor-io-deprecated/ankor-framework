@@ -140,7 +140,7 @@ public class AnkorServerTest {
             @Override
             public void handleModelAction(ModelRef modelRef, String action) {
                 if (action.equals("initialized")) {
-                    ModelRef containerRef = modelRef.root().with("containers['tab1']");
+                    ModelRef containerRef = modelRef.root().sub("containers['tab1']");
                     containerRef.setValue(null);
 
                     clientApp.getListenerRegistry().registerRemoteChangeListener(containerRef, new ModelChangeListener() {
@@ -152,8 +152,8 @@ public class AnkorServerTest {
                         public void afterModelChange(ModelRef modelRef, Object oldValue, Object newValue) {
                             LOG.info("new container {}", newValue);
 
-                            modelRef.with("filter.name").setValue("A*");
-                            modelRef.with("filter.type").setValue(AnimalType.Bird);
+                            modelRef.sub("filter.name").setValue("A*");
+                            modelRef.sub("filter.type").setValue(AnimalType.Bird);
                             modelRef.fireAction("search");
                         }
                     });

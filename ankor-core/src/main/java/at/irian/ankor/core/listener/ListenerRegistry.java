@@ -124,4 +124,23 @@ public class ListenerRegistry {
         }
     }
 
+    public void unregisterAllListenersFor(ModelRef modelRef) {
+        unregisterAllListenersFor(remoteActionListeners.entrySet().iterator(), modelRef);
+        unregisterAllListenersFor(localActionListeners.entrySet().iterator(), modelRef);
+        unregisterAllListenersFor(remoteChangeListeners.entrySet().iterator(), modelRef);
+        unregisterAllListenersFor(localChangeListeners.entrySet().iterator(), modelRef);
+    }
+
+    private void unregisterAllListenersFor(Iterator iterator, ModelRef modelRef) {
+        while (iterator.hasNext()) {
+            Map.Entry entry = (Map.Entry)iterator.next();
+            ModelRef refKey = (ModelRef) entry.getKey();
+            while (refKey != null) {
+                if (modelRef.equals(refKey)) {
+                    iterator.remove();
+                }
+                refKey = refKey.parent();
+            }
+        }
+    }
 }

@@ -1,8 +1,12 @@
 package at.irian.ankor.core.ref;
 
 import at.irian.ankor.core.application.ModelChangeWatcher;
+import at.irian.ankor.core.el.PathUtils;
 
 import javax.el.ValueExpression;
+
+import static at.irian.ankor.core.el.PathUtils.stripRoot;
+import static at.irian.ankor.core.el.PathUtils.valueExpressionToPath;
 
 /**
  * @author Manfred Geiler
@@ -48,7 +52,7 @@ public class PropertyRef implements ModelRef {
 
     @Override
     public ModelRef unwatched() {
-        return refFactory.unwatchedRef(valueExpression);
+        return refFactory.unwatched(this);
     }
 
     @Override
@@ -76,24 +80,29 @@ public class PropertyRef implements ModelRef {
 
     @Override
     public String toString() {
-        return "PropertyRef{" + "path=" + getPath() + '}';
-    }
-
-    private String getExpressionString() {
-        return valueExpression.getExpressionString();
+        return refFactory.toString(this);
     }
 
     @Override
-    public String getPath() {
-        return RefFactory.exprToPath(getExpressionString());
+    public ModelRef sub(String subPath) {
+        return refFactory.subRef(this, subPath);
     }
 
     @Override
-    public ModelRef with(String subPath) {
-        if (modelChangeWatcher != null) {
-            return refFactory.ref(getPath() + '.' + subPath);
-        } else {
-            return refFactory.unwatchedRef(getPath() + '.' + subPath);
-        }
+    public ModelRef parent() {
+        return refFactory.parentRef(this);
+    }
+
+    @Override
+    public String toPath() {
+        return refFactory.toPath(this);
+    }
+
+    ValueExpression getValueExpression() {
+        return valueExpression;
+    }
+
+    ModelChangeWatcher getModelChangeWatcher() {
+        return modelChangeWatcher;
     }
 }

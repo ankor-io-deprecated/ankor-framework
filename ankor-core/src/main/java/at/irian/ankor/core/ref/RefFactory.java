@@ -8,14 +8,13 @@ import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 
+import static at.irian.ankor.core.el.PathUtils.*;
+
 /**
  * @author MGeiler (Manfred Geiler)
  */
 public class RefFactory {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RefFactory.class);
-
-    private static final String EXPR_PREFIX = "#{" + ModelHolderVariableMapper.MODEL_ROOT_VAR_NAME + '.';
-    private static final String EXPR_SUFFIX = "}";
 
     private final ExpressionFactory expressionFactory;
     private final ELContext elContext;
@@ -54,46 +53,69 @@ public class RefFactory {
     }
 
     public ModelRef ref(String path) {
-        return ref(path, Object.class);
-    }
-
-    public ModelRef ref(String path, Class<?> type) {
         if (path == null || path.isEmpty()) {
             // root reference
             return rootRef;
         } else {
-            ValueExpression ve = expressionFactory.createValueExpression(elContext, pathToExpr(path), type);
-            return new PropertyRef(this, ve, modelChangeWatcher);
+            return ref(path, modelChangeWatcher);
         }
     }
 
-    protected ModelRef unwatchedRef(String path) {
-        return unwatchedRef(path, Object.class);
+    ModelRef ref(String path, ModelChangeWatcher modelChangeWatcher) {
+        ValueExpression ve = valueExpressionFor(prefixPathWithModelBase(path));
+        return new PropertyRef(this, ve, modelChangeWatcher);
     }
 
-    protected ModelRef unwatchedRef(String path, Class<?> type) {
-        if (path == null || path.isEmpty()) {
-            // root reference
-            return unwatchedRootRef;
+    private String prefixPathWithModelBase(String path) {
+        return ModelHolderVariableMapper.MODEL_ROOT_VAR_NAME + '.' + path;
+    }
+
+    private ValueExpression valueExpressionFor(String path) {
+        return expressionFactory.createValueExpression(elContext,
+                                                       pathToValueExpression(path),
+                                                       Object.class);
+    }
+
+    ModelRef unwatched(PropertyRef ref) {
+        if (ref.getModelChangeWatcher() == null) {
+            return ref;
         } else {
-            ValueExpression ve = expressionFactory.createValueExpression(elContext, pathToExpr(path), type);
-            return new PropertyRef(this, ve, null);
+            return new PropertyRef(this, ref.getValueExpression(), null);
         }
     }
 
-    protected ModelRef unwatchedRef(ValueExpression ve) {
-        return new PropertyRef(this, ve, null);
+    ModelRef parentRef(PropertyRef ref) {
+        return new PropertyRef(this, valueExpressionFor(parentPath(pathOf(ref))), ref.getModelChangeWatcher());
     }
 
-    static String pathToExpr(String path) {
-        return EXPR_PREFIX + path + EXPR_SUFFIX;
+    ModelRef subRef(PropertyRef ref, String subPath) {
+        return new PropertyRef(this,
+                               valueExpressionFor(subPath(pathOf(ref), subPath)),
+                               ref.getModelChangeWatcher());
     }
 
-    static String exprToPath(String expr) {
-        if (expr.startsWith(EXPR_PREFIX) && expr.endsWith(EXPR_SUFFIX)) {
-            return expr.substring(EXPR_PREFIX.length(), expr.length() - EXPR_SUFFIX.length());
-        } else {
-            throw new IllegalArgumentException("Not a model ref expression: " + expr);
-        }
+    private String pathOf(PropertyRef ref) {
+        ValueExpression valueExpression = ref.getValueExpression();
+        return valueExpressionToPath(valueExpression.getExpressionString());
+    }
+
+    private String pathOf(RootRef ref) {
+        return ModelHolderVariableMapper.MODEL_ROOT_VAR_NAME;
+    }
+
+    String toString(PropertyRef ref) {
+        return "Ref{" + pathOf(ref) + '}';
+    }
+
+    String toString(RootRef ref) {
+        return "Ref{" + pathOf(ref) + '}';
+    }
+
+    String toPath(PropertyRef ref) {
+        return stripRoot(pathOf(ref));
+    }
+
+    String toPath(RootRef ref) {
+        return "";
     }
 }
