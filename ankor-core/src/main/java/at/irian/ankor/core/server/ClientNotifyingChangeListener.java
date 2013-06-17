@@ -21,6 +21,6 @@ public class ClientNotifyingChangeListener implements ModelChangeListener {
 
     @Override
     public void afterModelChange(ModelRef modelRef, Object oldValue, Object newValue) {
-        ankorServer.handleServerChange(modelRef, oldValue, newValue);
+        ankorServer.handleLocalChange(modelRef, oldValue, newValue);
     }
 }

@@ -1,5 +1,6 @@
 package at.irian.ankor.core.test.animal;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -13,7 +14,7 @@ public class AnimalSearchContainer {
 
     public AnimalSearchContainer() {
         this.filter = new AnimalFilter();
-        this.resultList = null;
+        this.resultList = Collections.emptyList();
     }
 
     public AnimalFilter getFilter() {

@@ -17,6 +17,6 @@ public class ClientNotifyingActionListener implements ModelActionListener {
 
     @Override
     public void handleModelAction(ModelRef modelRef, String action) {
-        ankorServer.handleServerAction(modelRef, action);
+        ankorServer.handleLocalAction(modelRef, action);
     }
 }

@@ -13,9 +13,12 @@ import java.util.*;
 public class AnkorServer {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnkorServer.class);
 
+    private final String serverName;
     private final Application application;
+    private AnkorServer remoteServer;
 
-    public AnkorServer(Application application) {
+    public AnkorServer(String serverName, Application application) {
+        this.serverName = serverName;
         this.application = application;
         this.application.getListenerRegistry().registerLocalChangeListener(null,
                                                                            new ClientNotifyingChangeListener(this));
@@ -23,7 +26,7 @@ public class AnkorServer {
                                                                            new ClientNotifyingActionListener(this));
     }
 
-    public void handleClientAction(String path, String action) {
+    public void handleRemoteAction(String path, String action) {
         ModelRef modelRef = application.getRefFactory().ref(path);
         Collection<ModelActionListener> listeners = application.getListenerRegistry().getRemoteActionListenersFor(modelRef);
         for (ModelActionListener listener : listeners) {
@@ -31,7 +34,7 @@ public class AnkorServer {
         }
     }
 
-    public void handleClientChange(String path, Object newValue) {
+    public void handleRemoteChange(String path, Object newValue) {
         ModelRef modelRef = application.getRefFactory().ref(path);
         Object oldValue = modelRef.getValue();
         Collection<ModelChangeListener> listeners
@@ -48,11 +51,22 @@ public class AnkorServer {
         }
     }
 
-    protected void handleServerChange(ModelRef modelRef, Object oldValue, Object newValue) {
-        LOG.info("Server model changed: ref={}, old={}, new={}", modelRef, oldValue, newValue);
+
+    public void setRemoteServer(AnkorServer remoteServer) {
+        this.remoteServer = remoteServer;
     }
 
-    public void handleServerAction(ModelRef actionContext, String action) {
-        LOG.info("Server model action:  ref={}, action={}", actionContext, action);
+    protected void handleLocalChange(ModelRef modelRef, Object oldValue, Object newValue) {
+        if (remoteServer != null) {
+            LOG.info("sending change to {}: ref={}, old={}, new={}", remoteServer.serverName, modelRef, oldValue, newValue);
+            remoteServer.handleRemoteChange(modelRef.getPath(), newValue);
+        }
+    }
+
+    public void handleLocalAction(ModelRef modelRef, String action) {
+        if (remoteServer != null) {
+            LOG.info("sending action to {}:  ref={}, action={}", remoteServer.serverName, modelRef, action);
+            remoteServer.handleRemoteAction(modelRef.getPath(), action);
+        }
     }
 }
