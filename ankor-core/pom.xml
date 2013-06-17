@@ -24,14 +24,7 @@
         <dependency>
             <groupId>javax.el</groupId>
             <artifactId>el-ri</artifactId>
-            <version>1.0alpha</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
+            <scope>runtime</scope>
         </dependency>
 
     </dependencies>

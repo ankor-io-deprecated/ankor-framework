@@ -10,6 +10,8 @@
     </parent>
 
     <artifactId>ankor-servlet</artifactId>
+    <packaging>jar</packaging>
+    <name>Ankor - Servlet Support</name>
 
     <dependencies>
 

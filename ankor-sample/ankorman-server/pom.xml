@@ -22,7 +22,7 @@
 
         <dependency>
             <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-impl</artifactId>
+            <artifactId>ankor-core</artifactId>
             <scope>runtime</scope>
         </dependency>
 
