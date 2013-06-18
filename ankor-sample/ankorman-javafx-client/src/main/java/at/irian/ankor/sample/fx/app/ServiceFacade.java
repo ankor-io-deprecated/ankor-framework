@@ -1,6 +1,7 @@
 package at.irian.ankor.sample.fx.app;
 
 import at.irian.ankor.core.ref.ModelRef;
+import at.irian.ankor.core.ref.PropertyRef;
 import at.irian.ankor.core.ref.RootRef;
 
 /**
@@ -18,11 +19,11 @@ public class ServiceFacade {
 
     public void createAnimalSearchTab(String tabId, ActionCompleteCallback cb) {
         ModelRef tabsRef = App.getApplication().getRefFactory().rootRef().sub("tabs");
-        App.executeAction(String.format("service.createAnimalSearchTab('%s', model.tabs)", tabId), tabsRef.sub(tabId), null, cb);
+        App.executeAction(String.format("service.createAnimalSearchTab('%s')", tabId), tabsRef, tabId, cb);
     }
 
     public void initApplication(ActionCompleteCallback cb) {
         RootRef rootRef = App.getApplication().getRefFactory().rootRef();
-        App.executeAction("service.init()", rootRef, rootRef, cb);
+        App.executeAction("service.init()", rootRef, rootRef.path(), cb);
     }
 }

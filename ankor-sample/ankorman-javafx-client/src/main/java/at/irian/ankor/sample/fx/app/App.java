@@ -34,10 +34,9 @@ public class App {
 
     private static ActionCompleteCallback currentCB = null;
 
-    public static synchronized void executeAction(String action, ModelRef contextRef, ModelRef resultRef, final ActionCompleteCallback cb) {
+    public static synchronized void executeAction(String action, ModelRef contextRef, String resultPath, final ActionCompleteCallback cb) {
         ModelAction completeAction = SimpleAction.withName("cb");
         currentCB = cb;
-        String resultPath = resultRef != null ? resultRef.path() : null;
         contextRef.fire(new MethodAction(action, resultPath, completeAction));
     }
 

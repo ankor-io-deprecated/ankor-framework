@@ -7,7 +7,6 @@ import at.irian.ankor.sample.fx.app.App;
 import at.irian.ankor.sample.fx.model.AnimalType;
 import at.irian.ankor.sample.fx.view.AnimalSearchTab;
 import at.irian.ankor.sample.fx.view.Tab;
-import at.irian.ankor.sample.fx.view.Tabs;
 import at.irian.ankor.sample.fx.view.ViewModel;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -53,7 +52,7 @@ public class Main extends javafx.application.Application {
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    Thread.sleep(10 * 1000);
+                    Thread.sleep(5 * 1000);
                 } catch (InterruptedException e) {
                 }
 
@@ -73,13 +72,13 @@ public class Main extends javafx.application.Application {
             return model;
         }
 
-        public void createAnimalSearchTab(String tabId, Tabs tabs) {
+        public Tab createAnimalSearchTab(String tabId) {
             LOG.info("ServiceBean.openTab");
             Tab<AnimalSearchTab> tab = new Tab<AnimalSearchTab>(tabId);
             tab.setModel(new AnimalSearchTab());
             tab.getModel().getFilter().setName("Eagle");
             tab.getModel().getFilter().setType(AnimalType.Bird);
-            tabs.put(tabId, tab);
+            return tab;
         }
     }
 }
