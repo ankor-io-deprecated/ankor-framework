@@ -1,12 +1,8 @@
 package at.irian.ankor.core.ref;
 
 import at.irian.ankor.core.application.ModelChangeWatcher;
-import at.irian.ankor.core.el.PathUtils;
 
 import javax.el.ValueExpression;
-
-import static at.irian.ankor.core.el.PathUtils.stripRoot;
-import static at.irian.ankor.core.el.PathUtils.valueExpressionToPath;
 
 /**
  * @author Manfred Geiler
@@ -94,8 +90,8 @@ public class PropertyRef implements ModelRef {
     }
 
     @Override
-    public String toPath() {
-        return refFactory.toPath(this);
+    public String path() {
+        return refFactory.pathOf(this);
     }
 
     ValueExpression getValueExpression() {

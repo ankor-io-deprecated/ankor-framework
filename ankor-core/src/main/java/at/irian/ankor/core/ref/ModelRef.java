@@ -17,5 +17,5 @@ public interface ModelRef {
 
     void fireAction(String action);
 
-    String toPath();
+    String path();
 }

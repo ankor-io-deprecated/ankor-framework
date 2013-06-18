@@ -1,6 +1,7 @@
 package at.irian.ankor.core.listener;
 
 import at.irian.ankor.core.ref.ModelRef;
+import at.irian.ankor.core.util.CombinedCollection;
 
 import java.util.*;
 
@@ -10,87 +11,62 @@ import java.util.*;
 public class ListenerRegistry {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ListenerRegistry.class);
 
-    private final Map<ModelRef, Collection<ModelActionListener>> remoteActionListeners = new HashMap<ModelRef, Collection<ModelActionListener>>();
-    private final Map<ModelRef, Collection<ModelChangeListener>> remoteChangeListeners = new HashMap<ModelRef, Collection<ModelChangeListener>>();
+    private final Map<ModelRef, Collection<?>> remoteActionListeners = new HashMap<ModelRef, Collection<?>>();
+    private final Map<ModelRef, Collection<?>> remoteChangeListeners = new HashMap<ModelRef, Collection<?>>();
 
-    private final Map<ModelRef, Collection<ModelActionListener>> localActionListeners = new HashMap<ModelRef, Collection<ModelActionListener>>();
-    private final Map<ModelRef, Collection<ModelChangeListener>> localChangeListeners = new HashMap<ModelRef, Collection<ModelChangeListener>>();
+    private final Map<ModelRef, Collection<?>> localActionListeners = new HashMap<ModelRef, Collection<?>>();
+    private final Map<ModelRef, Collection<?>> localChangeListeners = new HashMap<ModelRef, Collection<?>>();
 
     public void registerRemoteActionListener(ModelRef ref, ModelActionListener listener) {
-        Collection<ModelActionListener> listeners = remoteActionListeners.get(ref);
-        if (listeners == null) {
-            listeners = new ArrayList<ModelActionListener>();
-            remoteActionListeners.put(ref, listeners);
-        }
-        listeners.add(listener);
+        addListener(remoteActionListeners, ref, listener);
     }
 
     public void registerLocalActionListener(ModelRef ref, ModelActionListener listener) {
-        Collection<ModelActionListener> listeners = localActionListeners.get(ref);
-        if (listeners == null) {
-            listeners = new ArrayList<ModelActionListener>();
-            localActionListeners.put(ref, listeners);
-        }
-        listeners.add(listener);
+        addListener(localActionListeners, ref, listener);
     }
 
     public void registerRemoteChangeListener(ModelRef ref, ModelChangeListener listener) {
-        Collection<ModelChangeListener> listeners = remoteChangeListeners.get(ref);
-        if (listeners == null) {
-            listeners = new ArrayList<ModelChangeListener>();
-            remoteChangeListeners.put(ref, listeners);
-        }
-        listeners.add(listener);
+        addListener(remoteChangeListeners, ref, listener);
     }
 
     public void registerLocalChangeListener(ModelRef ref, ModelChangeListener listener) {
-        Collection<ModelChangeListener> listeners = localChangeListeners.get(ref);
+        addListener(localChangeListeners, ref, listener);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void addListener(Map<ModelRef, Collection<?>> map, ModelRef ref, Object listener) {
+        Collection listeners = map.get(ref);
         if (listeners == null) {
-            listeners = new ArrayList<ModelChangeListener>();
-            localChangeListeners.put(ref, listeners);
+            listeners = new ArrayList();
+            map.put(ref, listeners);
         }
         listeners.add(listener);
     }
 
+
+    @SuppressWarnings("unchecked")
     public Collection<ModelActionListener> getRemoteActionListenersFor(ModelRef ref) {
-        Collection<ModelActionListener> listeners = remoteActionListeners.get(ref);
-        Collection<ModelActionListener> globalListeners = remoteActionListeners.get(null);
-        if (listeners == null && globalListeners == null) {
-            return Collections.emptyList();
-        } else if (globalListeners == null) {
-            return Collections.unmodifiableCollection(listeners);
-        } else if (listeners == null) {
-            return Collections.unmodifiableCollection(globalListeners);
-        } else {
-            // todo  optimizer by returning a combining list
-            ArrayList<ModelActionListener> result = new ArrayList<ModelActionListener>();
-            result.addAll(listeners);
-            result.addAll(globalListeners);
-            return Collections.unmodifiableCollection(result);
-        }
+        return getListenersFor(remoteActionListeners, ref);
     }
 
+    @SuppressWarnings("unchecked")
     public Collection<ModelActionListener> getLocalActionListenersFor(ModelRef ref) {
-        Collection<ModelActionListener> listeners = localActionListeners.get(ref);
-        Collection<ModelActionListener> globalListeners = localActionListeners.get(null);
-        if (listeners == null && globalListeners == null) {
-            return Collections.emptyList();
-        } else if (globalListeners == null) {
-            return Collections.unmodifiableCollection(listeners);
-        } else if (listeners == null) {
-            return Collections.unmodifiableCollection(globalListeners);
-        } else {
-            // todo  optimizer by returning a combining list
-            ArrayList<ModelActionListener> result = new ArrayList<ModelActionListener>();
-            result.addAll(listeners);
-            result.addAll(globalListeners);
-            return Collections.unmodifiableCollection(result);
-        }
+        return getListenersFor(localActionListeners, ref);
     }
 
+    @SuppressWarnings("unchecked")
     public Collection<ModelChangeListener> getRemoteChangeListenersFor(ModelRef ref) {
-        Collection<ModelChangeListener> listeners = remoteChangeListeners.get(ref);
-        Collection<ModelChangeListener> globalListeners = remoteChangeListeners.get(null);
+        return getListenersFor(remoteChangeListeners, ref);
+    }
+
+    @SuppressWarnings("unchecked")
+    public Collection<ModelChangeListener> getLocalChangeListenersFor(ModelRef ref) {
+        return getListenersFor(localChangeListeners, ref);
+    }
+
+    private Collection getListenersFor(Map<ModelRef, Collection<?>> map, ModelRef ref) {
+        Collection listeners = map.get(ref);
+        Collection globalListeners = map.get(null);
         if (listeners == null && globalListeners == null) {
             return Collections.emptyList();
         } else if (globalListeners == null) {
@@ -98,31 +74,10 @@ public class ListenerRegistry {
         } else if (listeners == null) {
             return Collections.unmodifiableCollection(globalListeners);
         } else {
-            // todo  optimizer by returning a combining list
-            ArrayList<ModelChangeListener> result = new ArrayList<ModelChangeListener>();
-            result.addAll(listeners);
-            result.addAll(globalListeners);
-            return Collections.unmodifiableCollection(result);
+            return new CombinedCollection(globalListeners, listeners);
         }
     }
 
-    public Collection<ModelChangeListener> getLocalChangeListenersFor(ModelRef ref) {
-        Collection<ModelChangeListener> listeners = localChangeListeners.get(ref);
-        Collection<ModelChangeListener> globalListeners = localChangeListeners.get(null);
-        if (listeners == null && globalListeners == null) {
-            return Collections.emptyList();
-        } else if (globalListeners == null) {
-            return Collections.unmodifiableCollection(listeners);
-        } else if (listeners == null) {
-            return Collections.unmodifiableCollection(globalListeners);
-        } else {
-            // todo  optimizer by returning a combining list
-            ArrayList<ModelChangeListener> result = new ArrayList<ModelChangeListener>();
-            result.addAll(listeners);
-            result.addAll(globalListeners);
-            return Collections.unmodifiableCollection(result);
-        }
-    }
 
     public void unregisterAllListenersFor(ModelRef modelRef) {
         unregisterAllListenersFor(remoteActionListeners.entrySet().iterator(), modelRef);
@@ -131,16 +86,38 @@ public class ListenerRegistry {
         unregisterAllListenersFor(localChangeListeners.entrySet().iterator(), modelRef);
     }
 
-    private void unregisterAllListenersFor(Iterator iterator, ModelRef modelRef) {
-        while (iterator.hasNext()) {
-            Map.Entry entry = (Map.Entry)iterator.next();
+    public void unregisterListener(Object listener) {
+        unregisterListeners(remoteActionListeners.entrySet().iterator(), listener);
+        unregisterListeners(localActionListeners.entrySet().iterator(), listener);
+        unregisterListeners(remoteChangeListeners.entrySet().iterator(), listener);
+        unregisterListeners(localChangeListeners.entrySet().iterator(), listener);
+    }
+
+
+    private void unregisterAllListenersFor(Iterator entryIterator, ModelRef modelRef) {
+        while (entryIterator.hasNext()) {
+            Map.Entry entry = (Map.Entry) entryIterator.next();
             ModelRef refKey = (ModelRef) entry.getKey();
             while (refKey != null) {
                 if (modelRef.equals(refKey)) {
-                    iterator.remove();
+                    entryIterator.remove();
                 }
                 refKey = refKey.parent();
             }
         }
     }
+
+    private void unregisterListeners(Iterator entryIterator, Object listener) {
+        while (entryIterator.hasNext()) {
+            Map.Entry entry = (Map.Entry) entryIterator.next();
+            Collection listeners = (Collection) entry.getValue();
+            Iterator listenersIterator = listeners.iterator();
+            while (listenersIterator.hasNext()) {
+                if (listenersIterator.next() == listener) {
+                    listenersIterator.remove();
+                }
+            }
+        }
+    }
+
 }

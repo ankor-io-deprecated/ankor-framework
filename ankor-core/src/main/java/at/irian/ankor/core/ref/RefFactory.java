@@ -8,7 +8,7 @@ import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 
-import static at.irian.ankor.core.el.PathUtils.*;
+import static at.irian.ankor.core.ref.PathUtils.*;
 
 /**
  * @author MGeiler (Manfred Geiler)
@@ -85,21 +85,21 @@ public class RefFactory {
     }
 
     ModelRef parentRef(PropertyRef ref) {
-        return new PropertyRef(this, valueExpressionFor(parentPath(pathOf(ref))), ref.getModelChangeWatcher());
+        return new PropertyRef(this, valueExpressionFor(parentPath(internalPathOf(ref))), ref.getModelChangeWatcher());
     }
 
     ModelRef subRef(PropertyRef ref, String subPath) {
         return new PropertyRef(this,
-                               valueExpressionFor(subPath(pathOf(ref), subPath)),
+                               valueExpressionFor(subPath(internalPathOf(ref), subPath)),
                                ref.getModelChangeWatcher());
     }
 
-    private String pathOf(PropertyRef ref) {
+    private String internalPathOf(PropertyRef ref) {
         ValueExpression valueExpression = ref.getValueExpression();
         return valueExpressionToPath(valueExpression.getExpressionString());
     }
 
-    private String pathOf(RootRef ref) {
+    private String internalPathOf(RootRef ref) {
         return ModelHolderVariableMapper.MODEL_ROOT_VAR_NAME;
     }
 
@@ -111,11 +111,11 @@ public class RefFactory {
         return "Ref{" + pathOf(ref) + '}';
     }
 
-    String toPath(PropertyRef ref) {
-        return stripRoot(pathOf(ref));
+    String pathOf(PropertyRef ref) {
+        return stripRoot(internalPathOf(ref));
     }
 
-    String toPath(RootRef ref) {
+    String pathOf(RootRef ref) {
         return "";
     }
 }

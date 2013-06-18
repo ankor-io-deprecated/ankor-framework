@@ -81,7 +81,7 @@ public class RootRef implements ModelRef {
     }
 
     @Override
-    public String toPath() {
-        return refFactory.toPath(this);
+    public String path() {
+        return refFactory.pathOf(this);
     }
 }
