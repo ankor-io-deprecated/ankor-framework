@@ -1,7 +1,8 @@
-package at.irian.ankor.sample.fx;
+package at.irian.ankor.sample.fx.binding;
 
 import at.irian.ankor.core.listener.ModelChangeListener;
 import at.irian.ankor.core.ref.ModelRef;
+import at.irian.ankor.sample.fx.infra.App;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -20,15 +21,15 @@ public class ModelBindings {
         prop.setValue((String) modelRef.getValue());
         prop.addListener(new ChangeListener<String>() {
             public void changed(ObservableValue<? extends String> observableValue, String oldValue, String newValue) {
-                if (modelRef.getValue() == null && (newValue == null || newValue.equals(""))) {
-                    return;
-                }
+                //if (modelRef.getValue() == null && (newValue == null || newValue.equals(""))) {
+                //    return;
+                //}
                 //modelRef.setValue(newValue);
             }
         });
         Bindings.bindBidirectional(prop, stringProperty);
         context.add(prop);
-        Main.clientApp.getListenerRegistry().registerRemoteChangeListener(modelRef,
+        App.getApplication().getListenerRegistry().registerRemoteChangeListener(modelRef,
                 new ModelChangeListener() {
                     public void beforeModelChange(ModelRef modelRef, Object oldValue, Object newValue) {
                     }

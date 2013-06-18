@@ -1,4 +1,4 @@
-package at.irian.ankor.sample.fx;
+package at.irian.ankor.sample.fx.binding;
 
 import javafx.beans.property.Property;
 

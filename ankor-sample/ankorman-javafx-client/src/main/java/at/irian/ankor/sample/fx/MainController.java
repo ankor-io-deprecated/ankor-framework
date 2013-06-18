@@ -3,6 +3,9 @@ package at.irian.ankor.sample.fx;
 import at.irian.ankor.core.action.SimpleAction;
 import at.irian.ankor.core.ref.ModelRef;
 import at.irian.ankor.core.ref.RootRef;
+import at.irian.ankor.sample.fx.binding.BindingContext;
+import at.irian.ankor.sample.fx.binding.ModelBindings;
+import at.irian.ankor.sample.fx.infra.App;
 import at.irian.ankor.sample.fx.model.Animal;
 import at.irian.ankor.sample.fx.model.AnimalType;
 import javafx.event.ActionEvent;
@@ -58,17 +61,19 @@ public class MainController implements Initializable {
         });
 */
 
-        RootRef rootRef = Main.clientApp.getRefFactory().rootRef();
-
+        RootRef rootRef = App.getApplication().getRefFactory().rootRef();
+        // Bind User Name
         ModelBindings.bind(rootRef.sub("userName"), userName.textProperty(), bindingContext);
+        // Bind Filter
+        ModelRef tabRef = rootRef.sub("tabs.getTab('0')");
+        ModelBindings.bind(tabRef.sub("model.filter.name"), name.textProperty(), bindingContext);
+        ModelBindings.bind(tabRef.sub("model.filter.type"), type.textProperty(), bindingContext);
 
-        ModelBindings.bind(rootRef.sub("tabs.getTab('0').model.filter.name"), name.textProperty(), bindingContext);
-        ModelBindings.bind(rootRef.sub("tabs.getTab('0').model.filter.type"), type.textProperty(), bindingContext);
-
-        Main.clientApp.getRefFactory().rootRef().fire(SimpleAction.withName("init"));
+        rootRef.fire(SimpleAction.withName("init"));
 
         loadAnimals();
 
+        this.tabRef = tabRef;
     }
 
     private void loadAnimals() {

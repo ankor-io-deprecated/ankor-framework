@@ -5,6 +5,7 @@ import at.irian.ankor.core.application.Application;
 import at.irian.ankor.core.listener.ModelActionListener;
 import at.irian.ankor.core.ref.ModelRef;
 import at.irian.ankor.core.server.SimpleAnkorServer;
+import at.irian.ankor.sample.fx.infra.App;
 import at.irian.ankor.sample.fx.model.AnimalType;
 import at.irian.ankor.sample.fx.view.AnimalSearchTab;
 import at.irian.ankor.sample.fx.view.Tab;
@@ -19,9 +20,6 @@ public class Main extends javafx.application.Application {
 
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(Main.class);
 
-    private static Application serverApp;
-    static Application clientApp;
-
     public static void main(String[] args) {
         launch(args);
     }
@@ -30,6 +28,29 @@ public class Main extends javafx.application.Application {
     public void start(Stage primaryStage) throws Exception {
 
         setupClientServer();
+
+        primaryStage.setTitle("Ankor FX Sample");
+        Pane myPane = FXMLLoader.load(getClass().getClassLoader().getResource("main.fxml"));
+
+        Scene myScene = new Scene(myPane);
+        primaryStage.setScene(myScene);
+        primaryStage.show();
+    }
+
+    private void setupClientServer() {
+
+        Application serverApp = new Application(ViewModel.class);
+        SimpleAnkorServer server = new SimpleAnkorServer(serverApp, "animalServer");
+        server.init();
+
+        Application clientApp = new Application(ViewModel.class);
+        SimpleAnkorServer client = new SimpleAnkorServer(clientApp, "animalClient");
+        client.init();
+        App.setInstance(clientApp);
+
+        server.setRemoteServer(client);
+        client.setRemoteServer(server);
+
 
         serverApp.getListenerRegistry().registerRemoteActionListener(null, new ModelActionListener() {
 
@@ -52,27 +73,6 @@ public class Main extends javafx.application.Application {
                 }
             }
         });
-
-        primaryStage.setTitle("Ankor FX Sample");
-        Pane myPane = FXMLLoader.load(getClass().getClassLoader().getResource("main.fxml"));
-
-        Scene myScene = new Scene(myPane);
-        primaryStage.setScene(myScene);
-        primaryStage.show();
-    }
-
-    private void setupClientServer() {
-
-        serverApp = new Application(ViewModel.class);
-        SimpleAnkorServer server = new SimpleAnkorServer(serverApp, "animalServer");
-        server.init();
-
-        clientApp = new Application(ViewModel.class);
-        SimpleAnkorServer client = new SimpleAnkorServer(clientApp, "animalClient");
-        client.init();
-
-        server.setRemoteServer(client);
-        client.setRemoteServer(server);
     }
 
 }
