@@ -39,16 +39,9 @@ public class RootRef implements ModelRef {
     }
 
     public void setValue(Object newValue) {
-        Object oldValue = null;
-        if (modelChangeWatcher != null) {
-            oldValue = modelHolder.getModel();
-            modelChangeWatcher.beforeModelChange(this, oldValue, newValue);
-        }
-
         this.modelHolder.setModel(newValue);
-
         if (this.modelChangeWatcher != null) {
-            this.modelChangeWatcher.afterModelChange(this, oldValue, newValue);
+            this.modelChangeWatcher.broadcastModelChange(this);
         }
     }
 

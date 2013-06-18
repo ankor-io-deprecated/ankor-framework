@@ -2,6 +2,7 @@ package at.irian.ankor.core.server;
 
 import at.irian.ankor.core.listener.ListenerRegistry;
 import at.irian.ankor.core.listener.ModelChangeListener;
+import at.irian.ankor.core.listener.ModelChangeListenerInstance;
 import at.irian.ankor.core.ref.ModelRef;
 
 import java.util.Collection;
@@ -20,19 +21,23 @@ public class RemoteChangeHandler {
 
     public void handleRemoteChange(ModelRef modelRef, Object newValue) {
         Object oldValue = modelRef.getValue();
-        Collection<ModelChangeListener> listeners = listenerRegistry.getRemoteChangeListenersFor(modelRef);
+        Collection<ModelChangeListenerInstance> listenerInstances = listenerRegistry.getRemoteChangeListenersFor(modelRef);
 
         // notify listeners before local change
-        for (ModelChangeListener listener : listeners) {
-            listener.beforeModelChange(modelRef, oldValue, newValue);
-        }
+//        for (ModelChangeListenerInstance listenerInstance : listenerInstances) {
+//            ModelChangeListener listener = listenerInstance.getListener();
+//            ModelRef ref = listenerInstance.getRef();
+//            listener.beforeModelChange(ref, oldValue, newValue);
+//        }
 
         // do change model (without notifying local listeners!)
         modelRef.unwatched().setValue(newValue);
 
         // notify listeners after local change
-        for (ModelChangeListener listener : listeners) {
-            listener.afterModelChange(modelRef, oldValue, newValue);
+        for (ModelChangeListenerInstance listenerInstance : listenerInstances) {
+            ModelChangeListener listener = listenerInstance.getListener();
+            ModelRef ref = listenerInstance.getRef();
+            listener.handleModelChange(ref, modelRef);
         }
 
         // cleanup listeners if modelRef is unset

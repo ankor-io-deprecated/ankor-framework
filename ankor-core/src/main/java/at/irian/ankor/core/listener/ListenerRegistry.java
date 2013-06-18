@@ -11,18 +11,18 @@ import java.util.*;
 public class ListenerRegistry {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ListenerRegistry.class);
 
-    private final Map<ModelRef, Collection<?>> remoteActionListeners = new HashMap<ModelRef, Collection<?>>();
-    private final Map<ModelRef, Collection<?>> remoteChangeListeners = new HashMap<ModelRef, Collection<?>>();
-
     private final Map<ModelRef, Collection<?>> localActionListeners = new HashMap<ModelRef, Collection<?>>();
-    private final Map<ModelRef, Collection<?>> localChangeListeners = new HashMap<ModelRef, Collection<?>>();
+    private final Map<ModelRef, Collection<?>> remoteActionListeners = new HashMap<ModelRef, Collection<?>>();
 
-    public void registerRemoteActionListener(ModelRef ref, ModelActionListener listener) {
-        addListener(remoteActionListeners, ref, listener);
-    }
+    private final Map<ModelRef, Collection<?>> localChangeListeners = new HashMap<ModelRef, Collection<?>>();
+    private final Map<ModelRef, Collection<?>> remoteChangeListeners = new HashMap<ModelRef, Collection<?>>();
 
     public void registerLocalActionListener(ModelRef ref, ModelActionListener listener) {
         addListener(localActionListeners, ref, listener);
+    }
+
+    public void registerRemoteActionListener(ModelRef ref, ModelActionListener listener) {
+        addListener(remoteActionListeners, ref, listener);
     }
 
     public void registerRemoteChangeListener(ModelRef ref, ModelChangeListener listener) {
@@ -44,32 +44,45 @@ public class ListenerRegistry {
     }
 
 
-    @SuppressWarnings("unchecked")
     public Collection<ModelActionListener> getRemoteActionListenersFor(ModelRef ref) {
-        return getListenersFor(remoteActionListeners, ref);
+        return getActionListenersFor(remoteActionListeners, ref);
     }
 
-    @SuppressWarnings("unchecked")
     public Collection<ModelActionListener> getLocalActionListenersFor(ModelRef ref) {
-        return getListenersFor(localActionListeners, ref);
+        return getActionListenersFor(localActionListeners, ref);
+    }
+
+    public Collection<ModelChangeListenerInstance> getRemoteChangeListenersFor(ModelRef ref) {
+        return getChangeListenerInstancesFor(remoteChangeListeners, ref);
+    }
+
+    public Collection<ModelChangeListenerInstance> getLocalChangeListenersFor(ModelRef ref) {
+        return getChangeListenerInstancesFor(localChangeListeners, ref);
     }
 
     @SuppressWarnings("unchecked")
-    public Collection<ModelChangeListener> getRemoteChangeListenersFor(ModelRef ref) {
-        return getListenersFor(remoteChangeListeners, ref);
+    private Collection<ModelActionListener> getActionListenersFor(Map<ModelRef, Collection<?>> map, ModelRef ref) {
+        Collection<?> globalListeners = map.get(null);
+        Collection<?> normalListeners = map.get(ref);
+        return CollectionUtils.concat(globalListeners, normalListeners);
     }
 
     @SuppressWarnings("unchecked")
-    public Collection<ModelChangeListener> getLocalChangeListenersFor(ModelRef ref) {
-        return getListenersFor(localChangeListeners, ref);
-    }
-
-    private Collection getListenersFor(Map<ModelRef, Collection<?>> map, ModelRef ref) {
+    private Collection<ModelChangeListenerInstance> getChangeListenerInstancesFor(Map<ModelRef, Collection<?>> map, final ModelRef ref) {
         Collection result = Collections.emptyList();
         for (Map.Entry<ModelRef, Collection<?>> entry : map.entrySet()) {
-            ModelRef listenerRef = entry.getKey();
+            final ModelRef listenerRef = entry.getKey();
             if (listenerRef == null || listenerRef.equals(ref) || listenerRef.isAncestorOf(ref)) {
-                result = CollectionUtils.concat(result, entry.getValue());
+                Collection<?> listeners = entry.getValue();
+                Collection listenerInstances = CollectionUtils.wrap(listeners, new CollectionUtils.Wrapper() {
+                    @Override
+                    public Object wrap(Object objToWrap) {
+                        return listenerRef != null
+                               ? new ModelChangeListenerInstance(listenerRef, (ModelChangeListener) objToWrap)
+                               : new ModelChangeListenerInstance(ref.root(), (ModelChangeListener) objToWrap);
+                    }
+                });
+                result = CollectionUtils.concat(result, listenerInstances);
             }
         }
         return result;
@@ -105,7 +118,7 @@ public class ListenerRegistry {
             Collection listeners = (Collection) entry.getValue();
             Iterator listenersIterator = listeners.iterator();
             while (listenersIterator.hasNext()) {
-                if (listenersIterator.next() == listener) {
+                if (listenersIterator.next() == listener) {   // todo listener instance
                     listenersIterator.remove();
                 }
             }

@@ -31,10 +31,8 @@ public class ModelBindings {
         context.add(prop);
         App.getApplication().getListenerRegistry().registerRemoteChangeListener(modelRef,
                 new ModelChangeListener() {
-                    public void beforeModelChange(ModelRef modelRef, Object oldValue, Object newValue) {
-                    }
 
-                    public void afterModelChange(ModelRef modelRef, Object oldValue, Object newValue) {
+                    public void handleModelChange(ModelRef watchedRef, ModelRef changedRef) {
                         //TestModel testModel = modelRef.getValue();
                         if (newValue instanceof Enum) {
                             newValue = ((Enum) newValue).name();

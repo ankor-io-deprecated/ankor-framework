@@ -38,9 +38,9 @@ public class SimpleAnkorServer extends AnkorServerBase {
     }
 
     @Override
-    protected void handleLocalChange(ModelRef modelRef, Object oldValue, Object newValue) {
+    protected void handleLocalChange(ModelRef modelRef, Object newValue) {
         if (remoteServer != null) {
-            LOG.info("Passing change to {} - {}: {} => {}", remoteServer, modelRef, oldValue, newValue);
+            LOG.info("Passing change to {} - {} => {}", remoteServer, modelRef, newValue);
             remoteServer.handleRemoteChange(modelRef.path(), newValue);
         }
     }

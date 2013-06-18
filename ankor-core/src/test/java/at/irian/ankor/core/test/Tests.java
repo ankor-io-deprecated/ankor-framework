@@ -68,17 +68,14 @@ public class Tests {
                     containerRef.setValue(null);
 
                     clientApp.getListenerRegistry().registerRemoteChangeListener(containerRef, new ModelChangeListener() {
-                        @Override
-                        public void beforeModelChange(ModelRef modelRef, Object oldValue, Object newValue) {
-                        }
 
                         @Override
-                        public void afterModelChange(ModelRef modelRef, Object oldValue, Object newValue) {
-                            LOG.info("new container {}", newValue);
+                        public void handleModelChange(ModelRef watchedRef, ModelRef changedRef) {
+                            LOG.info("new container {}", watchedRef.getValue());
 
-                            modelRef.sub("filter.name").setValue("A*");
-                            modelRef.sub("filter.type").setValue(AnimalType.Bird);
-                            modelRef.fire(SimpleAction.withName("search"));
+                            watchedRef.sub("filter.name").setValue("A*");
+                            watchedRef.sub("filter.type").setValue(AnimalType.Bird);
+                            watchedRef.fire(SimpleAction.withName("search"));
                         }
                     });
 

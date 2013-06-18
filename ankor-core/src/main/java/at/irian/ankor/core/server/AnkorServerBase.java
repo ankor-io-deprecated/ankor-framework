@@ -70,7 +70,7 @@ public abstract class AnkorServerBase {
         remoteChangeHandler.handleRemoteChange(modelRef, newValue);
     }
 
-    protected abstract void handleLocalChange(ModelRef modelRef, Object oldValue, Object newValue);
+    protected abstract void handleLocalChange(ModelRef modelRef, Object newValue);
 
     protected abstract void handleLocalAction(ModelRef modelRef, ModelAction action);
 
@@ -85,13 +85,10 @@ public abstract class AnkorServerBase {
         }
 
         @Override
-        public void beforeModelChange(ModelRef modelRef, Object oldValue, Object newValue) {
-        }
-
-        @Override
-        public void afterModelChange(ModelRef modelRef, Object oldValue, Object newValue) {
-            LOG.debug("Local model change detected by {} - {}: {} => {}", AnkorServerBase.this, modelRef, oldValue, newValue);
-            handleLocalChange(modelRef, oldValue, newValue);
+        public void handleModelChange(ModelRef watchedRef, ModelRef changedRef) {
+            Object newValue = changedRef.getValue();
+            LOG.debug("Local model change detected by {} - {} => {}", AnkorServerBase.this, changedRef, newValue);
+            handleLocalChange(changedRef, newValue);
         }
     }
 
@@ -107,7 +104,7 @@ public abstract class AnkorServerBase {
                 Object result = application.getMethodExecutor().execute(methodExpression, actionContext);
                 //Object newContextValue = actionContext.getValue();
 //                if (!ObjectUtils.equals(oldContextValue, newContextValue)) {
-//                    application.getModelChangeWatcher().afterModelChange(actionContext,
+//                    application.getModelChangeWatcher().handleModelChange(actionContext,
 //                                                                         oldContextValue,
 //                                                                         newContextValue);
 //                }

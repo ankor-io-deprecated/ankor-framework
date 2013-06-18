@@ -25,16 +25,9 @@ public class PropertyRef implements ModelRef {
     }
 
     public void setValue(Object newValue) {
-        Object oldValue = null;
-        if (modelChangeWatcher != null) {
-            oldValue = valueExpression.getValue(refFactory.elContext());
-            modelChangeWatcher.beforeModelChange(this, oldValue, newValue);
-        }
-
         valueExpression.setValue(refFactory.elContext(), newValue);
-
         if (modelChangeWatcher != null) {
-            modelChangeWatcher.afterModelChange(this, oldValue, newValue);
+            modelChangeWatcher.broadcastModelChange(this);
         }
     }
 
