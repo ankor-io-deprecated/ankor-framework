@@ -1,11 +1,9 @@
 package at.irian.ankor.sample.fx;
 
-import at.irian.ankor.core.action.ModelAction;
 import at.irian.ankor.core.application.Application;
-import at.irian.ankor.core.listener.ModelActionListener;
-import at.irian.ankor.core.ref.ModelRef;
+import at.irian.ankor.core.application.SimpleApplication;
 import at.irian.ankor.core.server.SimpleAnkorServer;
-import at.irian.ankor.sample.fx.infra.App;
+import at.irian.ankor.sample.fx.app.App;
 import at.irian.ankor.sample.fx.model.AnimalType;
 import at.irian.ankor.sample.fx.view.AnimalSearchTab;
 import at.irian.ankor.sample.fx.view.Tab;
@@ -39,11 +37,12 @@ public class Main extends javafx.application.Application {
 
     private void setupClientServer() {
 
-        Application serverApp = new Application(ViewModel.class);
+        final Application serverApp = SimpleApplication.withModelType(ViewModel.class)
+                .withBean("service", new ServiceBean());
         SimpleAnkorServer server = new SimpleAnkorServer(serverApp, "animalServer");
         server.init();
 
-        Application clientApp = new Application(ViewModel.class);
+        Application clientApp = SimpleApplication.withModelType(ViewModel.class);
         SimpleAnkorServer client = new SimpleAnkorServer(clientApp, "animalClient");
         client.init();
         App.setInstance(clientApp);
@@ -51,28 +50,36 @@ public class Main extends javafx.application.Application {
         server.setRemoteServer(client);
         client.setRemoteServer(server);
 
-
-        serverApp.getListenerRegistry().registerRemoteActionListener(null, new ModelActionListener() {
-
-            public void handleModelAction(ModelRef actionContext, ModelAction action) {
-                if ("init".equals(action.name())) {
-                    LOG.info("Creating new TestModel");
-
-                    actionContext.root().setValue(new ViewModel());
-
-                    actionContext.root().sub("userName").setValue("Toni Polster");
-
-                    Tabs tabs = actionContext.root().sub("tabs").getValue();
-                    Tab tab = tabs.newTab();
-                    actionContext.sub(String.format("tabs.getTab('%s').model", tab.getId())).setValue(new AnimalSearchTab());
-
-                    ModelRef animalSearchTabRef = actionContext.root().sub(String.format("tabs.getTab('%s').model", tab.getId()));
-                    animalSearchTabRef.sub("filter.name").setValue("Eagle");
-                    animalSearchTabRef.sub("filter.type").setValue(AnimalType.Bird);
-                    //modelRef.fireAction("initialized");
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    Thread.sleep(10 * 1000);
+                } catch (InterruptedException e) {
                 }
+
+                serverApp.getRefFactory().rootRef().sub("tabs.A.model.filter.name").setValue("test");
             }
-        });
+        }).start();
+
     }
 
+    @SuppressWarnings("UnusedDeclaration")
+    public static class ServiceBean {
+
+        public ViewModel init() {
+            LOG.info("ServiceBean.init");
+            ViewModel model = new ViewModel();
+            model.setUserName("Toni Polster");
+            return model;
+        }
+
+        public void createAnimalSearchTab(String tabId, Tabs tabs) {
+            LOG.info("ServiceBean.openTab");
+            Tab<AnimalSearchTab> tab = new Tab<AnimalSearchTab>(tabId);
+            tab.setModel(new AnimalSearchTab());
+            tab.getModel().getFilter().setName("Eagle");
+            tab.getModel().getFilter().setType(AnimalType.Bird);
+            tabs.put(tabId, tab);
+        }
+    }
 }

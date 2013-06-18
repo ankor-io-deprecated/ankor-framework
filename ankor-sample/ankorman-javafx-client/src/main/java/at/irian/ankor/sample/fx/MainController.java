@@ -1,13 +1,13 @@
 package at.irian.ankor.sample.fx;
 
-import at.irian.ankor.core.action.SimpleAction;
 import at.irian.ankor.core.ref.ModelRef;
 import at.irian.ankor.core.ref.RootRef;
+import at.irian.ankor.sample.fx.app.ActionCompleteCallback;
+import at.irian.ankor.sample.fx.app.App;
 import at.irian.ankor.sample.fx.binding.BindingContext;
-import at.irian.ankor.sample.fx.binding.ModelBindings;
-import at.irian.ankor.sample.fx.infra.App;
 import at.irian.ankor.sample.fx.model.Animal;
 import at.irian.ankor.sample.fx.model.AnimalType;
+import at.irian.ankor.sample.fx.view.ViewModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -21,6 +21,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import static at.irian.ankor.sample.fx.app.ServiceFacade.service;
+import static at.irian.ankor.sample.fx.binding.ModelBindings.bind;
 
 /**
  * @author Thomas Spiegl
@@ -42,38 +45,43 @@ public class MainController implements Initializable {
     @FXML
     private TableColumn<Animal, String> animalType;
 
-    private ModelRef tabRef;
+    private String tabId = "A";
 
-    private BindingContext bindingContext;
+    private BindingContext bindingContext = new BindingContext();
 
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        bindingContext = new BindingContext();
-/*
-        executeAction("OpenAnimalSearchTab", new Callback<>() {
-            public Object call(Object o) {
-                this.tabRef = (ModelRef) o;
-                ModelRef filterRef = tabRef.sub("filter");
-                bind("/user/fullName", userName);
-                bind(filterRef.sub("animalName"), tabId, name);
-                bind(filterRef.sub("animalType"), tabId, type);
-            }
 
-        });
-*/
-
-        RootRef rootRef = App.getApplication().getRefFactory().rootRef();
-        // Bind User Name
-        ModelBindings.bind(rootRef.sub("userName"), userName.textProperty(), bindingContext);
-        // Bind Filter
-        ModelRef tabRef = rootRef.sub("tabs.getTab('0')");
-        ModelBindings.bind(tabRef.sub("model.filter.name"), name.textProperty(), bindingContext);
-        ModelBindings.bind(tabRef.sub("model.filter.type"), type.textProperty(), bindingContext);
-
-        rootRef.fire(SimpleAction.withName("init"));
+        initApplication();
 
         loadAnimals();
+    }
 
-        this.tabRef = tabRef;
+    private void createTab() {
+        service().createAnimalSearchTab(tabId, new ActionCompleteCallback() {
+
+            public void onComplete() {
+                RootRef rootRef = App.getApplication().getRefFactory().rootRef();
+
+                // Bind Filter
+                ModelRef tabRef = rootRef.sub(String.format("tabs.%s", tabId));
+                bind(tabRef.sub("model.filter.name"), name.textProperty(), bindingContext);
+                bind(tabRef.sub("model.filter.type"), type.textProperty(), bindingContext);
+            }
+        });
+    }
+
+    private void initApplication() {
+        service().initApplication(new ActionCompleteCallback() {
+
+            public void onComplete() {
+                RootRef rootRef = App.getApplication().getRefFactory().rootRef();
+                ViewModel viewModel = rootRef.getValue();
+
+                userName.setText(viewModel.getUserName());
+
+                createTab();
+            }
+        });
     }
 
     private void loadAnimals() {
@@ -89,6 +97,4 @@ public class MainController implements Initializable {
     @FXML
     protected void search(@SuppressWarnings("UnusedParameters") ActionEvent event) {
     }
-
-
 }

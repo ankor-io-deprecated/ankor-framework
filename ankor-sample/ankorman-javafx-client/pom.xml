@@ -14,7 +14,7 @@
 
     <properties>
         <javafx.version>2.2.21</javafx.version>
-        <javafx.runtime.lib.jar>/Library/Java/JavaVirtualMachines/jdk1.7.0_21.jdk/Contents/Home/jre/lib/jfxrt.jar</javafx.runtime.lib.jar>
+        <!-- <javafx.runtime.lib.jar>${JAVA_FX_HOME}/jfxrt.jar</javafx.runtime.lib.jar> -->
     </properties>
 
     <dependencies>
@@ -29,7 +29,7 @@
             <artifactId>jfxrt</artifactId>
             <version>${javafx.version}</version>
             <scope>system</scope>
-            <systemPath>${javafx.runtime.lib.jar}</systemPath>
+            <!--<systemPath>${javafx.runtime.lib.jar}</systemPath>-->
         </dependency>
 
         <dependency>

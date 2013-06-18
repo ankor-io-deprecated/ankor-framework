@@ -40,7 +40,7 @@ public class MethodAction implements ModelAction, CompleteAware {
     }
 
     public ModelRef getResultRef(ModelRef actionContext) {
-        return actionContext.sub(resultPath);
+        return resultPath != null ? actionContext.sub(resultPath) : null;
     }
 
     @Override

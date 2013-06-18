@@ -72,7 +72,7 @@ public class ListenerRegistry {
         Collection result = Collections.emptyList();
         for (Map.Entry<ModelRef, Collection<?>> entry : map.entrySet()) {
             final ModelRef listenerRef = entry.getKey();
-            if (listenerRef == null || listenerRef.equals(ref) || listenerRef.isAncestorOf(ref)) {
+            if (listenerRef == null || listenerRef.equals(ref) || listenerRef.isDescendantOf(ref)) {
                 Collection<?> listeners = entry.getValue();
                 Collection listenerInstances = CollectionUtils.wrap(listeners, new CollectionUtils.Wrapper() {
                     @Override

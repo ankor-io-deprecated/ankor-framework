@@ -1,12 +1,14 @@
 package at.irian.ankor.sample.fx.view;
 
+import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
 * @author Thomas Spiegl
 */
-public class Tabs {
+public class Tabs extends AbstractMap<String, Tab> {
 
     private Map<String, Tab> tabs;
 
@@ -14,15 +16,13 @@ public class Tabs {
         tabs = new HashMap<String, Tab>();
     }
 
-    public Tab newTab() {
-        String tabId = Integer.toString(tabs.size());
-        Tab tab = new Tab(tabId);
-        tabs.put(tabId, tab);
-        return tab;
+    @Override
+    public Set<Entry<String, Tab>> entrySet() {
+        return tabs.entrySet();
     }
 
-    public Tab getTab(String tabId) {
-        return tabs.get(tabId);
+    @Override
+    public Tab put(String key, Tab value) {
+        return tabs.put(key, value);
     }
-
 }
