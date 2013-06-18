@@ -22,9 +22,8 @@
         </dependency>
 
         <dependency>
-            <groupId>javax.el</groupId>
-            <artifactId>el-ri</artifactId>
-            <scope>runtime</scope>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>el-impl</artifactId>
         </dependency>
 
     </dependencies>
