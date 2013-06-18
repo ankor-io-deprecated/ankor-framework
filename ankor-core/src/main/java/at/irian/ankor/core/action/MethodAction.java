@@ -9,10 +9,24 @@ public class MethodAction implements ModelAction, CompleteAware {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(MethodAction.class);
 
     private final String methodExpression;
+    private final ModelRef resultRef;
     private final ModelAction completeAction;
 
+    public MethodAction(String methodExpression) {
+        this(methodExpression, null, null);
+    }
+
+    public MethodAction(String methodExpression, ModelRef resultRef) {
+        this(methodExpression, resultRef, null);
+    }
+
     public MethodAction(String methodExpression, ModelAction completeAction) {
+        this(methodExpression, null, completeAction);
+    }
+
+    public MethodAction(String methodExpression, ModelRef resultRef, ModelAction completeAction) {
         this.methodExpression = methodExpression;
+        this.resultRef = resultRef;
         this.completeAction = completeAction;
     }
 
@@ -23,6 +37,10 @@ public class MethodAction implements ModelAction, CompleteAware {
     @Override
     public String name() {
         return methodExpression;
+    }
+
+    public ModelRef getResultRef() {
+        return resultRef;
     }
 
     @Override

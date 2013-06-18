@@ -194,13 +194,13 @@ public class SimpleAnkorServerTest {
         SimpleAnkorServer server = new SimpleAnkorServer(application, "TestServer");
         server.init();
 
-        server.handleRemoteAction("model", new MethodAction("testServiceBean.init(modelHolder)", null));
-        server.handleRemoteAction("model.containers", new MethodAction("testServiceBean.addContainer(model.containers, 'tab1')", null));
+        server.handleRemoteAction("model", new MethodAction("testServiceBean.init(modelHolder)"));
+        server.handleRemoteAction("model.containers", new MethodAction("testServiceBean.addContainer(model.containers, 'tab1')"));
 
         server.handleRemoteChange("model.containers['tab1'].filter.name", "A*");
         server.handleRemoteChange("model.containers['tab1'].filter.type", "Bird");
         server.handleRemoteAction("model.containers['tab1'].resultList",
-                                  new MethodAction("testServiceBean.search(model.containers['tab1'])", null));
+                                  new MethodAction("testServiceBean.search(model.containers['tab1'])"));
 
         Object model = application.getModelHolder().getModel();
         Assert.assertNotNull(model);
@@ -229,6 +229,58 @@ public class SimpleAnkorServerTest {
 
                 container.setResultList(animals);
             }
+        }
+    }
+
+
+
+
+    @Test
+    public void test_method_action_result() throws Exception {
+
+        Application application = SimpleApplication.withModelType(TestModel.class)
+                                                   .withBean("testServiceBean", new TestServiceBean2());
+        SimpleAnkorServer server = new SimpleAnkorServer(application, "TestServer");
+        server.init();
+
+        ModelRef modelRef = application.getRefFactory().ref("model");
+        server.handleRemoteAction("", new MethodAction("testServiceBean.init()", modelRef));
+
+        ModelRef tab1Ref = application.getRefFactory().ref("model.containers['tab1']");
+        server.handleRemoteAction("", new MethodAction("testServiceBean.openAnimalSearch()", tab1Ref));
+
+        server.handleRemoteChange("model.containers['tab1'].filter.name", "A*");
+        server.handleRemoteChange("model.containers['tab1'].filter.type", "Bird");
+
+        ModelRef resultRef = application.getRefFactory().ref("model.containers['tab1'].resultList");
+        server.handleRemoteAction("", new MethodAction("testServiceBean.search(model.containers['tab1'].filter)", resultRef));
+
+        Object model = application.getModelHolder().getModel();
+        Assert.assertNotNull(model);
+    }
+
+    public static class TestServiceBean2 {
+        public TestModel init() {
+            return new TestModel();
+        }
+
+        @SuppressWarnings("unchecked")
+        public AnimalSearchContainer openAnimalSearch() {
+            return new AnimalSearchContainer();
+        }
+
+        public List<Animal> search(AnimalFilter filter) {
+
+            if (filter.getType() == AnimalType.Bird) {
+
+                List<Animal> animals = new ArrayList<Animal>();
+                animals.add(new Animal("Adler", AnimalType.Bird));
+                animals.add(new Animal("Amsel", AnimalType.Bird));
+
+                return animals;
+            }
+
+            return null;
         }
     }
 

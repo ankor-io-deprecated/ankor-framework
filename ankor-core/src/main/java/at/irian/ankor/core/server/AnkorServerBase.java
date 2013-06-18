@@ -6,7 +6,6 @@ import at.irian.ankor.core.application.Application;
 import at.irian.ankor.core.listener.ModelActionListener;
 import at.irian.ankor.core.listener.ModelChangeListener;
 import at.irian.ankor.core.ref.ModelRef;
-import at.irian.ankor.core.util.ObjectUtils;
 
 /**
  * @author MGeiler (Manfred Geiler)
@@ -102,12 +101,19 @@ public abstract class AnkorServerBase {
         public void handleModelAction(ModelRef actionContext, ModelAction action) {
             if (action instanceof MethodAction) {
                 LOG.debug("Remote method action detected by {} - {}: {}", AnkorServerBase.this, actionContext, action);
-                Object oldContextValue = actionContext.getValue();
-                String methodExpression = ((MethodAction) action).getMethodExpression();
-                application.getMethodExecutor().execute(methodExpression, actionContext);
-                Object newContextValue = actionContext.getValue();
-                if (!ObjectUtils.equals(oldContextValue, newContextValue)) {
-                    application.getModelChangeWatcher().afterModelChange(actionContext, oldContextValue, newContextValue);
+                //Object oldContextValue = actionContext.getValue();
+                MethodAction methodAction = (MethodAction) action;
+                String methodExpression = methodAction.getMethodExpression();
+                Object result = application.getMethodExecutor().execute(methodExpression, actionContext);
+                //Object newContextValue = actionContext.getValue();
+//                if (!ObjectUtils.equals(oldContextValue, newContextValue)) {
+//                    application.getModelChangeWatcher().afterModelChange(actionContext,
+//                                                                         oldContextValue,
+//                                                                         newContextValue);
+//                }
+                ModelRef resultRef = methodAction.getResultRef();
+                if (resultRef != null) {
+                    resultRef.setValue(result);
                 }
             }
         }
