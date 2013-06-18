@@ -4,7 +4,7 @@ import at.irian.ankor.core.application.Application;
 import at.irian.ankor.core.listener.ModelActionListener;
 import at.irian.ankor.core.listener.ModelChangeListener;
 import at.irian.ankor.core.ref.ModelRef;
-import at.irian.ankor.core.server.AnkorServer;
+import at.irian.ankor.core.server.SimpleAnkorServer;
 import at.irian.ankor.core.test.animal.AnimalSearchActionListener;
 import at.irian.ankor.core.test.animal.AnimalType;
 import org.junit.Test;
@@ -19,7 +19,7 @@ public class Tests {
     public void test_animal_search() throws Exception {
 
         Application application = new Application(TestModel.class);
-        AnkorServer server = new AnkorServer("server", application);
+        SimpleAnkorServer server = new SimpleAnkorServer(application, "server");
 
         application.getListenerRegistry().registerRemoteActionListener(null, new InitActionListener());
         application.getListenerRegistry().registerRemoteActionListener(null, new NewContainerActionListener());
@@ -41,7 +41,7 @@ public class Tests {
     public void test_animal_search_with_mock_client() throws Exception {
 
         final Application serverApp = new Application(TestModel.class);
-        AnkorServer server = new AnkorServer("server", serverApp);
+        SimpleAnkorServer server = new SimpleAnkorServer(serverApp, "server");
         serverApp.getListenerRegistry().registerRemoteActionListener(null, new ModelActionListener() {
             @Override
             public void handleModelAction(ModelRef modelRef, String action) {
@@ -56,7 +56,7 @@ public class Tests {
         serverApp.getListenerRegistry().registerRemoteActionListener(null, new AnimalSearchActionListener());
 
         final Application clientApp = new Application(Object.class);
-        AnkorServer client = new AnkorServer("client", clientApp);
+        SimpleAnkorServer client = new SimpleAnkorServer(clientApp, "client");
         clientApp.getListenerRegistry().registerRemoteActionListener(null, new ModelActionListener() {
             @Override
             public void handleModelAction(ModelRef modelRef, String action) {

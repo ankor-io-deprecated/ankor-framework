@@ -14,19 +14,19 @@ import org.junit.Test;
 /**
  * @author MGeiler (Manfred Geiler)
  */
-public class AnkorServerTest {
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnkorServerTest.class);
+public class SimpleAnkorServerTest {
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SimpleAnkorServerTest.class);
 
     @Test
     public void test_remote_init_action() throws Exception {
 
         Application application = new Application(TestModel.class);
-        AnkorServer server = new AnkorServer("server", application);
+        SimpleAnkorServer server = new SimpleAnkorServer(application, "server");
 
         application.getListenerRegistry().registerRemoteActionListener(application.getRefFactory().rootRef(),
                                                                        new InitActionListener());
 
-        server.handleRemoteAction(null, "init");
+        server.handleRemoteAction((String) null, "init");
 
         Object model = application.getModelHolder().getModel();
         Assert.assertNotNull(model);
@@ -39,7 +39,7 @@ public class AnkorServerTest {
         Application application = new Application(TestModel.class);
         TestModel model = new TestModel();
         application.getModelHolder().setModel(model);
-        AnkorServer server = new AnkorServer("server", application);
+        SimpleAnkorServer server = new SimpleAnkorServer(application, "server");
 
         application.getListenerRegistry().registerRemoteChangeListener(application.getRefFactory().ref("userName"),
                                                                        new UserNameChangeListener());
@@ -55,7 +55,7 @@ public class AnkorServerTest {
         Application application = new Application(TestModel.class);
         TestModel model = new TestModel();
         application.getModelHolder().setModel(model);
-        AnkorServer server = new AnkorServer("server", application);
+        SimpleAnkorServer server = new SimpleAnkorServer(application, "server");
 
         application.getListenerRegistry().registerRemoteChangeListener(application.getRefFactory().ref("testUser"),
                                                                        new ModelChangeListener() {
@@ -84,7 +84,7 @@ public class AnkorServerTest {
         Application application = new Application(TestModel.class);
         TestModel model = new TestModel();
         application.getModelHolder().setModel(model);
-        AnkorServer server = new AnkorServer("server", application);
+        SimpleAnkorServer server = new SimpleAnkorServer(application, "server");
 
         application.getListenerRegistry().registerRemoteActionListener(application.getRefFactory().ref("userName"),
                                                                        new LoadUserActionListener());
@@ -98,13 +98,13 @@ public class AnkorServerTest {
     public void test_animal_search() throws Exception {
 
         Application application = new Application(TestModel.class);
-        AnkorServer server = new AnkorServer("server", application);
+        SimpleAnkorServer server = new SimpleAnkorServer(application, "server");
 
         application.getListenerRegistry().registerRemoteActionListener(null, new InitActionListener());
         application.getListenerRegistry().registerRemoteActionListener(null, new NewContainerActionListener());
         application.getListenerRegistry().registerRemoteActionListener(null, new AnimalSearchActionListener());
 
-        server.handleRemoteAction(null, "init");
+        server.handleRemoteAction((String) null, "init");
 
         server.handleRemoteChange("containers['tab1']", null);
         server.handleRemoteAction("containers['tab1']", "newAnimalSearchContainer");
@@ -120,7 +120,7 @@ public class AnkorServerTest {
     public void test_animal_search_with_mock_client() throws Exception {
 
         final Application serverApp = new Application(TestModel.class);
-        AnkorServer server = new AnkorServer("server", serverApp);
+        SimpleAnkorServer server = new SimpleAnkorServer(serverApp, "server");
         serverApp.getListenerRegistry().registerRemoteActionListener(null, new ModelActionListener() {
             @Override
             public void handleModelAction(ModelRef modelRef, String action) {
@@ -135,7 +135,7 @@ public class AnkorServerTest {
         serverApp.getListenerRegistry().registerRemoteActionListener(null, new AnimalSearchActionListener());
 
         final Application clientApp = new Application(Object.class);
-        AnkorServer client = new AnkorServer("client", clientApp);
+        SimpleAnkorServer client = new SimpleAnkorServer(clientApp, "client");
         clientApp.getListenerRegistry().registerRemoteActionListener(null, new ModelActionListener() {
             @Override
             public void handleModelAction(ModelRef modelRef, String action) {
@@ -166,7 +166,7 @@ public class AnkorServerTest {
         server.setRemoteServer(client);
         client.setRemoteServer(server);
 
-        server.handleRemoteAction(null, "init");
+        server.handleRemoteAction((String) null, "init");
 
 //        server.handleRemoteChange("containers['tab1']", null);
 //        server.handleRemoteAction("containers['tab1']", "newAnimalSearchContainer");
