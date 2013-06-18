@@ -1,5 +1,6 @@
 package at.irian.ankor.core.ref;
 
+import at.irian.ankor.core.application.ModelActionBus;
 import at.irian.ankor.core.application.ModelChangeWatcher;
 
 import javax.el.ValueExpression;
@@ -53,7 +54,10 @@ public class PropertyRef implements ModelRef {
 
     @Override
     public void fireAction(String action) {
-        refFactory.modelActionBus().broadcastAction(this, action);
+        ModelActionBus modelActionBus = refFactory.modelActionBus();
+        if (modelActionBus != null) {
+            modelActionBus.broadcastAction(this, action);
+        }
     }
 
     @SuppressWarnings("RedundantIfStatement")
@@ -100,5 +104,16 @@ public class PropertyRef implements ModelRef {
 
     ModelChangeWatcher getModelChangeWatcher() {
         return modelChangeWatcher;
+    }
+
+    @Override
+    public boolean isDescendantOf(ModelRef ref) {
+        ModelRef parentRef = parent();
+        return parentRef.equals(ref) || parentRef.isDescendantOf(ref);
+    }
+
+    @Override
+    public boolean isAncestorOf(ModelRef ref) {
+        return ref.isDescendantOf(this);
     }
 }

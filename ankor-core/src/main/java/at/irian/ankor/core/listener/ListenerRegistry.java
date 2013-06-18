@@ -65,19 +65,15 @@ public class ListenerRegistry {
     }
 
     private Collection getListenersFor(Map<ModelRef, Collection<?>> map, ModelRef ref) {
-        Collection listeners = map.get(ref);
-        Collection globalListeners = map.get(null);
-        if (listeners == null && globalListeners == null) {
-            return Collections.emptyList();
-        } else if (globalListeners == null) {
-            return Collections.unmodifiableCollection(listeners);
-        } else if (listeners == null) {
-            return Collections.unmodifiableCollection(globalListeners);
-        } else {
-            return new CombinedCollection(globalListeners, listeners);
+        Collection result = Collections.emptyList();
+        for (Map.Entry<ModelRef, Collection<?>> entry : map.entrySet()) {
+            ModelRef listenerRef = entry.getKey();
+            if (listenerRef == null || listenerRef.equals(ref) || listenerRef.isAncestorOf(ref)) {
+                result = CombinedCollection.combine(result, entry.getValue());
+            }
         }
+        return result;
     }
-
 
     public void unregisterAllListenersFor(ModelRef modelRef) {
         unregisterAllListenersFor(remoteActionListeners.entrySet().iterator(), modelRef);
@@ -86,28 +82,24 @@ public class ListenerRegistry {
         unregisterAllListenersFor(localChangeListeners.entrySet().iterator(), modelRef);
     }
 
-    public void unregisterListener(Object listener) {
-        unregisterListeners(remoteActionListeners.entrySet().iterator(), listener);
-        unregisterListeners(localActionListeners.entrySet().iterator(), listener);
-        unregisterListeners(remoteChangeListeners.entrySet().iterator(), listener);
-        unregisterListeners(localChangeListeners.entrySet().iterator(), listener);
-    }
-
-
-    private void unregisterAllListenersFor(Iterator entryIterator, ModelRef modelRef) {
+    private void unregisterAllListenersFor(Iterator entryIterator, ModelRef ref) {
         while (entryIterator.hasNext()) {
             Map.Entry entry = (Map.Entry) entryIterator.next();
-            ModelRef refKey = (ModelRef) entry.getKey();
-            while (refKey != null) {
-                if (modelRef.equals(refKey)) {
-                    entryIterator.remove();
-                }
-                refKey = refKey.parent();
+            ModelRef listenerRef = (ModelRef) entry.getKey();
+            if (listenerRef != null && (listenerRef.equals(ref) || listenerRef.isDescendantOf(ref))) {
+                entryIterator.remove();
             }
         }
     }
 
-    private void unregisterListeners(Iterator entryIterator, Object listener) {
+    public void unregisterListener(Object listener) {
+        unregisterListener(remoteActionListeners.entrySet().iterator(), listener);
+        unregisterListener(localActionListeners.entrySet().iterator(), listener);
+        unregisterListener(remoteChangeListeners.entrySet().iterator(), listener);
+        unregisterListener(localChangeListeners.entrySet().iterator(), listener);
+    }
+
+    private void unregisterListener(Iterator entryIterator, Object listener) {
         while (entryIterator.hasNext()) {
             Map.Entry entry = (Map.Entry) entryIterator.next();
             Collection listeners = (Collection) entry.getValue();

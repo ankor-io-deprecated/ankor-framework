@@ -1,5 +1,6 @@
 package at.irian.ankor.core.ref;
 
+import at.irian.ankor.core.application.ModelActionBus;
 import at.irian.ankor.core.application.ModelChangeWatcher;
 import at.irian.ankor.core.model.ModelHolder;
 
@@ -57,7 +58,10 @@ public class RootRef implements ModelRef {
 
     @Override
     public void fireAction(String action) {
-        refFactory.modelActionBus().broadcastAction(this, action);
+        ModelActionBus modelActionBus = refFactory.modelActionBus();
+        if (modelActionBus != null) {
+            modelActionBus.broadcastAction(this, action);
+        }
     }
 
     @Override
@@ -83,5 +87,15 @@ public class RootRef implements ModelRef {
     @Override
     public String path() {
         return refFactory.pathOf(this);
+    }
+
+    @Override
+    public boolean isDescendantOf(ModelRef ref) {
+        return false;
+    }
+
+    @Override
+    public boolean isAncestorOf(ModelRef ref) {
+        return true;
     }
 }

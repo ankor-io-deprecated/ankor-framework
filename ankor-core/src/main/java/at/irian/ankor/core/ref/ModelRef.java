@@ -18,4 +18,10 @@ public interface ModelRef {
     void fireAction(String action);
 
     String path();
+
+    /**
+     * @return true, if the given ref is a parent (or grand-parent, or...) of this ref
+     */
+    boolean isDescendantOf(ModelRef ref);
+    boolean isAncestorOf(ModelRef ref);
 }

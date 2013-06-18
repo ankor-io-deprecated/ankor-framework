@@ -2,6 +2,7 @@ package at.irian.ankor.core.util;
 
 import java.util.AbstractCollection;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 
 /**
@@ -47,5 +48,18 @@ public class CombinedCollection extends AbstractCollection {
     @Override
     public int size() {
         return c1.size() + c2.size();
+    }
+
+
+    public static Collection combine(Collection c1, Collection c2) {
+        if (c1.isEmpty() && c2.isEmpty()) {
+            return c1;
+        } else if (c1.isEmpty()) {
+            return c2;
+        } else if (c2.isEmpty()) {
+            return c1;
+        } else {
+            return new CombinedCollection(c1, c2);
+        }
     }
 }

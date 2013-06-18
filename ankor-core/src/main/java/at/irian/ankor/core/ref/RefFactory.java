@@ -85,7 +85,12 @@ public class RefFactory {
     }
 
     ModelRef parentRef(PropertyRef ref) {
-        return new PropertyRef(this, valueExpressionFor(parentPath(internalPathOf(ref))), ref.getModelChangeWatcher());
+        String parentPath = parentPath(internalPathOf(ref));
+        if (ModelHolderVariableMapper.MODEL_ROOT_VAR_NAME.equals(parentPath)) {
+            return rootRef();
+        } else {
+            return new PropertyRef(this, valueExpressionFor(parentPath), ref.getModelChangeWatcher());
+        }
     }
 
     ModelRef subRef(PropertyRef ref, String subPath) {
