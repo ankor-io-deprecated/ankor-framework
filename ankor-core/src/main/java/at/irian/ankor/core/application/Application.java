@@ -1,7 +1,9 @@
 package at.irian.ankor.core.application;
 
+import at.irian.ankor.core.el.BeanResolver;
 import at.irian.ankor.core.el.StandardELContext;
 import at.irian.ankor.core.listener.ListenerRegistry;
+import at.irian.ankor.core.method.MethodExecutor;
 import at.irian.ankor.core.ref.RefFactory;
 
 import javax.el.ExpressionFactory;
@@ -15,15 +17,23 @@ public class Application {
     private final ListenerRegistry listenerRegistry;
     private final ModelHolder modelHolder;
     private final RefFactory refFactory;
+    private final MethodExecutor methodExecutor;
+    private final BeanResolver beanResolver;
+    private final ModelChangeWatcher modelChangeWatcher;
 
-    public Application(Class<?> modelType) {
+    public Application(Class<?> modelType, BeanResolver beanResolver) {
+        this.beanResolver = beanResolver;
         this.listenerRegistry = new ListenerRegistry();
         this.modelHolder = new ModelHolder(modelType);
-        this.refFactory = new RefFactory(ExpressionFactory.newInstance(),
-                                         new StandardELContext(),
-                                         new ModelChangeWatcher(listenerRegistry),
+        ExpressionFactory expressionFactory = ExpressionFactory.newInstance();
+        StandardELContext standardELContext = new StandardELContext();
+        this.modelChangeWatcher = new ModelChangeWatcher(listenerRegistry);
+        this.refFactory = new RefFactory(expressionFactory,
+                                         standardELContext,
+                                         modelChangeWatcher,
                                          new ModelActionBus(listenerRegistry),
                                          modelHolder);
+        this.methodExecutor = new MethodExecutor(expressionFactory, standardELContext, modelHolder, beanResolver);
     }
 
     public ModelHolder getModelHolder() {
@@ -36,5 +46,17 @@ public class Application {
 
     public ListenerRegistry getListenerRegistry() {
         return listenerRegistry;
+    }
+
+    public MethodExecutor getMethodExecutor() {
+        return methodExecutor;
+    }
+
+    protected BeanResolver getBeanResolver() {
+        return beanResolver;
+    }
+
+    public ModelChangeWatcher getModelChangeWatcher() {
+        return modelChangeWatcher;
     }
 }

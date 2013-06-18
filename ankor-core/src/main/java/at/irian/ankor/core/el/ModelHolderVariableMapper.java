@@ -1,4 +1,4 @@
-package at.irian.ankor.core.ref;
+package at.irian.ankor.core.el;
 
 import at.irian.ankor.core.application.ModelHolder;
 
@@ -10,10 +10,11 @@ import javax.el.VariableMapper;
 /**
  * @author Manfred Geiler
  */
-class ModelHolderVariableMapper extends VariableMapper {
+public class ModelHolderVariableMapper extends VariableMapper {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelHolderVariableMapper.class);
 
-    static final String MODEL_ROOT_VAR_NAME = "model";
+    public static final String MODEL_VAR_NAME = "model";
+    public static final String MODEL_HOLDER_VAR_NAME = "modelHolder";
 
     private final ExpressionFactory expressionFactory;
     private final ELContext baseELContext;
@@ -29,8 +30,10 @@ class ModelHolderVariableMapper extends VariableMapper {
 
     @Override
     public ValueExpression resolveVariable(String variable) {
-        if (MODEL_ROOT_VAR_NAME.equals(variable)) {
+        if (MODEL_VAR_NAME.equals(variable)) {
             return expressionFactory.createValueExpression(modelHolder.getModel(), modelHolder.getModelType());
+        } else if (MODEL_HOLDER_VAR_NAME.equals(variable)) {
+                return expressionFactory.createValueExpression(modelHolder, ModelHolder.class);
         } else {
             return baseELContext.getVariableMapper().resolveVariable(variable);
         }
@@ -39,11 +42,13 @@ class ModelHolderVariableMapper extends VariableMapper {
     @SuppressWarnings("unchecked")
     @Override
     public ValueExpression setVariable(String variable, ValueExpression expression) {
-        if (MODEL_ROOT_VAR_NAME.equals(variable)) {
+        if (MODEL_VAR_NAME.equals(variable)) {
             Object oldModel = modelHolder.getModel();
             Object newModel = expression.getValue(baseELContext);
             modelHolder.setModel(newModel);
             return expressionFactory.createValueExpression(oldModel, modelHolder.getModelType());
+        } else if (MODEL_HOLDER_VAR_NAME.equals(variable)) {
+            throw new UnsupportedOperationException("cannot change modelHolder");
         } else {
             return baseELContext.getVariableMapper().setVariable(variable, expression);
         }

@@ -1,17 +1,23 @@
 package at.irian.ankor.core.server;
 
+import at.irian.ankor.core.action.MethodAction;
 import at.irian.ankor.core.action.ModelAction;
 import at.irian.ankor.core.action.SimpleAction;
 import at.irian.ankor.core.application.Application;
+import at.irian.ankor.core.application.ModelHolder;
+import at.irian.ankor.core.application.SimpleApplication;
 import at.irian.ankor.core.listener.ModelActionListener;
 import at.irian.ankor.core.listener.ModelChangeListener;
 import at.irian.ankor.core.ref.ModelRef;
 import at.irian.ankor.core.test.*;
-import at.irian.ankor.core.test.animal.AnimalSearchActionListener;
+import at.irian.ankor.core.test.animal.*;
 import at.irian.ankor.core.test.NewContainerActionListener;
-import at.irian.ankor.core.test.animal.AnimalType;
 import junit.framework.Assert;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author MGeiler (Manfred Geiler)
@@ -22,7 +28,7 @@ public class SimpleAnkorServerTest {
     @Test
     public void test_remote_init_action() throws Exception {
 
-        Application application = new Application(TestModel.class);
+        Application application = SimpleApplication.withModelType(TestModel.class);
         SimpleAnkorServer server = new SimpleAnkorServer(application, "server");
 
         application.getListenerRegistry().registerRemoteActionListener(application.getRefFactory().rootRef(),
@@ -38,7 +44,7 @@ public class SimpleAnkorServerTest {
     @Test
     public void test_remote_change() throws Exception {
 
-        Application application = new Application(TestModel.class);
+        Application application = SimpleApplication.withModelType(TestModel.class);
         TestModel model = new TestModel();
         application.getModelHolder().setModel(model);
         SimpleAnkorServer server = new SimpleAnkorServer(application, "server");
@@ -54,7 +60,7 @@ public class SimpleAnkorServerTest {
     @Test
     public void test_remote_change_typed() throws Exception {
 
-        Application application = new Application(TestModel.class);
+        Application application = SimpleApplication.withModelType(TestModel.class);
         TestModel model = new TestModel();
         application.getModelHolder().setModel(model);
         SimpleAnkorServer server = new SimpleAnkorServer(application, "server");
@@ -83,7 +89,7 @@ public class SimpleAnkorServerTest {
     @Test
     public void test_local_change_and_action() throws Exception {
 
-        Application application = new Application(TestModel.class);
+        Application application = SimpleApplication.withModelType(TestModel.class);
         TestModel model = new TestModel();
         application.getModelHolder().setModel(model);
         SimpleAnkorServer server = new SimpleAnkorServer(application, "server");
@@ -99,7 +105,7 @@ public class SimpleAnkorServerTest {
     @Test
     public void test_animal_search() throws Exception {
 
-        Application application = new Application(TestModel.class);
+        Application application = SimpleApplication.withModelType(TestModel.class);
         SimpleAnkorServer server = new SimpleAnkorServer(application, "server");
 
         application.getListenerRegistry().registerRemoteActionListener(null, new InitActionListener());
@@ -121,7 +127,7 @@ public class SimpleAnkorServerTest {
     @Test
     public void test_animal_search_with_mock_client() throws Exception {
 
-        final Application serverApp = new Application(TestModel.class);
+        final Application serverApp = SimpleApplication.withModelType(TestModel.class);
         SimpleAnkorServer server = new SimpleAnkorServer(serverApp, "server");
         serverApp.getListenerRegistry().registerRemoteActionListener(null, new ModelActionListener() {
             @Override
@@ -136,7 +142,7 @@ public class SimpleAnkorServerTest {
         serverApp.getListenerRegistry().registerRemoteActionListener(null, new NewContainerActionListener());
         serverApp.getListenerRegistry().registerRemoteActionListener(null, new AnimalSearchActionListener());
 
-        final Application clientApp = new Application(Object.class);
+        final Application clientApp = SimpleApplication.withModelType(TestModel.class);
         SimpleAnkorServer client = new SimpleAnkorServer(clientApp, "client");
         clientApp.getListenerRegistry().registerRemoteActionListener(null, new ModelActionListener() {
             @Override
@@ -179,5 +185,51 @@ public class SimpleAnkorServerTest {
 
     }
 
+
+    @Test
+    public void test_method_action() throws Exception {
+
+        Application application = SimpleApplication.withModelType(TestModel.class)
+                                                   .withBean("testServiceBean", new TestServiceBean());
+        SimpleAnkorServer server = new SimpleAnkorServer(application, "TestServer");
+        server.init();
+
+        server.handleRemoteAction("model", new MethodAction("testServiceBean.init(modelHolder)", null));
+        server.handleRemoteAction("model.containers", new MethodAction("testServiceBean.addContainer(model.containers, 'tab1')", null));
+
+        server.handleRemoteChange("model.containers['tab1'].filter.name", "A*");
+        server.handleRemoteChange("model.containers['tab1'].filter.type", "Bird");
+        server.handleRemoteAction("model.containers['tab1'].resultList",
+                                  new MethodAction("testServiceBean.search(model.containers['tab1'])", null));
+
+        Object model = application.getModelHolder().getModel();
+        Assert.assertNotNull(model);
+    }
+
+    public static class TestServiceBean {
+        public void init(ModelHolder modelHolder) {
+            LOG.info("TestServiceBean.init");
+            modelHolder.setModel(new TestModel());
+        }
+
+        @SuppressWarnings("unchecked")
+        public void addContainer(Map containers, String tabName) {
+            LOG.info("TestServiceBean.addContainer");
+            containers.put(tabName, new AnimalSearchContainer());
+        }
+
+        public void search(AnimalSearchContainer container) {
+            AnimalFilter filter = container.getFilter();
+
+            if (filter.getType() == AnimalType.Bird) {
+
+                List<Animal> animals = new ArrayList<Animal>();
+                animals.add(new Animal("Adler", AnimalType.Bird));
+                animals.add(new Animal("Amsel", AnimalType.Bird));
+
+                container.setResultList(animals);
+            }
+        }
+    }
 
 }

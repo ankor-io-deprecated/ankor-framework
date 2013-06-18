@@ -18,6 +18,12 @@ public class ModelActionBus {
     }
 
     public void broadcastAction(ModelRef modelRef, ModelAction action) {
+        if (modelRef == null) {
+            throw new NullPointerException("modelRef");
+        }
+        if (action == null) {
+            throw new NullPointerException("action");
+        }
         for (ModelActionListener modelActionListener : listenerRegistry.getLocalActionListenersFor(modelRef)) {
             modelActionListener.handleModelAction(modelRef, action);
         }

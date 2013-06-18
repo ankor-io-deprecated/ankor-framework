@@ -8,17 +8,17 @@ import java.util.List;
 /**
  * @author MGeiler (Manfred Geiler)
  */
-public class StandardAction extends SimpleAction implements CompleteAware {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(StandardAction.class);
+public class ParamsAction extends SimpleAction implements CompleteAware {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ParamsAction.class);
 
     private String[] params = new String[0];
     private ModelAction completeAction;
 
-    protected StandardAction(String name) {
+    protected ParamsAction(String name) {
         super(name);
     }
 
-    protected StandardAction(String name, String[] params, ModelAction completeAction) {
+    protected ParamsAction(String name, String[] params, ModelAction completeAction) {
         super(name);
         this.params = params;
         this.completeAction = completeAction;
@@ -39,17 +39,17 @@ public class StandardAction extends SimpleAction implements CompleteAware {
         }
     }
 
-    public static StandardAction withName(String name) {
-        return new StandardAction(name);
+    public static ParamsAction withName(String name) {
+        return new ParamsAction(name);
     }
 
-    public StandardAction withParam(String paramPath) {
+    public ParamsAction withParam(String paramPath) {
         List<String> lst = Arrays.asList(params);
         lst.add(paramPath);
-        return new StandardAction(name(), lst.toArray(new String[lst.size()]), completeAction);
+        return new ParamsAction(name(), lst.toArray(new String[lst.size()]), completeAction);
     }
 
-    public StandardAction onCompleteFire(ModelAction action) {
-        return new StandardAction(name(), params, action);
+    public ParamsAction onCompleteFire(ModelAction action) {
+        return new ParamsAction(name(), params, action);
     }
 }

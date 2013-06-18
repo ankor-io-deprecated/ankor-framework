@@ -1,10 +1,12 @@
 package at.irian.ankor.core.server;
 
+import at.irian.ankor.core.action.MethodAction;
 import at.irian.ankor.core.action.ModelAction;
 import at.irian.ankor.core.application.Application;
 import at.irian.ankor.core.listener.ModelActionListener;
 import at.irian.ankor.core.listener.ModelChangeListener;
 import at.irian.ankor.core.ref.ModelRef;
+import at.irian.ankor.core.util.ObjectUtils;
 
 /**
  * @author MGeiler (Manfred Geiler)
@@ -16,6 +18,7 @@ public abstract class AnkorServerBase {
     protected final RemoteActionHandler remoteActionHandler;
     protected final RemoteChangeHandler remoteChangeHandler;
     private LocalListener localListener = null;
+    private MethodActionListener methodActionListener = null;
 
     public AnkorServerBase(Application application) {
         this.application = application;
@@ -28,9 +31,13 @@ public abstract class AnkorServerBase {
         if (localListener != null) {
             throw new IllegalStateException("already initialized");
         }
+
         localListener = new LocalListener();
         application.getListenerRegistry().registerLocalChangeListener(null, localListener);
         application.getListenerRegistry().registerLocalActionListener(null, localListener);
+
+        methodActionListener = new MethodActionListener();
+        application.getListenerRegistry().registerRemoteActionListener(null, methodActionListener);
     }
 
     public void close() {
@@ -38,6 +45,10 @@ public abstract class AnkorServerBase {
         if (localListener != null) {
             application.getListenerRegistry().unregisterListener(localListener);
             localListener = null;
+        }
+        if (methodActionListener != null) {
+            application.getListenerRegistry().unregisterListener(methodActionListener);
+            methodActionListener = null;
         }
     }
 
@@ -47,6 +58,7 @@ public abstract class AnkorServerBase {
     }
 
     protected void handleRemoteAction(ModelRef actionContext, ModelAction action) {
+        LOG.debug("Remote action received by {} - {}: {}", AnkorServerBase.this, actionContext, action);
         remoteActionHandler.handleRemoteAction(actionContext, action);
     }
 
@@ -55,6 +67,7 @@ public abstract class AnkorServerBase {
     }
 
     protected void handleRemoteChange(ModelRef modelRef, Object newValue) {
+        LOG.debug("Remote change received by {} - {}: {}", AnkorServerBase.this, modelRef, newValue);
         remoteChangeHandler.handleRemoteChange(modelRef, newValue);
     }
 
@@ -68,7 +81,7 @@ public abstract class AnkorServerBase {
     private class LocalListener implements ModelActionListener, ModelChangeListener {
         @Override
         public void handleModelAction(ModelRef actionContext, ModelAction action) {
-            LOG.debug("Local action detected by {} - {}: {}", this, actionContext, action);
+            LOG.debug("Local action detected by {} - {}: {}", AnkorServerBase.this, actionContext, action);
             handleLocalAction(actionContext, action);
         }
 
@@ -78,9 +91,25 @@ public abstract class AnkorServerBase {
 
         @Override
         public void afterModelChange(ModelRef modelRef, Object oldValue, Object newValue) {
-            LOG.debug("Local model change detected by {} - {}: {} => {}", this, modelRef, oldValue, newValue);
+            LOG.debug("Local model change detected by {} - {}: {} => {}", AnkorServerBase.this, modelRef, oldValue, newValue);
             handleLocalChange(modelRef, oldValue, newValue);
         }
     }
 
+
+    private class MethodActionListener implements ModelActionListener {
+        @Override
+        public void handleModelAction(ModelRef actionContext, ModelAction action) {
+            if (action instanceof MethodAction) {
+                LOG.debug("Remote method action detected by {} - {}: {}", AnkorServerBase.this, actionContext, action);
+                Object oldContextValue = actionContext.getValue();
+                String methodExpression = ((MethodAction) action).getMethodExpression();
+                application.getMethodExecutor().execute(methodExpression, actionContext);
+                Object newContextValue = actionContext.getValue();
+                if (!ObjectUtils.equals(oldContextValue, newContextValue)) {
+                    application.getModelChangeWatcher().afterModelChange(actionContext, oldContextValue, newContextValue);
+                }
+            }
+        }
+    }
 }

@@ -3,6 +3,8 @@ package at.irian.ankor.core.ref;
 import at.irian.ankor.core.application.ModelActionBus;
 import at.irian.ankor.core.application.ModelChangeWatcher;
 import at.irian.ankor.core.application.ModelHolder;
+import at.irian.ankor.core.el.ModelHolderELContext;
+import at.irian.ankor.core.el.ModelHolderVariableMapper;
 
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
@@ -16,7 +18,7 @@ import static at.irian.ankor.core.ref.PathUtils.*;
 public class RefFactory {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RefFactory.class);
 
-    private static final String MODEL_VAR_NAME = ModelHolderVariableMapper.MODEL_ROOT_VAR_NAME;
+    private static final String MODEL_VAR_NAME = ModelHolderVariableMapper.MODEL_VAR_NAME;
     private static final String MODEL_PATH_PREFIX = MODEL_VAR_NAME + '.';
 
     private final ExpressionFactory expressionFactory;

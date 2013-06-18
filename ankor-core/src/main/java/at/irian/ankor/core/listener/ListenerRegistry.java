@@ -1,7 +1,7 @@
 package at.irian.ankor.core.listener;
 
 import at.irian.ankor.core.ref.ModelRef;
-import at.irian.ankor.core.util.CombinedCollection;
+import at.irian.ankor.core.util.CollectionUtils;
 
 import java.util.*;
 
@@ -69,7 +69,7 @@ public class ListenerRegistry {
         for (Map.Entry<ModelRef, Collection<?>> entry : map.entrySet()) {
             ModelRef listenerRef = entry.getKey();
             if (listenerRef == null || listenerRef.equals(ref) || listenerRef.isAncestorOf(ref)) {
-                result = CombinedCollection.combine(result, entry.getValue());
+                result = CollectionUtils.concat(result, entry.getValue());
             }
         }
         return result;

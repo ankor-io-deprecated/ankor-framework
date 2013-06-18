@@ -28,4 +28,25 @@ public class AnimalSearchContainer {
     public void setResultList(List<Animal> resultList) {
         this.resultList = resultList;
     }
+
+    @SuppressWarnings("RedundantIfStatement")
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) { return true; }
+        if (o == null || getClass() != o.getClass()) { return false; }
+
+        AnimalSearchContainer that = (AnimalSearchContainer) o;
+
+        if (!filter.equals(that.filter)) { return false; }
+        if (!resultList.equals(that.resultList)) { return false; }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = filter.hashCode();
+        result = 31 * result + resultList.hashCode();
+        return result;
+    }
 }
