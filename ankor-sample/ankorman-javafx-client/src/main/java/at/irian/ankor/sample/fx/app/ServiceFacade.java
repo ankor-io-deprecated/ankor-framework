@@ -1,7 +1,6 @@
 package at.irian.ankor.sample.fx.app;
 
 import at.irian.ankor.core.ref.ModelRef;
-import at.irian.ankor.core.ref.PropertyRef;
 import at.irian.ankor.core.ref.RootRef;
 
 /**

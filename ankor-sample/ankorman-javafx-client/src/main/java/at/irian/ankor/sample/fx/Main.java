@@ -51,12 +51,15 @@ public class Main extends javafx.application.Application {
 
         new Thread(new Runnable() {
             public void run() {
-                try {
-                    Thread.sleep(5 * 1000);
-                } catch (InterruptedException e) {
+                int i = 0;
+                //noinspection InfiniteLoopStatement
+                for (;;) {
+                    try {
+                        Thread.sleep((i == 0 ? 5 : 1) * 1000);
+                    } catch (InterruptedException e) {
+                    }
+                    serverApp.getRefFactory().rootRef().sub("tabs.A.model.filter.name").setValue("Eagle " + (++i));
                 }
-
-                serverApp.getRefFactory().rootRef().sub("tabs.A.model.filter.name").setValue("test");
             }
         }).start();
 
