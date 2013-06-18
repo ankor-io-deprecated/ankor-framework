@@ -1,11 +1,11 @@
 package at.irian.ankor.core.ref;
 
+import at.irian.ankor.core.action.ModelAction;
+
 /**
  * @author MGeiler (Manfred Geiler)
  */
 public interface ModelRef {
-
-    static String NIL = "NIL";
 
     void setValue(Object value);
     <T> T getValue();
@@ -15,7 +15,7 @@ public interface ModelRef {
     ModelRef sub(String subPath);
     ModelRef unwatched();
 
-    void fireAction(String action);
+    void fire(ModelAction action);
 
     String path();
 

@@ -1,5 +1,6 @@
 package at.irian.ankor.core.test.animal;
 
+import at.irian.ankor.core.action.ModelAction;
 import at.irian.ankor.core.listener.ModelActionListener;
 import at.irian.ankor.core.ref.ModelRef;
 
@@ -13,9 +14,9 @@ public class AnimalSearchActionListener implements ModelActionListener {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalSearchActionListener.class);
 
     @Override
-    public void handleModelAction(ModelRef containerRef, String action) {
-        if (action.equals("search")) {
-            Object container = containerRef.getValue();
+    public void handleModelAction(ModelRef actionContext, ModelAction action) {
+        if (action.name().equals("search")) {
+            Object container = actionContext.getValue();
 
             if (container instanceof AnimalSearchContainer) {
                 LOG.info("Animal search action");
@@ -27,7 +28,7 @@ public class AnimalSearchActionListener implements ModelActionListener {
                     animals.add(new Animal("Adler", AnimalType.Bird));
                     animals.add(new Animal("Amsel", AnimalType.Bird));
 
-                    containerRef.sub("resultList").setValue(animals);
+                    actionContext.sub("resultList").setValue(animals);
                 }
             }
 

@@ -1,5 +1,7 @@
 package at.irian.ankor.core.test;
 
+import at.irian.ankor.core.action.ModelAction;
+import at.irian.ankor.core.action.SimpleAction;
 import at.irian.ankor.core.application.Application;
 import at.irian.ankor.core.listener.ModelActionListener;
 import at.irian.ankor.core.listener.ModelChangeListener;
@@ -25,14 +27,14 @@ public class Tests {
         application.getListenerRegistry().registerRemoteActionListener(null, new NewContainerActionListener());
         application.getListenerRegistry().registerRemoteActionListener(null, new AnimalSearchActionListener());
 
-        server.handleRemoteAction(null, "init");
+        server.handleRemoteAction(null, SimpleAction.withName("init"));
 
         server.handleRemoteChange("containers['tab1']", null);
-        server.handleRemoteAction("containers['tab1']", "newAnimalSearchContainer");
+        server.handleRemoteAction("containers['tab1']", SimpleAction.withName("newAnimalSearchContainer"));
 
         server.handleRemoteChange("containers['tab1'].filter.name", "A*");
         server.handleRemoteChange("containers['tab1'].filter.type", "Bird");
-        server.handleRemoteAction("containers['tab1']", "search");
+        server.handleRemoteAction("containers['tab1']", SimpleAction.withName("search"));
 
     }
 
@@ -44,11 +46,11 @@ public class Tests {
         SimpleAnkorServer server = new SimpleAnkorServer(serverApp, "server");
         serverApp.getListenerRegistry().registerRemoteActionListener(null, new ModelActionListener() {
             @Override
-            public void handleModelAction(ModelRef modelRef, String action) {
-                if (action.equals("init")) {
+            public void handleModelAction(ModelRef actionContext, ModelAction action) {
+                if (action.name().equals("init")) {
                     LOG.info("Creating new TestModel");
-                    modelRef.root().setValue(new TestModel());
-                    modelRef.fireAction("initialized");
+                    actionContext.root().setValue(new TestModel());
+                    actionContext.fire(SimpleAction.withName("initialized"));
                 }
             }
         });
@@ -59,9 +61,9 @@ public class Tests {
         SimpleAnkorServer client = new SimpleAnkorServer(clientApp, "client");
         clientApp.getListenerRegistry().registerRemoteActionListener(null, new ModelActionListener() {
             @Override
-            public void handleModelAction(ModelRef modelRef, String action) {
-                if (action.equals("initialized")) {
-                    ModelRef containerRef = modelRef.root().sub("containers['tab1']");
+            public void handleModelAction(ModelRef actionContext, ModelAction action) {
+                if (action.name().equals("initialized")) {
+                    ModelRef containerRef = actionContext.root().sub("containers['tab1']");
                     containerRef.setValue(null);
 
                     clientApp.getListenerRegistry().registerRemoteChangeListener(containerRef, new ModelChangeListener() {
@@ -75,11 +77,11 @@ public class Tests {
 
                             modelRef.sub("filter.name").setValue("A*");
                             modelRef.sub("filter.type").setValue(AnimalType.Bird);
-                            modelRef.fireAction("search");
+                            modelRef.fire(SimpleAction.withName("search"));
                         }
                     });
 
-                    containerRef.fireAction("newAnimalSearchContainer");
+                    containerRef.fire(SimpleAction.withName("newAnimalSearchContainer"));
                 }
             }
         });
@@ -87,7 +89,7 @@ public class Tests {
         server.setRemoteServer(client);
         client.setRemoteServer(server);
 
-        server.handleRemoteAction(null, "init");
+        server.handleRemoteAction(null, SimpleAction.withName("init"));
 
 //        server.handleRemoteChange("containers['tab1']", null);
 //        server.handleRemoteAction("containers['tab1']", "newAnimalSearchContainer");

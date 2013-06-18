@@ -1,5 +1,6 @@
 package at.irian.ankor.core.ref;
 
+import at.irian.ankor.core.action.ModelAction;
 import at.irian.ankor.core.application.ModelActionBus;
 import at.irian.ankor.core.application.ModelChangeWatcher;
 
@@ -53,7 +54,7 @@ public class PropertyRef implements ModelRef {
     }
 
     @Override
-    public void fireAction(String action) {
+    public void fire(ModelAction action) {
         ModelActionBus modelActionBus = refFactory.modelActionBus();
         if (modelActionBus != null) {
             modelActionBus.broadcastAction(this, action);

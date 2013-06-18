@@ -1,5 +1,6 @@
 package at.irian.ankor.core.server;
 
+import at.irian.ankor.core.action.ModelAction;
 import at.irian.ankor.core.application.Application;
 import at.irian.ankor.core.ref.ModelRef;
 
@@ -27,13 +28,13 @@ public class SimpleAnkorServer extends AnkorServerBase {
     }
 
     @Override
-    public void handleRemoteAction(String path, String action) {
-        super.handleRemoteAction(path, action);
+    public void handleRemoteAction(String actionContextPath, ModelAction action) {
+        super.handleRemoteAction(actionContextPath, action);
     }
 
     @Override
-    public void handleRemoteChange(String path, Object newValue) {
-        super.handleRemoteChange(path, newValue);
+    public void handleRemoteChange(String propertyPath, Object newValue) {
+        super.handleRemoteChange(propertyPath, newValue);
     }
 
     @Override
@@ -45,7 +46,7 @@ public class SimpleAnkorServer extends AnkorServerBase {
     }
 
     @Override
-    public void handleLocalAction(ModelRef modelRef, String action) {
+    public void handleLocalAction(ModelRef modelRef, ModelAction action) {
         if (remoteServer != null) {
             LOG.info("sending action to {}:  ref={}, action={}", remoteServer, modelRef, action);
             remoteServer.handleRemoteAction(modelRef.path(), action);

@@ -1,5 +1,6 @@
 package at.irian.ankor.core.application;
 
+import at.irian.ankor.core.action.ModelAction;
 import at.irian.ankor.core.listener.ListenerRegistry;
 import at.irian.ankor.core.listener.ModelActionListener;
 import at.irian.ankor.core.ref.ModelRef;
@@ -16,7 +17,7 @@ public class ModelActionBus {
         this.listenerRegistry = listenerRegistry;
     }
 
-    public void broadcastAction(ModelRef modelRef, String action) {
+    public void broadcastAction(ModelRef modelRef, ModelAction action) {
         for (ModelActionListener modelActionListener : listenerRegistry.getLocalActionListenersFor(modelRef)) {
             modelActionListener.handleModelAction(modelRef, action);
         }

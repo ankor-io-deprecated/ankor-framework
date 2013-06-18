@@ -1,5 +1,6 @@
 package at.irian.ankor.core.server;
 
+import at.irian.ankor.core.action.ModelAction;
 import at.irian.ankor.core.application.Application;
 import at.irian.ankor.core.listener.ModelActionListener;
 import at.irian.ankor.core.listener.ModelChangeListener;
@@ -41,18 +42,16 @@ public abstract class AnkorServerBase {
     }
 
 
-    protected void handleRemoteAction(String path, String action) {
-        ModelRef modelRef = application.getRefFactory().ref(path);
-        handleRemoteAction(modelRef, action);
+    protected void handleRemoteAction(String actionContextPath, ModelAction action) {
+        handleRemoteAction(application.getRefFactory().ref(actionContextPath), action);
     }
 
-    protected void handleRemoteAction(ModelRef modelRef, String action) {
-        remoteActionHandler.handleRemoteAction(modelRef, action);
+    protected void handleRemoteAction(ModelRef actionContext, ModelAction action) {
+        remoteActionHandler.handleRemoteAction(actionContext, action);
     }
 
-    protected void handleRemoteChange(String path, Object newValue) {
-        ModelRef modelRef = application.getRefFactory().ref(path);
-        handleRemoteChange(modelRef, newValue);
+    protected void handleRemoteChange(String propertyPath, Object newValue) {
+        handleRemoteChange(application.getRefFactory().ref(propertyPath), newValue);
     }
 
     protected void handleRemoteChange(ModelRef modelRef, Object newValue) {
@@ -61,16 +60,16 @@ public abstract class AnkorServerBase {
 
     protected abstract void handleLocalChange(ModelRef modelRef, Object oldValue, Object newValue);
 
-    protected abstract void handleLocalAction(ModelRef modelRef, String action);
+    protected abstract void handleLocalAction(ModelRef modelRef, ModelAction action);
 
 
 
 
     private class LocalListener implements ModelActionListener, ModelChangeListener {
         @Override
-        public void handleModelAction(ModelRef modelRef, String action) {
-            LOG.debug("Local action detected by {} - {}: {}", this, modelRef, action);
-            handleLocalAction(modelRef, action);
+        public void handleModelAction(ModelRef actionContext, ModelAction action) {
+            LOG.debug("Local action detected by {} - {}: {}", this, actionContext, action);
+            handleLocalAction(actionContext, action);
         }
 
         @Override
