@@ -1,5 +1,6 @@
 package at.irian.ankor.sample.fx;
 
+import at.irian.ankor.core.action.ModelAction;
 import at.irian.ankor.core.application.Application;
 import at.irian.ankor.core.listener.ModelActionListener;
 import at.irian.ankor.core.ref.ModelRef;
@@ -31,19 +32,20 @@ public class Main extends javafx.application.Application {
         setupClientServer();
 
         serverApp.getListenerRegistry().registerRemoteActionListener(null, new ModelActionListener() {
-            public void handleModelAction(ModelRef modelRef, String action) {
-                if (action.equals("init")) {
+
+            public void handleModelAction(ModelRef actionContext, ModelAction action) {
+                if ("init".equals(action.name())) {
                     LOG.info("Creating new TestModel");
 
-                    modelRef.root().setValue(new ViewModel());
+                    actionContext.root().setValue(new ViewModel());
 
-                    modelRef.root().sub("userName").setValue("Toni Polster");
+                    actionContext.root().sub("userName").setValue("Toni Polster");
 
-                    Tabs tabs = modelRef.root().sub("tabs").getValue();
+                    Tabs tabs = actionContext.root().sub("tabs").getValue();
                     Tab tab = tabs.newTab();
-                    modelRef.sub(String.format("tabs.getTab('%s').model", tab.getId())).setValue(new AnimalSearchTab());
+                    actionContext.sub(String.format("tabs.getTab('%s').model", tab.getId())).setValue(new AnimalSearchTab());
 
-                    ModelRef animalSearchTabRef = modelRef.root().sub(String.format("tabs.getTab('%s').model", tab.getId()));
+                    ModelRef animalSearchTabRef = actionContext.root().sub(String.format("tabs.getTab('%s').model", tab.getId()));
                     animalSearchTabRef.sub("filter.name").setValue("Eagle");
                     animalSearchTabRef.sub("filter.type").setValue(AnimalType.Bird);
                     //modelRef.fireAction("initialized");

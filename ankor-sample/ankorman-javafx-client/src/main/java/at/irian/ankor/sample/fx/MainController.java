@@ -1,5 +1,6 @@
 package at.irian.ankor.sample.fx;
 
+import at.irian.ankor.core.action.SimpleAction;
 import at.irian.ankor.core.ref.ModelRef;
 import at.irian.ankor.core.ref.RootRef;
 import at.irian.ankor.sample.fx.model.Animal;
@@ -14,7 +15,9 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
 
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ResourceBundle;
 
 /**
  * @author Thomas Spiegl
@@ -62,7 +65,7 @@ public class MainController implements Initializable {
         ModelBindings.bind(rootRef.sub("tabs.getTab('0').model.filter.name"), name.textProperty(), bindingContext);
         ModelBindings.bind(rootRef.sub("tabs.getTab('0').model.filter.type"), type.textProperty(), bindingContext);
 
-        Main.clientApp.getRefFactory().rootRef().fireAction("init");
+        Main.clientApp.getRefFactory().rootRef().fire(SimpleAction.withName("init"));
 
         loadAnimals();
 
