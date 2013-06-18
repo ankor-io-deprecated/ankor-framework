@@ -58,24 +58,28 @@ public class RefFactory {
     }
 
     public ModelRef ref(String path) {
-        if (path == null || path.isEmpty() || path.equals(MODEL_VAR_NAME)) {
-            // root reference
-            return rootRef;
-        } else {
-            return ref(path, modelChangeWatcher);
-        }
+        return ref(path, modelChangeWatcher);
     }
 
     ModelRef ref(String path, ModelChangeWatcher modelChangeWatcher) {
-        ValueExpression ve = valueExpressionFor(prefixPathWithModelBaseIfNecessary(path));
-        return new PropertyRef(this, ve, modelChangeWatcher);
+        if (path == null || path.isEmpty() || path.equals(MODEL_VAR_NAME)) {
+            // root reference
+            return modelChangeWatcher != null ? rootRef : unwatchedRootRef;
+        } else {
+            ValueExpression ve = valueExpressionFor(prefixPathWithModelBaseIfNecessary(path));
+            return new PropertyRef(this, ve, modelChangeWatcher);
+        }
     }
 
     private String prefixPathWithModelBaseIfNecessary(String path) {
-        if (!path.startsWith(MODEL_PATH_PREFIX)) {
-            return MODEL_PATH_PREFIX + path;
-        } else {
+        if (path.isEmpty()) {
+            return MODEL_VAR_NAME;
+        } else if (path.equals(MODEL_VAR_NAME)) {
             return path;
+        } else if (path.startsWith(MODEL_PATH_PREFIX)) {
+            return path;
+        } else {
+            return MODEL_PATH_PREFIX + path;
         }
     }
 

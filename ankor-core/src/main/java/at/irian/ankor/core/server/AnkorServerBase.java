@@ -111,7 +111,7 @@ public abstract class AnkorServerBase {
 //                                                                         oldContextValue,
 //                                                                         newContextValue);
 //                }
-                ModelRef resultRef = methodAction.getResultRef();
+                ModelRef resultRef = methodAction.getResultRef(actionContext);
                 if (resultRef != null) {
                     resultRef.setValue(result);
                 }

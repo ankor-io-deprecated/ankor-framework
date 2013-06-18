@@ -243,17 +243,15 @@ public class SimpleAnkorServerTest {
         SimpleAnkorServer server = new SimpleAnkorServer(application, "TestServer");
         server.init();
 
-        ModelRef modelRef = application.getRefFactory().ref("model");
-        server.handleRemoteAction("", new MethodAction("testServiceBean.init()", modelRef));
+        server.handleRemoteAction("", new MethodAction("testServiceBean.init()", ""));
 
-        ModelRef tab1Ref = application.getRefFactory().ref("model.containers['tab1']");
-        server.handleRemoteAction("", new MethodAction("testServiceBean.openAnimalSearch()", tab1Ref));
+        server.handleRemoteAction("", new MethodAction("testServiceBean.openAnimalSearch()", "model.containers['tab1']"));
 
         server.handleRemoteChange("model.containers['tab1'].filter.name", "A*");
         server.handleRemoteChange("model.containers['tab1'].filter.type", "Bird");
 
-        ModelRef resultRef = application.getRefFactory().ref("model.containers['tab1'].resultList");
-        server.handleRemoteAction("", new MethodAction("testServiceBean.search(model.containers['tab1'].filter)", resultRef));
+        server.handleRemoteAction("", new MethodAction("testServiceBean.search(model.containers['tab1'].filter)",
+                                                       "model.containers['tab1'].resultList"));
 
         Object model = application.getModelHolder().getModel();
         Assert.assertNotNull(model);
