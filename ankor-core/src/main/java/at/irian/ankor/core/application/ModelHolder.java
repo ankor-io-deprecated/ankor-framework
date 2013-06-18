@@ -1,4 +1,4 @@
-package at.irian.ankor.core.model;
+package at.irian.ankor.core.application;
 
 /**
  * @author MGeiler (Manfred Geiler)

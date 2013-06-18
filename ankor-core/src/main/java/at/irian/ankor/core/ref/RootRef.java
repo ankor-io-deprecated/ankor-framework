@@ -3,7 +3,7 @@ package at.irian.ankor.core.ref;
 import at.irian.ankor.core.action.ModelAction;
 import at.irian.ankor.core.application.ModelActionBus;
 import at.irian.ankor.core.application.ModelChangeWatcher;
-import at.irian.ankor.core.model.ModelHolder;
+import at.irian.ankor.core.application.ModelHolder;
 
 /**
  * @author Manfred Geiler

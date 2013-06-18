@@ -1,6 +1,6 @@
 package at.irian.ankor.core.ref;
 
-import at.irian.ankor.core.model.ModelHolder;
+import at.irian.ankor.core.application.ModelHolder;
 
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;

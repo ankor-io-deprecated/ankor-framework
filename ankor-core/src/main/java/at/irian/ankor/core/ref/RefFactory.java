@@ -2,7 +2,7 @@ package at.irian.ankor.core.ref;
 
 import at.irian.ankor.core.application.ModelActionBus;
 import at.irian.ankor.core.application.ModelChangeWatcher;
-import at.irian.ankor.core.model.ModelHolder;
+import at.irian.ankor.core.application.ModelHolder;
 
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
@@ -15,6 +15,9 @@ import static at.irian.ankor.core.ref.PathUtils.*;
  */
 public class RefFactory {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RefFactory.class);
+
+    private static final String MODEL_VAR_NAME = ModelHolderVariableMapper.MODEL_ROOT_VAR_NAME;
+    private static final String MODEL_PATH_PREFIX = MODEL_VAR_NAME + '.';
 
     private final ExpressionFactory expressionFactory;
     private final ELContext elContext;
@@ -53,7 +56,7 @@ public class RefFactory {
     }
 
     public ModelRef ref(String path) {
-        if (path == null || path.isEmpty()) {
+        if (path == null || path.isEmpty() || path.equals(MODEL_VAR_NAME)) {
             // root reference
             return rootRef;
         } else {
@@ -62,12 +65,16 @@ public class RefFactory {
     }
 
     ModelRef ref(String path, ModelChangeWatcher modelChangeWatcher) {
-        ValueExpression ve = valueExpressionFor(prefixPathWithModelBase(path));
+        ValueExpression ve = valueExpressionFor(prefixPathWithModelBaseIfNecessary(path));
         return new PropertyRef(this, ve, modelChangeWatcher);
     }
 
-    private String prefixPathWithModelBase(String path) {
-        return ModelHolderVariableMapper.MODEL_ROOT_VAR_NAME + '.' + path;
+    private String prefixPathWithModelBaseIfNecessary(String path) {
+        if (!path.startsWith(MODEL_PATH_PREFIX)) {
+            return MODEL_PATH_PREFIX + path;
+        } else {
+            return path;
+        }
     }
 
     private ValueExpression valueExpressionFor(String path) {
@@ -85,8 +92,8 @@ public class RefFactory {
     }
 
     ModelRef parentRef(PropertyRef ref) {
-        String parentPath = parentPath(internalPathOf(ref));
-        if (ModelHolderVariableMapper.MODEL_ROOT_VAR_NAME.equals(parentPath)) {
+        String parentPath = parentPath(pathOf(ref));
+        if (MODEL_VAR_NAME.equals(parentPath)) {
             return rootRef();
         } else {
             return new PropertyRef(this, valueExpressionFor(parentPath), ref.getModelChangeWatcher());
@@ -95,32 +102,23 @@ public class RefFactory {
 
     ModelRef subRef(PropertyRef ref, String subPath) {
         return new PropertyRef(this,
-                               valueExpressionFor(subPath(internalPathOf(ref), subPath)),
+                               valueExpressionFor(subPath(pathOf(ref), subPath)),
                                ref.getModelChangeWatcher());
     }
 
-    private String internalPathOf(PropertyRef ref) {
-        ValueExpression valueExpression = ref.getValueExpression();
-        return valueExpressionToPath(valueExpression.getExpressionString());
+    String pathOf(ModelRef ref) {
+        if (ref instanceof RootRef) {
+            return MODEL_VAR_NAME;
+        } else if (ref instanceof PropertyRef) {
+            ValueExpression valueExpression = ((PropertyRef)ref).getValueExpression();
+            return valueExpressionToPath(valueExpression.getExpressionString());
+        } else {
+            throw new IllegalArgumentException("unsupported ref type " + ref.getClass());
+        }
     }
 
-    private String internalPathOf(RootRef ref) {
-        return ModelHolderVariableMapper.MODEL_ROOT_VAR_NAME;
-    }
-
-    String toString(PropertyRef ref) {
+    String toString(ModelRef ref) {
         return "Ref{" + pathOf(ref) + '}';
     }
 
-    String toString(RootRef ref) {
-        return "Ref{" + pathOf(ref) + '}';
-    }
-
-    String pathOf(PropertyRef ref) {
-        return stripRoot(internalPathOf(ref));
-    }
-
-    String pathOf(RootRef ref) {
-        return "";
-    }
 }

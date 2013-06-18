@@ -2,7 +2,6 @@ package at.irian.ankor.core.application;
 
 import at.irian.ankor.core.el.StandardELContext;
 import at.irian.ankor.core.listener.ListenerRegistry;
-import at.irian.ankor.core.model.ModelHolder;
 import at.irian.ankor.core.ref.RefFactory;
 
 import javax.el.ExpressionFactory;
