@@ -14,9 +14,10 @@
 <?import javafx.scene.layout.VBox?>
 <BorderPane fx:controller="at.irian.ankor.sample.fx.MainController" xmlns:fx="http://javafx.com/fxml" prefHeight="400" prefWidth="400">
     <top>
-        <Text text="Animal Search"/>
-        <Text fx:id="userName"/>
-
+        <HBox prefHeight="20" spacing="5">
+            <Text text="User: " /><Text fx:id="userName"/>
+            <Text text="Server says: " /><Text fx:id="serverStatus"/>
+        </HBox>
     </top>
     <center>
         <VBox prefHeight="300" spacing="10" >
