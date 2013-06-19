@@ -1,9 +1,9 @@
-package at.irian.ankor.sample.fx;
+package at.irian.ankor.sample.fx.view;
 
 import at.irian.ankor.core.ref.Ref;
-import at.irian.ankor.sample.fx.app.ActionCompleteCallback;
-import at.irian.ankor.sample.fx.binding.BindingContext;
-import at.irian.ankor.sample.fx.view.RootModel;
+import at.irian.ankor.fx.app.ActionCompleteCallback;
+import at.irian.ankor.fx.binding.BindingContext;
+import at.irian.ankor.sample.fx.view.model.RootModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -18,7 +18,7 @@ import java.util.ResourceBundle;
 
 import static at.irian.ankor.sample.fx.App.application;
 import static at.irian.ankor.sample.fx.App.facade;
-import static at.irian.ankor.sample.fx.binding.ModelBindings.bind;
+import static at.irian.ankor.fx.binding.ModelBindings.bind;
 
 /**
  * @author Thomas Spiegl
@@ -56,6 +56,17 @@ public class MainController implements Initializable {
             tab = FXMLLoader.load(getClass().getClassLoader().getResource("animal_search_tab.fxml"));
         } catch (IOException e) {
             throw new IllegalStateException("cannot load animal_search_tab.fxml", e);
+        }
+        tabPane.getTabs().add(tab);
+        tabPane.getSelectionModel().select(tab);
+    }
+
+    public void openAnimalDetailTab(ActionEvent actionEvent) {
+        Tab tab;
+        try {
+            tab = FXMLLoader.load(getClass().getClassLoader().getResource("animal_detail_tab.fxml"));
+        } catch (IOException e) {
+            throw new IllegalStateException("cannot load animal_detail_tab.fxml", e);
         }
         tabPane.getTabs().add(tab);
         tabPane.getSelectionModel().select(tab);

@@ -1,4 +1,4 @@
-package at.irian.ankor.sample.fx.view;
+package at.irian.ankor.sample.fx.view.model;
 
 import java.util.AbstractMap;
 import java.util.HashMap;
@@ -23,6 +23,10 @@ public class Tabs extends AbstractMap<String, Tab> {
 
     @Override
     public Tab put(String key, Tab value) {
-        return tabs.put(key, value);
+        if (value == null) {
+            return tabs.remove(key);
+        } else {
+            return tabs.put(key, value);
+        }
     }
 }

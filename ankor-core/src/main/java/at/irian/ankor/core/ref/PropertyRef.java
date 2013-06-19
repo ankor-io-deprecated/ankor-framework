@@ -3,6 +3,7 @@ package at.irian.ankor.core.ref;
 import at.irian.ankor.core.action.ModelAction;
 import at.irian.ankor.core.application.ModelActionBus;
 import at.irian.ankor.core.application.ModelChangeNotifier;
+import at.irian.ankor.core.listener.NilValue;
 
 import javax.el.ValueExpression;
 
@@ -25,6 +26,9 @@ class PropertyRef implements Ref {
     }
 
     public void setValue(Object newValue) {
+        if (newValue instanceof NilValue) {
+            newValue = null;
+        }
         valueExpression.setValue(refFactory.elContext(), newValue);
         if (modelChangeNotifier != null) {
             modelChangeNotifier.notifyLocalListeners(this);

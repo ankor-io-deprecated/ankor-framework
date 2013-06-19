@@ -1,0 +1,19 @@
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+<Tab fx:controller="at.irian.ankor.sample.fx.view.AnimalDetailTabController" fx:id="tab" closable="true" xmlns:fx="http://javafx.com/fxml">
+    <VBox prefHeight="300" spacing="10" >
+        <GridPane alignment="center" hgap="10" vgap="5" >
+
+            <Label text="Name" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+            <TextField fx:id="name" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+            <Label text="Type" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+            <TextField fx:id="type" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+            <Button text="Save" GridPane.columnIndex="1" GridPane.rowIndex="2"
+                    onAction="#save"/>
+        </GridPane>
+        <Text fx:id="message" />
+    </VBox>
+</Tab>

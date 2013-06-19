@@ -1,4 +1,4 @@
-package at.irian.ankor.sample.fx.view;
+package at.irian.ankor.sample.fx.view.model;
 
 /**
  * @author Thomas Spiegl

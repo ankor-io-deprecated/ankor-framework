@@ -1,34 +1,38 @@
-package at.irian.ankor.sample.fx;
+package at.irian.ankor.sample.fx.view;
 
+import at.irian.ankor.core.listener.NilValue;
 import at.irian.ankor.core.ref.Ref;
-import at.irian.ankor.sample.fx.app.ActionCompleteCallback;
-import at.irian.ankor.sample.fx.binding.BindingContext;
-import at.irian.ankor.sample.fx.model.Animal;
-import at.irian.ankor.sample.fx.view.AnimalSearchModel;
-import at.irian.ankor.sample.fx.view.Tab;
+import at.irian.ankor.fx.app.ActionCompleteCallback;
+import at.irian.ankor.fx.binding.BindingContext;
+import at.irian.ankor.sample.fx.server.model.Animal;
+import at.irian.ankor.sample.fx.view.model.AnimalSearchTab;
+import at.irian.ankor.sample.fx.view.model.Tab;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.concurrent.atomic.AtomicInteger;
 
+import static at.irian.ankor.fx.binding.ModelBindings.bind;
 import static at.irian.ankor.sample.fx.App.application;
 import static at.irian.ankor.sample.fx.App.facade;
-import static at.irian.ankor.sample.fx.binding.ModelBindings.bind;
 
 /**
  * @author Thomas Spiegl
  */
 public class AnimalSearchTabController implements Initializable {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalSearchTabController.class);
-
+    @FXML
+    private javafx.scene.control.Tab tab;
     @FXML
     private TextInputControl name;
     @FXML
@@ -42,17 +46,16 @@ public class AnimalSearchTabController implements Initializable {
 
     private String tabId = TabIds.next();
 
-    static class TabIds {
-        private static AtomicInteger current = new AtomicInteger(0);
-
-        static String next() {
-            return "A" + current.incrementAndGet();
-        }
-    }
-
     private BindingContext bindingContext = new BindingContext();
 
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        tab.setText(String.format("Animal Search (%s)", tabId));
+        tab.setOnClosed(new EventHandler<Event>() {
+            @Override
+            public void handle(Event event) {
+                getTabRef().setValue(NilValue.instance());
+            }
+        });
         facade().createAnimalSearchTab(tabId, new ActionCompleteCallback() {
 
             public void onComplete() {
@@ -71,8 +74,22 @@ public class AnimalSearchTabController implements Initializable {
     }
 
     private void loadAnimals(List<Animal> animals) {
+
         animalName.setCellValueFactory(new PropertyValueFactory<Animal, String>("name"));
+        //animalName.setCellFactory(cellFactory);
+        animalName.setCellFactory(TextFieldTableCell.<Animal>forTableColumn());
+        animalName.setOnEditCommit(
+                new EventHandler<TableColumn.CellEditEvent<Animal, String>>() {
+                    @Override public void handle(TableColumn.CellEditEvent<Animal, String> t) {
+                        Animal animal = t.getTableView().getItems().get(t.getTablePosition().getRow());
+                        animal.setName(t.getNewValue());
+                        //getTabRef().sub("model").sub("animals");
+                    }
+                });
+
         animalType.setCellValueFactory(new PropertyValueFactory<Animal, String>("type"));
+
+
         animalTable.getItems().setAll(animals);
     }
 
@@ -80,10 +97,11 @@ public class AnimalSearchTabController implements Initializable {
     protected void search(@SuppressWarnings("UnusedParameters") ActionEvent event) {
         facade().searchAnimals(getTabRef(), new ActionCompleteCallback() {
             public void onComplete() {
-                Tab<AnimalSearchModel> tab = getTabRef().getValue();
-                AnimalSearchModel model = tab.getModel();
+                Tab<AnimalSearchTab> tab = getTabRef().getValue();
+                AnimalSearchTab model = tab.getModel();
                 loadAnimals(model.getAnimals());
             }
         });
     }
+
 }

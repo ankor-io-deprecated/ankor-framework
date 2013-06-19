@@ -1,4 +1,4 @@
-package at.irian.ankor.sample.fx.binding;
+package at.irian.ankor.fx.binding;
 
 import at.irian.ankor.core.listener.ModelChangeListener;
 import at.irian.ankor.core.ref.Ref;

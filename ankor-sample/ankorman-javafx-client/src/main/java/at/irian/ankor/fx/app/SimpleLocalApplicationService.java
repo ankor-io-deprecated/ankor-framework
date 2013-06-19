@@ -1,9 +1,9 @@
-package at.irian.ankor.sample.fx.app;
+package at.irian.ankor.fx.app;
 
 import at.irian.ankor.core.application.Application;
 import at.irian.ankor.core.application.SimpleApplication;
 import at.irian.ankor.core.server.SimpleAnkorServer;
-import at.irian.ankor.sample.fx.view.RootModel;
+import at.irian.ankor.sample.fx.view.model.RootModel;
 
 /**
  * @author Thomas Spiegl
@@ -54,7 +54,7 @@ public class SimpleLocalApplicationService {
                 //noinspection InfiniteLoopStatement
                 for (;;) {
                     try {
-                        Thread.sleep(1000 * 5);
+                        Thread.sleep(1000 * 30);
                     } catch (InterruptedException e) {
                         return;
                     }

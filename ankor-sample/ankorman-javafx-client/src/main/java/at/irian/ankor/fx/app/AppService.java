@@ -1,4 +1,4 @@
-package at.irian.ankor.sample.fx.app;
+package at.irian.ankor.fx.app;
 
 import at.irian.ankor.core.action.method.RemoteMethodAction;
 import at.irian.ankor.core.action.ModelAction;

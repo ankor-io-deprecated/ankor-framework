@@ -1,4 +1,4 @@
-package at.irian.ankor.sample.fx.app;
+package at.irian.ankor.fx.app;
 
 /**
 * @author Thomas Spiegl

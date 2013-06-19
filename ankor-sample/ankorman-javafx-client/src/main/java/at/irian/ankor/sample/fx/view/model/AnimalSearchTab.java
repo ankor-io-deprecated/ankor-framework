@@ -1,20 +1,20 @@
-package at.irian.ankor.sample.fx.view;
+package at.irian.ankor.sample.fx.view.model;
 
-import at.irian.ankor.sample.fx.model.Animal;
-import at.irian.ankor.sample.fx.model.AnimalSearchFilter;
+import at.irian.ankor.sample.fx.server.model.Animal;
+import at.irian.ankor.sample.fx.server.model.AnimalSearchFilter;
 
 import java.util.List;
 
 /**
 * @author Thomas Spiegl
 */
-public class AnimalSearchModel {
+public class AnimalSearchTab {
 
     private AnimalSearchFilter filter;
 
     private List<Animal> animals;
 
-    public AnimalSearchModel() {
+    public AnimalSearchTab() {
         this.filter = new AnimalSearchFilter();
     }
 

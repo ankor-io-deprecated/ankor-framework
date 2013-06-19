@@ -1,8 +1,9 @@
 package at.irian.ankor.sample.fx;
 
 import at.irian.ankor.core.ref.Ref;
-import at.irian.ankor.sample.fx.app.ActionCompleteCallback;
-import at.irian.ankor.sample.fx.app.AppService;
+import at.irian.ankor.fx.app.ActionCompleteCallback;
+import at.irian.ankor.fx.app.AppService;
+import at.irian.ankor.sample.fx.server.model.Animal;
 
 /**
  * @author Thomas Spiegl
@@ -22,6 +23,16 @@ public class ServiceFacade {
         appService.executeAction(tabsRef, String.format("service.createAnimalSearchTab('%s')", tabId), tabId, cb);
     }
 
+    public void createAnimalDetailTab(String tabId, ActionCompleteCallback cb) {
+        Ref tabsRef = appService.getApplication().getRefFactory().rootRef().sub("tabs");
+        appService.executeAction(tabsRef, String.format("service.createAnimalDetailTab('%s')", tabId), tabId, cb);
+    }
+
+    public void createAnimalDetailTab(String tabId, String animalUUID, ActionCompleteCallback cb) {
+        Ref tabsRef = appService.getApplication().getRefFactory().rootRef().sub("tabs");
+        appService.executeAction(tabsRef, String.format("service.createAnimalDetailTab('%s', '%s')", tabId, animalUUID), tabId, cb);
+    }
+
     public void initApplication(ActionCompleteCallback cb) {
         Ref rootRef = appService.getApplication().getRefFactory().rootRef();
         appService.executeAction(rootRef, "service.init()", rootRef.path(), cb);
@@ -30,4 +41,9 @@ public class ServiceFacade {
     public void searchAnimals(Ref tabRef, ActionCompleteCallback cb) {
         appService.executeAction(tabRef.sub("model"), "service.searchAnimals(context.filter)", "animals", cb); // TODO context.animals
     }
+
+    public void saveAnimal(Ref tabRef, ActionCompleteCallback cb) {
+        appService.executeAction(tabRef.sub("model"), "service.saveAnimal(context.animal)", null, cb); // TODO context.animals
+    }
+
 }
