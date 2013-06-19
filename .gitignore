@@ -6,6 +6,7 @@
 .idea/scopes/
 .idea/*.xml
 .idea/.*
+*.ipr
 *.iml
 *.iws
 *.log
