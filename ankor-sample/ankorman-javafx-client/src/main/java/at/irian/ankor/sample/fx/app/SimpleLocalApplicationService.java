@@ -31,11 +31,11 @@ public class SimpleLocalApplicationService {
         final Application serverApp = SimpleApplication.withModelType(RootModel.class)
                 .withBean(beanName, bean);
         SimpleAnkorServer server = new SimpleAnkorServer(serverApp, "server");
-        server.init();
+        server.start();
 
         Application clientApp = SimpleApplication.withModelType(RootModel.class);
         SimpleAnkorServer client = new SimpleAnkorServer(clientApp, "client");
-        client.init();
+        client.start();
 
         server.setRemoteServer(client);
         client.setRemoteServer(server);

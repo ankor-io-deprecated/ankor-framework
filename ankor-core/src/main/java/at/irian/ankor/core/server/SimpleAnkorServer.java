@@ -27,29 +27,27 @@ public class SimpleAnkorServer extends AnkorServerBase {
         return serverName;
     }
 
-    @Override
-    public void handleRemoteAction(String actionContextPath, ModelAction action) {
-        super.handleRemoteAction(actionContextPath, action);
+    public void receiveAction(String actionContextPath, ModelAction action) {
+        receiveAction(application.getRefFactory().ref(actionContextPath), action);
+    }
+
+    public void receiveChange(String changedPath, Object newValue) {
+        receiveChange(application.getRefFactory().ref(changedPath), newValue);
     }
 
     @Override
-    public void handleRemoteChange(String propertyPath, Object newValue) {
-        super.handleRemoteChange(propertyPath, newValue);
-    }
-
-    @Override
-    protected void handleLocalChange(Ref ref, Object newValue) {
+    protected void sendChange(Ref changedRef, Object newValue) {
         if (remoteServer != null) {
-            LOG.info("Passing change to {} - {} => {}", remoteServer, ref, newValue);
-            remoteServer.handleRemoteChange(ref.path(), newValue);
+            LOG.info("passing change to {} - {} => {}", remoteServer, changedRef, newValue);
+            remoteServer.receiveChange(changedRef.path(), newValue);
         }
     }
 
     @Override
-    public void handleLocalAction(Ref ref, ModelAction action) {
+    public void sendAction(Ref actionContextRef, ModelAction action) {
         if (remoteServer != null) {
-            LOG.info("sending action to {}:  ref={}, action={}", remoteServer, ref, action);
-            remoteServer.handleRemoteAction(ref.path(), action);
+            LOG.info("passing action to {}:  ref={}, action={}", remoteServer, actionContextRef, action);
+            remoteServer.receiveAction(actionContextRef.path(), action);
         }
     }
 }

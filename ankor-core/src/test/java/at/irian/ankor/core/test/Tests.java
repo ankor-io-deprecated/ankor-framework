@@ -28,14 +28,14 @@ public class Tests {
         application.getListenerRegistry().registerRemoteActionListener(null, new NewContainerActionListener());
         application.getListenerRegistry().registerRemoteActionListener(null, new AnimalSearchActionListener());
 
-        server.handleRemoteAction(null, SimpleAction.withName("init"));
+        server.receiveAction(null, SimpleAction.withName("init"));
 
-        server.handleRemoteChange("containers['tab1']", null);
-        server.handleRemoteAction("containers['tab1']", SimpleAction.withName("newAnimalSearchContainer"));
+        server.receiveChange("containers['tab1']", null);
+        server.receiveAction("containers['tab1']", SimpleAction.withName("newAnimalSearchContainer"));
 
-        server.handleRemoteChange("containers['tab1'].filter.name", "A*");
-        server.handleRemoteChange("containers['tab1'].filter.type", "Bird");
-        server.handleRemoteAction("containers['tab1']", SimpleAction.withName("search"));
+        server.receiveChange("containers['tab1'].filter.name", "A*");
+        server.receiveChange("containers['tab1'].filter.type", "Bird");
+        server.receiveAction("containers['tab1']", SimpleAction.withName("search"));
 
     }
 
@@ -87,14 +87,14 @@ public class Tests {
         server.setRemoteServer(client);
         client.setRemoteServer(server);
 
-        server.handleRemoteAction(null, SimpleAction.withName("init"));
+        server.receiveAction(null, SimpleAction.withName("init"));
 
-//        server.handleRemoteChange("containers['tab1']", null);
-//        server.handleRemoteAction("containers['tab1']", "newAnimalSearchContainer");
+//        server.receiveChange("containers['tab1']", null);
+//        server.receiveAction("containers['tab1']", "newAnimalSearchContainer");
 
-//        server.handleRemoteChange("containers['tab1'].filter.name", "A*");
-//        server.handleRemoteChange("containers['tab1'].filter.type", "Bird");
-//        server.handleRemoteAction("containers['tab1']", "search");
+//        server.receiveChange("containers['tab1'].filter.name", "A*");
+//        server.receiveChange("containers['tab1'].filter.type", "Bird");
+//        server.receiveAction("containers['tab1']", "search");
 
     }
 

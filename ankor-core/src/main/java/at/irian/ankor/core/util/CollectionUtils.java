@@ -13,7 +13,7 @@ public final class CollectionUtils {
 
     private CollectionUtils() {}
 
-    public static Collection concat(Collection c1, Collection c2) {
+    public static <T> Collection<T> concat(Collection<T> c1, Collection<T> c2) {
         if (c1 == null && c2 == null) {
             return Collections.emptyList();
         } else if (c1 == null) {
@@ -27,33 +27,32 @@ public final class CollectionUtils {
         } else if (c2.isEmpty()) {
             return c1;
         } else {
-            return new ConcatCollection(c1, c2);
+            return new ConcatCollection<T>(c1, c2);
         }
     }
 
-    private static class ConcatCollection extends AbstractCollection {
+    private static class ConcatCollection<T> extends AbstractCollection<T> {
 
-        private final Collection c1;
-        private final Collection c2;
+        private final Collection<T> c1;
+        private final Collection<T> c2;
 
-        public ConcatCollection(Collection c1, Collection c2) {
+        public ConcatCollection(Collection<T> c1, Collection<T> c2) {
             this.c1 = c1;
             this.c2 = c2;
         }
 
-        @SuppressWarnings("NullableProblems")
         @Override
-        public Iterator iterator() {
-            final Iterator it1 = c1.iterator();
-            final Iterator it2 = c2.iterator();
-            return new Iterator() {
+        public Iterator<T> iterator() {
+            final Iterator<T> it1 = c1.iterator();
+            final Iterator<T> it2 = c2.iterator();
+            return new Iterator<T>() {
                 @Override
                 public boolean hasNext() {
                     return it1.hasNext() || it2.hasNext();
                 }
 
                 @Override
-                public Object next() {
+                public T next() {
                     if (it1.hasNext()) {
                         return it1.next();
                     } else {
@@ -75,19 +74,19 @@ public final class CollectionUtils {
     }
 
 
-    public static Collection wrap(final Collection c, final Wrapper wrapper) {
-        return new AbstractCollection() {
+    public static <A,B> Collection<B> wrap(final Collection<A> c, final Wrapper<A,B> wrapper) {
+        return new AbstractCollection<B>() {
             @Override
-            public Iterator iterator() {
-                final Iterator iterator = c.iterator();
-                return new Iterator() {
+            public Iterator<B> iterator() {
+                final Iterator<A> iterator = c.iterator();
+                return new Iterator<B>() {
                     @Override
                     public boolean hasNext() {
                         return iterator.hasNext();
                     }
 
                     @Override
-                    public Object next() {
+                    public B next() {
                         return wrapper.wrap(iterator.next());
                     }
 
@@ -105,9 +104,8 @@ public final class CollectionUtils {
         };
     }
 
-    public static interface Wrapper {
-        Object wrap(Object objToWrap);
+    public static interface Wrapper<A,B> {
+        B wrap(A objToWrap);
     }
-
 
 }

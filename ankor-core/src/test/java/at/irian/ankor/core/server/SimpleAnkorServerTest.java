@@ -34,7 +34,7 @@ public class SimpleAnkorServerTest {
         application.getListenerRegistry().registerRemoteActionListener(application.getRefFactory().rootRef(),
                                                                        new InitActionListener());
 
-        server.handleRemoteAction((String) null, SimpleAction.withName("init"));
+        server.receiveAction((String) null, SimpleAction.withName("init"));
 
         Object model = application.getModelHolder().getModel();
         Assert.assertNotNull(model);
@@ -52,7 +52,7 @@ public class SimpleAnkorServerTest {
         application.getListenerRegistry().registerRemoteChangeListener(application.getRefFactory().ref("userName"),
                                                                        new UserNameChangeListener());
 
-        server.handleRemoteChange("userName", "Max Muster");
+        server.receiveChange("userName", "Max Muster");
 
         Assert.assertEquals("user name", "Max Muster", model.getUserName());
     }
@@ -76,7 +76,7 @@ public class SimpleAnkorServerTest {
                                                                            }
                                                                        });
 
-        server.handleRemoteChange("testUser", new TestUser("Max", "Muster"));
+        server.receiveChange("testUser", new TestUser("Max", "Muster"));
 
         //Assert.assertEquals("user name", "Max Muster", model.getUserName());
     }
@@ -91,7 +91,7 @@ public class SimpleAnkorServerTest {
 
         application.getListenerRegistry().registerRemoteActionListener(application.getRefFactory().ref("userName"),
                                                                        new LoadUserActionListener());
-        server.handleRemoteAction("userName", SimpleAction.withName("loadUser"));
+        server.receiveAction("userName", SimpleAction.withName("loadUser"));
 
         Assert.assertEquals("user name", "Max Muster", model.getUserName());
     }
@@ -107,14 +107,14 @@ public class SimpleAnkorServerTest {
         application.getListenerRegistry().registerRemoteActionListener(null, new NewContainerActionListener());
         application.getListenerRegistry().registerRemoteActionListener(null, new AnimalSearchActionListener());
 
-        server.handleRemoteAction((String) null, SimpleAction.withName("init"));
+        server.receiveAction((String) null, SimpleAction.withName("init"));
 
-        server.handleRemoteChange("containers['tab1']", null);
-        server.handleRemoteAction("containers['tab1']", SimpleAction.withName("newAnimalSearchContainer"));
+        server.receiveChange("containers['tab1']", null);
+        server.receiveAction("containers['tab1']", SimpleAction.withName("newAnimalSearchContainer"));
 
-        server.handleRemoteChange("containers['tab1'].filter.name", "A*");
-        server.handleRemoteChange("containers['tab1'].filter.type", "Bird");
-        server.handleRemoteAction("containers['tab1']", SimpleAction.withName("search"));
+        server.receiveChange("containers['tab1'].filter.name", "A*");
+        server.receiveChange("containers['tab1'].filter.type", "Bird");
+        server.receiveAction("containers['tab1']", SimpleAction.withName("search"));
 
     }
 
@@ -166,14 +166,14 @@ public class SimpleAnkorServerTest {
         server.setRemoteServer(client);
         client.setRemoteServer(server);
 
-        server.handleRemoteAction((String) null, SimpleAction.withName("init"));
+        server.receiveAction((String) null, SimpleAction.withName("init"));
 
-//        server.handleRemoteChange("containers['tab1']", null);
-//        server.handleRemoteAction("containers['tab1']", "newAnimalSearchContainer");
+//        server.receiveChange("containers['tab1']", null);
+//        server.receiveAction("containers['tab1']", "newAnimalSearchContainer");
 
-//        server.handleRemoteChange("containers['tab1'].filter.name", "A*");
-//        server.handleRemoteChange("containers['tab1'].filter.type", "Bird");
-//        server.handleRemoteAction("containers['tab1']", "search");
+//        server.receiveChange("containers['tab1'].filter.name", "A*");
+//        server.receiveChange("containers['tab1'].filter.type", "Bird");
+//        server.receiveAction("containers['tab1']", "search");
 
     }
 
@@ -184,15 +184,16 @@ public class SimpleAnkorServerTest {
         Application application = SimpleApplication.withModelType(TestModel.class)
                                                    .withBean("testServiceBean", new TestServiceBean());
         SimpleAnkorServer server = new SimpleAnkorServer(application, "TestServer");
-        server.init();
+        server.start();
 
-        server.handleRemoteAction("model", new MethodAction("testServiceBean.init(modelHolder)"));
-        server.handleRemoteAction("model.containers", new MethodAction("testServiceBean.addContainer(model.containers, 'tab1')"));
+        server.receiveAction("model", new MethodAction("testServiceBean.init(modelHolder)"));
+        server.receiveAction("model.containers",
+                             new MethodAction("testServiceBean.addContainer(model.containers, 'tab1')"));
 
-        server.handleRemoteChange("model.containers['tab1'].filter.name", "A*");
-        server.handleRemoteChange("model.containers['tab1'].filter.type", "Bird");
-        server.handleRemoteAction("model.containers['tab1'].resultList",
-                                  new MethodAction("testServiceBean.search(model.containers['tab1'])"));
+        server.receiveChange("model.containers['tab1'].filter.name", "A*");
+        server.receiveChange("model.containers['tab1'].filter.type", "Bird");
+        server.receiveAction("model.containers['tab1'].resultList",
+                             new MethodAction("testServiceBean.search(model.containers['tab1'])"));
 
         Object model = application.getModelHolder().getModel();
         Assert.assertNotNull(model);
@@ -233,17 +234,17 @@ public class SimpleAnkorServerTest {
         Application application = SimpleApplication.withModelType(TestModel.class)
                                                    .withBean("testServiceBean", new TestServiceBean2());
         SimpleAnkorServer server = new SimpleAnkorServer(application, "TestServer");
-        server.init();
+        server.start();
 
-        server.handleRemoteAction("", new MethodAction("testServiceBean.init()", ""));
+        server.receiveAction("", new MethodAction("testServiceBean.init()", ""));
 
-        server.handleRemoteAction("", new MethodAction("testServiceBean.openAnimalSearch()", "model.containers['tab1']"));
+        server.receiveAction("", new MethodAction("testServiceBean.openAnimalSearch()", "model.containers['tab1']"));
 
-        server.handleRemoteChange("model.containers['tab1'].filter.name", "A*");
-        server.handleRemoteChange("model.containers['tab1'].filter.type", "Bird");
+        server.receiveChange("model.containers['tab1'].filter.name", "A*");
+        server.receiveChange("model.containers['tab1'].filter.type", "Bird");
 
-        server.handleRemoteAction("", new MethodAction("testServiceBean.search(model.containers['tab1'].filter)",
-                                                       "model.containers['tab1'].resultList"));
+        server.receiveAction("", new MethodAction("testServiceBean.search(model.containers['tab1'].filter)",
+                                                  "model.containers['tab1'].resultList"));
 
         Object model = application.getModelHolder().getModel();
         Assert.assertNotNull(model);
