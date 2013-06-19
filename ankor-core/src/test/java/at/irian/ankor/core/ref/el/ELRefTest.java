@@ -30,7 +30,7 @@ public class ELRefTest {
                                                    modelELContext,
                                                    null,
                                                    null,
-                                                   "root", null);
+                                                   "root", "context", null);
         this.refFactory = new ELRefFactory(refContext);
     }
 

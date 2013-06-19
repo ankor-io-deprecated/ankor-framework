@@ -20,6 +20,7 @@ public class ELRefContext implements RefContext {
     private final DefaultChangeNotifier changeNotifier;
     private final DefaultActionNotifier actionNotifier;
     private final String modelRootVarName;
+    private final String contextVarName;
     private final Ref modelContext;
 
     public ELRefContext(ExpressionFactory expressionFactory,
@@ -27,32 +28,35 @@ public class ELRefContext implements RefContext {
                         DefaultChangeNotifier changeNotifier,
                         DefaultActionNotifier actionNotifier,
                         String modelRootVarName,
-                        Ref modelContext) {
+                        String contextVarName, Ref modelContext) {
         this.expressionFactory = expressionFactory;
         this.elContext = elContext;
         this.changeNotifier = changeNotifier;
         this.actionNotifier = actionNotifier;
         this.modelRootVarName = modelRootVarName;
+        this.contextVarName = contextVarName;
         this.modelContext = modelContext;
     }
 
     public ELRefContext with(ELContext elContext) {
         return new ELRefContext(expressionFactory, elContext, changeNotifier, actionNotifier, modelRootVarName,
-                                modelContext);
+                                "context", modelContext);
     }
 
     public ELRefContext withNoModelChangeNotifier() {
-        return new ELRefContext(expressionFactory, elContext, null, actionNotifier, modelRootVarName, modelContext);
+        return new ELRefContext(expressionFactory, elContext, null, actionNotifier, modelRootVarName,
+                                "context",
+                                modelContext);
     }
 
     @Override
     public ELRefContext withModelContext(Ref modelContext) {
-        ModelContextELContext elContext = new ModelContextELContext(this.elContext, "context", modelContext);
+        ModelContextELContext elContext = new ModelContextELContext(this.elContext, contextVarName, modelContext);
         return new ELRefContext(expressionFactory,
                                 elContext,
                                 changeNotifier,
                                 actionNotifier,
-                                modelRootVarName, modelContext);
+                                modelRootVarName, "context", modelContext);
     }
 
     public ELContext getELContext() {

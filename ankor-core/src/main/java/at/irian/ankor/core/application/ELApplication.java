@@ -31,7 +31,9 @@ public class ELApplication extends Application {
                                                    modelELContext,
                                                    new DefaultChangeNotifier(getListenerRegistry()),
                                                    new DefaultActionNotifier(getListenerRegistry()),
-                                                   config.getModelRootVarName(), null);
+                                                   config.getModelRootVarName(),
+                                                   config.getContextVarName(),
+                                                   null);
         this.refFactory = new ELRefFactory(refContext);
     }
 

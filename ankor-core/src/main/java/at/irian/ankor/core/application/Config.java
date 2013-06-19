@@ -6,4 +6,5 @@ package at.irian.ankor.core.application;
 public interface Config {
     String getModelRootVarName();
     String getModelHolderVarName();
+    String getContextVarName();
 }
