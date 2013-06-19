@@ -14,7 +14,7 @@ import javax.el.VariableMapper;
 public class ModelHolderVariableMapper extends VariableMapper {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelHolderVariableMapper.class);
 
-    public static final String ROOT_VAR_NAME = "model";
+    public static final String ROOT_VAR_NAME = "root";
     public static final String MODEL_HOLDER_VAR_NAME = "modelHolder";
 
     private final ExpressionFactory expressionFactory;

@@ -20,12 +20,12 @@ public class ServiceFacade {
 
     public void createAnimalSearchTab(String tabId, ActionCompleteCallback cb) {
         Ref tabsRef = appService.getApplication().getRefFactory().rootRef().sub("tabs");
-        appService.executeAction(tabsRef, String.format("service.createAnimalSearchTab('%s')", tabId), tabId, cb);
+        appService.executeAction(tabsRef, String.format("service.createAnimalSearchTab('%s')", tabId), "context." + tabId, cb);
     }
 
     public void createAnimalDetailTab(String tabId, ActionCompleteCallback cb) {
         Ref tabsRef = appService.getApplication().getRefFactory().rootRef().sub("tabs");
-        appService.executeAction(tabsRef, String.format("service.createAnimalDetailTab('%s')", tabId), tabId, cb);
+        appService.executeAction(tabsRef, String.format("service.createAnimalDetailTab('%s')", tabId), "context." + tabId, cb);
     }
 
     public void initApplication(ActionCompleteCallback cb) {
@@ -34,11 +34,11 @@ public class ServiceFacade {
     }
 
     public void searchAnimals(Ref tabRef, ActionCompleteCallback cb) {
-        appService.executeAction(tabRef.sub("model"), "service.searchAnimals(context.filter)", "animals", cb); // TODO context.animals
+        appService.executeAction(tabRef.sub("model"), "service.searchAnimals(context.filter)", "context.animals", cb);
     }
 
     public void saveAnimal(Ref tabRef, ActionCompleteCallback cb) {
-        appService.executeAction(tabRef.sub("model"), "service.saveAnimal(context.animal)", null, cb); // TODO context.animals
+        appService.executeAction(tabRef.sub("model"), "service.saveAnimal(context.animal)", null, cb);
     }
 
     public void saveAnimals(Ref tabRef, ActionCompleteCallback cb) {

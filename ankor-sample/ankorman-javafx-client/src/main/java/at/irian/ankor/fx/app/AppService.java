@@ -37,6 +37,9 @@ public class AppService {
     public synchronized void executeAction(Ref contextRef, String actionMethod, String resultPath, ActionCompleteCallback cb) {
         ModelAction completeAction = SimpleAction.create("cb");
         currentCallback = cb;
-        contextRef.fire(RemoteMethodAction.create(actionMethod).withResultIn(resultPath).onComplete(completeAction));
+        contextRef.fire(RemoteMethodAction
+                .create(actionMethod)
+                .withResultIn(resultPath)
+                .onComplete(completeAction));
     }
 }

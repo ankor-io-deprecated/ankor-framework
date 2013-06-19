@@ -17,6 +17,7 @@
             <columns>
                 <TableColumn prefWidth="250" fx:id="animalName" text="Name" editable="true" />
                 <TableColumn prefWidth="100" fx:id="animalType" text="Type" editable="true"/>
+                <TableColumn prefWidth="100" fx:id="actionCol" />
             </columns>
         </TableView>
         <Button text="Save" GridPane.columnIndex="1" GridPane.rowIndex="2"

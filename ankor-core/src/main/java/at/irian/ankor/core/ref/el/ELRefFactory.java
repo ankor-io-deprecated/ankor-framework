@@ -70,7 +70,7 @@ public class ELRefFactory implements RefFactory {
         } else if (path.startsWith(ROOT_PATH_PREFIX)) {
             return path;
         } else {
-            return ROOT_PATH_PREFIX + path;
+            return path; // TODO
         }
     }
 

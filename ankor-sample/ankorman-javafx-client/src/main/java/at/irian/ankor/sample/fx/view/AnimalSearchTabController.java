@@ -7,16 +7,17 @@ import at.irian.ankor.fx.binding.BindingContext;
 import at.irian.ankor.sample.fx.server.model.Animal;
 import at.irian.ankor.sample.fx.view.model.AnimalSearchTab;
 import at.irian.ankor.sample.fx.view.model.Tab;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextInputControl;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.util.Callback;
 
 import java.net.URL;
 import java.util.List;
@@ -43,6 +44,8 @@ public class AnimalSearchTabController implements Initializable {
     private TableColumn<Animal, String> animalName;
     @FXML
     private TableColumn<Animal, String> animalType;
+    @FXML
+    private TableColumn actionCol;
 
     private String tabId = TabIds.next();
 
@@ -75,22 +78,29 @@ public class AnimalSearchTabController implements Initializable {
 
     private void loadAnimals(final List<Animal> animals) {
 
+        animalTable.getItems().setAll(animals);
+
         animalName.setCellValueFactory(new PropertyValueFactory<Animal, String>("name"));
-        //animalName.setCellFactory(cellFactory);
         animalName.setCellFactory(TextFieldTableCell.<Animal>forTableColumn());
         animalName.setOnEditCommit(
                 new EventHandler<TableColumn.CellEditEvent<Animal, String>>() {
-                    @Override public void handle(TableColumn.CellEditEvent<Animal, String> t) {
-                        Animal animal = t.getTableView().getItems().get(t.getTablePosition().getRow());
-                        animal.setName(t.getNewValue());
-                        getTabRef().sub("model").sub("animals").setValue(animals);
+                    @Override
+                    public void handle(TableColumn.CellEditEvent<Animal, String> t) {
+                        int rowNum = t.getTablePosition().getRow();
+                        getTabRef().sub("model").sub(String.format("animals[%d].name", rowNum)).setValue(t.getNewValue());
                     }
                 });
 
         animalType.setCellValueFactory(new PropertyValueFactory<Animal, String>("type"));
 
+        actionCol.setCellFactory(
+                new Callback<TableColumn<Animal, String>, TableCell<Animal, String>>() {
+                    @Override
+                    public TableCell<Animal, String> call(TableColumn<Animal, String> p) {
+                        return new ButtonCell();
+                    }
 
-        animalTable.getItems().setAll(animals);
+                });
     }
 
     @FXML
@@ -110,5 +120,34 @@ public class AnimalSearchTabController implements Initializable {
             public void onComplete() {
             }
         });
+    }
+
+    @FXML
+    protected void edit(@SuppressWarnings("UnusedParameters") ActionEvent event) {
+        System.out.println("yes");
+    }
+
+    private class ButtonCell extends TableCell<Animal, String> {
+        final Button cellButton = new Button("Action");
+
+        ButtonCell(){
+            cellButton.setOnAction(new EventHandler<ActionEvent>(){
+                @Override
+                public void handle(ActionEvent t) {
+                    Animal animal = animalTable.getItems().get(getTableRow().getIndex());
+
+                    //facade().createAnimalDetailTab();
+                }
+            });
+        }
+
+        //Display button if the row is not empty
+        @Override
+        protected void updateItem(String t, boolean empty) {
+            super.updateItem(t, empty);
+            if(empty){
+                setGraphic(cellButton);
+            }
+        }
     }
 }
