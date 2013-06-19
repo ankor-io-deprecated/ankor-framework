@@ -49,7 +49,7 @@ public class RefFactory {
         return modelActionBus;
     }
 
-    public RootRef rootRef() {
+    public Ref rootRef() {
         return rootRef;
     }
 

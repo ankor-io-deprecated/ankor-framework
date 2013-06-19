@@ -5,7 +5,7 @@ import at.irian.ankor.core.action.ModelAction;
 import at.irian.ankor.core.action.SimpleAction;
 import at.irian.ankor.core.application.Application;
 import at.irian.ankor.core.listener.ModelActionListener;
-import at.irian.ankor.core.ref.ModelRef;
+import at.irian.ankor.core.ref.Ref;
 
 /**
  * @author Thomas Spiegl
@@ -21,7 +21,7 @@ public class AppService {
     public AppService(Application application) {
         application.getListenerRegistry().registerRemoteActionListener(null,
                 new ModelActionListener() {
-                    public void handleModelAction(ModelRef actionContext, ModelAction action) {
+                    public void handleModelAction(Ref actionContext, ModelAction action) {
                         if (currentCallback != null && action.name().equals("cb")) {
                             currentCallback.onComplete();
                         }
@@ -34,7 +34,7 @@ public class AppService {
         return application;
     }
 
-    public synchronized void executeAction(ModelRef contextRef, String actionMethod, String resultPath, ActionCompleteCallback cb) {
+    public synchronized void executeAction(Ref contextRef, String actionMethod, String resultPath, ActionCompleteCallback cb) {
         ModelAction completeAction = SimpleAction.withName("cb");
         currentCallback = cb;
         contextRef.fire(new MethodAction(actionMethod, resultPath, completeAction));

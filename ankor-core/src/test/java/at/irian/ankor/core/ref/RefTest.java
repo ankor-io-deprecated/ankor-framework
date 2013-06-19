@@ -1,7 +1,7 @@
 package at.irian.ankor.core.ref;
 
-import at.irian.ankor.core.el.StandardELContext;
 import at.irian.ankor.core.application.ModelHolder;
+import at.irian.ankor.core.el.StandardELContext;
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,7 +29,7 @@ public class RefTest {
 
     @Test
     public void test_root_path() throws Exception {
-        RootRef ref = refFactory.rootRef();
+        Ref ref = refFactory.rootRef();
         Assert.assertEquals("model", ref.path());
     }
 

@@ -1,7 +1,6 @@
 package at.irian.ankor.sample.fx;
 
-import at.irian.ankor.core.ref.ModelRef;
-import at.irian.ankor.core.ref.RootRef;
+import at.irian.ankor.core.ref.Ref;
 import at.irian.ankor.sample.fx.app.ActionCompleteCallback;
 import at.irian.ankor.sample.fx.app.AppService;
 
@@ -19,16 +18,16 @@ public class ServiceFacade {
     }
 
     public void createAnimalSearchTab(String tabId, ActionCompleteCallback cb) {
-        ModelRef tabsRef = appService.getApplication().getRefFactory().rootRef().sub("tabs");
+        Ref tabsRef = appService.getApplication().getRefFactory().rootRef().sub("tabs");
         appService.executeAction(tabsRef, String.format("service.createAnimalSearchTab('%s')", tabId), tabId, cb);
     }
 
     public void initApplication(ActionCompleteCallback cb) {
-        RootRef rootRef = appService.getApplication().getRefFactory().rootRef();
+        Ref rootRef = appService.getApplication().getRefFactory().rootRef();
         appService.executeAction(rootRef, "service.init()", rootRef.path(), cb);
     }
 
-    public void searchAnimals(ModelRef tabRef, ActionCompleteCallback cb) {
+    public void searchAnimals(Ref tabRef, ActionCompleteCallback cb) {
         appService.executeAction(tabRef.sub("model"), "service.searchAnimals(context.filter)", "animals", cb); // TODO context.animals
     }
 }

@@ -1,7 +1,6 @@
 package at.irian.ankor.sample.fx;
 
-import at.irian.ankor.core.ref.ModelRef;
-import at.irian.ankor.core.ref.RootRef;
+import at.irian.ankor.core.ref.Ref;
 import at.irian.ankor.sample.fx.app.ActionCompleteCallback;
 import at.irian.ankor.sample.fx.binding.BindingContext;
 import at.irian.ankor.sample.fx.model.Animal;
@@ -59,7 +58,7 @@ public class MainController implements Initializable {
         facade().createAnimalSearchTab(tabId, new ActionCompleteCallback() {
 
             public void onComplete() {
-                ModelRef filterRef = getTabRef().sub("model").sub("filter");
+                Ref filterRef = getTabRef().sub("model").sub("filter");
 
                 // Bind Filter
                 bind(filterRef.sub("name"), name.textProperty(), bindingContext);
@@ -68,8 +67,8 @@ public class MainController implements Initializable {
         });
     }
 
-    private ModelRef getTabRef() {
-        RootRef rootRef = application().getRefFactory().rootRef();
+    private Ref getTabRef() {
+        Ref rootRef = application().getRefFactory().rootRef();
         return rootRef.sub(String.format("tabs.%s", tabId));
     }
 
@@ -77,7 +76,7 @@ public class MainController implements Initializable {
         facade().initApplication(new ActionCompleteCallback() {
 
             public void onComplete() {
-                RootRef rootRef = application().getRefFactory().rootRef();
+                Ref rootRef = application().getRefFactory().rootRef();
                 RootModel rootModel = rootRef.getValue();
 
                 userName.setText(rootModel.getUserName());
