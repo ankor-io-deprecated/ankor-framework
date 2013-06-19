@@ -17,11 +17,11 @@ public class DefaultChangeNotifier {
         this.listenerRegistry = listenerRegistry;
     }
 
-    public void notifyLocalListeners(Ref changedRef) {
+    public void notifyLocalListeners(Ref contextRef, Ref changedRef) {
         for (ModelChangeListenerInstance changeListenerInstance : listenerRegistry.getLocalChangeListenersFor(changedRef)) {
             ModelChangeListener listener = changeListenerInstance.getListener();
             Ref watchedRef = changeListenerInstance.getRef();
-            listener.handleModelChange(watchedRef, changedRef);
+            listener.handleModelChange(contextRef, watchedRef, changedRef);
         }
     }
 

@@ -68,4 +68,8 @@ public interface Ref {
     boolean isRoot();
 
     RefContext refContext();
+
+    Ref withRefContext(RefContext newRefContext);
+
+    Ref withModelContext(Ref modelContext);
 }

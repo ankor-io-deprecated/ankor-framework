@@ -1,7 +1,6 @@
 package at.irian.ankor.core.action.method;
 
 import at.irian.ankor.core.action.ModelAction;
-import at.irian.ankor.core.el.SingleReadonlyVariableELContext;
 import at.irian.ankor.core.listener.ModelActionListener;
 import at.irian.ankor.core.ref.Ref;
 import at.irian.ankor.core.ref.RefFactory;
@@ -17,8 +16,6 @@ import javax.el.ValueExpression;
 public class RemoteMethodActionListener implements ModelActionListener {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RemoteMethodActionListener.class);
 
-    private static final String CONTEXT_VAR_NAME = "context";
-
     private final ExpressionFactory expressionFactory;
     private final RefFactory refFactory;
 
@@ -28,40 +25,35 @@ public class RemoteMethodActionListener implements ModelActionListener {
     }
 
     @Override
-    public void handleModelAction(Ref actionContext, ModelAction action) {
+    public void handleModelAction(Ref modelContext, ModelAction action) {
         if (action instanceof RemoteMethodAction) {
-            processMethodAction(actionContext, (RemoteMethodAction) action);
+            processMethodAction(modelContext, (RemoteMethodAction) action);
         }
     }
 
-    private void processMethodAction(Ref actionContext, RemoteMethodAction action) {
-
-        ELContext methodExecutionELContext = createMethodExecutionELContext(actionContext);
+    private void processMethodAction(Ref modelContext, RemoteMethodAction action) {
 
         Object result;
         try {
-            result = executeMethod(methodExecutionELContext, action.getMethodExpression());
+            result = executeMethod(modelContext, action.getMethodExpression());
         } catch (Exception e) {
-            handleError(actionContext, action, e);
+            handleError(modelContext, action, e);
             return;
         }
 
-        handleResult(actionContext, methodExecutionELContext, action.getResultPath(), result);
+        handleResult(modelContext, action.getResultPath(), result);
 
         if (action.isAutoRefreshActionContext()) {
-            actionContext.setValue(actionContext.getValue());
+            modelContext.setValue(modelContext.getValue());
         }
 
-        fireCompleteAction(actionContext, action.getCompleteAction());
+        fireCompleteAction(modelContext, action.getCompleteAction());
     }
 
-    private void handleResult(Ref actionContext,
-                              ELContext methodExecutionELContext,
-                              String resultPath,
-                              Object result) {
+    private void handleResult(Ref modelContext, String resultPath, Object result) {
         if (resultPath != null) {
-            ELRefContext refContext = ((ELRefContext) actionContext.refContext()).with(methodExecutionELContext);
-            Ref resultRef = refFactory.ref(resultPath, refContext);
+            ELRefContext refContext = (ELRefContext) modelContext.refContext();
+            Ref resultRef = refFactory.ref(resultPath, refContext.withModelContext(modelContext));
             resultRef.setValue(result);
         }
     }
@@ -81,19 +73,13 @@ public class RemoteMethodActionListener implements ModelActionListener {
         }
     }
 
-    private ELContext createMethodExecutionELContext(Ref actionContext) {
-        Object contextValue = actionContext.getValue();
-        ELRefContext refContext = (ELRefContext)actionContext.refContext();
-        return new SingleReadonlyVariableELContext(refContext.getELContext(),
-                                                   CONTEXT_VAR_NAME,
-                                                   contextValue);
-    }
-
-    private Object executeMethod(ELContext elContext, String methodExpression) {
-        ValueExpression ve = expressionFactory.createValueExpression(elContext,
+    private Object executeMethod(Ref modelContext, String methodExpression) {
+        ELRefContext refContext = (ELRefContext) modelContext.refContext();
+        ELContext execELContext = refContext.withModelContext(modelContext).getELContext();
+        ValueExpression ve = expressionFactory.createValueExpression(execELContext,
                                                                      "#{" + methodExpression + "}",
                                                                      Object.class);
-        return ve.getValue(elContext);
+        return ve.getValue(execELContext);
     }
 
 }

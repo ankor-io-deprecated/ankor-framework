@@ -61,7 +61,7 @@ public class SimpleAnkorServerTest {
 
         listenerRegistry.registerRemoteChangeListener(refFactory.ref("root.userName"), new ModelChangeListener() {
             @Override
-            public void handleModelChange(Ref watchedRef, Ref changedRef) {
+            public void handleModelChange(Ref contextRef, Ref watchedRef, Ref changedRef) {
                 watchedRef.setValue("Max Muster 2");
             }
         });
@@ -79,7 +79,7 @@ public class SimpleAnkorServerTest {
 
         listenerRegistry.registerRemoteChangeListener(refFactory.ref("root.testUser"), new ModelChangeListener() {
             @Override
-            public void handleModelChange(Ref watchedRef, Ref changedRef) {
+            public void handleModelChange(Ref contextRef, Ref watchedRef, Ref changedRef) {
                 LOG.info("watched = {}", watchedRef);
                 LOG.info("changed = {}", changedRef);
             }
@@ -113,7 +113,16 @@ public class SimpleAnkorServerTest {
     }
 
 
+    @Test
+    public void test_context() throws Exception {
+        TestModel model = new TestModel();
+        model.setTestUser(new TestUser("Max", "Muster"));
+        application.getModelHolder().setModel(model);
 
+        Ref contextRef = refFactory.ref("root.testUser");
+        Ref ref = refFactory.ref("context.firstName").withModelContext(contextRef);
+        Assert.assertEquals("Max", ref.getValue());
+    }
 
 
     public static class TestModel {
@@ -149,6 +158,14 @@ public class SimpleAnkorServerTest {
         public TestUser(String firstName, String lastName) {
             this.firstName = firstName;
             this.lastName = lastName;
+        }
+
+        public String getFirstName() {
+            return firstName;
+        }
+
+        public String getLastName() {
+            return lastName;
         }
 
         @Override

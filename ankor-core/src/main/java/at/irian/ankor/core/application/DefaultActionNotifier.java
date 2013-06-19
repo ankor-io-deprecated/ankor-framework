@@ -17,15 +17,15 @@ public class DefaultActionNotifier {
         this.listenerRegistry = listenerRegistry;
     }
 
-    public void broadcastAction(Ref ref, ModelAction action) {
-        if (ref == null) {
-            throw new NullPointerException("ref");
+    public void broadcastAction(Ref contextRef, ModelAction action) {
+        if (contextRef == null) {
+            throw new NullPointerException("contextRef");
         }
         if (action == null) {
             throw new NullPointerException("action");
         }
-        for (ModelActionListener modelActionListener : listenerRegistry.getLocalActionListenersFor(ref)) {
-            modelActionListener.handleModelAction(ref, action);
+        for (ModelActionListener modelActionListener : listenerRegistry.getLocalActionListenersFor(contextRef)) {
+            modelActionListener.handleModelAction(contextRef, action);
         }
     }
 

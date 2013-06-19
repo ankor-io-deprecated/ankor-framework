@@ -70,7 +70,7 @@ public class Tests {
                     clientApp.getListenerRegistry().registerRemoteChangeListener(containerRef, new ModelChangeListener() {
 
                         @Override
-                        public void handleModelChange(Ref watchedRef, Ref changedRef) {
+                        public void handleModelChange(Ref contextRef, Ref watchedRef, Ref changedRef) {
                             LOG.info("new container {}", watchedRef.getValue());
 
                             watchedRef.sub("filter.name").setValue("A*");

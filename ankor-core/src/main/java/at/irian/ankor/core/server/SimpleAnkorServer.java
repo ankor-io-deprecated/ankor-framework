@@ -27,27 +27,35 @@ public class SimpleAnkorServer extends ELAnkorServer {
         return serverName;
     }
 
-    public void receiveAction(String actionContextPath, ModelAction action) {
-        receiveAction(application.getRefFactory().ref(actionContextPath), action);
+    public void receiveAction(String modelContextPath, ModelAction action) {
+        receiveAction(application.getRefFactory().ref(modelContextPath), action);
     }
 
     public void receiveChange(String changedPath, Object newValue) {
-        receiveChange(application.getRefFactory().ref(changedPath), newValue);
+        receiveChange(null, changedPath, newValue);
+    }
+
+    public void receiveChange(String modelContextPath, String changedPath, Object newValue) {
+        receiveChange(modelContextPath != null ? application.getRefFactory().ref(modelContextPath) : null,
+                      application.getRefFactory().ref(changedPath),
+                      newValue);
     }
 
     @Override
-    protected void sendChange(Ref changedRef, Object newValue) {
+    protected void sendChange(Ref modelContext, Ref changedProperty, Object newValue) {
         if (remoteServer != null) {
-            LOG.info("passing change to {} - {} => {}", remoteServer, changedRef, newValue);
-            remoteServer.receiveChange(changedRef.path(), newValue);
+            LOG.info("passing change to {} - {} => {} / context = {}", remoteServer, changedProperty, newValue, modelContext);
+            remoteServer.receiveChange(modelContext != null ? modelContext.path() : null,
+                                       changedProperty.path(),
+                                       newValue);
         }
     }
 
     @Override
-    public void sendAction(Ref actionContextRef, ModelAction action) {
+    public void sendAction(Ref modelContext, ModelAction action) {
         if (remoteServer != null) {
-            LOG.info("passing action to {}:  ref={}, action={}", remoteServer, actionContextRef, action);
-            remoteServer.receiveAction(actionContextRef.path(), action);
+            LOG.info("passing action to {}: action = {} / context = {}", remoteServer, action, modelContext);
+            remoteServer.receiveAction(modelContext.path(), action);
         }
     }
 }

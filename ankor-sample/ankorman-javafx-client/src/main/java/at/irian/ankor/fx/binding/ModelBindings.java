@@ -49,7 +49,7 @@ public class ModelBindings {
         App.application().getListenerRegistry().registerRemoteChangeListener(modelRef,
                 new ModelChangeListener() {
 
-                    public void handleModelChange(Ref watchedRef, Ref changedRef) {
+                    public void handleModelChange(Ref contextRef, Ref watchedRef, Ref changedRef) {
                         String strValue;
                         Object newValue = watchedRef.getValue();
                         if (newValue instanceof String) {

@@ -16,7 +16,7 @@ public class AutoUnregisterChangeListener implements ModelChangeListener {
     }
 
     @Override
-    public void handleModelChange(Ref watchedRef, Ref changedRef) {
+    public void handleModelChange(Ref contextRef, Ref watchedRef, Ref changedRef) {
         if (isNil(changedRef.getValue())) {
             listenerRegistry.unregisterAllListenersFor(changedRef);
         }

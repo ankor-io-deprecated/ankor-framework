@@ -2,7 +2,9 @@ package at.irian.ankor.core.ref.el;
 
 import at.irian.ankor.core.action.ModelAction;
 import at.irian.ankor.core.application.DefaultActionNotifier;
+import at.irian.ankor.core.el.ModelContextELContext;
 import at.irian.ankor.core.ref.Ref;
+import at.irian.ankor.core.ref.RefContext;
 
 import javax.el.ValueExpression;
 
@@ -23,7 +25,7 @@ class ELRef implements Ref {
     public void setValue(Object newValue) {
         valueExpression.setValue(refContext.getELContext(), newValue);
         if (refContext.getChangeNotifier() != null) {
-            refContext.getChangeNotifier().notifyLocalListeners(this);
+            refContext.getChangeNotifier().notifyLocalListeners(refContext.getModelContext(), this);
         }
     }
 
@@ -107,5 +109,18 @@ class ELRef implements Ref {
 
     ValueExpression valueExpression() {
         return valueExpression;
+    }
+
+    @Override
+    public Ref withRefContext(RefContext newRefContext) {
+        return ELRefUtils.ref((ELRefContext)newRefContext, path());
+    }
+
+    @Override
+    public Ref withModelContext(Ref contextRef) {
+        ELRefContext newRefContext = refContext.with(new ModelContextELContext(refContext.getELContext(),
+                                                                           "context", //todo
+                                                                           contextRef));
+        return withRefContext(newRefContext);
     }
 }

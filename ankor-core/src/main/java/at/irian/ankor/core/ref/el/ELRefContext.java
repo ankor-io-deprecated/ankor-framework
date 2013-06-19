@@ -2,6 +2,8 @@ package at.irian.ankor.core.ref.el;
 
 import at.irian.ankor.core.application.DefaultActionNotifier;
 import at.irian.ankor.core.application.DefaultChangeNotifier;
+import at.irian.ankor.core.el.ModelContextELContext;
+import at.irian.ankor.core.ref.Ref;
 import at.irian.ankor.core.ref.RefContext;
 
 import javax.el.ELContext;
@@ -18,25 +20,38 @@ public class ELRefContext implements RefContext {
     private final DefaultChangeNotifier changeNotifier;
     private final DefaultActionNotifier actionNotifier;
     private final String modelRootVarName;
+    private final Ref modelContext;
 
     public ELRefContext(ExpressionFactory expressionFactory,
                         ELContext elContext,
                         DefaultChangeNotifier changeNotifier,
                         DefaultActionNotifier actionNotifier,
-                        String modelRootVarName) {
+                        String modelRootVarName,
+                        Ref modelContext) {
         this.expressionFactory = expressionFactory;
         this.elContext = elContext;
         this.changeNotifier = changeNotifier;
         this.actionNotifier = actionNotifier;
         this.modelRootVarName = modelRootVarName;
+        this.modelContext = modelContext;
     }
 
     public ELRefContext with(ELContext elContext) {
-        return new ELRefContext(expressionFactory, elContext, changeNotifier, actionNotifier, modelRootVarName);
+        return new ELRefContext(expressionFactory, elContext, changeNotifier, actionNotifier, modelRootVarName,
+                                modelContext);
     }
 
     public ELRefContext withNoModelChangeNotifier() {
-        return new ELRefContext(expressionFactory, elContext, null, actionNotifier, modelRootVarName);
+        return new ELRefContext(expressionFactory, elContext, null, actionNotifier, modelRootVarName, modelContext);
+    }
+
+    public ELRefContext withModelContext(Ref modelContext) {
+        ModelContextELContext elContext = new ModelContextELContext(this.elContext, "context", modelContext);
+        return new ELRefContext(expressionFactory,
+                                elContext,
+                                changeNotifier,
+                                actionNotifier,
+                                modelRootVarName, modelContext);
     }
 
     public ELContext getELContext() {
@@ -57,5 +72,10 @@ public class ELRefContext implements RefContext {
 
     public ExpressionFactory getExpressionFactory() {
         return expressionFactory;
+    }
+
+    @Override
+    public Ref getModelContext() {
+        return modelContext;
     }
 }

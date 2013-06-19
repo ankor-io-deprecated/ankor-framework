@@ -8,10 +8,9 @@ import java.util.Collections;
 import java.util.Iterator;
 
 /**
- * @author Manfred Geiler
- */
+* @author Manfred Geiler
+*/
 public class SingleReadonlyVariableELResolver extends ELResolver {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelHolderELResolver.class);
 
     protected final String varName;
     protected final Object value;
@@ -62,7 +61,7 @@ public class SingleReadonlyVariableELResolver extends ELResolver {
             featureDescriptor.setName(varName);
             featureDescriptor.setDisplayName(varName);
             featureDescriptor.setExpert(true);
-            featureDescriptor.setShortDescription(varName + "singleton instance");
+            featureDescriptor.setShortDescription(varName + " singleton instance");
             return Collections.singleton(featureDescriptor).iterator();
         }
         return null;

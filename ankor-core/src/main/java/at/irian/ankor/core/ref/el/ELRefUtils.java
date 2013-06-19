@@ -2,7 +2,6 @@ package at.irian.ankor.core.ref.el;
 
 import at.irian.ankor.core.ref.Ref;
 
-import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 
@@ -12,7 +11,7 @@ import static at.irian.ankor.core.ref.el.PathUtils.parentPath;
 /**
  * @author Manfred Geiler
  */
-final class ELRefUtils {
+public final class ELRefUtils {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ELRefUtils.class);
 
     private ELRefUtils() {}
@@ -56,7 +55,7 @@ final class ELRefUtils {
         return valueExpressionToPath(elRef.valueExpression().getExpressionString());
     }
 
-    static String pathToValueExpression(String path) {
+    public static String pathToValueExpression(String path) {
         return PathUtils.EXPR_PREFIX + path + PathUtils.EXPR_SUFFIX;
     }
 

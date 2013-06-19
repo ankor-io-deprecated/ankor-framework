@@ -61,7 +61,7 @@ public class SimpleLocalApplicationService {
                     }
 
                     long upSinceSeconds = (System.currentTimeMillis() - started) / 1000;
-                    String serverStatus = String.format("sever up time %ds", upSinceSeconds);
+                    String serverStatus = String.format("server up time %ds", upSinceSeconds);
 
                     serverApplication.getRefFactory().rootRef().sub("serverStatus").setValue(serverStatus);
                 }

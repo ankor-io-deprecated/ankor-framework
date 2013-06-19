@@ -30,43 +30,43 @@ public class ELRefTest {
                                                    modelELContext,
                                                    null,
                                                    null,
-                                                   "model");
+                                                   "root", null);
         this.refFactory = new ELRefFactory(refContext);
     }
 
     @Test
     public void test_root_path() throws Exception {
         Ref ref = refFactory.rootRef();
-        Assert.assertEquals("model", ref.path());
+        Assert.assertEquals("root", ref.path());
     }
 
     @Test
     public void test_prop_path() throws Exception {
-        Ref ref = refFactory.ref("model.test.person.name");
-        Assert.assertEquals("model.test.person.name", ref.path());
+        Ref ref = refFactory.ref("root.test.person.name");
+        Assert.assertEquals("root.test.person.name", ref.path());
     }
 
     @Test
     public void test_prop_path_auto() throws Exception {
-        Ref ref = refFactory.ref("model.test.person.name");
-        Assert.assertEquals("model.test.person.name", ref.path());
+        Ref ref = refFactory.ref("root.test.person.name");
+        Assert.assertEquals("root.test.person.name", ref.path());
     }
 
     @Test
     public void test_parent_path() throws Exception {
-        Ref ref = refFactory.ref("model.test.person.name");
-        Assert.assertEquals("model.test.person", ref.parent().path());
+        Ref ref = refFactory.ref("root.test.person.name");
+        Assert.assertEquals("root.test.person", ref.parent().path());
     }
 
     @Test
     public void test_descendant() throws Exception {
-        Ref ref = refFactory.ref("model.test.person.name");
+        Ref ref = refFactory.ref("root.test.person.name");
         Assert.assertTrue(ref.isDescendantOf(refFactory.rootRef()));
-        Assert.assertTrue(ref.isDescendantOf(refFactory.ref("model.test.person")));
-        Assert.assertTrue(ref.isDescendantOf(refFactory.ref("model.test")));
-        Assert.assertTrue(ref.isDescendantOf(refFactory.ref("model")));
+        Assert.assertTrue(ref.isDescendantOf(refFactory.ref("root.test.person")));
+        Assert.assertTrue(ref.isDescendantOf(refFactory.ref("root.test")));
+        Assert.assertTrue(ref.isDescendantOf(refFactory.ref("root")));
         Assert.assertTrue(ref.isDescendantOf(refFactory.ref("")));
-        Assert.assertFalse(ref.isDescendantOf(refFactory.ref("model.foo.bar")));
-        Assert.assertFalse(ref.isDescendantOf(refFactory.ref("model.foo")));
+        Assert.assertFalse(ref.isDescendantOf(refFactory.ref("root.foo.bar")));
+        Assert.assertFalse(ref.isDescendantOf(refFactory.ref("root.foo")));
     }
 }

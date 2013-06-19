@@ -6,6 +6,8 @@ import at.irian.ankor.core.ref.Ref;
 /**
  * @author MGeiler (Manfred Geiler)
  */
+//todo rename
 public interface ModelActionListener {
-    void handleModelAction(Ref actionContext, ModelAction action);
+    //todo rename to processAction
+    void handleModelAction(Ref actionContextRef, ModelAction action);
 }
