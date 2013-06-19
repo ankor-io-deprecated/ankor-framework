@@ -1,6 +1,7 @@
 package at.irian.ankor.core.listener;
 
 import at.irian.ankor.core.ref.Ref;
+import at.irian.ankor.core.util.NilValue;
 
 /**
  * @author MGeiler (Manfred Geiler)

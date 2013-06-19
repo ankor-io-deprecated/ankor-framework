@@ -16,7 +16,7 @@ public class LoadUserActionListener implements ModelActionListener {
         if (action.name().equals("loadUser")) {
             String userName = "Max Muster";
             actionContext.setValue(userName);
-            actionContext.fire(SimpleAction.withName("success"));
+            actionContext.fire(SimpleAction.create("success"));
         }
     }
 

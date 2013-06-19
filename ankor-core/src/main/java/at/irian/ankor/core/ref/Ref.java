@@ -26,7 +26,8 @@ public interface Ref {
     Ref root();
 
     /**
-     * @return Ref to the model object that is the structural parent of the object referenced by this Ref
+     * @return Ref to the model object that is the structural parent of the object referenced by this Ref,
+     *         null if this Ref is the root
      */
     Ref parent();
 
@@ -63,4 +64,8 @@ public interface Ref {
      * @return true, if the given Ref is a child (or grandchild, or...) of this Ref
      */
     boolean isAncestorOf(Ref ref);
+
+    boolean isRoot();
+
+    RefContext refContext();
 }

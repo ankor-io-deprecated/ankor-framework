@@ -8,12 +8,12 @@ import at.irian.ankor.core.ref.Ref;
 /**
  * @author Manfred Geiler
  */
-public class ModelChangeNotifier {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelChangeNotifier.class);
+public class DefaultChangeNotifier {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(DefaultChangeNotifier.class);
 
     private final ListenerRegistry listenerRegistry;
 
-    public ModelChangeNotifier(ListenerRegistry listenerRegistry) {
+    public DefaultChangeNotifier(ListenerRegistry listenerRegistry) {
         this.listenerRegistry = listenerRegistry;
     }
 

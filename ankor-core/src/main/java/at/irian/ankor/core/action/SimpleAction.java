@@ -12,7 +12,7 @@ public class SimpleAction implements ModelAction {
         this.name = name;
     }
 
-    public static SimpleAction withName(String name) {
+    public static SimpleAction create(String name) {
         return new SimpleAction(name);
     }
 

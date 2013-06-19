@@ -15,8 +15,9 @@ public class InitActionListener implements ModelActionListener {
     public void handleModelAction(Ref actionContext, ModelAction action) {
         if (action.name().equals("init")) {
             LOG.info("Creating new TestModel");
-            actionContext.root().setValue(createNewModel());
-            actionContext.fire(SimpleAction.withName("initialized"));
+            Ref root = actionContext.root();
+            root.setValue(createNewModel());
+            actionContext.fire(SimpleAction.create("initialized"));
         }
     }
 

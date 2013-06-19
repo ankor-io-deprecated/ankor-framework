@@ -1,4 +1,4 @@
-package at.irian.ankor.core.listener;
+package at.irian.ankor.core.util;
 
 /**
  * @author Manfred Geiler

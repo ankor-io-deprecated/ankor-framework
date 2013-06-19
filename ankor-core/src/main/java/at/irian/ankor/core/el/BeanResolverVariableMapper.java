@@ -8,16 +8,16 @@ import javax.el.VariableMapper;
 /**
  * @author Manfred Geiler
  */
-public class BeanVariableMapper extends VariableMapper {
+public class BeanResolverVariableMapper extends VariableMapper {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelHolderVariableMapper.class);
 
     private final ExpressionFactory expressionFactory;
     private final ELContext baseELContext;
     private final BeanResolver beanResolver;
 
-    public BeanVariableMapper(ExpressionFactory expressionFactory,
-                              ELContext baseELContext,
-                              BeanResolver beanResolver) {
+    public BeanResolverVariableMapper(ExpressionFactory expressionFactory,
+                                      ELContext baseELContext,
+                                      BeanResolver beanResolver) {
         this.baseELContext = baseELContext;
         this.expressionFactory = expressionFactory;
         this.beanResolver = beanResolver;

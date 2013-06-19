@@ -3,17 +3,19 @@ package at.irian.ankor.core.el;
 import javax.el.*;
 
 /**
- * @author MGeiler (Manfred Geiler)
+ * @author Manfred Geiler
  */
-public class ModelContextELContext extends ELContext {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelContextELContext.class);
+public class BeanResolverELContext extends ELContext {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(StandardELContext.class);
 
     private final ELContext baseELContext;
     private final VariableMapper variableMapper;
 
-    public ModelContextELContext(ELContext baseELContext, ValueExpression contextValueExpression) {
+    public BeanResolverELContext(ExpressionFactory expressionFactory,
+                                 ELContext baseELContext,
+                                 BeanResolver beanResolver) {
         this.baseELContext = baseELContext;
-        this.variableMapper = new ModelContextVariableMapper(baseELContext, contextValueExpression);
+        this.variableMapper = new BeanResolverVariableMapper(expressionFactory, baseELContext, beanResolver);
     }
 
     @Override

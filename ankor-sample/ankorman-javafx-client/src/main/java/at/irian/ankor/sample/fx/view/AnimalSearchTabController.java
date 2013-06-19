@@ -1,7 +1,7 @@
 package at.irian.ankor.sample.fx.view;
 
-import at.irian.ankor.core.listener.NilValue;
 import at.irian.ankor.core.ref.Ref;
+import at.irian.ankor.core.util.NilValue;
 import at.irian.ankor.fx.app.ActionCompleteCallback;
 import at.irian.ankor.fx.binding.BindingContext;
 import at.irian.ankor.sample.fx.server.model.Animal;

@@ -28,14 +28,14 @@ public class Tests {
         application.getListenerRegistry().registerRemoteActionListener(null, new NewContainerActionListener());
         application.getListenerRegistry().registerRemoteActionListener(null, new AnimalSearchActionListener());
 
-        server.receiveAction(null, SimpleAction.withName("init"));
+        server.receiveAction(null, SimpleAction.create("init"));
 
         server.receiveChange("containers['tab1']", null);
-        server.receiveAction("containers['tab1']", SimpleAction.withName("newAnimalSearchContainer"));
+        server.receiveAction("containers['tab1']", SimpleAction.create("newAnimalSearchContainer"));
 
         server.receiveChange("containers['tab1'].filter.name", "A*");
         server.receiveChange("containers['tab1'].filter.type", "Bird");
-        server.receiveAction("containers['tab1']", SimpleAction.withName("search"));
+        server.receiveAction("containers['tab1']", SimpleAction.create("search"));
 
     }
 
@@ -51,7 +51,7 @@ public class Tests {
                 if (action.name().equals("init")) {
                     LOG.info("Creating new TestModel");
                     actionContext.root().setValue(new TestModel());
-                    actionContext.fire(SimpleAction.withName("initialized"));
+                    actionContext.fire(SimpleAction.create("initialized"));
                 }
             }
         });
@@ -75,11 +75,11 @@ public class Tests {
 
                             watchedRef.sub("filter.name").setValue("A*");
                             watchedRef.sub("filter.type").setValue(AnimalType.Bird);
-                            watchedRef.fire(SimpleAction.withName("search"));
+                            watchedRef.fire(SimpleAction.create("search"));
                         }
                     });
 
-                    containerRef.fire(SimpleAction.withName("newAnimalSearchContainer"));
+                    containerRef.fire(SimpleAction.create("newAnimalSearchContainer"));
                 }
             }
         });
@@ -87,7 +87,7 @@ public class Tests {
         server.setRemoteServer(client);
         client.setRemoteServer(server);
 
-        server.receiveAction(null, SimpleAction.withName("init"));
+        server.receiveAction(null, SimpleAction.create("init"));
 
 //        server.receiveChange("containers['tab1']", null);
 //        server.receiveAction("containers['tab1']", "newAnimalSearchContainer");

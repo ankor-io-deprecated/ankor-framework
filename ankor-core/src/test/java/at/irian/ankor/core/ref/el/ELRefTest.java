@@ -1,7 +1,11 @@
-package at.irian.ankor.core.ref;
+package at.irian.ankor.core.ref.el;
 
 import at.irian.ankor.core.application.ModelHolder;
+import at.irian.ankor.core.el.ELSupport;
+import at.irian.ankor.core.el.ModelHolderELContext;
 import at.irian.ankor.core.el.StandardELContext;
+import at.irian.ankor.core.ref.Ref;
+import at.irian.ankor.core.ref.RefFactory;
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,8 +15,8 @@ import javax.el.ExpressionFactory;
 /**
  * @author MGeiler (Manfred Geiler)
  */
-public class RefTest {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RefTest.class);
+public class ELRefTest {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ELRefTest.class);
 
     private ModelHolder modelHolder;
     private RefFactory refFactory;
@@ -20,11 +24,12 @@ public class RefTest {
     @Before
     public void setup() {
         this.modelHolder = new ModelHolder(Object.class);
-        this.refFactory = new RefFactory(ExpressionFactory.newInstance(),
-                                         new StandardELContext(),
-                                         null,
-                                         null,
-                                         modelHolder);
+        ExpressionFactory expressionFactory = ExpressionFactory.newInstance();
+        ModelHolderELContext elContext = new ModelHolderELContext(expressionFactory,
+                                                                  new StandardELContext(),
+                                                                  modelHolder);
+        ELSupport elSupport = new ELSupport(expressionFactory, elContext);
+        this.refFactory = new ELRefFactory(elSupport, null, null);
     }
 
     @Test

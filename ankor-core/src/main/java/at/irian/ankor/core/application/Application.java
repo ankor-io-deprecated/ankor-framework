@@ -1,12 +1,11 @@
 package at.irian.ankor.core.application;
 
-import at.irian.ankor.core.el.BeanResolver;
-import at.irian.ankor.core.el.ELSupport;
-import at.irian.ankor.core.el.StandardELContext;
+import at.irian.ankor.core.el.*;
 import at.irian.ankor.core.listener.ListenerRegistry;
-import at.irian.ankor.core.action.method.MethodExecutor;
 import at.irian.ankor.core.ref.RefFactory;
+import at.irian.ankor.core.ref.el.ELRefFactory;
 
+import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 
 /**
@@ -19,22 +18,24 @@ public class Application {
     private final ModelHolder modelHolder;
     private final RefFactory refFactory;
     private final BeanResolver beanResolver;
-    private final ModelChangeNotifier modelChangeNotifier;
     private final ELSupport elSupport;
 
     public Application(Class<?> modelType, BeanResolver beanResolver) {
         this.beanResolver = beanResolver;
         this.listenerRegistry = new ListenerRegistry();
         this.modelHolder = new ModelHolder(modelType);
+        this.elSupport = createELSupport(beanResolver, modelHolder);
+        this.refFactory = new ELRefFactory(elSupport,
+                                           new DefaultChangeNotifier(listenerRegistry),
+                                           new DefaultActionNotifier(listenerRegistry));
+    }
+
+    private ELSupport createELSupport(BeanResolver beanResolver, ModelHolder modelHolder) {
         ExpressionFactory expressionFactory = ExpressionFactory.newInstance();
-        StandardELContext standardELContext = new StandardELContext();
-        this.elSupport = new ELSupport(expressionFactory, standardELContext);
-        this.modelChangeNotifier = new ModelChangeNotifier(listenerRegistry);
-        this.refFactory = new RefFactory(expressionFactory,
-                                         standardELContext,
-                                         modelChangeNotifier,
-                                         new ModelActionBus(listenerRegistry),
-                                         modelHolder);
+        ELContext standardELContext = new StandardELContext();
+        ELContext beanELContext = new BeanResolverELContext(expressionFactory, standardELContext, beanResolver);
+        ELContext baseELContext = new ModelHolderELContext(expressionFactory, beanELContext, modelHolder);
+        return new ELSupport(expressionFactory, baseELContext);
     }
 
     public ModelHolder getModelHolder() {
@@ -51,10 +52,6 @@ public class Application {
 
     public BeanResolver getBeanResolver() {
         return beanResolver;
-    }
-
-    public ModelChangeNotifier getModelChangeNotifier() {
-        return modelChangeNotifier;
     }
 
     public ELSupport getELSupport() {
