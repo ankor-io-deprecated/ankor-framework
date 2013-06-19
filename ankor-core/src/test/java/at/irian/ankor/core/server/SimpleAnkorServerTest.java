@@ -8,7 +8,7 @@ import at.irian.ankor.core.application.ModelHolder;
 import at.irian.ankor.core.application.SimpleApplication;
 import at.irian.ankor.core.listener.ModelActionListener;
 import at.irian.ankor.core.listener.ModelChangeListener;
-import at.irian.ankor.core.ref.ModelRef;
+import at.irian.ankor.core.ref.Ref;
 import at.irian.ankor.core.test.*;
 import at.irian.ankor.core.test.animal.*;
 import at.irian.ankor.core.test.NewContainerActionListener;
@@ -69,8 +69,8 @@ public class SimpleAnkorServerTest {
                                                                        new ModelChangeListener() {
 
                                                                            @Override
-                                                                           public void handleModelChange(ModelRef watchedRef,
-                                                                                                         ModelRef changedRef) {
+                                                                           public void handleModelChange(Ref watchedRef,
+                                                                                                         Ref changedRef) {
                                                                                LOG.info("change from client {}, {}",
                                                                                         watchedRef, watchedRef.getValue());
                                                                            }
@@ -126,7 +126,7 @@ public class SimpleAnkorServerTest {
         SimpleAnkorServer server = new SimpleAnkorServer(serverApp, "server");
         serverApp.getListenerRegistry().registerRemoteActionListener(null, new ModelActionListener() {
             @Override
-            public void handleModelAction(ModelRef actionContext, ModelAction action) {
+            public void handleModelAction(Ref actionContext, ModelAction action) {
                 if (action.name().equals("init")) {
                     LOG.info("Creating new TestModel");
                     actionContext.root().setValue(new TestModel());
@@ -141,15 +141,15 @@ public class SimpleAnkorServerTest {
         SimpleAnkorServer client = new SimpleAnkorServer(clientApp, "client");
         clientApp.getListenerRegistry().registerRemoteActionListener(null, new ModelActionListener() {
             @Override
-            public void handleModelAction(ModelRef actionContext, ModelAction action) {
+            public void handleModelAction(Ref actionContext, ModelAction action) {
                 if (action.name().equals("initialized")) {
-                    ModelRef containerRef = actionContext.root().sub("containers['tab1']");
+                    Ref containerRef = actionContext.root().sub("containers['tab1']");
                     containerRef.setValue(null);
 
                     clientApp.getListenerRegistry().registerRemoteChangeListener(containerRef, new ModelChangeListener() {
 
                         @Override
-                        public void handleModelChange(ModelRef watchedRef, ModelRef changedRef) {
+                        public void handleModelChange(Ref watchedRef, Ref changedRef) {
                             LOG.info("new container {}", watchedRef.getValue());
 
                             watchedRef.sub("filter.name").setValue("A*");

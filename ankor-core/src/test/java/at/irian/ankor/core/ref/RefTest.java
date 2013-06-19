@@ -11,8 +11,8 @@ import javax.el.ExpressionFactory;
 /**
  * @author MGeiler (Manfred Geiler)
  */
-public class ModelRefTest {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelRefTest.class);
+public class RefTest {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RefTest.class);
 
     private ModelHolder modelHolder;
     private RefFactory refFactory;
@@ -35,25 +35,25 @@ public class ModelRefTest {
 
     @Test
     public void test_prop_path() throws Exception {
-        ModelRef ref = refFactory.ref("model.test.person.name");
+        Ref ref = refFactory.ref("model.test.person.name");
         Assert.assertEquals("model.test.person.name", ref.path());
     }
 
     @Test
     public void test_prop_path_auto() throws Exception {
-        ModelRef ref = refFactory.ref("test.person.name");
+        Ref ref = refFactory.ref("test.person.name");
         Assert.assertEquals("model.test.person.name", ref.path());
     }
 
     @Test
     public void test_parent_path() throws Exception {
-        ModelRef ref = refFactory.ref("model.test.person.name");
+        Ref ref = refFactory.ref("model.test.person.name");
         Assert.assertEquals("model.test.person", ref.parent().path());
     }
 
     @Test
     public void test_descendant() throws Exception {
-        ModelRef ref = refFactory.ref("model.test.person.name");
+        Ref ref = refFactory.ref("model.test.person.name");
         Assert.assertTrue(ref.isDescendantOf(refFactory.rootRef()));
         Assert.assertTrue(ref.isDescendantOf(refFactory.ref("model.test.person")));
         Assert.assertTrue(ref.isDescendantOf(refFactory.ref("model.test")));

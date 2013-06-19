@@ -8,7 +8,7 @@ import at.irian.ankor.core.application.ModelHolder;
 /**
  * @author Manfred Geiler
  */
-public class RootRef implements ModelRef {
+class RootRef implements Ref {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(PropertyRef.class);
 
     private final RefFactory refFactory;
@@ -24,17 +24,17 @@ public class RootRef implements ModelRef {
     }
 
     @Override
-    public RootRef root() {
+    public Ref root() {
         return this;
     }
 
     @Override
-    public ModelRef parent() {
+    public Ref parent() {
         return null;
     }
 
     @Override
-    public ModelRef unwatched() {
+    public Ref unwatched() {
         return refFactory.unwatchedRootRef();
     }
 
@@ -74,7 +74,7 @@ public class RootRef implements ModelRef {
     }
 
     @Override
-    public ModelRef sub(String subPath) {
+    public Ref sub(String subPath) {
         return refFactory.ref(subPath, modelChangeWatcher);
     }
 
@@ -84,12 +84,12 @@ public class RootRef implements ModelRef {
     }
 
     @Override
-    public boolean isDescendantOf(ModelRef ref) {
+    public boolean isDescendantOf(Ref ref) {
         return false;
     }
 
     @Override
-    public boolean isAncestorOf(ModelRef ref) {
+    public boolean isAncestorOf(Ref ref) {
         return true;
     }
 }

@@ -1,7 +1,7 @@
 package at.irian.ankor.core.test;
 
 import at.irian.ankor.core.listener.ModelChangeListener;
-import at.irian.ankor.core.ref.ModelRef;
+import at.irian.ankor.core.ref.Ref;
 import at.irian.ankor.core.test.animal.AnimalSearchContainer;
 
 /**
@@ -12,7 +12,7 @@ public class NewContainerChangeListener implements ModelChangeListener {
 
 
     @Override
-    public void handleModelChange(ModelRef watchedRef, ModelRef changedRef) {
+    public void handleModelChange(Ref watchedRef, Ref changedRef) {
         if (watchedRef.path().startsWith("containers")) {
             watchedRef.setValue(new AnimalSearchContainer());
         }

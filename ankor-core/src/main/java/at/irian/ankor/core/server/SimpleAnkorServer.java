@@ -2,7 +2,7 @@ package at.irian.ankor.core.server;
 
 import at.irian.ankor.core.action.ModelAction;
 import at.irian.ankor.core.application.Application;
-import at.irian.ankor.core.ref.ModelRef;
+import at.irian.ankor.core.ref.Ref;
 
 /**
  * @author MGeiler (Manfred Geiler)
@@ -38,18 +38,18 @@ public class SimpleAnkorServer extends AnkorServerBase {
     }
 
     @Override
-    protected void handleLocalChange(ModelRef modelRef, Object newValue) {
+    protected void handleLocalChange(Ref ref, Object newValue) {
         if (remoteServer != null) {
-            LOG.info("Passing change to {} - {} => {}", remoteServer, modelRef, newValue);
-            remoteServer.handleRemoteChange(modelRef.path(), newValue);
+            LOG.info("Passing change to {} - {} => {}", remoteServer, ref, newValue);
+            remoteServer.handleRemoteChange(ref.path(), newValue);
         }
     }
 
     @Override
-    public void handleLocalAction(ModelRef modelRef, ModelAction action) {
+    public void handleLocalAction(Ref ref, ModelAction action) {
         if (remoteServer != null) {
-            LOG.info("sending action to {}:  ref={}, action={}", remoteServer, modelRef, action);
-            remoteServer.handleRemoteAction(modelRef.path(), action);
+            LOG.info("sending action to {}:  ref={}, action={}", remoteServer, ref, action);
+            remoteServer.handleRemoteAction(ref.path(), action);
         }
     }
 }

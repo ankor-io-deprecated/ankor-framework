@@ -5,8 +5,7 @@ import at.irian.ankor.core.action.ModelAction;
 import at.irian.ankor.core.application.Application;
 import at.irian.ankor.core.listener.ModelActionListener;
 import at.irian.ankor.core.listener.ModelChangeListener;
-import at.irian.ankor.core.ref.ModelRef;
-import at.irian.ankor.core.util.ObjectUtils;
+import at.irian.ankor.core.ref.Ref;
 
 /**
  * @author MGeiler (Manfred Geiler)
@@ -57,7 +56,7 @@ public abstract class AnkorServerBase {
         handleRemoteAction(application.getRefFactory().ref(actionContextPath), action);
     }
 
-    protected void handleRemoteAction(ModelRef actionContext, ModelAction action) {
+    protected void handleRemoteAction(Ref actionContext, ModelAction action) {
         LOG.debug("Remote action received by {} - {}: {}", AnkorServerBase.this, actionContext, action);
         remoteActionHandler.handleRemoteAction(actionContext, action);
     }
@@ -66,27 +65,27 @@ public abstract class AnkorServerBase {
         handleRemoteChange(application.getRefFactory().ref(propertyPath), newValue);
     }
 
-    protected void handleRemoteChange(ModelRef modelRef, Object newValue) {
-        LOG.debug("Remote change received by {} - {}: {}", AnkorServerBase.this, modelRef, newValue);
-        remoteChangeHandler.handleRemoteChange(modelRef, newValue);
+    protected void handleRemoteChange(Ref ref, Object newValue) {
+        LOG.debug("Remote change received by {} - {}: {}", AnkorServerBase.this, ref, newValue);
+        remoteChangeHandler.handleRemoteChange(ref, newValue);
     }
 
-    protected abstract void handleLocalChange(ModelRef modelRef, Object newValue);
+    protected abstract void handleLocalChange(Ref ref, Object newValue);
 
-    protected abstract void handleLocalAction(ModelRef modelRef, ModelAction action);
+    protected abstract void handleLocalAction(Ref ref, ModelAction action);
 
 
 
 
     private class LocalListener implements ModelActionListener, ModelChangeListener {
         @Override
-        public void handleModelAction(ModelRef actionContext, ModelAction action) {
+        public void handleModelAction(Ref actionContext, ModelAction action) {
             LOG.debug("Local action detected by {} - {}: {}", AnkorServerBase.this, actionContext, action);
             handleLocalAction(actionContext, action);
         }
 
         @Override
-        public void handleModelChange(ModelRef watchedRef, ModelRef changedRef) {
+        public void handleModelChange(Ref watchedRef, Ref changedRef) {
             Object newValue = changedRef.getValue();
             LOG.debug("Local model change detected by {} - {} => {}", AnkorServerBase.this, changedRef, newValue);
             handleLocalChange(changedRef, newValue);
@@ -96,13 +95,13 @@ public abstract class AnkorServerBase {
 
     private class MethodActionListener implements ModelActionListener {
         @Override
-        public void handleModelAction(ModelRef actionContext, ModelAction action) {
+        public void handleModelAction(Ref actionContext, ModelAction action) {
             if (action instanceof MethodAction) {
                 LOG.debug("Remote method action detected by {} - {}: {}", AnkorServerBase.this, actionContext, action);
                 MethodAction methodAction = (MethodAction) action;
                 String methodExpression = methodAction.getMethodExpression();
                 Object result = application.getMethodExecutor().execute(methodExpression, actionContext);
-                ModelRef resultRef = methodAction.getResultRef(actionContext);
+                Ref resultRef = methodAction.getResultRef(actionContext);
                 if (resultRef != null) {
                     resultRef.setValue(result);
                 } else {

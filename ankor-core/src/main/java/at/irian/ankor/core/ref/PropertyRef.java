@@ -9,7 +9,7 @@ import javax.el.ValueExpression;
 /**
  * @author Manfred Geiler
  */
-public class PropertyRef implements ModelRef {
+class PropertyRef implements Ref {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(PropertyRef.class);
 
     private final RefFactory refFactory;
@@ -37,12 +37,12 @@ public class PropertyRef implements ModelRef {
     }
 
     @Override
-    public RootRef root() {
+    public Ref root() {
         return refFactory.rootRef();
     }
 
     @Override
-    public ModelRef unwatched() {
+    public Ref unwatched() {
         return refFactory.unwatched(this);
     }
 
@@ -78,12 +78,12 @@ public class PropertyRef implements ModelRef {
     }
 
     @Override
-    public ModelRef sub(String subPath) {
+    public Ref sub(String subPath) {
         return refFactory.subRef(this, subPath);
     }
 
     @Override
-    public ModelRef parent() {
+    public Ref parent() {
         return refFactory.parentRef(this);
     }
 
@@ -101,13 +101,13 @@ public class PropertyRef implements ModelRef {
     }
 
     @Override
-    public boolean isDescendantOf(ModelRef ref) {
-        ModelRef parentRef = parent();
+    public boolean isDescendantOf(Ref ref) {
+        Ref parentRef = parent();
         return parentRef.equals(ref) || parentRef.isDescendantOf(ref);
     }
 
     @Override
-    public boolean isAncestorOf(ModelRef ref) {
+    public boolean isAncestorOf(Ref ref) {
         return ref.isDescendantOf(this);
     }
 }

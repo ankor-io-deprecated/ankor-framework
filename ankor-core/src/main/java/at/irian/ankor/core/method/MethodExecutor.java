@@ -5,12 +5,11 @@ import at.irian.ankor.core.el.BeanELContext;
 import at.irian.ankor.core.el.BeanResolver;
 import at.irian.ankor.core.el.ModelContextELContext;
 import at.irian.ankor.core.el.ModelHolderELContext;
-import at.irian.ankor.core.ref.ModelRef;
+import at.irian.ankor.core.ref.Ref;
 import at.irian.ankor.core.ref.PathUtils;
 
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
-import javax.el.MethodExpression;
 import javax.el.ValueExpression;
 
 /**
@@ -31,13 +30,15 @@ public class MethodExecutor {
         this.modelAndBeanELContext = new ModelHolderELContext(expressionFactory, beanELContext, modelHolder);
     }
 
-    public Object execute(String methodExpression, ModelRef actionContext) {
+    public Object execute(String methodExpression, Ref actionContext) {
         ValueExpression ve = expressionFactory.createValueExpression(modelAndBeanELContext,
                                                                      PathUtils.pathToValueExpression(actionContext.path()),
                                                                      Object.class);
         ModelContextELContext elContext = new ModelContextELContext(modelAndBeanELContext, ve);
 
-        ValueExpression me = expressionFactory.createValueExpression(elContext, "#{" + methodExpression + "}", Object.class);
+        ValueExpression me = expressionFactory.createValueExpression(elContext,
+                                                                     "#{" + methodExpression + "}",
+                                                                     Object.class);
 
         return me.getValue(elContext);
     }

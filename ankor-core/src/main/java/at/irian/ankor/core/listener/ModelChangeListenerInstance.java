@@ -1,20 +1,20 @@
 package at.irian.ankor.core.listener;
 
-import at.irian.ankor.core.ref.ModelRef;
+import at.irian.ankor.core.ref.Ref;
 
 /**
  * @author MGeiler (Manfred Geiler)
  */
 public class ModelChangeListenerInstance {
-    private final ModelRef ref;
+    private final Ref ref;
     private final ModelChangeListener listener;
 
-    public ModelChangeListenerInstance(ModelRef ref, ModelChangeListener listener) {
+    public ModelChangeListenerInstance(Ref ref, ModelChangeListener listener) {
         this.ref = ref;
         this.listener = listener;
     }
 
-    public ModelRef getRef() {
+    public Ref getRef() {
         return ref;
     }
 

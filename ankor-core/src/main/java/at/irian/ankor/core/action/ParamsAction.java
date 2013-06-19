@@ -1,6 +1,6 @@
 package at.irian.ankor.core.action;
 
-import at.irian.ankor.core.ref.ModelRef;
+import at.irian.ankor.core.ref.Ref;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,8 +24,8 @@ public class ParamsAction extends SimpleAction implements CompleteAware {
         this.completeAction = completeAction;
     }
 
-    public ModelRef[] params(ModelRef actionContext) {
-        ModelRef[] result = new ModelRef[params.length];
+    public Ref[] params(Ref actionContext) {
+        Ref[] result = new Ref[params.length];
         for (int i = 0; i < params.length; i++) {
             result[i] = actionContext.sub(params[i]);
         }
@@ -33,7 +33,7 @@ public class ParamsAction extends SimpleAction implements CompleteAware {
     }
 
     @Override
-    public void complete(ModelRef actionContext) {
+    public void complete(Ref actionContext) {
         if (completeAction != null) {
             actionContext.fire(completeAction);
         }

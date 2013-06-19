@@ -3,7 +3,7 @@ package at.irian.ankor.core.server;
 import at.irian.ankor.core.listener.ListenerRegistry;
 import at.irian.ankor.core.listener.ModelChangeListener;
 import at.irian.ankor.core.listener.ModelChangeListenerInstance;
-import at.irian.ankor.core.ref.ModelRef;
+import at.irian.ankor.core.ref.Ref;
 
 import java.util.Collection;
 
@@ -19,14 +19,14 @@ public class RemoteChangeHandler {
         this.listenerRegistry = listenerRegistry;
     }
 
-    public void handleRemoteChange(ModelRef modelRef, Object newValue) {
+    public void handleRemoteChange(Ref modelRef, Object newValue) {
         Object oldValue = modelRef.getValue();
         Collection<ModelChangeListenerInstance> listenerInstances = listenerRegistry.getRemoteChangeListenersFor(modelRef);
 
         // notify listeners before local change
 //        for (ModelChangeListenerInstance listenerInstance : listenerInstances) {
 //            ModelChangeListener listener = listenerInstance.getListener();
-//            ModelRef ref = listenerInstance.getRef();
+//            Ref ref = listenerInstance.getRef();
 //            listener.beforeModelChange(ref, oldValue, newValue);
 //        }
 
@@ -36,7 +36,7 @@ public class RemoteChangeHandler {
         // notify listeners after local change
         for (ModelChangeListenerInstance listenerInstance : listenerInstances) {
             ModelChangeListener listener = listenerInstance.getListener();
-            ModelRef ref = listenerInstance.getRef();
+            Ref ref = listenerInstance.getRef();
             listener.handleModelChange(ref, modelRef);
         }
 

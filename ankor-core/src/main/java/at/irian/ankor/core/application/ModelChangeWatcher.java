@@ -3,7 +3,7 @@ package at.irian.ankor.core.application;
 import at.irian.ankor.core.listener.ListenerRegistry;
 import at.irian.ankor.core.listener.ModelChangeListener;
 import at.irian.ankor.core.listener.ModelChangeListenerInstance;
-import at.irian.ankor.core.ref.ModelRef;
+import at.irian.ankor.core.ref.Ref;
 
 /**
  * @author Manfred Geiler
@@ -17,10 +17,10 @@ public class ModelChangeWatcher {
         this.listenerRegistry = listenerRegistry;
     }
 
-    public void broadcastModelChange(ModelRef modelRef) {
+    public void broadcastModelChange(Ref modelRef) {
         for (ModelChangeListenerInstance modelChangeListenerInstance : listenerRegistry.getLocalChangeListenersFor(modelRef)) {
             ModelChangeListener listener = modelChangeListenerInstance.getListener();
-            ModelRef ref = modelChangeListenerInstance.getRef();
+            Ref ref = modelChangeListenerInstance.getRef();
             listener.handleModelChange(ref, modelRef);
         }
     }

@@ -4,7 +4,7 @@ import at.irian.ankor.core.action.CompleteAware;
 import at.irian.ankor.core.action.ModelAction;
 import at.irian.ankor.core.listener.ListenerRegistry;
 import at.irian.ankor.core.listener.ModelActionListener;
-import at.irian.ankor.core.ref.ModelRef;
+import at.irian.ankor.core.ref.Ref;
 
 import java.util.Collection;
 
@@ -20,7 +20,7 @@ public class RemoteActionHandler {
         this.listenerRegistry = listenerRegistry;
     }
 
-    public void handleRemoteAction(ModelRef actionContext, ModelAction action) {
+    public void handleRemoteAction(Ref actionContext, ModelAction action) {
 
         // notify listeners
         Collection<ModelActionListener> listeners = listenerRegistry.getRemoteActionListenersFor(actionContext);

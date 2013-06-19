@@ -1,6 +1,6 @@
 package at.irian.ankor.core.action;
 
-import at.irian.ankor.core.ref.ModelRef;
+import at.irian.ankor.core.ref.Ref;
 
 /**
  * @author MGeiler (Manfred Geiler)
@@ -39,12 +39,12 @@ public class MethodAction implements ModelAction, CompleteAware {
         return methodExpression;
     }
 
-    public ModelRef getResultRef(ModelRef actionContext) {
+    public Ref getResultRef(Ref actionContext) {
         return resultPath != null ? actionContext.sub(resultPath) : null;
     }
 
     @Override
-    public void complete(ModelRef actionContext) {
+    public void complete(Ref actionContext) {
         if (completeAction != null) {
             actionContext.fire(completeAction);
         }

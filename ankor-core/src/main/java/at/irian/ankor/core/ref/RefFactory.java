@@ -57,11 +57,11 @@ public class RefFactory {
         return unwatchedRootRef;
     }
 
-    public ModelRef ref(String path) {
+    public Ref ref(String path) {
         return ref(path, modelChangeWatcher);
     }
 
-    ModelRef ref(String path, ModelChangeWatcher modelChangeWatcher) {
+    Ref ref(String path, ModelChangeWatcher modelChangeWatcher) {
         if (path == null || path.isEmpty() || path.equals(MODEL_VAR_NAME)) {
             // root reference
             return modelChangeWatcher != null ? rootRef : unwatchedRootRef;
@@ -89,7 +89,7 @@ public class RefFactory {
                                                        Object.class);
     }
 
-    ModelRef unwatched(PropertyRef ref) {
+    Ref unwatched(PropertyRef ref) {
         if (ref.getModelChangeWatcher() == null) {
             return ref;
         } else {
@@ -97,7 +97,7 @@ public class RefFactory {
         }
     }
 
-    ModelRef parentRef(PropertyRef ref) {
+    Ref parentRef(PropertyRef ref) {
         String parentPath = parentPath(pathOf(ref));
         if (MODEL_VAR_NAME.equals(parentPath)) {
             return rootRef();
@@ -106,13 +106,13 @@ public class RefFactory {
         }
     }
 
-    ModelRef subRef(PropertyRef ref, String subPath) {
+    Ref subRef(PropertyRef ref, String subPath) {
         return new PropertyRef(this,
                                valueExpressionFor(subPath(pathOf(ref), subPath)),
                                ref.getModelChangeWatcher());
     }
 
-    String pathOf(ModelRef ref) {
+    String pathOf(Ref ref) {
         if (ref instanceof RootRef) {
             return MODEL_VAR_NAME;
         } else if (ref instanceof PropertyRef) {
@@ -123,7 +123,7 @@ public class RefFactory {
         }
     }
 
-    String toString(ModelRef ref) {
+    String toString(Ref ref) {
         return "Ref{" + pathOf(ref) + '}';
     }
 
