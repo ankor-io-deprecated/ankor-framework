@@ -69,7 +69,10 @@ public class ModelBindings {
     private static void registerLocalListener(final Ref modelRef, SimpleStringProperty prop) {
         prop.addListener(new ChangeListener<String>() {
             public void changed(ObservableValue<? extends String> observableValue, String oldValue, String newValue) {
-                modelRef.setValue(newValue);
+                try {
+                    modelRef.setValue(newValue);
+                } catch(IllegalArgumentException ignored) {
+                }
             }
         });
     }

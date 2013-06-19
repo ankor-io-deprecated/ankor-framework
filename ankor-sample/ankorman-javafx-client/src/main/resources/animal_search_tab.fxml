@@ -1,0 +1,23 @@
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<Tab fx:controller="at.irian.ankor.sample.fx.AnimalSearchTabController" text="Search 1" closable="false" xmlns:fx="http://javafx.com/fxml">
+    <VBox prefHeight="300" spacing="10" >
+        <GridPane alignment="center" hgap="10" vgap="5" >
+
+            <Label text="Name" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+            <TextField fx:id="name" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+            <Label text="Type" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+            <TextField fx:id="type" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+            <Button text="Search" GridPane.columnIndex="1" GridPane.rowIndex="2"
+                    onAction="#search"/>
+        </GridPane>
+        <TableView fx:id="animalTable" prefHeight="200">
+            <columns>
+                <TableColumn prefWidth="100" fx:id="animalType" text="Type" />
+                <TableColumn prefWidth="250" fx:id="animalName" text="Name" />
+            </columns>
+        </TableView>
+    </VBox>
+</Tab>
