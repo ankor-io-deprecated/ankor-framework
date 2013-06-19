@@ -1,4 +1,4 @@
-package at.irian.ankor.core.method;
+package at.irian.ankor.core.action.method;
 
 import at.irian.ankor.core.application.ModelHolder;
 import at.irian.ankor.core.el.BeanELContext;

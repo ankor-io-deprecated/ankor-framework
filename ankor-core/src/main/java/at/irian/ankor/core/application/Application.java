@@ -1,9 +1,10 @@
 package at.irian.ankor.core.application;
 
 import at.irian.ankor.core.el.BeanResolver;
+import at.irian.ankor.core.el.ELSupport;
 import at.irian.ankor.core.el.StandardELContext;
 import at.irian.ankor.core.listener.ListenerRegistry;
-import at.irian.ankor.core.method.MethodExecutor;
+import at.irian.ankor.core.action.method.MethodExecutor;
 import at.irian.ankor.core.ref.RefFactory;
 
 import javax.el.ExpressionFactory;
@@ -17,9 +18,9 @@ public class Application {
     private final ListenerRegistry listenerRegistry;
     private final ModelHolder modelHolder;
     private final RefFactory refFactory;
-    private final MethodExecutor methodExecutor;
     private final BeanResolver beanResolver;
-    private final ModelChangeWatcher modelChangeWatcher;
+    private final ModelChangeNotifier modelChangeNotifier;
+    private final ELSupport elSupport;
 
     public Application(Class<?> modelType, BeanResolver beanResolver) {
         this.beanResolver = beanResolver;
@@ -27,13 +28,13 @@ public class Application {
         this.modelHolder = new ModelHolder(modelType);
         ExpressionFactory expressionFactory = ExpressionFactory.newInstance();
         StandardELContext standardELContext = new StandardELContext();
-        this.modelChangeWatcher = new ModelChangeWatcher(listenerRegistry);
+        this.elSupport = new ELSupport(expressionFactory, standardELContext);
+        this.modelChangeNotifier = new ModelChangeNotifier(listenerRegistry);
         this.refFactory = new RefFactory(expressionFactory,
                                          standardELContext,
-                                         modelChangeWatcher,
+                                         modelChangeNotifier,
                                          new ModelActionBus(listenerRegistry),
                                          modelHolder);
-        this.methodExecutor = new MethodExecutor(expressionFactory, standardELContext, modelHolder, beanResolver);
     }
 
     public ModelHolder getModelHolder() {
@@ -48,15 +49,15 @@ public class Application {
         return listenerRegistry;
     }
 
-    public MethodExecutor getMethodExecutor() {
-        return methodExecutor;
-    }
-
-    protected BeanResolver getBeanResolver() {
+    public BeanResolver getBeanResolver() {
         return beanResolver;
     }
 
-    public ModelChangeWatcher getModelChangeWatcher() {
-        return modelChangeWatcher;
+    public ModelChangeNotifier getModelChangeNotifier() {
+        return modelChangeNotifier;
+    }
+
+    public ELSupport getELSupport() {
+        return elSupport;
     }
 }

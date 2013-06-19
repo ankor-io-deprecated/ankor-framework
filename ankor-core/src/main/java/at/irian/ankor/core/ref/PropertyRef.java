@@ -2,7 +2,7 @@ package at.irian.ankor.core.ref;
 
 import at.irian.ankor.core.action.ModelAction;
 import at.irian.ankor.core.application.ModelActionBus;
-import at.irian.ankor.core.application.ModelChangeWatcher;
+import at.irian.ankor.core.application.ModelChangeNotifier;
 
 import javax.el.ValueExpression;
 
@@ -14,20 +14,20 @@ class PropertyRef implements Ref {
 
     private final RefFactory refFactory;
     private final ValueExpression valueExpression;
-    private final ModelChangeWatcher modelChangeWatcher;
+    private final ModelChangeNotifier modelChangeNotifier;
 
     PropertyRef(RefFactory refFactory,
                 ValueExpression valueExpression,
-                ModelChangeWatcher modelChangeWatcher) {
+                ModelChangeNotifier modelChangeNotifier) {
         this.refFactory = refFactory;
         this.valueExpression = valueExpression;
-        this.modelChangeWatcher = modelChangeWatcher;
+        this.modelChangeNotifier = modelChangeNotifier;
     }
 
     public void setValue(Object newValue) {
         valueExpression.setValue(refFactory.elContext(), newValue);
-        if (modelChangeWatcher != null) {
-            modelChangeWatcher.broadcastModelChange(this);
+        if (modelChangeNotifier != null) {
+            modelChangeNotifier.notifyLocalListeners(this);
         }
     }
 
@@ -96,8 +96,8 @@ class PropertyRef implements Ref {
         return valueExpression;
     }
 
-    ModelChangeWatcher getModelChangeWatcher() {
-        return modelChangeWatcher;
+    ModelChangeNotifier getModelChangeNotifier() {
+        return modelChangeNotifier;
     }
 
     @Override

@@ -1,6 +1,6 @@
 package at.irian.ankor.core.server;
 
-import at.irian.ankor.core.action.MethodAction;
+import at.irian.ankor.core.action.method.RemoteMethodAction;
 import at.irian.ankor.core.action.ModelAction;
 import at.irian.ankor.core.action.SimpleAction;
 import at.irian.ankor.core.application.Application;
@@ -186,14 +186,14 @@ public class SimpleAnkorServerTest {
         SimpleAnkorServer server = new SimpleAnkorServer(application, "TestServer");
         server.start();
 
-        server.receiveAction("model", new MethodAction("testServiceBean.init(modelHolder)"));
+        server.receiveAction("model", new RemoteMethodAction("testServiceBean.init(modelHolder)"));
         server.receiveAction("model.containers",
-                             new MethodAction("testServiceBean.addContainer(model.containers, 'tab1')"));
+                             new RemoteMethodAction("testServiceBean.addContainer(model.containers, 'tab1')"));
 
         server.receiveChange("model.containers['tab1'].filter.name", "A*");
         server.receiveChange("model.containers['tab1'].filter.type", "Bird");
         server.receiveAction("model.containers['tab1'].resultList",
-                             new MethodAction("testServiceBean.search(model.containers['tab1'])"));
+                             new RemoteMethodAction("testServiceBean.search(model.containers['tab1'])"));
 
         Object model = application.getModelHolder().getModel();
         Assert.assertNotNull(model);
@@ -236,14 +236,14 @@ public class SimpleAnkorServerTest {
         SimpleAnkorServer server = new SimpleAnkorServer(application, "TestServer");
         server.start();
 
-        server.receiveAction("", new MethodAction("testServiceBean.init()", ""));
+        server.receiveAction("", new RemoteMethodAction("testServiceBean.init()", ""));
 
-        server.receiveAction("", new MethodAction("testServiceBean.openAnimalSearch()", "model.containers['tab1']"));
+        server.receiveAction("", new RemoteMethodAction("testServiceBean.openAnimalSearch()", "model.containers['tab1']"));
 
         server.receiveChange("model.containers['tab1'].filter.name", "A*");
         server.receiveChange("model.containers['tab1'].filter.type", "Bird");
 
-        server.receiveAction("", new MethodAction("testServiceBean.search(model.containers['tab1'].filter)",
+        server.receiveAction("", new RemoteMethodAction("testServiceBean.search(model.containers['tab1'].filter)",
                                                   "model.containers['tab1'].resultList"));
 
         Object model = application.getModelHolder().getModel();

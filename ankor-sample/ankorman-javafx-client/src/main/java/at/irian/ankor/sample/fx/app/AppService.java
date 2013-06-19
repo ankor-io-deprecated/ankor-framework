@@ -1,6 +1,6 @@
 package at.irian.ankor.sample.fx.app;
 
-import at.irian.ankor.core.action.MethodAction;
+import at.irian.ankor.core.action.method.RemoteMethodAction;
 import at.irian.ankor.core.action.ModelAction;
 import at.irian.ankor.core.action.SimpleAction;
 import at.irian.ankor.core.application.Application;
@@ -37,6 +37,6 @@ public class AppService {
     public synchronized void executeAction(Ref contextRef, String actionMethod, String resultPath, ActionCompleteCallback cb) {
         ModelAction completeAction = SimpleAction.withName("cb");
         currentCallback = cb;
-        contextRef.fire(new MethodAction(actionMethod, resultPath, completeAction));
+        contextRef.fire(new RemoteMethodAction(actionMethod, resultPath, completeAction));
     }
 }

@@ -1,7 +1,7 @@
 package at.irian.ankor.core.ref;
 
 import at.irian.ankor.core.application.ModelActionBus;
-import at.irian.ankor.core.application.ModelChangeWatcher;
+import at.irian.ankor.core.application.ModelChangeNotifier;
 import at.irian.ankor.core.application.ModelHolder;
 import at.irian.ankor.core.el.ModelHolderELContext;
 import at.irian.ankor.core.el.ModelHolderVariableMapper;
@@ -23,21 +23,21 @@ public class RefFactory {
 
     private final ExpressionFactory expressionFactory;
     private final ELContext elContext;
-    private final ModelChangeWatcher modelChangeWatcher;
+    private final ModelChangeNotifier modelChangeNotifier;
     private final ModelActionBus modelActionBus;
     private final RootRef rootRef;
     private final RootRef unwatchedRootRef;
 
     public RefFactory(ExpressionFactory expressionFactory,
                       ELContext standardELContext,
-                      ModelChangeWatcher modelChangeWatcher,
+                      ModelChangeNotifier modelChangeNotifier,
                       ModelActionBus modelActionBus,
                       ModelHolder modelHolder) {
         this.expressionFactory = expressionFactory;
         this.elContext = new ModelHolderELContext(expressionFactory, standardELContext, modelHolder);
-        this.modelChangeWatcher = modelChangeWatcher;
+        this.modelChangeNotifier = modelChangeNotifier;
         this.modelActionBus = modelActionBus;
-        this.rootRef = new RootRef(this, modelHolder, modelChangeWatcher);
+        this.rootRef = new RootRef(this, modelHolder, modelChangeNotifier);
         this.unwatchedRootRef = new RootRef(this, modelHolder, null);
     }
 
@@ -53,21 +53,21 @@ public class RefFactory {
         return rootRef;
     }
 
-    protected RootRef unwatchedRootRef() {
+    protected Ref unwatchedRootRef() {
         return unwatchedRootRef;
     }
 
     public Ref ref(String path) {
-        return ref(path, modelChangeWatcher);
+        return ref(path, modelChangeNotifier);
     }
 
-    Ref ref(String path, ModelChangeWatcher modelChangeWatcher) {
+    Ref ref(String path, ModelChangeNotifier modelChangeNotifier) {
         if (path == null || path.isEmpty() || path.equals(MODEL_VAR_NAME)) {
             // root reference
-            return modelChangeWatcher != null ? rootRef : unwatchedRootRef;
+            return modelChangeNotifier != null ? rootRef : unwatchedRootRef;
         } else {
             ValueExpression ve = valueExpressionFor(prefixPathWithModelBaseIfNecessary(path));
-            return new PropertyRef(this, ve, modelChangeWatcher);
+            return new PropertyRef(this, ve, modelChangeNotifier);
         }
     }
 
@@ -90,7 +90,7 @@ public class RefFactory {
     }
 
     Ref unwatched(PropertyRef ref) {
-        if (ref.getModelChangeWatcher() == null) {
+        if (ref.getModelChangeNotifier() == null) {
             return ref;
         } else {
             return new PropertyRef(this, ref.getValueExpression(), null);
@@ -102,14 +102,14 @@ public class RefFactory {
         if (MODEL_VAR_NAME.equals(parentPath)) {
             return rootRef();
         } else {
-            return new PropertyRef(this, valueExpressionFor(parentPath), ref.getModelChangeWatcher());
+            return new PropertyRef(this, valueExpressionFor(parentPath), ref.getModelChangeNotifier());
         }
     }
 
     Ref subRef(PropertyRef ref, String subPath) {
         return new PropertyRef(this,
                                valueExpressionFor(subPath(pathOf(ref), subPath)),
-                               ref.getModelChangeWatcher());
+                               ref.getModelChangeNotifier());
     }
 
     String pathOf(Ref ref) {

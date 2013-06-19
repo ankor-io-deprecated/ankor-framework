@@ -2,7 +2,7 @@ package at.irian.ankor.core.ref;
 
 import at.irian.ankor.core.action.ModelAction;
 import at.irian.ankor.core.application.ModelActionBus;
-import at.irian.ankor.core.application.ModelChangeWatcher;
+import at.irian.ankor.core.application.ModelChangeNotifier;
 import at.irian.ankor.core.application.ModelHolder;
 
 /**
@@ -13,14 +13,14 @@ class RootRef implements Ref {
 
     private final RefFactory refFactory;
     private final ModelHolder modelHolder;
-    private final ModelChangeWatcher modelChangeWatcher;
+    private final ModelChangeNotifier modelChangeNotifier;
 
     RootRef(RefFactory refFactory,
             ModelHolder modelHolder,
-            ModelChangeWatcher modelChangeWatcher) {
+            ModelChangeNotifier modelChangeNotifier) {
         this.refFactory = refFactory;
         this.modelHolder = modelHolder;
-        this.modelChangeWatcher = modelChangeWatcher;
+        this.modelChangeNotifier = modelChangeNotifier;
     }
 
     @Override
@@ -40,8 +40,8 @@ class RootRef implements Ref {
 
     public void setValue(Object newValue) {
         this.modelHolder.setModel(newValue);
-        if (this.modelChangeWatcher != null) {
-            this.modelChangeWatcher.broadcastModelChange(this);
+        if (this.modelChangeNotifier != null) {
+            this.modelChangeNotifier.notifyLocalListeners(this);
         }
     }
 
@@ -75,7 +75,7 @@ class RootRef implements Ref {
 
     @Override
     public Ref sub(String subPath) {
-        return refFactory.ref(subPath, modelChangeWatcher);
+        return refFactory.ref(subPath, modelChangeNotifier);
     }
 
     @Override

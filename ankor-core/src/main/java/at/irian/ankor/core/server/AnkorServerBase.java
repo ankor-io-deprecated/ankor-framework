@@ -1,8 +1,7 @@
 package at.irian.ankor.core.server;
 
-import at.irian.ankor.core.action.CompleteAware;
-import at.irian.ankor.core.action.MethodActionListener;
 import at.irian.ankor.core.action.ModelAction;
+import at.irian.ankor.core.action.method.RemoteMethodActionListener;
 import at.irian.ankor.core.application.Application;
 import at.irian.ankor.core.listener.*;
 import at.irian.ankor.core.ref.Ref;
@@ -34,8 +33,8 @@ public abstract class AnkorServerBase {
         listenerRegistry.registerRemoteChangeListener(null, autoUnregisterChangeListener);
 
         // default action listeners
-        MethodActionListener methodActionListener = new MethodActionListener(application);
-        listenerRegistry.registerRemoteActionListener(null, methodActionListener);
+        RemoteMethodActionListener remoteMethodActionListener = new RemoteMethodActionListener(application);
+        listenerRegistry.registerRemoteActionListener(null, remoteMethodActionListener);
     }
 
     public void stop() {
@@ -47,16 +46,11 @@ public abstract class AnkorServerBase {
     protected void receiveAction(Ref actionContextRef, ModelAction action) {
         LOG.debug("Remote action received by {} - {}: {}", AnkorServerBase.this, actionContextRef, action);
 
-        // notify listeners
+        // notify action listeners
         ListenerRegistry listenerRegistry = application.getListenerRegistry();
         Collection<ModelActionListener> listeners = listenerRegistry.getRemoteActionListenersFor(actionContextRef);
         for (ModelActionListener listener : listeners) {
             listener.handleModelAction(actionContextRef, action);
-        }
-
-        //todo...
-        if (action instanceof CompleteAware) {
-            ((CompleteAware) action).complete(actionContextRef);
         }
     }
 
@@ -66,7 +60,7 @@ public abstract class AnkorServerBase {
         // do change model (without notifying local listeners!)
         changedRef.unwatched().setValue(newValue);
 
-        // notify listeners
+        // notify change listeners
         ListenerRegistry listenerRegistry = application.getListenerRegistry();
         Collection<ModelChangeListenerInstance> listenerInstances = listenerRegistry.getRemoteChangeListenersFor(changedRef);
         for (ModelChangeListenerInstance listenerInstance : listenerInstances) {

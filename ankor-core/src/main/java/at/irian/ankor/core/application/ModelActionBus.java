@@ -9,7 +9,7 @@ import at.irian.ankor.core.ref.Ref;
  * @author Manfred Geiler
  */
 public class ModelActionBus {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelChangeWatcher.class);
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelChangeNotifier.class);
 
     private final ListenerRegistry listenerRegistry;
 
