@@ -5,4 +5,5 @@ package at.irian.ankor.core.ref;
  */
 public interface RefContext {
     Ref getModelContext();
+    RefContext withModelContext(Ref modelContext);
 }

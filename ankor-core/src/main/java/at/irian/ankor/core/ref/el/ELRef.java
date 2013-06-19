@@ -2,7 +2,7 @@ package at.irian.ankor.core.ref.el;
 
 import at.irian.ankor.core.action.ModelAction;
 import at.irian.ankor.core.application.DefaultActionNotifier;
-import at.irian.ankor.core.el.ModelContextELContext;
+import at.irian.ankor.core.ref.BaseRef;
 import at.irian.ankor.core.ref.Ref;
 import at.irian.ankor.core.ref.RefContext;
 
@@ -11,42 +11,41 @@ import javax.el.ValueExpression;
 /**
  * @author Manfred Geiler
  */
-class ELRef implements Ref {
+class ELRef extends BaseRef {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ELRef.class);
 
-    private final ELRefContext refContext;
     private final ValueExpression valueExpression;
 
     ELRef(ELRefContext refContext, ValueExpression valueExpression) {
-        this.refContext = refContext;
+        super(refContext);
         this.valueExpression = valueExpression;
     }
 
     public void setValue(Object newValue) {
-        valueExpression.setValue(refContext.getELContext(), newValue);
-        if (refContext.getChangeNotifier() != null) {
-            refContext.getChangeNotifier().notifyLocalListeners(refContext.getModelContext(), this);
+        valueExpression.setValue(refContext().getELContext(), newValue);
+        if (refContext().getChangeNotifier() != null) {
+            refContext().getChangeNotifier().notifyLocalListeners(refContext.getModelContext(), this);
         }
     }
 
     @SuppressWarnings("unchecked")
     public <T> T getValue() {
-        return (T)valueExpression.getValue(refContext.getELContext());
+        return (T)valueExpression.getValue(refContext().getELContext());
     }
 
     @Override
     public Ref root() {
-        return ELRefUtils.rootRef(refContext);
+        return ELRefUtils.rootRef(refContext());
     }
 
     @Override
     public Ref unwatched() {
-        return new ELRef(refContext.withNoModelChangeNotifier(), valueExpression);
+        return new ELRef(refContext().withNoModelChangeNotifier(), valueExpression);
     }
 
     @Override
     public void fire(ModelAction action) {
-        DefaultActionNotifier actionNotifier = refContext.getActionNotifier();
+        DefaultActionNotifier actionNotifier = refContext().getActionNotifier();
         if (actionNotifier != null) {
             actionNotifier.broadcastAction(this, action);
         }
@@ -67,11 +66,6 @@ class ELRef implements Ref {
     }
 
     @Override
-    public String toString() {
-        return "Ref{" + path() + '}';
-    }
-
-    @Override
     public Ref sub(String subPath) {
         return ELRefUtils.subRef(this, subPath);
     }
@@ -83,7 +77,7 @@ class ELRef implements Ref {
 
     @Override
     public boolean isRoot() {
-        return ELRefUtils.isRootPath(refContext, path());
+        return ELRefUtils.isRootPath(refContext(), path());
     }
 
     @Override
@@ -92,19 +86,8 @@ class ELRef implements Ref {
     }
 
     @Override
-    public boolean isDescendantOf(Ref ref) {
-        Ref parentRef = parent();
-        return parentRef != null && (parentRef.equals(ref) || parentRef.isDescendantOf(ref));
-    }
-
-    @Override
-    public boolean isAncestorOf(Ref ref) {
-        return ref.isDescendantOf(this);
-    }
-
-    @Override
     public ELRefContext refContext() {
-        return refContext;
+        return (ELRefContext)refContext;
     }
 
     ValueExpression valueExpression() {
@@ -114,13 +97,5 @@ class ELRef implements Ref {
     @Override
     public Ref withRefContext(RefContext newRefContext) {
         return ELRefUtils.ref((ELRefContext)newRefContext, path());
-    }
-
-    @Override
-    public Ref withModelContext(Ref contextRef) {
-        ELRefContext newRefContext = refContext.with(new ModelContextELContext(refContext.getELContext(),
-                                                                           "context", //todo
-                                                                           contextRef));
-        return withRefContext(newRefContext);
     }
 }

@@ -43,4 +43,11 @@ public class Animal {
     public void setType(AnimalType type) {
         this.type = type;
     }
+
+    @Override
+    public String toString() {
+        return "Animal{" +
+               "name='" + name + '\'' +
+               '}';
+    }
 }

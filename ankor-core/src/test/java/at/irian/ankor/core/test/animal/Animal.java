@@ -21,4 +21,11 @@ public class Animal {
     public AnimalType getType() {
         return type;
     }
+
+    @Override
+    public String toString() {
+        return "Animal{" +
+               "name='" + name + '\'' +
+               '}';
+    }
 }

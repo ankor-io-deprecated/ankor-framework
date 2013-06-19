@@ -45,6 +45,7 @@ public class ELRefContext implements RefContext {
         return new ELRefContext(expressionFactory, elContext, null, actionNotifier, modelRootVarName, modelContext);
     }
 
+    @Override
     public ELRefContext withModelContext(Ref modelContext) {
         ModelContextELContext elContext = new ModelContextELContext(this.elContext, "context", modelContext);
         return new ELRefContext(expressionFactory,

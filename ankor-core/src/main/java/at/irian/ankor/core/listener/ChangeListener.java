@@ -5,6 +5,6 @@ import at.irian.ankor.core.ref.Ref;
 /**
  * @author MGeiler (Manfred Geiler)
  */
-public interface ModelChangeListener {
-    void handleModelChange(Ref contextRef, Ref watchedRef, Ref changedRef);
+public interface ChangeListener {
+    void processChange(Ref contextRef, Ref watchedRef, Ref changedRef);
 }

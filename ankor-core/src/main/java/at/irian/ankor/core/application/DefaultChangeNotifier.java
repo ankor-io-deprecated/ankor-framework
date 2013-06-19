@@ -1,8 +1,8 @@
 package at.irian.ankor.core.application;
 
+import at.irian.ankor.core.listener.BoundChangeListener;
+import at.irian.ankor.core.listener.ChangeListener;
 import at.irian.ankor.core.listener.ListenerRegistry;
-import at.irian.ankor.core.listener.ModelChangeListener;
-import at.irian.ankor.core.listener.ModelChangeListenerInstance;
 import at.irian.ankor.core.ref.Ref;
 
 /**
@@ -18,10 +18,10 @@ public class DefaultChangeNotifier {
     }
 
     public void notifyLocalListeners(Ref contextRef, Ref changedRef) {
-        for (ModelChangeListenerInstance changeListenerInstance : listenerRegistry.getLocalChangeListenersFor(changedRef)) {
-            ModelChangeListener listener = changeListenerInstance.getListener();
-            Ref watchedRef = changeListenerInstance.getRef();
-            listener.handleModelChange(contextRef, watchedRef, changedRef);
+        for (BoundChangeListener boundChangeListener : listenerRegistry.getLocalChangeListenersFor(changedRef)) {
+            ChangeListener listener = boundChangeListener.getListener();
+            Ref watchedRef = boundChangeListener.getRef();
+            listener.processChange(contextRef, watchedRef, changedRef);
         }
     }
 

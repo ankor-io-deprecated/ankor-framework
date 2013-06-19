@@ -1,12 +1,11 @@
 package at.irian.ankor.fx.binding;
 
-import at.irian.ankor.core.listener.ModelChangeListener;
+import at.irian.ankor.core.listener.ChangeListener;
 import at.irian.ankor.core.ref.Ref;
 import at.irian.ankor.sample.fx.App;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
 /**
@@ -47,9 +46,9 @@ public class ModelBindings {
 
     private static void registerRemoteListener(Ref modelRef, final StringProperty stringProperty) {
         App.application().getListenerRegistry().registerRemoteChangeListener(modelRef,
-                new ModelChangeListener() {
+                new ChangeListener() {
 
-                    public void handleModelChange(Ref contextRef, Ref watchedRef, Ref changedRef) {
+                    public void processChange(Ref contextRef, Ref watchedRef, Ref changedRef) {
                         String strValue;
                         Object newValue = watchedRef.getValue();
                         if (newValue instanceof String) {
@@ -61,13 +60,13 @@ public class ModelBindings {
                                 strValue = null;
                             }
                         }
-                        stringProperty.setValue(strValue);
+                        stringProperty.setValue(strValue); //todo: prevent setting back to model immediately (and sending change back to server)
                     }
                 });
     }
 
     private static void registerLocalListener(final Ref modelRef, SimpleStringProperty prop) {
-        prop.addListener(new ChangeListener<String>() {
+        prop.addListener(new javafx.beans.value.ChangeListener<String>() {
             public void changed(ObservableValue<? extends String> observableValue, String oldValue, String newValue) {
                 try {
                     modelRef.setValue(newValue);

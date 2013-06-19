@@ -4,8 +4,8 @@ import at.irian.ankor.core.action.ModelAction;
 import at.irian.ankor.core.action.SimpleAction;
 import at.irian.ankor.core.application.DefaultApplication;
 import at.irian.ankor.core.application.SimpleApplication;
-import at.irian.ankor.core.listener.ModelActionListener;
-import at.irian.ankor.core.listener.ModelChangeListener;
+import at.irian.ankor.core.listener.ActionListener;
+import at.irian.ankor.core.listener.ChangeListener;
 import at.irian.ankor.core.ref.Ref;
 import at.irian.ankor.core.server.SimpleAnkorServer;
 import at.irian.ankor.core.test.animal.AnimalSearchActionListener;
@@ -45,9 +45,9 @@ public class Tests {
 
         final DefaultApplication serverApp = SimpleApplication.create(TestModel.class);
         SimpleAnkorServer server = new SimpleAnkorServer(serverApp, "server");
-        serverApp.getListenerRegistry().registerRemoteActionListener(null, new ModelActionListener() {
+        serverApp.getListenerRegistry().registerRemoteActionListener(null, new ActionListener() {
             @Override
-            public void handleModelAction(Ref actionContext, ModelAction action) {
+            public void processAction(Ref actionContext, ModelAction action) {
                 if (action.name().equals("init")) {
                     LOG.info("Creating new TestModel");
                     actionContext.root().setValue(new TestModel());
@@ -60,17 +60,17 @@ public class Tests {
 
         final DefaultApplication clientApp = SimpleApplication.create(TestModel.class);
         SimpleAnkorServer client = new SimpleAnkorServer(clientApp, "client");
-        clientApp.getListenerRegistry().registerRemoteActionListener(null, new ModelActionListener() {
+        clientApp.getListenerRegistry().registerRemoteActionListener(null, new ActionListener() {
             @Override
-            public void handleModelAction(Ref actionContext, ModelAction action) {
+            public void processAction(Ref actionContext, ModelAction action) {
                 if (action.name().equals("initialized")) {
                     Ref containerRef = actionContext.root().sub("containers['tab1']");
                     containerRef.setValue(null);
 
-                    clientApp.getListenerRegistry().registerRemoteChangeListener(containerRef, new ModelChangeListener() {
+                    clientApp.getListenerRegistry().registerRemoteChangeListener(containerRef, new ChangeListener() {
 
                         @Override
-                        public void handleModelChange(Ref contextRef, Ref watchedRef, Ref changedRef) {
+                        public void processChange(Ref contextRef, Ref watchedRef, Ref changedRef) {
                             LOG.info("new container {}", watchedRef.getValue());
 
                             watchedRef.sub("filter.name").setValue("A*");

@@ -5,11 +5,11 @@ import at.irian.ankor.core.ref.Ref;
 /**
  * @author MGeiler (Manfred Geiler)
  */
-public class ModelChangeListenerInstance {
+public class BoundChangeListener {
     private final Ref ref;
-    private final ModelChangeListener listener;
+    private final ChangeListener listener;
 
-    public ModelChangeListenerInstance(Ref ref, ModelChangeListener listener) {
+    public BoundChangeListener(Ref ref, ChangeListener listener) {
         this.ref = ref;
         this.listener = listener;
     }
@@ -18,7 +18,7 @@ public class ModelChangeListenerInstance {
         return ref;
     }
 
-    public ModelChangeListener getListener() {
+    public ChangeListener getListener() {
         return listener;
     }
 }

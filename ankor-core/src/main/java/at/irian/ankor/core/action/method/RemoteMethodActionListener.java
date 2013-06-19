@@ -1,7 +1,7 @@
 package at.irian.ankor.core.action.method;
 
 import at.irian.ankor.core.action.ModelAction;
-import at.irian.ankor.core.listener.ModelActionListener;
+import at.irian.ankor.core.listener.ActionListener;
 import at.irian.ankor.core.ref.Ref;
 import at.irian.ankor.core.ref.RefFactory;
 import at.irian.ankor.core.ref.el.ELRefContext;
@@ -13,7 +13,7 @@ import javax.el.ValueExpression;
 /**
 * @author MGeiler (Manfred Geiler)
 */
-public class RemoteMethodActionListener implements ModelActionListener {
+public class RemoteMethodActionListener implements ActionListener {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RemoteMethodActionListener.class);
 
     private final ExpressionFactory expressionFactory;
@@ -25,7 +25,7 @@ public class RemoteMethodActionListener implements ModelActionListener {
     }
 
     @Override
-    public void handleModelAction(Ref modelContext, ModelAction action) {
+    public void processAction(Ref modelContext, ModelAction action) {
         if (action instanceof RemoteMethodAction) {
             processMethodAction(modelContext, (RemoteMethodAction) action);
         }

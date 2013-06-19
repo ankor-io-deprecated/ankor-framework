@@ -6,7 +6,7 @@ import at.irian.ankor.core.util.NilValue;
 /**
  * @author MGeiler (Manfred Geiler)
  */
-public class AutoUnregisterChangeListener implements ModelChangeListener {
+public class AutoUnregisterChangeListener implements ChangeListener {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AutoUnregisterChangeListener.class);
 
     private final ListenerRegistry listenerRegistry;
@@ -16,7 +16,7 @@ public class AutoUnregisterChangeListener implements ModelChangeListener {
     }
 
     @Override
-    public void handleModelChange(Ref contextRef, Ref watchedRef, Ref changedRef) {
+    public void processChange(Ref contextRef, Ref watchedRef, Ref changedRef) {
         if (isNil(changedRef.getValue())) {
             listenerRegistry.unregisterAllListenersFor(changedRef);
         }

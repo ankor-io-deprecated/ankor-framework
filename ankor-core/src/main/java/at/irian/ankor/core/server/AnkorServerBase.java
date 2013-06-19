@@ -47,9 +47,9 @@ public abstract class AnkorServerBase {
 
         // notify action listeners
         ListenerRegistry listenerRegistry = application.getListenerRegistry();
-        Collection<ModelActionListener> listeners = listenerRegistry.getRemoteActionListenersFor(contextRef);
-        for (ModelActionListener listener : listeners) {
-            listener.handleModelAction(contextRef, action);
+        Collection<ActionListener> listeners = listenerRegistry.getRemoteActionListenersFor(contextRef);
+        for (ActionListener listener : listeners) {
+            listener.processAction(contextRef, action);
         }
     }
 
@@ -66,20 +66,20 @@ public abstract class AnkorServerBase {
 
         // notify change listeners
         ListenerRegistry listenerRegistry = application.getListenerRegistry();
-        Collection<ModelChangeListenerInstance> listenerInstances = listenerRegistry.getRemoteChangeListenersFor(changedRef);
-        for (ModelChangeListenerInstance listenerInstance : listenerInstances) {
-            ModelChangeListener listener = listenerInstance.getListener();
+        Collection<BoundChangeListener> listenerInstances = listenerRegistry.getRemoteChangeListenersFor(changedRef);
+        for (BoundChangeListener listenerInstance : listenerInstances) {
+            ChangeListener listener = listenerInstance.getListener();
             Ref watchedRef = listenerInstance.getRef();
-            listener.handleModelChange(modelContext, watchedRef, changedRef);
+            listener.processChange(modelContext, watchedRef, changedRef);
         }
     }
 
 
 
 
-    private class LocalActionListener implements ModelActionListener {
+    private class LocalActionListener implements ActionListener {
         @Override
-        public void handleModelAction(Ref actionContext, ModelAction action) {
+        public void processAction(Ref actionContext, ModelAction action) {
             LOG.debug("Local action detected by {} - {}: {}", AnkorServerBase.this, actionContext, action);
             sendAction(actionContext, action);
         }
@@ -88,9 +88,9 @@ public abstract class AnkorServerBase {
     protected abstract void sendAction(Ref contextRef, ModelAction action);
 
 
-    private class LocalChangeListener implements ModelChangeListener {
+    private class LocalChangeListener implements ChangeListener {
         @Override
-        public void handleModelChange(Ref contextRef, Ref watchedRef, Ref changedRef) {
+        public void processChange(Ref contextRef, Ref watchedRef, Ref changedRef) {
             Object newValue = changedRef.getValue();
             LOG.debug("Local change detected by {} - {} => {}", AnkorServerBase.this, changedRef, newValue);
             sendChange(contextRef, changedRef, newValue);

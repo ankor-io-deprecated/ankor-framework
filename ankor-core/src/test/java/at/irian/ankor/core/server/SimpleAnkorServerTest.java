@@ -4,9 +4,9 @@ import at.irian.ankor.core.action.ModelAction;
 import at.irian.ankor.core.action.SimpleAction;
 import at.irian.ankor.core.application.DefaultApplication;
 import at.irian.ankor.core.application.SimpleApplication;
+import at.irian.ankor.core.listener.ActionListener;
+import at.irian.ankor.core.listener.ChangeListener;
 import at.irian.ankor.core.listener.ListenerRegistry;
-import at.irian.ankor.core.listener.ModelActionListener;
-import at.irian.ankor.core.listener.ModelChangeListener;
 import at.irian.ankor.core.ref.Ref;
 import at.irian.ankor.core.ref.RefFactory;
 import junit.framework.Assert;
@@ -35,9 +35,9 @@ public class SimpleAnkorServerTest {
     
     @Test
     public void test_remote_init_action() throws Exception {
-        listenerRegistry.registerRemoteActionListener(refFactory.rootRef(), new ModelActionListener() {
+        listenerRegistry.registerRemoteActionListener(refFactory.rootRef(), new ActionListener() {
             @Override
-            public void handleModelAction(Ref actionContext, ModelAction action) {
+            public void processAction(Ref actionContext, ModelAction action) {
                 if (action.name().equals("init")) {
                     LOG.info("Creating new TestModel");
                     Ref root = actionContext.root();
@@ -59,9 +59,9 @@ public class SimpleAnkorServerTest {
         TestModel model = new TestModel();
         application.getModelHolder().setModel(model);
 
-        listenerRegistry.registerRemoteChangeListener(refFactory.ref("root.userName"), new ModelChangeListener() {
+        listenerRegistry.registerRemoteChangeListener(refFactory.ref("root.userName"), new ChangeListener() {
             @Override
-            public void handleModelChange(Ref contextRef, Ref watchedRef, Ref changedRef) {
+            public void processChange(Ref contextRef, Ref watchedRef, Ref changedRef) {
                 watchedRef.setValue("Max Muster 2");
             }
         });
@@ -77,9 +77,9 @@ public class SimpleAnkorServerTest {
         TestModel model = new TestModel();
         application.getModelHolder().setModel(model);
 
-        listenerRegistry.registerRemoteChangeListener(refFactory.ref("root.testUser"), new ModelChangeListener() {
+        listenerRegistry.registerRemoteChangeListener(refFactory.ref("root.testUser"), new ChangeListener() {
             @Override
-            public void handleModelChange(Ref contextRef, Ref watchedRef, Ref changedRef) {
+            public void processChange(Ref contextRef, Ref watchedRef, Ref changedRef) {
                 LOG.info("watched = {}", watchedRef);
                 LOG.info("changed = {}", changedRef);
             }
@@ -97,9 +97,9 @@ public class SimpleAnkorServerTest {
         TestModel model = new TestModel();
         application.getModelHolder().setModel(model);
 
-        listenerRegistry.registerRemoteActionListener(refFactory.ref("root.userName"), new ModelActionListener() {
+        listenerRegistry.registerRemoteActionListener(refFactory.ref("root.userName"), new ActionListener() {
             @Override
-            public void handleModelAction(Ref actionContext, ModelAction action) {
+            public void processAction(Ref actionContext, ModelAction action) {
                 if (action.name().equals("loadUser")) {
                     String userName = "Max Muster";
                     actionContext.setValue(userName);

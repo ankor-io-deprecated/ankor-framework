@@ -11,80 +11,82 @@ import java.util.*;
 public class ListenerRegistry {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ListenerRegistry.class);
 
-    private final Map<Ref, Collection<ModelActionListener>> localActionListeners = new HashMap<Ref, Collection<ModelActionListener>>();
-    private final Map<Ref, Collection<ModelActionListener>> remoteActionListeners = new HashMap<Ref, Collection<ModelActionListener>>();
+    private final Map<Ref, Collection<ActionListener>> localActionListeners = new HashMap<Ref, Collection<ActionListener>>();
+    private final Map<Ref, Collection<ActionListener>> remoteActionListeners = new HashMap<Ref, Collection<ActionListener>>();
 
-    private final Map<Ref, Collection<ModelChangeListener>> localChangeListeners = new HashMap<Ref, Collection<ModelChangeListener>>();
-    private final Map<Ref, Collection<ModelChangeListener>> remoteChangeListeners = new HashMap<Ref, Collection<ModelChangeListener>>();
+    private final Map<Ref, Collection<ChangeListener>> localChangeListeners = new HashMap<Ref, Collection<ChangeListener>>();
+    private final Map<Ref, Collection<ChangeListener>> remoteChangeListeners = new HashMap<Ref, Collection<ChangeListener>>();
 
-    public void registerLocalActionListener(Ref actionContextRef, ModelActionListener listener) {
-        addActionListener(localActionListeners, actionContextRef, listener);
+    public void registerLocalActionListener(Ref actionContext, ActionListener listener) {
+        addActionListener(localActionListeners, actionContext, listener);
     }
 
-    public void registerRemoteActionListener(Ref actionContextRef, ModelActionListener listener) {
-        addActionListener(remoteActionListeners, actionContextRef, listener);
+    public void registerRemoteActionListener(Ref actionContext, ActionListener listener) {
+        addActionListener(remoteActionListeners, actionContext, listener);
     }
 
-    private void addActionListener(Map<Ref, Collection<ModelActionListener>> map,
-                                   Ref actionContextRef, ModelActionListener listener) {
-        Collection<ModelActionListener> listeners = map.get(actionContextRef);
+    private void addActionListener(Map<Ref, Collection<ActionListener>> map,
+                                   Ref actionContext,
+                                   ActionListener listener) {
+        Collection<ActionListener> listeners = map.get(actionContext);
         if (listeners == null) {
-            listeners = new ArrayList<ModelActionListener>();
-            map.put(actionContextRef, listeners);
+            listeners = new ArrayList<ActionListener>();
+            map.put(actionContext, listeners);
         }
         listeners.add(listener);
     }
 
-    public Collection<ModelActionListener> getLocalActionListenersFor(Ref actionContextRef) {
-        return getActionListenersFor(localActionListeners, actionContextRef);
+    public Collection<ActionListener> getLocalActionListenersFor(Ref actionContext) {
+        return getActionListenersFor(localActionListeners, actionContext);
     }
 
-    public Collection<ModelActionListener> getRemoteActionListenersFor(Ref actionContextRef) {
-        return getActionListenersFor(remoteActionListeners, actionContextRef);
+    public Collection<ActionListener> getRemoteActionListenersFor(Ref actionContext) {
+        return getActionListenersFor(remoteActionListeners, actionContext);
     }
 
-    private Collection<ModelActionListener> getActionListenersFor(Map<Ref, Collection<ModelActionListener>> map, Ref actionContextRef) {
-        Collection<ModelActionListener> globalListeners = map.get(null);              // global listeners
-        Collection<ModelActionListener> normalListeners = map.get(actionContextRef);  // action context listeners
+    private Collection<ActionListener> getActionListenersFor(Map<Ref, Collection<ActionListener>> map,
+                                                             Ref actionContext) {
+        Collection<ActionListener> globalListeners = map.get(null);           // global listeners
+        Collection<ActionListener> normalListeners = map.get(actionContext);  // action context listeners
         return CollectionUtils.concat(globalListeners, normalListeners);
     }
 
 
-    public void registerLocalChangeListener(Ref watchedRef, ModelChangeListener listener) {
+    public void registerLocalChangeListener(Ref watchedRef, ChangeListener listener) {
         addChangeListener(localChangeListeners, watchedRef, listener);
     }
 
-    public void registerRemoteChangeListener(Ref watchedRef, ModelChangeListener listener) {
+    public void registerRemoteChangeListener(Ref watchedRef, ChangeListener listener) {
         addChangeListener(remoteChangeListeners, watchedRef, listener);
     }
 
-    private void addChangeListener(Map<Ref, Collection<ModelChangeListener>> map,
-                                   Ref watchedRef, ModelChangeListener listener) {
-        Collection<ModelChangeListener> listeners = map.get(watchedRef);
+    private void addChangeListener(Map<Ref, Collection<ChangeListener>> map,
+                                   Ref watchedRef, ChangeListener listener) {
+        Collection<ChangeListener> listeners = map.get(watchedRef);
         if (listeners == null) {
-            listeners = new ArrayList<ModelChangeListener>();
+            listeners = new ArrayList<ChangeListener>();
             map.put(watchedRef, listeners);
         }
         listeners.add(listener);
     }
 
 
-    public Collection<ModelChangeListenerInstance> getLocalChangeListenersFor(Ref changedRef) {
-        return getChangeListenerInstancesFor(localChangeListeners, changedRef);
+    public Collection<BoundChangeListener> getLocalChangeListenersFor(Ref changedRef) {
+        return getChangeListenerFor(localChangeListeners, changedRef);
     }
 
-    public Collection<ModelChangeListenerInstance> getRemoteChangeListenersFor(Ref changedRef) {
-        return getChangeListenerInstancesFor(remoteChangeListeners, changedRef);
+    public Collection<BoundChangeListener> getRemoteChangeListenersFor(Ref changedRef) {
+        return getChangeListenerFor(remoteChangeListeners, changedRef);
     }
 
-    private Collection<ModelChangeListenerInstance> getChangeListenerInstancesFor(Map<Ref, Collection<ModelChangeListener>> map,
-                                                                                  final Ref changedRef) {
-        Collection<ModelChangeListenerInstance> result = Collections.emptyList();
-        for (Map.Entry<Ref, Collection<ModelChangeListener>> entry : map.entrySet()) {
+    private Collection<BoundChangeListener> getChangeListenerFor(Map<Ref, Collection<ChangeListener>> map,
+                                                                 final Ref changedRef) {
+        Collection<BoundChangeListener> result = Collections.emptyList();
+        for (Map.Entry<Ref, Collection<ChangeListener>> entry : map.entrySet()) {
             Ref watchedRef = entry.getKey();
             if (watchedRef == null || watchedRef.equals(changedRef) || watchedRef.isDescendantOf(changedRef)) {
-                Collection<ModelChangeListener> listeners = entry.getValue();
-                CollectionUtils.Wrapper<ModelChangeListener, ModelChangeListenerInstance> wrapper;
+                Collection<ChangeListener> listeners = entry.getValue();
+                CollectionUtils.Wrapper<ChangeListener, BoundChangeListener> wrapper;
                 if (watchedRef == null) {
                     wrapper = wrapper(changedRef.root());
                 } else {
@@ -96,11 +98,11 @@ public class ListenerRegistry {
         return result;
     }
 
-    private CollectionUtils.Wrapper<ModelChangeListener,ModelChangeListenerInstance> wrapper(final Ref ref) {
-        return new CollectionUtils.Wrapper<ModelChangeListener,ModelChangeListenerInstance>() {
+    private CollectionUtils.Wrapper<ChangeListener,BoundChangeListener> wrapper(final Ref ref) {
+        return new CollectionUtils.Wrapper<ChangeListener,BoundChangeListener>() {
             @Override
-            public ModelChangeListenerInstance wrap(ModelChangeListener objToWrap) {
-                return new ModelChangeListenerInstance(ref, objToWrap);
+            public BoundChangeListener wrap(ChangeListener objToWrap) {
+                return new BoundChangeListener(ref, objToWrap);
             }
         };
     }
