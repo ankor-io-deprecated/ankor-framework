@@ -1,19 +1,19 @@
 package at.irian.ankor.core.server;
 
 import at.irian.ankor.core.action.ModelAction;
-import at.irian.ankor.core.application.Application;
+import at.irian.ankor.core.application.DefaultApplication;
 import at.irian.ankor.core.ref.Ref;
 
 /**
  * @author MGeiler (Manfred Geiler)
  */
-public class SimpleAnkorServer extends AnkorServerBase {
+public class SimpleAnkorServer extends ELAnkorServer {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SimpleAnkorServer.class);
 
     private final String serverName;
     private SimpleAnkorServer remoteServer;
 
-    public SimpleAnkorServer(Application application, String serverName) {
+    public SimpleAnkorServer(DefaultApplication application, String serverName) {
         super(application);
         this.serverName = serverName;
     }

@@ -8,15 +8,14 @@ import java.util.Map;
 /**
  * @author MGeiler (Manfred Geiler)
  */
-public class SimpleApplication extends Application {
+public class SimpleApplication extends DefaultApplication {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SimpleApplication.class);
-
 
     protected SimpleApplication(Class<?> modelType, BeanResolver beanResolver) {
         super(modelType, beanResolver);
     }
 
-    public static SimpleApplication withModelType(Class<?> modelType) {
+    public static SimpleApplication create(Class<?> modelType) {
         return new SimpleApplication(modelType, new MyBeanResolver());
     }
 

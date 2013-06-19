@@ -13,12 +13,10 @@ class ELRef implements Ref {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ELRef.class);
 
     private final ELRefContext refContext;
-    private final String path;
     private final ValueExpression valueExpression;
 
-    ELRef(ELRefContext refContext, String path, ValueExpression valueExpression) {
+    ELRef(ELRefContext refContext, ValueExpression valueExpression) {
         this.refContext = refContext;
-        this.path = path;
         this.valueExpression = valueExpression;
     }
 
@@ -36,12 +34,12 @@ class ELRef implements Ref {
 
     @Override
     public Ref root() {
-        return ELRefFactory.rootRef(refContext);
+        return ELRefUtils.rootRef(refContext);
     }
 
     @Override
     public Ref unwatched() {
-        return new ELRef(refContext.withNoModelChangeNotifier(), path, valueExpression);
+        return new ELRef(refContext.withNoModelChangeNotifier(), valueExpression);
     }
 
     @Override
@@ -57,13 +55,13 @@ class ELRef implements Ref {
         if (this == o) { return true; }
         if (o == null || getClass() != o.getClass()) { return false; }
         ELRef elRef = (ELRef) o;
-        return path.equals(elRef.path);
+        return valueExpression.equals(elRef.valueExpression);
 
     }
 
     @Override
     public int hashCode() {
-        return path.hashCode();
+        return valueExpression.hashCode();
     }
 
     @Override
@@ -73,22 +71,22 @@ class ELRef implements Ref {
 
     @Override
     public Ref sub(String subPath) {
-        return ELRefFactory.subRef(this, subPath);
+        return ELRefUtils.subRef(this, subPath);
     }
 
     @Override
     public Ref parent() {
-        return ELRefFactory.parentRef(this);
+        return ELRefUtils.parentRef(this);
     }
 
     @Override
     public boolean isRoot() {
-        return ELRefFactory.isRootPath(path);
+        return ELRefUtils.isRootPath(refContext, path());
     }
 
     @Override
     public String path() {
-        return path;
+        return ELRefUtils.path(this);
     }
 
     @Override
@@ -105,5 +103,9 @@ class ELRef implements Ref {
     @Override
     public ELRefContext refContext() {
         return refContext;
+    }
+
+    ValueExpression valueExpression() {
+        return valueExpression;
     }
 }

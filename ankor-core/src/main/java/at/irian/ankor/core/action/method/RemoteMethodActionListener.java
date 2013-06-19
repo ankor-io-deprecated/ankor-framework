@@ -1,15 +1,14 @@
 package at.irian.ankor.core.action.method;
 
 import at.irian.ankor.core.action.ModelAction;
-import at.irian.ankor.core.application.Application;
-import at.irian.ankor.core.el.ELSupport;
-import at.irian.ankor.core.el.SimpleReadonlySingletonELContext;
+import at.irian.ankor.core.el.SingleReadonlyVariableELContext;
 import at.irian.ankor.core.listener.ModelActionListener;
 import at.irian.ankor.core.ref.Ref;
 import at.irian.ankor.core.ref.RefFactory;
 import at.irian.ankor.core.ref.el.ELRefContext;
 
 import javax.el.ELContext;
+import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 
 /**
@@ -20,12 +19,12 @@ public class RemoteMethodActionListener implements ModelActionListener {
 
     private static final String CONTEXT_VAR_NAME = "context";
 
-    private final ELSupport elSupport;
+    private final ExpressionFactory expressionFactory;
     private final RefFactory refFactory;
 
-    public RemoteMethodActionListener(Application application) {
-        this.elSupport = application.getELSupport();
-        this.refFactory = application.getRefFactory();
+    public RemoteMethodActionListener(ExpressionFactory expressionFactory, RefFactory refFactory) {
+        this.expressionFactory = expressionFactory;
+        this.refFactory = refFactory;
     }
 
     @Override
@@ -41,7 +40,7 @@ public class RemoteMethodActionListener implements ModelActionListener {
 
         Object result;
         try {
-            result = elSupport.executeMethod(methodExecutionELContext, action.getMethodExpression());
+            result = executeMethod(methodExecutionELContext, action.getMethodExpression());
         } catch (Exception e) {
             handleError(actionContext, action, e);
             return;
@@ -83,8 +82,18 @@ public class RemoteMethodActionListener implements ModelActionListener {
     }
 
     private ELContext createMethodExecutionELContext(Ref actionContext) {
-        ValueExpression contextVE = elSupport.createValueExpression(elSupport.getBaseELContext(), actionContext.path());
-        return new SimpleReadonlySingletonELContext(elSupport.getBaseELContext(), CONTEXT_VAR_NAME, contextVE);
+        Object contextValue = actionContext.getValue();
+        ELRefContext refContext = (ELRefContext)actionContext.refContext();
+        return new SingleReadonlyVariableELContext(refContext.getELContext(),
+                                                   CONTEXT_VAR_NAME,
+                                                   contextValue);
+    }
+
+    private Object executeMethod(ELContext elContext, String methodExpression) {
+        ValueExpression ve = expressionFactory.createValueExpression(elContext,
+                                                                     "#{" + methodExpression + "}",
+                                                                     Object.class);
+        return ve.getValue(elContext);
     }
 
 }

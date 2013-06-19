@@ -1,23 +1,17 @@
 package at.irian.ankor.core.server;
 
-import at.irian.ankor.core.action.method.RemoteMethodAction;
 import at.irian.ankor.core.action.ModelAction;
 import at.irian.ankor.core.action.SimpleAction;
-import at.irian.ankor.core.application.Application;
-import at.irian.ankor.core.application.ModelHolder;
+import at.irian.ankor.core.application.DefaultApplication;
 import at.irian.ankor.core.application.SimpleApplication;
+import at.irian.ankor.core.listener.ListenerRegistry;
 import at.irian.ankor.core.listener.ModelActionListener;
 import at.irian.ankor.core.listener.ModelChangeListener;
 import at.irian.ankor.core.ref.Ref;
-import at.irian.ankor.core.test.*;
-import at.irian.ankor.core.test.animal.*;
-import at.irian.ankor.core.test.NewContainerActionListener;
+import at.irian.ankor.core.ref.RefFactory;
 import junit.framework.Assert;
+import org.junit.Before;
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author MGeiler (Manfred Geiler)
@@ -25,15 +19,33 @@ import java.util.Map;
 public class SimpleAnkorServerTest {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SimpleAnkorServerTest.class);
 
+    private DefaultApplication application;
+    private SimpleAnkorServer server;
+    private RefFactory refFactory;
+    private ListenerRegistry listenerRegistry;
+
+    @Before
+    public void setup() {
+        application = SimpleApplication.create(TestModel.class);
+        server = new SimpleAnkorServer(application, "server");
+        refFactory = application.getRefFactory();
+        listenerRegistry = application.getListenerRegistry();
+    }
+    
+    
     @Test
     public void test_remote_init_action() throws Exception {
-
-        Application application = SimpleApplication.withModelType(TestModel.class);
-        SimpleAnkorServer server = new SimpleAnkorServer(application, "server");
-
-        application.getListenerRegistry().registerRemoteActionListener(application.getRefFactory().rootRef(),
-                                                                       new InitActionListener());
-
+        listenerRegistry.registerRemoteActionListener(refFactory.rootRef(), new ModelActionListener() {
+            @Override
+            public void handleModelAction(Ref actionContext, ModelAction action) {
+                if (action.name().equals("init")) {
+                    LOG.info("Creating new TestModel");
+                    Ref root = actionContext.root();
+                    root.setValue(new TestModel());
+                    actionContext.fire(SimpleAction.create("initialized"));
+                }
+            }
+        });
         server.receiveAction((String) null, SimpleAction.create("init"));
 
         Object model = application.getModelHolder().getModel();
@@ -44,236 +56,109 @@ public class SimpleAnkorServerTest {
     @Test
     public void test_remote_change() throws Exception {
 
-        Application application = SimpleApplication.withModelType(TestModel.class);
         TestModel model = new TestModel();
         application.getModelHolder().setModel(model);
-        SimpleAnkorServer server = new SimpleAnkorServer(application, "server");
 
-        application.getListenerRegistry().registerRemoteChangeListener(application.getRefFactory().ref("userName"),
-                                                                       new UserNameChangeListener());
+        listenerRegistry.registerRemoteChangeListener(refFactory.ref("root.userName"), new ModelChangeListener() {
+            @Override
+            public void handleModelChange(Ref watchedRef, Ref changedRef) {
+                watchedRef.setValue("Max Muster 2");
+            }
+        });
 
-        server.receiveChange("userName", "Max Muster");
+        server.receiveChange("root.userName", "Max Muster");
 
-        Assert.assertEquals("user name", "Max Muster", model.getUserName());
+        Assert.assertEquals("Max Muster 2", model.getUserName());
     }
 
     @Test
     public void test_remote_change_typed() throws Exception {
 
-        Application application = SimpleApplication.withModelType(TestModel.class);
         TestModel model = new TestModel();
         application.getModelHolder().setModel(model);
-        SimpleAnkorServer server = new SimpleAnkorServer(application, "server");
 
-        application.getListenerRegistry().registerRemoteChangeListener(application.getRefFactory().ref("testUser"),
-                                                                       new ModelChangeListener() {
+        listenerRegistry.registerRemoteChangeListener(refFactory.ref("root.testUser"), new ModelChangeListener() {
+            @Override
+            public void handleModelChange(Ref watchedRef, Ref changedRef) {
+                LOG.info("watched = {}", watchedRef);
+                LOG.info("changed = {}", changedRef);
+            }
+        });
 
-                                                                           @Override
-                                                                           public void handleModelChange(Ref watchedRef,
-                                                                                                         Ref changedRef) {
-                                                                               LOG.info("change from client {}, {}",
-                                                                                        watchedRef, watchedRef.getValue());
-                                                                           }
-                                                                       });
+        TestUser newValue = new TestUser("Max", "Muster");
+        server.receiveChange("root.testUser", newValue);
 
-        server.receiveChange("testUser", new TestUser("Max", "Muster"));
-
-        //Assert.assertEquals("user name", "Max Muster", model.getUserName());
+        Assert.assertEquals(newValue, model.getTestUser());
     }
 
     @Test
     public void test_local_change_and_action() throws Exception {
 
-        Application application = SimpleApplication.withModelType(TestModel.class);
         TestModel model = new TestModel();
         application.getModelHolder().setModel(model);
-        SimpleAnkorServer server = new SimpleAnkorServer(application, "server");
 
-        application.getListenerRegistry().registerRemoteActionListener(application.getRefFactory().ref("userName"),
-                                                                       new LoadUserActionListener());
-        server.receiveAction("userName", SimpleAction.create("loadUser"));
-
-        Assert.assertEquals("user name", "Max Muster", model.getUserName());
-    }
-
-
-    @Test
-    public void test_animal_search() throws Exception {
-
-        Application application = SimpleApplication.withModelType(TestModel.class);
-        SimpleAnkorServer server = new SimpleAnkorServer(application, "server");
-
-        application.getListenerRegistry().registerRemoteActionListener(null, new InitActionListener());
-        application.getListenerRegistry().registerRemoteActionListener(null, new NewContainerActionListener());
-        application.getListenerRegistry().registerRemoteActionListener(null, new AnimalSearchActionListener());
-
-        server.receiveAction((String) null, SimpleAction.create("init"));
-
-        server.receiveChange("containers['tab1']", null);
-        server.receiveAction("containers['tab1']", SimpleAction.create("newAnimalSearchContainer"));
-
-        server.receiveChange("containers['tab1'].filter.name", "A*");
-        server.receiveChange("containers['tab1'].filter.type", "Bird");
-        server.receiveAction("containers['tab1']", SimpleAction.create("search"));
-
-    }
-
-
-    @Test
-    public void test_animal_search_with_mock_client() throws Exception {
-
-        final Application serverApp = SimpleApplication.withModelType(TestModel.class);
-        SimpleAnkorServer server = new SimpleAnkorServer(serverApp, "server");
-        serverApp.getListenerRegistry().registerRemoteActionListener(null, new ModelActionListener() {
+        listenerRegistry.registerRemoteActionListener(refFactory.ref("root.userName"), new ModelActionListener() {
             @Override
             public void handleModelAction(Ref actionContext, ModelAction action) {
-                if (action.name().equals("init")) {
-                    LOG.info("Creating new TestModel");
-                    actionContext.root().setValue(new TestModel());
-                    actionContext.fire(SimpleAction.create("initialized"));
+                if (action.name().equals("loadUser")) {
+                    String userName = "Max Muster";
+                    actionContext.setValue(userName);
+                    actionContext.fire(SimpleAction.create("success"));
                 }
             }
         });
-        serverApp.getListenerRegistry().registerRemoteActionListener(null, new NewContainerActionListener());
-        serverApp.getListenerRegistry().registerRemoteActionListener(null, new AnimalSearchActionListener());
+        server.receiveAction("root.userName", SimpleAction.create("loadUser"));
 
-        final Application clientApp = SimpleApplication.withModelType(TestModel.class);
-        SimpleAnkorServer client = new SimpleAnkorServer(clientApp, "client");
-        clientApp.getListenerRegistry().registerRemoteActionListener(null, new ModelActionListener() {
-            @Override
-            public void handleModelAction(Ref actionContext, ModelAction action) {
-                if (action.name().equals("initialized")) {
-                    Ref containerRef = actionContext.root().sub("containers['tab1']");
-                    containerRef.setValue(null);
-
-                    clientApp.getListenerRegistry().registerRemoteChangeListener(containerRef, new ModelChangeListener() {
-
-                        @Override
-                        public void handleModelChange(Ref watchedRef, Ref changedRef) {
-                            LOG.info("new container {}", watchedRef.getValue());
-
-                            watchedRef.sub("filter.name").setValue("A*");
-                            watchedRef.sub("filter.type").setValue(AnimalType.Bird);
-                            watchedRef.fire(SimpleAction.create("search"));
-                        }
-                    });
-
-                    containerRef.fire(SimpleAction.create("newAnimalSearchContainer"));
-                }
-            }
-        });
-
-        server.setRemoteServer(client);
-        client.setRemoteServer(server);
-
-        server.receiveAction((String) null, SimpleAction.create("init"));
-
-//        server.receiveChange("containers['tab1']", null);
-//        server.receiveAction("containers['tab1']", "newAnimalSearchContainer");
-
-//        server.receiveChange("containers['tab1'].filter.name", "A*");
-//        server.receiveChange("containers['tab1'].filter.type", "Bird");
-//        server.receiveAction("containers['tab1']", "search");
-
-    }
-
-
-    @Test
-    public void test_method_action() throws Exception {
-
-        Application application = SimpleApplication.withModelType(TestModel.class)
-                                                   .withBean("testServiceBean", new TestServiceBean());
-        SimpleAnkorServer server = new SimpleAnkorServer(application, "TestServer");
-        server.start();
-
-        server.receiveAction("model", RemoteMethodAction.create("testServiceBean.init(modelHolder)"));
-        server.receiveAction("model.containers",
-                             RemoteMethodAction.create("testServiceBean.addContainer(model.containers, 'tab1')"));
-
-        server.receiveChange("model.containers['tab1'].filter.name", "A*");
-        server.receiveChange("model.containers['tab1'].filter.type", "Bird");
-        server.receiveAction("model.containers['tab1'].resultList",
-                             RemoteMethodAction.create("testServiceBean.search(model.containers['tab1'])"));
-
-        Object model = application.getModelHolder().getModel();
-        Assert.assertNotNull(model);
-    }
-
-    public static class TestServiceBean {
-        public void init(ModelHolder modelHolder) {
-            LOG.info("TestServiceBean.init");
-            modelHolder.setModel(new TestModel());
-        }
-
-        @SuppressWarnings("unchecked")
-        public void addContainer(Map containers, String tabName) {
-            LOG.info("TestServiceBean.addContainer");
-            containers.put(tabName, new AnimalSearchContainer());
-        }
-
-        public void search(AnimalSearchContainer container) {
-            AnimalFilter filter = container.getFilter();
-
-            if (filter.getType() == AnimalType.Bird) {
-
-                List<Animal> animals = new ArrayList<Animal>();
-                animals.add(new Animal("Adler", AnimalType.Bird));
-                animals.add(new Animal("Amsel", AnimalType.Bird));
-
-                container.setResultList(animals);
-            }
-        }
+        Assert.assertEquals("Max Muster", model.getUserName());
     }
 
 
 
 
-    @Test
-    public void test_method_action_result() throws Exception {
 
-        Application application = SimpleApplication.withModelType(TestModel.class)
-                                                   .withBean("testServiceBean", new TestServiceBean2());
-        SimpleAnkorServer server = new SimpleAnkorServer(application, "TestServer");
-        server.start();
+    public static class TestModel {
+        //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TestModel.class);
 
-        server.receiveAction("", RemoteMethodAction.create("testServiceBean.init()").withResultIn(""));
+        private String userName;
+        private TestUser testUser;
 
-        server.receiveAction("", RemoteMethodAction.create("testServiceBean.openAnimalSearch()")
-                                                   .withResultIn("model.containers['tab1']"));
+        public String getUserName() {
+            return userName;
+        }
 
-        server.receiveChange("model.containers['tab1'].filter.name", "A*");
-        server.receiveChange("model.containers['tab1'].filter.type", "Bird");
+        public void setUserName(String userName) {
+            this.userName = userName;
+        }
 
-        server.receiveAction("", RemoteMethodAction.create("testServiceBean.search(model.containers['tab1'].filter)")
-                                                   .withResultIn("model.containers['tab1'].resultList"));
+        public TestUser getTestUser() {
+            return testUser;
+        }
 
-        Object model = application.getModelHolder().getModel();
-        Assert.assertNotNull(model);
+        public void setTestUser(TestUser testUser) {
+            this.testUser = testUser;
+        }
+
     }
 
-    public static class TestServiceBean2 {
-        public TestModel init() {
-            return new TestModel();
+    public static class TestUser {
+        //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TestUser.class);
+
+        private final String firstName;
+        private final String lastName;
+
+        public TestUser(String firstName, String lastName) {
+            this.firstName = firstName;
+            this.lastName = lastName;
         }
 
-        @SuppressWarnings("unchecked")
-        public AnimalSearchContainer openAnimalSearch() {
-            return new AnimalSearchContainer();
-        }
-
-        public List<Animal> search(AnimalFilter filter) {
-
-            if (filter.getType() == AnimalType.Bird) {
-
-                List<Animal> animals = new ArrayList<Animal>();
-                animals.add(new Animal("Adler", AnimalType.Bird));
-                animals.add(new Animal("Amsel", AnimalType.Bird));
-
-                return animals;
-            }
-
-            return null;
+        @Override
+        public String toString() {
+            return "TestUser{" +
+                   "firstName='" + firstName + '\'' +
+                   ", lastName='" + lastName + '\'' +
+                   '}';
         }
     }
+
 
 }

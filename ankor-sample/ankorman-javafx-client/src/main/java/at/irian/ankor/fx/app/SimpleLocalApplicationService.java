@@ -1,6 +1,7 @@
 package at.irian.ankor.fx.app;
 
 import at.irian.ankor.core.application.Application;
+import at.irian.ankor.core.application.DefaultApplication;
 import at.irian.ankor.core.application.SimpleApplication;
 import at.irian.ankor.core.server.SimpleAnkorServer;
 import at.irian.ankor.sample.fx.view.model.RootModel;
@@ -28,12 +29,12 @@ public class SimpleLocalApplicationService {
     }
 
     public AppService create() {
-        final Application serverApp = SimpleApplication.withModelType(RootModel.class)
+        final DefaultApplication serverApp = SimpleApplication.create(RootModel.class)
                 .withBean(beanName, bean);
         SimpleAnkorServer server = new SimpleAnkorServer(serverApp, "server");
         server.start();
 
-        Application clientApp = SimpleApplication.withModelType(RootModel.class);
+        DefaultApplication clientApp = SimpleApplication.create(RootModel.class);
         SimpleAnkorServer client = new SimpleAnkorServer(clientApp, "client");
         client.start();
 

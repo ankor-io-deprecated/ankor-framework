@@ -1,7 +1,6 @@
 package at.irian.ankor.core.server;
 
 import at.irian.ankor.core.action.ModelAction;
-import at.irian.ankor.core.action.method.RemoteMethodActionListener;
 import at.irian.ankor.core.application.Application;
 import at.irian.ankor.core.listener.*;
 import at.irian.ankor.core.ref.Ref;
@@ -31,17 +30,17 @@ public abstract class AnkorServerBase {
         AutoUnregisterChangeListener autoUnregisterChangeListener = new AutoUnregisterChangeListener(listenerRegistry);
         listenerRegistry.registerLocalChangeListener(null, autoUnregisterChangeListener);
         listenerRegistry.registerRemoteChangeListener(null, autoUnregisterChangeListener);
-
-        // default action listeners
-        RemoteMethodActionListener remoteMethodActionListener = new RemoteMethodActionListener(application);
-        listenerRegistry.registerRemoteActionListener(null, remoteMethodActionListener);
-    }
+  }
 
     public void stop() {
         LOG.debug("Stopping {}", this);
         application.getListenerRegistry().unregisterAllListeners();
     }
 
+
+    protected Application getApplication() {
+        return application;
+    }
 
     protected void receiveAction(Ref actionContextRef, ModelAction action) {
         LOG.debug("Remote action received by {} - {}: {}", AnkorServerBase.this, actionContextRef, action);

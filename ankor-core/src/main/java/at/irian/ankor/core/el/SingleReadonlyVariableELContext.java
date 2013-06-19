@@ -3,18 +3,20 @@ package at.irian.ankor.core.el;
 import javax.el.*;
 
 /**
- * @author Manfred Geiler
+ * @author MGeiler (Manfred Geiler)
  */
-public class BeanResolverELContext extends ELContext {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(StandardELContext.class);
+public class SingleReadonlyVariableELContext extends ELContext {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SingleReadonlyVariableELContext.class);
 
     private final CompositeELResolver elResolver;
     private FunctionMapper functionMapper;
     private VariableMapper variableMapper;
 
-    public BeanResolverELContext(ELContext baseELContext, BeanResolver beanResolver) {
+    public SingleReadonlyVariableELContext(ELContext baseELContext,
+                                           String varName,
+                                           Object value) {
         this.elResolver = new CompositeELResolver();
-        this.elResolver.add(new BeanResolverELResolver(beanResolver));
+        this.elResolver.add(new SingleReadonlyVariableELResolver(varName, value));
         this.elResolver.add(baseELContext.getELResolver());
         this.functionMapper = baseELContext.getFunctionMapper();
         this.variableMapper = baseELContext.getVariableMapper();

@@ -1,7 +1,5 @@
 package at.irian.ankor.core.ref.el;
 
-import javax.el.ValueExpression;
-
 /**
  * @author Manfred Geiler
  */
@@ -12,10 +10,6 @@ public final class PathUtils {
     public static final String EXPR_SUFFIX = "}";
 
     private PathUtils() {}
-
-    public static String pathToValueExpression(String path) {
-        return EXPR_PREFIX + path + EXPR_SUFFIX;
-    }
 
     public static String parentPath(String path) {
         if (path.endsWith("]")) {
