@@ -73,7 +73,7 @@ public class AnimalSearchTabController implements Initializable {
         return rootRef.sub(String.format("tabs.%s", tabId));
     }
 
-    private void loadAnimals(List<Animal> animals) {
+    private void loadAnimals(final List<Animal> animals) {
 
         animalName.setCellValueFactory(new PropertyValueFactory<Animal, String>("name"));
         //animalName.setCellFactory(cellFactory);
@@ -83,7 +83,7 @@ public class AnimalSearchTabController implements Initializable {
                     @Override public void handle(TableColumn.CellEditEvent<Animal, String> t) {
                         Animal animal = t.getTableView().getItems().get(t.getTablePosition().getRow());
                         animal.setName(t.getNewValue());
-                        //getTabRef().sub("model").sub("animals");
+                        getTabRef().sub("model").sub("animals").setValue(animals);
                     }
                 });
 
@@ -104,4 +104,11 @@ public class AnimalSearchTabController implements Initializable {
         });
     }
 
+    @FXML
+    protected void save(@SuppressWarnings("UnusedParameters") ActionEvent event) {
+        facade().saveAnimals(getTabRef(), new ActionCompleteCallback() {
+            public void onComplete() {
+            }
+        });
+    }
 }

@@ -106,4 +106,10 @@ public class ServiceBean {
         tab.getModel().setAnimal(new Animal(null, null));
         return tab;
     }
+
+    public void saveAnimals(List<Animal> animals) {
+        for (Animal animal : animals) {
+            AnimalRepository.saveAnimal(animal);
+        }
+    }
 }

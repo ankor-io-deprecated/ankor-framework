@@ -19,5 +19,7 @@
                 <TableColumn prefWidth="100" fx:id="animalType" text="Type" editable="true"/>
             </columns>
         </TableView>
+        <Button text="Save" GridPane.columnIndex="1" GridPane.rowIndex="2"
+                onAction="#save"/>
     </VBox>
 </Tab>

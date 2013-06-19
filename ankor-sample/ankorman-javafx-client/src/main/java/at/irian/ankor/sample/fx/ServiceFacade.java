@@ -28,11 +28,6 @@ public class ServiceFacade {
         appService.executeAction(tabsRef, String.format("service.createAnimalDetailTab('%s')", tabId), tabId, cb);
     }
 
-    public void createAnimalDetailTab(String tabId, String animalUUID, ActionCompleteCallback cb) {
-        Ref tabsRef = appService.getApplication().getRefFactory().rootRef().sub("tabs");
-        appService.executeAction(tabsRef, String.format("service.createAnimalDetailTab('%s', '%s')", tabId, animalUUID), tabId, cb);
-    }
-
     public void initApplication(ActionCompleteCallback cb) {
         Ref rootRef = appService.getApplication().getRefFactory().rootRef();
         appService.executeAction(rootRef, "service.init()", rootRef.path(), cb);
@@ -46,4 +41,7 @@ public class ServiceFacade {
         appService.executeAction(tabRef.sub("model"), "service.saveAnimal(context.animal)", null, cb); // TODO context.animals
     }
 
+    public void saveAnimals(Ref tabRef, ActionCompleteCallback cb) {
+        appService.executeAction(tabRef.sub("model"), "service.saveAnimals(context.animals)", null, cb);
+    }
 }
