@@ -1,24 +1,24 @@
 package at.irian.ankor.action.method;
 
-import at.irian.ankor.action.ModelAction;
+import at.irian.ankor.action.Action;
 
 /**
  * @author MGeiler (Manfred Geiler)
  */
-public class RemoteMethodAction implements ModelAction {
+public class RemoteMethodAction implements Action {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RemoteMethodAction.class);
 
     private final String methodExpression;
     private final String resultPath;
     private final boolean autoRefreshActionContext;
-    private final ModelAction completeAction;
-    private final ModelAction errorAction;
+    private final Action completeAction;
+    private final Action errorAction;
 
     private RemoteMethodAction(String methodExpression,
                                String resultPath,
                                boolean autoRefreshActionContext,
-                               ModelAction completeAction,
-                               ModelAction errorAction) {
+                               Action completeAction,
+                               Action errorAction) {
         this.methodExpression = methodExpression;
         this.resultPath = resultPath;
         this.autoRefreshActionContext = autoRefreshActionContext;
@@ -39,11 +39,11 @@ public class RemoteMethodAction implements ModelAction {
         return new RemoteMethodAction(methodExpression, resultPath, autoRefreshActionContext, completeAction, errorAction);
     }
 
-    public RemoteMethodAction onComplete(ModelAction action) {
+    public RemoteMethodAction onComplete(Action action) {
         return new RemoteMethodAction(methodExpression, resultPath, autoRefreshActionContext, action, errorAction);
     }
 
-    public RemoteMethodAction onError(ModelAction action) {
+    public RemoteMethodAction onError(Action action) {
         return new RemoteMethodAction(methodExpression, resultPath, autoRefreshActionContext, completeAction, action);
     }
 
@@ -64,11 +64,11 @@ public class RemoteMethodAction implements ModelAction {
         return autoRefreshActionContext;
     }
 
-    public ModelAction getCompleteAction() {
+    public Action getCompleteAction() {
         return completeAction;
     }
 
-    public ModelAction getErrorAction() {
+    public Action getErrorAction() {
         return errorAction;
     }
 

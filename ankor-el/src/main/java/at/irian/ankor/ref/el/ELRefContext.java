@@ -3,6 +3,8 @@ package at.irian.ankor.ref.el;
 import at.irian.ankor.application.DefaultActionNotifier;
 import at.irian.ankor.application.DefaultChangeNotifier;
 import at.irian.ankor.el.ModelContextELContext;
+import at.irian.ankor.path.PathSyntax;
+import at.irian.ankor.path.el.ELPathSyntax;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 
@@ -82,5 +84,10 @@ public class ELRefContext implements RefContext {
     @Override
     public Ref getModelContext() {
         return modelContext;
+    }
+
+    @Override
+    public PathSyntax getPathSyntax() {
+        return ELPathSyntax.getInstance();
     }
 }

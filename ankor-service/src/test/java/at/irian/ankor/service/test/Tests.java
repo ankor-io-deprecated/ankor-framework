@@ -1,6 +1,6 @@
 package at.irian.ankor.service.test;
 
-import at.irian.ankor.action.ModelAction;
+import at.irian.ankor.action.Action;
 import at.irian.ankor.action.SimpleAction;
 import at.irian.ankor.application.DefaultApplication;
 import at.irian.ankor.application.SimpleApplication;
@@ -47,7 +47,7 @@ public class Tests {
         SimpleAnkorServer server = new SimpleAnkorServer(serverApp, "server");
         serverApp.getListenerRegistry().registerRemoteActionListener(null, new ActionListener() {
             @Override
-            public void processAction(Ref actionContext, ModelAction action) {
+            public void processAction(Ref actionContext, Action action) {
                 if (action.name().equals("init")) {
                     LOG.info("Creating new TestModel");
                     actionContext.root().setValue(new TestModel());
@@ -62,7 +62,7 @@ public class Tests {
         SimpleAnkorServer client = new SimpleAnkorServer(clientApp, "client");
         clientApp.getListenerRegistry().registerRemoteActionListener(null, new ActionListener() {
             @Override
-            public void processAction(Ref actionContext, ModelAction action) {
+            public void processAction(Ref actionContext, Action action) {
                 if (action.name().equals("initialized")) {
                     Ref containerRef = actionContext.root().sub("containers['tab1']");
                     containerRef.setValue(null);

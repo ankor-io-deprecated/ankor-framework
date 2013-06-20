@@ -1,6 +1,6 @@
 package at.irian.ankor.service;
 
-import at.irian.ankor.action.ModelAction;
+import at.irian.ankor.action.Action;
 import at.irian.ankor.action.SimpleAction;
 import at.irian.ankor.application.DefaultApplication;
 import at.irian.ankor.application.SimpleApplication;
@@ -37,7 +37,7 @@ public class SimpleAnkorServerTest {
     public void test_remote_init_action() throws Exception {
         listenerRegistry.registerRemoteActionListener(refFactory.rootRef(), new ActionListener() {
             @Override
-            public void processAction(Ref actionContext, ModelAction action) {
+            public void processAction(Ref actionContext, Action action) {
                 if (action.name().equals("init")) {
                     LOG.info("Creating new TestModel");
                     Ref root = actionContext.root();
@@ -99,7 +99,7 @@ public class SimpleAnkorServerTest {
 
         listenerRegistry.registerRemoteActionListener(refFactory.ref("root.userName"), new ActionListener() {
             @Override
-            public void processAction(Ref actionContext, ModelAction action) {
+            public void processAction(Ref actionContext, Action action) {
                 if (action.name().equals("loadUser")) {
                     String userName = "Max Muster";
                     actionContext.setValue(userName);

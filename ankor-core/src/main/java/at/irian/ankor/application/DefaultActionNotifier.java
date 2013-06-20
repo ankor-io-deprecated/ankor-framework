@@ -1,7 +1,7 @@
 package at.irian.ankor.application;
 
+import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionListener;
-import at.irian.ankor.action.ModelAction;
 import at.irian.ankor.ref.Ref;
 
 /**
@@ -16,7 +16,7 @@ public class DefaultActionNotifier {
         this.listenerRegistry = listenerRegistry;
     }
 
-    public void broadcastAction(Ref contextRef, ModelAction action) {
+    public void broadcastAction(Ref contextRef, Action action) {
         if (contextRef == null) {
             throw new NullPointerException("contextRef");
         }

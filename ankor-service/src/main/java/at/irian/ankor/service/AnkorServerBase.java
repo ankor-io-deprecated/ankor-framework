@@ -1,7 +1,7 @@
 package at.irian.ankor.service;
 
+import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionListener;
-import at.irian.ankor.action.ModelAction;
 import at.irian.ankor.application.AutoUnregisterChangeListener;
 import at.irian.ankor.application.ListenerRegistry;
 import at.irian.ankor.change.BoundChangeListener;
@@ -46,7 +46,7 @@ public abstract class AnkorServerBase {
         return application;
     }
 
-    protected void receiveAction(Ref contextRef, ModelAction action) {
+    protected void receiveAction(Ref contextRef, Action action) {
         LOG.debug("Remote action received by {} - {}: {}", AnkorServerBase.this, contextRef, action);
 
         // notify action listeners
@@ -83,13 +83,13 @@ public abstract class AnkorServerBase {
 
     private class LocalActionListener implements ActionListener {
         @Override
-        public void processAction(Ref actionContext, ModelAction action) {
+        public void processAction(Ref actionContext, Action action) {
             LOG.debug("Local action detected by {} - {}: {}", AnkorServerBase.this, actionContext, action);
             sendAction(actionContext, action);
         }
     }
 
-    protected abstract void sendAction(Ref contextRef, ModelAction action);
+    protected abstract void sendAction(Ref contextRef, Action action);
 
 
     private class LocalChangeListener implements ChangeListener {

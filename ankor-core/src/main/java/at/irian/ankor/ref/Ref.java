@@ -1,6 +1,6 @@
 package at.irian.ankor.ref;
 
-import at.irian.ankor.action.ModelAction;
+import at.irian.ankor.action.Action;
 
 /**
  * @author MGeiler (Manfred Geiler)
@@ -48,7 +48,7 @@ public interface Ref {
      * Fire an action with this Ref as the action context.
      * @param action an Action
      */
-    void fire(ModelAction action);
+    void fire(Action action);
 
     /**
      * @return the full structural path of this Ref

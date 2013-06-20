@@ -1,6 +1,6 @@
 package at.irian.ankor.service;
 
-import at.irian.ankor.action.ModelAction;
+import at.irian.ankor.action.Action;
 import at.irian.ankor.application.DefaultApplication;
 import at.irian.ankor.ref.Ref;
 
@@ -27,7 +27,7 @@ public class SimpleAnkorServer extends ELAnkorServer {
         return serverName;
     }
 
-    public void receiveAction(String modelContextPath, ModelAction action) {
+    public void receiveAction(String modelContextPath, Action action) {
         receiveAction(application.getRefFactory().ref(modelContextPath), action);
     }
 
@@ -52,7 +52,7 @@ public class SimpleAnkorServer extends ELAnkorServer {
     }
 
     @Override
-    public void sendAction(Ref modelContext, ModelAction action) {
+    public void sendAction(Ref modelContext, Action action) {
         if (remoteServer != null) {
             LOG.info("passing action to {}: action = {} / context = {}", remoteServer, action, modelContext);
             remoteServer.receiveAction(modelContext.path(), action);

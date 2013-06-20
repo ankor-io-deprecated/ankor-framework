@@ -1,6 +1,6 @@
 package at.irian.ankor.ref.el;
 
-import at.irian.ankor.action.ModelAction;
+import at.irian.ankor.action.Action;
 import at.irian.ankor.application.DefaultActionNotifier;
 import at.irian.ankor.ref.BaseRef;
 import at.irian.ankor.ref.Ref;
@@ -44,7 +44,7 @@ class ELRef extends BaseRef {
     }
 
     @Override
-    public void fire(ModelAction action) {
+    public void fire(Action action) {
         DefaultActionNotifier actionNotifier = refContext().getActionNotifier();
         if (actionNotifier != null) {
             actionNotifier.broadcastAction(this, action);

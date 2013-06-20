@@ -1,7 +1,7 @@
 package at.irian.ankor.fx.app;
 
+import at.irian.ankor.action.Action;
 import at.irian.ankor.action.method.RemoteMethodAction;
-import at.irian.ankor.action.ModelAction;
 import at.irian.ankor.action.SimpleAction;
 import at.irian.ankor.application.Application;
 import at.irian.ankor.action.ActionListener;
@@ -21,7 +21,7 @@ public class AppService {
     public AppService(Application application) {
         application.getListenerRegistry().registerRemoteActionListener(null,
                 new ActionListener() {
-                    public void processAction(Ref actionContext, ModelAction action) {
+                    public void processAction(Ref actionContext, Action action) {
                         if (currentCallback != null && action.name().equals("cb")) {
                             currentCallback.onComplete();
                         }
@@ -35,7 +35,7 @@ public class AppService {
     }
 
     public synchronized void executeAction(Ref contextRef, String actionMethod, String resultPath, ActionCompleteCallback cb) {
-        ModelAction completeAction = SimpleAction.create("cb");
+        Action completeAction = SimpleAction.create("cb");
         currentCallback = cb;
         contextRef.fire(RemoteMethodAction
                 .create(actionMethod)

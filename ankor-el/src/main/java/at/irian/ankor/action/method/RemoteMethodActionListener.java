@@ -1,6 +1,6 @@
 package at.irian.ankor.action.method;
 
-import at.irian.ankor.action.ModelAction;
+import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionListener;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefFactory;
@@ -25,7 +25,7 @@ public class RemoteMethodActionListener implements ActionListener {
     }
 
     @Override
-    public void processAction(Ref modelContext, ModelAction action) {
+    public void processAction(Ref modelContext, Action action) {
         if (action instanceof RemoteMethodAction) {
             processMethodAction(modelContext, (RemoteMethodAction) action);
         }
@@ -58,14 +58,14 @@ public class RemoteMethodActionListener implements ActionListener {
         }
     }
 
-    private void fireCompleteAction(Ref actionContext, ModelAction completeAction) {
+    private void fireCompleteAction(Ref actionContext, Action completeAction) {
         if (completeAction != null) {
             actionContext.fire(completeAction);
         }
     }
 
     private void handleError(Ref actionContext, RemoteMethodAction action, Exception e) {
-        ModelAction errorAction = action.getErrorAction();
+        Action errorAction = action.getErrorAction();
         if (errorAction != null) {
             actionContext.fire(errorAction);
         } else {
