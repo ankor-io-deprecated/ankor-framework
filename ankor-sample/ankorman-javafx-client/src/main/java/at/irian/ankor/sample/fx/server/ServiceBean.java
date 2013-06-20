@@ -102,30 +102,39 @@ public class ServiceBean {
     public Tab createAnimalSearchTab(final String tabId) {
         Tab<AnimalSearchTab> tab = new Tab<AnimalSearchTab>(tabId);
         tab.setModel(new AnimalSearchTab());
-        tab.getModel().getFilter().setTypes(Arrays.asList(AnimalType.values()));
-        tab.getModel().getFilter().setFamilies(Arrays.asList(new AnimalFamily[0]));
+        List<AnimalType> types = new ArrayList<AnimalType>(AnimalType.values().length + 1);
+        types.addAll(Arrays.asList(AnimalType.values()));
+        types.add(null);
+        tab.getModel().getFilter().setTypes(types);
+        tab.getModel().getFilter().setFamilies(new ArrayList<AnimalFamily>(0));
         application.getListenerRegistry().registerRemoteChangeListener(
                 application.getRefFactory().rootRef().sub("tabs")
                         .sub(tabId).sub("model").sub("filter").sub("type"), new ChangeListener() {
             @Override
             public void processChange(Ref modelContext, Ref watchedProperty, Ref changedProperty) {
                 AnimalType type = changedProperty.getValue();
-                List<AnimalFamily> families = new ArrayList<AnimalFamily>();
-                switch (type) {
-                    case Bird:
-                        families.add(AnimalFamily.Accipitridae);
-                        break;
-                    case Fish:
-                        families.add(AnimalFamily.Esocidae);
-                        families.add(AnimalFamily.Salmonidae);
-                        break;
-                    case Mammal:
-                        families.add(AnimalFamily.Balaenopteridae);
-                        families.add(AnimalFamily.Felidae);
-                        break;
+                List<AnimalFamily> families;
+                if (type != null) {
+                    families = new ArrayList<AnimalFamily>();
+                    switch (type) {
+                        case Bird:
+                            families.add(AnimalFamily.Accipitridae);
+                            break;
+                        case Fish:
+                            families.add(AnimalFamily.Esocidae);
+                            families.add(AnimalFamily.Salmonidae);
+                            break;
+                        case Mammal:
+                            families.add(AnimalFamily.Balaenopteridae);
+                            families.add(AnimalFamily.Felidae);
+                            break;
+                    }
+                    families.add(null);
+                } else {
+                    families = new ArrayList<AnimalFamily>(0);
                 }
                 application.getRefFactory().rootRef().sub("tabs")
-                        .sub(tabId).sub("model").sub("filter").sub("families").setValue(families);
+                        .sub(tabId).sub("model").sub("filter").sub("families").setValue(families); // TODO how to get this ref as a method param?
             }
         });
         return tab;

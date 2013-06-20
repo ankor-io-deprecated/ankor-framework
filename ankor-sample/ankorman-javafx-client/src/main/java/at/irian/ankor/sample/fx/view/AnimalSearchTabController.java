@@ -9,7 +9,6 @@ import at.irian.ankor.sample.fx.server.model.AnimalType;
 import at.irian.ankor.sample.fx.view.model.AnimalSearchTab;
 import at.irian.ankor.sample.fx.view.model.Tab;
 import at.irian.ankor.util.NilValue;
-import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -34,12 +33,12 @@ import static at.irian.ankor.sample.fx.App.facade;
 public class AnimalSearchTabController implements Initializable {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalSearchTabController.class);
     @FXML
-    private javafx.scene.control.Tab tab;
+    protected javafx.scene.control.Tab tab;
 
     @FXML
-    private TextInputControl name;
+    protected TextInputControl name;
     @FXML
-    private ComboBox<AnimalType> type;
+    protected ComboBox<AnimalType> type;
     @FXML
     private ComboBox<AnimalFamily> family;
 
@@ -68,14 +67,10 @@ public class AnimalSearchTabController implements Initializable {
 
             public void onComplete() {
                 Ref filterRef = getTabRef().sub("model").sub("filter");
-
-                type.setItems(FXCollections.<AnimalType>observableArrayList());
-
+                // Bind filter items
                 bind(filterRef.sub("name"), name, bindingContext);
-
-                bind(filterRef.sub("type"), filterRef.sub("types"), type, bindingContext);
-
-                bind(filterRef.sub("family"), filterRef.sub("families"), family, bindingContext);
+                bind(filterRef.sub("type"), filterRef.sub("types"), type);
+                bind(filterRef.sub("family"), filterRef.sub("families"), family);
             }
         });
     }
@@ -144,7 +139,7 @@ public class AnimalSearchTabController implements Initializable {
             cellButton.setOnAction(new EventHandler<ActionEvent>(){
                 @Override
                 public void handle(ActionEvent t) {
-                    Animal animal = animalTable.getItems().get(getTableRow().getIndex());
+                    //Animal animal = animalTable.getItems().get(getTableRow().getIndex());
 
                     //facade().createAnimalDetailTab();
                 }

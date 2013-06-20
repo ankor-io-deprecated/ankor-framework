@@ -23,7 +23,8 @@ public class ModelBindings {
 
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelBinding.class);
 
-    public static <T> void bind(final Ref valueRef, final Ref itemsRef, final ComboBox<T> comboBox, BindingContext context) {
+    public static <T> void bind(final Ref valueRef, final Ref itemsRef, final ComboBox<T> comboBox
+    ) {
         //noinspection unchecked
 
         setValue(valueRef, itemsRef, comboBox);
