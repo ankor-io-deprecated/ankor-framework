@@ -14,21 +14,26 @@
         <module>ankorman-js-client</module>
     </modules>
 
+    <properties>
+        <ankor.version>0-SNAPSHOT</ankor.version>
+    </properties>
+
     <dependencyManagement>
 
         <dependencies>
 
             <dependency>
                 <groupId>at.irian.ankor</groupId>
-                <artifactId>ankor-api</artifactId>
-                <version>0-SNAPSHOT</version>
+                <artifactId>ankor-service</artifactId>
+                <version>${ankor.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>at.irian.ankor</groupId>
-                <artifactId>ankor-core</artifactId>
-                <version>0-SNAPSHOT</version>
+                <artifactId>ankor-fx</artifactId>
+                <version>${project.version}</version>
             </dependency>
+
 
             <dependency>
                 <groupId>junit</groupId>

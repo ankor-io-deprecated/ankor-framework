@@ -1,6 +1,6 @@
 package at.irian.ankor.sample.fx.view;
 
-import at.irian.ankor.core.ref.Ref;
+import at.irian.ankor.ref.Ref;
 import at.irian.ankor.fx.app.ActionCompleteCallback;
 import at.irian.ankor.fx.binding.BindingContext;
 import at.irian.ankor.sample.fx.view.model.RootModel;

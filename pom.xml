@@ -9,10 +9,12 @@
     <name>Ankor - Project</name>
 
     <modules>
-        <module>ankor-api</module>
         <module>ankor-core</module>
-        <module>ankor-sample</module>
+        <module>ankor-el</module>
+        <module>ankor-service</module>
         <module>ankor-servlet</module>
+        <module>ankor-fx</module>
+        <module>ankor-sample</module>
     </modules>
 
     <dependencyManagement>

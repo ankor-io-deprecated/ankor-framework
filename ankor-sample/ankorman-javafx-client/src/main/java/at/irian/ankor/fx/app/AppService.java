@@ -1,11 +1,11 @@
 package at.irian.ankor.fx.app;
 
-import at.irian.ankor.core.action.method.RemoteMethodAction;
-import at.irian.ankor.core.action.ModelAction;
-import at.irian.ankor.core.action.SimpleAction;
-import at.irian.ankor.core.application.Application;
-import at.irian.ankor.core.listener.ActionListener;
-import at.irian.ankor.core.ref.Ref;
+import at.irian.ankor.action.method.RemoteMethodAction;
+import at.irian.ankor.action.ModelAction;
+import at.irian.ankor.action.SimpleAction;
+import at.irian.ankor.application.Application;
+import at.irian.ankor.action.ActionListener;
+import at.irian.ankor.ref.Ref;
 
 /**
  * @author Thomas Spiegl

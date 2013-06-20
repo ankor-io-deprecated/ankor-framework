@@ -16,14 +16,8 @@
 
         <dependency>
             <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-api</artifactId>
+            <artifactId>ankor-service</artifactId>
             <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-core</artifactId>
-            <scope>runtime</scope>
         </dependency>
 
     </dependencies>

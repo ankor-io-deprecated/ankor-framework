@@ -1,9 +1,8 @@
 package at.irian.ankor.sample.fx;
 
-import at.irian.ankor.core.ref.Ref;
+import at.irian.ankor.ref.Ref;
 import at.irian.ankor.fx.app.ActionCompleteCallback;
 import at.irian.ankor.fx.app.AppService;
-import at.irian.ankor.sample.fx.server.model.Animal;
 
 /**
  * @author Thomas Spiegl

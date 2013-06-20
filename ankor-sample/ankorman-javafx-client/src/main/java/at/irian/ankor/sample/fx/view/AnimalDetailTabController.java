@@ -1,7 +1,7 @@
 package at.irian.ankor.sample.fx.view;
 
-import at.irian.ankor.core.ref.Ref;
-import at.irian.ankor.core.util.NilValue;
+import at.irian.ankor.ref.Ref;
+import at.irian.ankor.util.NilValue;
 import at.irian.ankor.fx.app.ActionCompleteCallback;
 import at.irian.ankor.fx.binding.BindingContext;
 import javafx.beans.value.ChangeListener;
@@ -9,7 +9,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextInputControl;

@@ -10,20 +10,20 @@
 
     <artifactId>ankor-core</artifactId>
     <packaging>jar</packaging>
-    <name>Ankor - Core Implementation</name>
+    <name>Ankor - Core</name>
 
     <dependencies>
 
         <dependency>
-            <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-api</artifactId>
-            <version>${project.version}</version>
+            <groupId>javax.el</groupId>
+            <artifactId>el-api</artifactId>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>el-impl</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
     </dependencies>

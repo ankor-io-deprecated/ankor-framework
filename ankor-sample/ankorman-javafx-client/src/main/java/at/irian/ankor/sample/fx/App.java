@@ -1,6 +1,6 @@
 package at.irian.ankor.sample.fx;
 
-import at.irian.ankor.core.application.Application;
+import at.irian.ankor.application.Application;
 import at.irian.ankor.fx.app.AppService;
 import at.irian.ankor.fx.app.SimpleLocalApplicationService;
 import at.irian.ankor.sample.fx.server.ServiceBean;

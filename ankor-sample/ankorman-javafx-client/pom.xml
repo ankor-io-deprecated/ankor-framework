@@ -21,7 +21,9 @@
 
         <dependency>
             <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-core</artifactId>
+            <artifactId>ankor-fx</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>

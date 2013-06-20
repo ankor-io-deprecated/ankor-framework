@@ -1,7 +1,7 @@
 package at.irian.ankor.fx.binding;
 
-import at.irian.ankor.core.listener.ChangeListener;
-import at.irian.ankor.core.ref.Ref;
+import at.irian.ankor.change.ChangeListener;
+import at.irian.ankor.ref.Ref;
 import at.irian.ankor.sample.fx.App;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
