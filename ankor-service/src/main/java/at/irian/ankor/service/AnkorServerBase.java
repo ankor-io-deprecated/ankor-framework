@@ -1,11 +1,11 @@
 package at.irian.ankor.service;
 
 import at.irian.ankor.action.Action;
-import at.irian.ankor.action.ActionListener;
+import at.irian.ankor.event.ActionListener;
 import at.irian.ankor.application.AutoUnregisterChangeListener;
 import at.irian.ankor.application.ListenerRegistry;
-import at.irian.ankor.change.BoundChangeListener;
-import at.irian.ankor.change.ChangeListener;
+import at.irian.ankor.application.BoundChangeListener;
+import at.irian.ankor.event.ChangeListener;
 import at.irian.ankor.application.Application;
 import at.irian.ankor.ref.Ref;
 
@@ -83,9 +83,9 @@ public abstract class AnkorServerBase {
 
     private class LocalActionListener implements ActionListener {
         @Override
-        public void processAction(Ref actionContext, Action action) {
-            LOG.debug("Local action detected by {} - {}: {}", AnkorServerBase.this, actionContext, action);
-            sendAction(actionContext, action);
+        public void processAction(Ref modelContext, Action action) {
+            LOG.debug("Local action detected by {} - {}: {}", AnkorServerBase.this, modelContext, action);
+            sendAction(modelContext, action);
         }
     }
 
@@ -94,10 +94,10 @@ public abstract class AnkorServerBase {
 
     private class LocalChangeListener implements ChangeListener {
         @Override
-        public void processChange(Ref contextRef, Ref watchedRef, Ref changedRef) {
-            Object newValue = changedRef.getValue();
-            LOG.debug("Local change detected by {} - {} => {}", AnkorServerBase.this, changedRef, newValue);
-            sendChange(contextRef, changedRef, newValue);
+        public void processChange(Ref modelContext, Ref watchedProperty, Ref changedProperty) {
+            Object newValue = changedProperty.getValue();
+            LOG.debug("Local change detected by {} - {} => {}", AnkorServerBase.this, changedProperty, newValue);
+            sendChange(modelContext, changedProperty, newValue);
         }
     }
 

@@ -4,8 +4,8 @@ import at.irian.ankor.action.Action;
 import at.irian.ankor.action.SimpleAction;
 import at.irian.ankor.application.DefaultApplication;
 import at.irian.ankor.application.SimpleApplication;
-import at.irian.ankor.action.ActionListener;
-import at.irian.ankor.change.ChangeListener;
+import at.irian.ankor.event.ActionListener;
+import at.irian.ankor.event.ChangeListener;
 import at.irian.ankor.application.ListenerRegistry;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefFactory;
@@ -37,12 +37,12 @@ public class SimpleAnkorServerTest {
     public void test_remote_init_action() throws Exception {
         listenerRegistry.registerRemoteActionListener(refFactory.rootRef(), new ActionListener() {
             @Override
-            public void processAction(Ref actionContext, Action action) {
+            public void processAction(Ref modelContext, Action action) {
                 if (action.name().equals("init")) {
                     LOG.info("Creating new TestModel");
-                    Ref root = actionContext.root();
+                    Ref root = modelContext.root();
                     root.setValue(new TestModel());
-                    actionContext.fire(SimpleAction.create("initialized"));
+                    modelContext.fire(SimpleAction.create("initialized"));
                 }
             }
         });
@@ -61,8 +61,8 @@ public class SimpleAnkorServerTest {
 
         listenerRegistry.registerRemoteChangeListener(refFactory.ref("root.userName"), new ChangeListener() {
             @Override
-            public void processChange(Ref contextRef, Ref watchedRef, Ref changedRef) {
-                watchedRef.setValue("Max Muster 2");
+            public void processChange(Ref modelContext, Ref watchedProperty, Ref changedProperty) {
+                watchedProperty.setValue("Max Muster 2");
             }
         });
 
@@ -79,9 +79,9 @@ public class SimpleAnkorServerTest {
 
         listenerRegistry.registerRemoteChangeListener(refFactory.ref("root.testUser"), new ChangeListener() {
             @Override
-            public void processChange(Ref contextRef, Ref watchedRef, Ref changedRef) {
-                LOG.info("watched = {}", watchedRef);
-                LOG.info("changed = {}", changedRef);
+            public void processChange(Ref modelContext, Ref watchedProperty, Ref changedProperty) {
+                LOG.info("watched = {}", watchedProperty);
+                LOG.info("changed = {}", changedProperty);
             }
         });
 
@@ -99,11 +99,11 @@ public class SimpleAnkorServerTest {
 
         listenerRegistry.registerRemoteActionListener(refFactory.ref("root.userName"), new ActionListener() {
             @Override
-            public void processAction(Ref actionContext, Action action) {
+            public void processAction(Ref modelContext, Action action) {
                 if (action.name().equals("loadUser")) {
                     String userName = "Max Muster";
-                    actionContext.setValue(userName);
-                    actionContext.fire(SimpleAction.create("success"));
+                    modelContext.setValue(userName);
+                    modelContext.fire(SimpleAction.create("success"));
                 }
             }
         });

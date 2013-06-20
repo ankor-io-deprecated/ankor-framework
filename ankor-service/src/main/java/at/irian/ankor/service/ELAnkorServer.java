@@ -1,6 +1,6 @@
 package at.irian.ankor.service;
 
-import at.irian.ankor.action.method.RemoteMethodActionListener;
+import at.irian.ankor.service.rma.RemoteMethodActionListener;
 import at.irian.ankor.application.ELApplication;
 
 /**

@@ -1,8 +1,8 @@
 package at.irian.ankor.ref.el;
 
-import at.irian.ankor.application.DefaultActionNotifier;
-import at.irian.ankor.application.DefaultChangeNotifier;
 import at.irian.ankor.el.ModelContextELContext;
+import at.irian.ankor.event.ActionNotifier;
+import at.irian.ankor.event.ChangeNotifier;
 import at.irian.ankor.path.PathSyntax;
 import at.irian.ankor.path.el.ELPathSyntax;
 import at.irian.ankor.ref.Ref;
@@ -19,16 +19,16 @@ public class ELRefContext implements RefContext {
 
     private final ExpressionFactory expressionFactory;
     private final ELContext elContext;
-    private final DefaultChangeNotifier changeNotifier;
-    private final DefaultActionNotifier actionNotifier;
+    private final ChangeNotifier changeNotifier;
+    private final ActionNotifier actionNotifier;
     private final String modelRootVarName;
     private final String contextVarName;
     private final Ref modelContext;
 
     public ELRefContext(ExpressionFactory expressionFactory,
                         ELContext elContext,
-                        DefaultChangeNotifier changeNotifier,
-                        DefaultActionNotifier actionNotifier,
+                        ChangeNotifier changeNotifier,
+                        ActionNotifier actionNotifier,
                         String modelRootVarName,
                         String contextVarName, Ref modelContext) {
         this.expressionFactory = expressionFactory;
@@ -65,11 +65,11 @@ public class ELRefContext implements RefContext {
         return elContext;
     }
 
-    public DefaultChangeNotifier getChangeNotifier() {
+    public ChangeNotifier getChangeNotifier() {
         return changeNotifier;
     }
 
-    public DefaultActionNotifier getActionNotifier() {
+    public ActionNotifier getActionNotifier() {
         return actionNotifier;
     }
 

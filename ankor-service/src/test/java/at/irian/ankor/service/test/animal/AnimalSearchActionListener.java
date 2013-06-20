@@ -1,7 +1,7 @@
 package at.irian.ankor.service.test.animal;
 
 import at.irian.ankor.action.Action;
-import at.irian.ankor.action.ActionListener;
+import at.irian.ankor.event.ActionListener;
 import at.irian.ankor.ref.Ref;
 
 import java.util.ArrayList;
@@ -14,9 +14,9 @@ public class AnimalSearchActionListener implements ActionListener {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalSearchActionListener.class);
 
     @Override
-    public void processAction(Ref actionContext, Action action) {
+    public void processAction(Ref modelContext, Action action) {
         if (action.name().equals("search")) {
-            Object container = actionContext.getValue();
+            Object container = modelContext.getValue();
 
             if (container instanceof AnimalSearchContainer) {
                 LOG.info("Animal search action");
@@ -28,7 +28,7 @@ public class AnimalSearchActionListener implements ActionListener {
                     animals.add(new Animal("Adler", AnimalType.Bird));
                     animals.add(new Animal("Amsel", AnimalType.Bird));
 
-                    actionContext.sub("resultList").setValue(animals);
+                    modelContext.sub("resultList").setValue(animals);
                 }
             }
 

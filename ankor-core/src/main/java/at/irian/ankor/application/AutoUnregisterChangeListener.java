@@ -1,7 +1,6 @@
 package at.irian.ankor.application;
 
-import at.irian.ankor.application.ListenerRegistry;
-import at.irian.ankor.change.ChangeListener;
+import at.irian.ankor.event.ChangeListener;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.util.NilValue;
 
@@ -18,9 +17,9 @@ public class AutoUnregisterChangeListener implements ChangeListener {
     }
 
     @Override
-    public void processChange(Ref contextRef, Ref watchedRef, Ref changedRef) {
-        if (isNil(changedRef.getValue())) {
-            listenerRegistry.unregisterAllListenersFor(changedRef);
+    public void processChange(Ref modelContext, Ref watchedProperty, Ref changedProperty) {
+        if (isNil(changedProperty.getValue())) {
+            listenerRegistry.unregisterAllListenersFor(changedProperty);
         }
     }
 

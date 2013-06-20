@@ -1,6 +1,6 @@
 package at.irian.ankor.fx.binding;
 
-import at.irian.ankor.change.ChangeListener;
+import at.irian.ankor.event.ChangeListener;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.sample.fx.App;
 import javafx.beans.binding.Bindings;
@@ -48,9 +48,9 @@ public class ModelBindings {
         App.application().getListenerRegistry().registerRemoteChangeListener(modelRef,
                 new ChangeListener() {
 
-                    public void processChange(Ref contextRef, Ref watchedRef, Ref changedRef) {
+                    public void processChange(Ref modelContext, Ref watchedProperty, Ref changedProperty) {
                         String strValue;
-                        Object newValue = watchedRef.getValue();
+                        Object newValue = watchedProperty.getValue();
                         if (newValue instanceof String) {
                             strValue = (String) newValue;
                         } else {

@@ -1,8 +1,7 @@
 package at.irian.ankor.application;
 
-import at.irian.ankor.action.ActionListener;
-import at.irian.ankor.change.BoundChangeListener;
-import at.irian.ankor.change.ChangeListener;
+import at.irian.ankor.event.ActionListener;
+import at.irian.ankor.event.ChangeListener;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.util.CollectionUtils;
 

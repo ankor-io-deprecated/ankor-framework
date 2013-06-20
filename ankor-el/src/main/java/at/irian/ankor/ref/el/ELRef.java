@@ -1,7 +1,8 @@
 package at.irian.ankor.ref.el;
 
 import at.irian.ankor.action.Action;
-import at.irian.ankor.application.DefaultActionNotifier;
+import at.irian.ankor.event.ActionNotifier;
+import at.irian.ankor.event.ChangeNotifier;
 import at.irian.ankor.ref.BaseRef;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
@@ -23,8 +24,9 @@ class ELRef extends BaseRef {
 
     public void setValue(Object newValue) {
         valueExpression.setValue(refContext().getELContext(), newValue);
-        if (refContext().getChangeNotifier() != null) {
-            refContext().getChangeNotifier().notifyLocalListeners(refContext.getModelContext(), this);
+        ChangeNotifier changeNotifier = refContext().getChangeNotifier();
+        if (changeNotifier != null) {
+            changeNotifier.broadcastChange(refContext.getModelContext(), this);
         }
     }
 
@@ -45,7 +47,7 @@ class ELRef extends BaseRef {
 
     @Override
     public void fire(Action action) {
-        DefaultActionNotifier actionNotifier = refContext().getActionNotifier();
+        ActionNotifier actionNotifier = refContext().getActionNotifier();
         if (actionNotifier != null) {
             actionNotifier.broadcastAction(this, action);
         }

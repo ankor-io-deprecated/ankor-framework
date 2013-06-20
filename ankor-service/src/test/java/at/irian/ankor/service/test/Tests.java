@@ -4,8 +4,8 @@ import at.irian.ankor.action.Action;
 import at.irian.ankor.action.SimpleAction;
 import at.irian.ankor.application.DefaultApplication;
 import at.irian.ankor.application.SimpleApplication;
-import at.irian.ankor.action.ActionListener;
-import at.irian.ankor.change.ChangeListener;
+import at.irian.ankor.event.ActionListener;
+import at.irian.ankor.event.ChangeListener;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.service.SimpleAnkorServer;
 import at.irian.ankor.service.test.animal.AnimalSearchActionListener;
@@ -47,11 +47,11 @@ public class Tests {
         SimpleAnkorServer server = new SimpleAnkorServer(serverApp, "server");
         serverApp.getListenerRegistry().registerRemoteActionListener(null, new ActionListener() {
             @Override
-            public void processAction(Ref actionContext, Action action) {
+            public void processAction(Ref modelContext, Action action) {
                 if (action.name().equals("init")) {
                     LOG.info("Creating new TestModel");
-                    actionContext.root().setValue(new TestModel());
-                    actionContext.fire(SimpleAction.create("initialized"));
+                    modelContext.root().setValue(new TestModel());
+                    modelContext.fire(SimpleAction.create("initialized"));
                 }
             }
         });
@@ -62,20 +62,20 @@ public class Tests {
         SimpleAnkorServer client = new SimpleAnkorServer(clientApp, "client");
         clientApp.getListenerRegistry().registerRemoteActionListener(null, new ActionListener() {
             @Override
-            public void processAction(Ref actionContext, Action action) {
+            public void processAction(Ref modelContext, Action action) {
                 if (action.name().equals("initialized")) {
-                    Ref containerRef = actionContext.root().sub("containers['tab1']");
+                    Ref containerRef = modelContext.root().sub("containers['tab1']");
                     containerRef.setValue(null);
 
                     clientApp.getListenerRegistry().registerRemoteChangeListener(containerRef, new ChangeListener() {
 
                         @Override
-                        public void processChange(Ref contextRef, Ref watchedRef, Ref changedRef) {
-                            LOG.info("new container {}", watchedRef.getValue());
+                        public void processChange(Ref modelContext, Ref watchedProperty, Ref changedProperty) {
+                            LOG.info("new container {}", watchedProperty.getValue());
 
-                            watchedRef.sub("filter.name").setValue("A*");
-                            watchedRef.sub("filter.type").setValue(AnimalType.Bird);
-                            watchedRef.fire(SimpleAction.create("search"));
+                            watchedProperty.sub("filter.name").setValue("A*");
+                            watchedProperty.sub("filter.type").setValue(AnimalType.Bird);
+                            watchedProperty.fire(SimpleAction.create("search"));
                         }
                     });
 

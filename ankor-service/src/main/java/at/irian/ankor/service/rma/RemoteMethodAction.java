@@ -1,4 +1,4 @@
-package at.irian.ankor.action.method;
+package at.irian.ankor.service.rma;
 
 import at.irian.ankor.action.Action;
 
