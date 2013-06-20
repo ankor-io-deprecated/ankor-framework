@@ -4,9 +4,17 @@ import at.irian.ankor.event.ChangeListener;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.sample.fx.App;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextInputControl;
+import javafx.scene.text.Text;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Thomas Spiegl
@@ -15,16 +23,49 @@ public class ModelBindings {
 
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelBinding.class);
 
-    public static void bind(final Ref modelRef, final StringProperty stringProperty, BindingContext context) {
+    public static <T> void bind(final Ref valueRef, final Ref itemsRef, final ComboBox<T> comboBox, BindingContext context) {
+        //noinspection unchecked
+
+        setValue(valueRef, itemsRef, comboBox);
+
+        registerLocalListener(valueRef, comboBox);
+
+        registerRemoteListener(itemsRef, comboBox.itemsProperty());
+    }
+
+    public static void bind(final Ref valueRef, final Text text, BindingContext context) {
+        bindText(valueRef, text.textProperty(), context);
+    }
+
+    public static void bind(final Ref valueRef, final TextInputControl control, BindingContext context) {
+        bindText(valueRef, control.textProperty(), context);
+    }
+
+    public static void bindText(Ref valueRef, StringProperty stringProperty, BindingContext context) {
 
         SimpleStringProperty prop = createBinding(stringProperty, context);
 
-        setValue(modelRef, prop);
+        setValue(valueRef, prop);
 
-        registerLocalListener(modelRef, prop);
+        registerLocalListener(valueRef, prop);
 
-        registerRemoteListener(modelRef, stringProperty);
+        registerRemoteListener(valueRef, stringProperty);
+    }
 
+    // private
+
+    private static <T> void registerLocalListener(final Ref valueRef, ComboBox<T> comboBox) {
+        comboBox.valueProperty().addListener(new javafx.beans.value.ChangeListener<Object>() {
+            @Override
+            public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
+                valueRef.setValue(newValue);
+            }
+        });
+    }
+
+    private static <T> void setValue(Ref valueRef, Ref itemsRef, ComboBox<T> comboBox) {
+        comboBox.getItems().<T>addAll((List<T>) itemsRef.getValue());
+        comboBox.valueProperty().setValue((T) valueRef.getValue());
     }
 
     private static SimpleStringProperty createBinding(StringProperty stringProperty, BindingContext context) {
@@ -44,7 +85,19 @@ public class ModelBindings {
         prop.setValue(value);
     }
 
-    private static void registerRemoteListener(Ref modelRef, final StringProperty stringProperty) {
+    private static <T> void registerRemoteListener(Ref modelRef, final ObjectProperty<ObservableList<T>> property) {
+        App.application().getListenerRegistry().registerRemoteChangeListener(modelRef,
+                new ChangeListener() {
+
+                    public void processChange(Ref modelContext, Ref watchedProperty, Ref changedProperty) {
+                        property.getValue().clear();
+                        //noinspection unchecked
+                        property.getValue().addAll((Collection) watchedProperty.getValue());
+                    }
+                });
+    }
+
+    private static void registerRemoteListener(Ref modelRef, final StringProperty property) {
         App.application().getListenerRegistry().registerRemoteChangeListener(modelRef,
                 new ChangeListener() {
 
@@ -60,7 +113,7 @@ public class ModelBindings {
                                 strValue = null;
                             }
                         }
-                        stringProperty.setValue(strValue); //todo: prevent setting back to model immediately (and sending change back to server)
+                        property.setValue(strValue);
                     }
                 });
     }

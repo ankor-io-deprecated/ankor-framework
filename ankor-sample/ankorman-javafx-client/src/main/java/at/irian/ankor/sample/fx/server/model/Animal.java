@@ -11,17 +11,24 @@ public class Animal {
     private final String uuid;
     private String name;
     private AnimalType type;
+    private AnimalFamily family;
+
+    public Animal() {
+        this.uuid = UUID.randomUUID().toString();
+    }
 
     public Animal(Animal other) {
         this.uuid = other.uuid;
         this.name = other.name;
         this.type = other.type;
+        this.family = other.family;
     }
 
-    public Animal(String name, AnimalType type) {
+    public Animal(String name, AnimalType type, AnimalFamily family) {
         this.uuid = UUID.randomUUID().toString();
         this.name = name;
         this.type = type;
+        this.family = family;
     }
 
     public String getUuid() {
@@ -44,10 +51,21 @@ public class Animal {
         this.type = type;
     }
 
+    public AnimalFamily getFamily() {
+        return family;
+    }
+
+    public void setFamily(AnimalFamily family) {
+        this.family = family;
+    }
+
     @Override
     public String toString() {
-        return "Animal{" +
-               "name='" + name + '\'' +
-               '}';
+        final StringBuilder sb = new StringBuilder("Animal{");
+        sb.append("name='").append(name).append('\'');
+        sb.append(", type=").append(type);
+        sb.append(", family=").append(family);
+        sb.append('}');
+        return sb.toString();
     }
 }

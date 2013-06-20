@@ -44,7 +44,7 @@ public class MainController implements Initializable {
 
                 userName.setText(rootModel.getUserName());
 
-                bind(rootRef.sub("serverStatus"), serverStatus.textProperty(), bindingContext);
+                bind(rootRef.sub("serverStatus"), serverStatus, bindingContext);
 
             }
         });

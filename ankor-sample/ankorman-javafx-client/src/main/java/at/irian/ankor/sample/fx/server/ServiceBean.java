@@ -1,6 +1,10 @@
 package at.irian.ankor.sample.fx.server;
 
+import at.irian.ankor.application.Application;
+import at.irian.ankor.event.ChangeListener;
+import at.irian.ankor.ref.Ref;
 import at.irian.ankor.sample.fx.server.model.Animal;
+import at.irian.ankor.sample.fx.server.model.AnimalFamily;
 import at.irian.ankor.sample.fx.server.model.AnimalSearchFilter;
 import at.irian.ankor.sample.fx.server.model.AnimalType;
 import at.irian.ankor.sample.fx.view.model.AnimalDetailTab;
@@ -9,6 +13,7 @@ import at.irian.ankor.sample.fx.view.model.RootModel;
 import at.irian.ankor.sample.fx.view.model.Tab;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -17,6 +22,12 @@ import java.util.List;
 */
 @SuppressWarnings("UnusedDeclaration")
 public class ServiceBean {
+
+    private Application application;
+
+    public void setApplication(Application application) {
+        this.application = application;
+    }
 
     public RootModel init() {
         RootModel model = new RootModel();
@@ -50,11 +61,12 @@ public class ServiceBean {
         private static List<Animal> animals;
         static {
             animals = new ArrayList<Animal>();
-            animals.add(new Animal("Trout", AnimalType.Fish));
-            animals.add(new Animal("Salmon", AnimalType.Fish));
-            animals.add(new Animal("Pike", AnimalType.Fish));
-            animals.add(new Animal("Eagle", AnimalType.Bird));
-            animals.add(new Animal("Whale", AnimalType.Mammal));
+            animals.add(new Animal("Trout", AnimalType.Fish, AnimalFamily.Salmonidae));
+            animals.add(new Animal("Salmon", AnimalType.Fish, AnimalFamily.Salmonidae));
+            animals.add(new Animal("Pike", AnimalType.Fish, AnimalFamily.Esocidae));
+            animals.add(new Animal("Eagle", AnimalType.Bird, AnimalFamily.Accipitridae));
+            animals.add(new Animal("Blue Whale", AnimalType.Mammal, AnimalFamily.Balaenopteridae));
+            animals.add(new Animal("Tiger", AnimalType.Mammal, AnimalFamily.Felidae));
         }
 
         private static List<Animal> getAnimals() {
@@ -87,9 +99,35 @@ public class ServiceBean {
         }
     }
 
-    public Tab createAnimalSearchTab(String tabId) {
+    public Tab createAnimalSearchTab(final String tabId) {
         Tab<AnimalSearchTab> tab = new Tab<AnimalSearchTab>(tabId);
         tab.setModel(new AnimalSearchTab());
+        tab.getModel().getFilter().setTypes(Arrays.asList(AnimalType.values()));
+        tab.getModel().getFilter().setFamilies(Arrays.asList(new AnimalFamily[0]));
+        application.getListenerRegistry().registerRemoteChangeListener(
+                application.getRefFactory().rootRef().sub("tabs")
+                        .sub(tabId).sub("model").sub("filter").sub("type"), new ChangeListener() {
+            @Override
+            public void processChange(Ref modelContext, Ref watchedProperty, Ref changedProperty) {
+                AnimalType type = changedProperty.getValue();
+                List<AnimalFamily> families = new ArrayList<AnimalFamily>();
+                switch (type) {
+                    case Bird:
+                        families.add(AnimalFamily.Accipitridae);
+                        break;
+                    case Fish:
+                        families.add(AnimalFamily.Esocidae);
+                        families.add(AnimalFamily.Salmonidae);
+                        break;
+                    case Mammal:
+                        families.add(AnimalFamily.Balaenopteridae);
+                        families.add(AnimalFamily.Felidae);
+                        break;
+                }
+                application.getRefFactory().rootRef().sub("tabs")
+                        .sub(tabId).sub("model").sub("filter").sub("families").setValue(families);
+            }
+        });
         return tab;
     }
 
@@ -103,7 +141,7 @@ public class ServiceBean {
     public Tab createAnimalDetailTab(String tabId) {
         Tab<AnimalDetailTab> tab = new Tab<AnimalDetailTab>(tabId);
         tab.setModel(new AnimalDetailTab());
-        tab.getModel().setAnimal(new Animal(null, null));
+        tab.getModel().setAnimal(new Animal());
         return tab;
     }
 

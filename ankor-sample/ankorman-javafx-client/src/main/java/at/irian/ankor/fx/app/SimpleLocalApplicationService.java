@@ -3,6 +3,7 @@ package at.irian.ankor.fx.app;
 import at.irian.ankor.application.Application;
 import at.irian.ankor.application.DefaultApplication;
 import at.irian.ankor.application.SimpleApplication;
+import at.irian.ankor.sample.fx.server.ServiceBean;
 import at.irian.ankor.sample.fx.view.model.RootModel;
 import at.irian.ankor.service.SimpleAnkorServer;
 
@@ -33,6 +34,7 @@ public class SimpleLocalApplicationService {
                 .withBean(beanName, bean);
         SimpleAnkorServer server = new SimpleAnkorServer(serverApp, "server");
         server.start();
+        ((ServiceBean) bean).setApplication(serverApp); // TODO hack
 
         DefaultApplication clientApp = SimpleApplication.create(RootModel.class);
         SimpleAnkorServer client = new SimpleAnkorServer(clientApp, "client");

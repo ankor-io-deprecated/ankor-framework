@@ -1,9 +1,9 @@
 package at.irian.ankor.sample.fx.view;
 
-import at.irian.ankor.ref.Ref;
-import at.irian.ankor.util.NilValue;
 import at.irian.ankor.fx.app.ActionCompleteCallback;
 import at.irian.ankor.fx.binding.BindingContext;
+import at.irian.ankor.ref.Ref;
+import at.irian.ankor.util.NilValue;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -54,8 +54,8 @@ public class AnimalDetailTabController implements Initializable {
                 Ref animalRef = getTabRef().sub("model").sub("animal");
 
                 // Bind Filter
-                bind(animalRef.sub("name"), name.textProperty(), bindingContext);
-                bind(animalRef.sub("type"), type.textProperty(), bindingContext);
+                bind(animalRef.sub("name"), name, bindingContext);
+                bind(animalRef.sub("type"), type, bindingContext);
                 name.textProperty().addListener(new ChangeListener<String>() {
                     @Override
                     public void changed(ObservableValue<? extends String> observableValue, String s, String s2) {

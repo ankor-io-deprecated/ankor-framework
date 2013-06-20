@@ -14,12 +14,12 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.Tab?>
-<BorderPane fx:controller="at.irian.ankor.sample.fx.view.MainController" xmlns:fx="http://javafx.com/fxml" prefHeight="500" prefWidth="400">
+<BorderPane  fx:controller="at.irian.ankor.sample.fx.view.MainController" xmlns:fx="http://javafx.com/fxml" prefHeight="500" prefWidth="400">
     <top>
         <VBox>
             <HBox prefHeight="20" spacing="5">
-                <Text text="User: " /><Text fx:id="userName"/>
-                <Text text="Server says: " /><Text fx:id="serverStatus"/>
+                <Text text="User: "/><Text fx:id="userName"/>
+                <Text text="Server says: "/><Text fx:id="serverStatus"/>
             </HBox>
             <HBox prefHeight="20" spacing="5">
                 <Button text="Animal Search" GridPane.columnIndex="1" GridPane.rowIndex="2"

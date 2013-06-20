@@ -1,12 +1,15 @@
 package at.irian.ankor.sample.fx.view;
 
-import at.irian.ankor.ref.Ref;
-import at.irian.ankor.util.NilValue;
 import at.irian.ankor.fx.app.ActionCompleteCallback;
 import at.irian.ankor.fx.binding.BindingContext;
+import at.irian.ankor.ref.Ref;
 import at.irian.ankor.sample.fx.server.model.Animal;
+import at.irian.ankor.sample.fx.server.model.AnimalFamily;
+import at.irian.ankor.sample.fx.server.model.AnimalType;
 import at.irian.ankor.sample.fx.view.model.AnimalSearchTab;
 import at.irian.ankor.sample.fx.view.model.Tab;
+import at.irian.ankor.util.NilValue;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -32,10 +35,14 @@ public class AnimalSearchTabController implements Initializable {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalSearchTabController.class);
     @FXML
     private javafx.scene.control.Tab tab;
+
     @FXML
     private TextInputControl name;
     @FXML
-    private TextInputControl type;
+    private ComboBox<AnimalType> type;
+    @FXML
+    private ComboBox<AnimalFamily> family;
+
     @FXML
     private TableView<Animal> animalTable;
     @FXML
@@ -62,9 +69,13 @@ public class AnimalSearchTabController implements Initializable {
             public void onComplete() {
                 Ref filterRef = getTabRef().sub("model").sub("filter");
 
-                // Bind Filter
-                bind(filterRef.sub("name"), name.textProperty(), bindingContext);
-                bind(filterRef.sub("type"), type.textProperty(), bindingContext);
+                type.setItems(FXCollections.<AnimalType>observableArrayList());
+
+                bind(filterRef.sub("name"), name, bindingContext);
+
+                bind(filterRef.sub("type"), filterRef.sub("types"), type, bindingContext);
+
+                bind(filterRef.sub("family"), filterRef.sub("families"), family, bindingContext);
             }
         });
     }
@@ -74,6 +85,7 @@ public class AnimalSearchTabController implements Initializable {
         return rootRef.sub(String.format("tabs.%s", tabId));
     }
 
+    @SuppressWarnings("unchecked")
     private void loadAnimals(final List<Animal> animals) {
 
         animalTable.getItems().setAll(animals);
