@@ -34,6 +34,7 @@ public class AppService {
         return application;
     }
 
+    @Deprecated
     public synchronized void executeAction(Ref contextRef, String actionMethod, String resultPath, ActionCompleteCallback cb) {
         Action completeAction = SimpleAction.create("cb");
         currentCallback = cb;
@@ -42,4 +43,58 @@ public class AppService {
                 .withResultIn(resultPath)
                 .onComplete(completeAction));
     }
+
+
+    public RMAExecution remoteMethod(String method) {
+        return new RMAExecution(method);
+    }
+
+    public class RMAExecution {
+        private RemoteMethodAction rma;
+        private Ref contextRef;
+        private ActionCompleteCallback cb;
+
+        public RMAExecution(String method) {
+            this.rma = RemoteMethodAction.create(method);
+        }
+
+        public RMAExecution inContext(Ref contextRef) {
+            this.contextRef = contextRef;
+            return this;
+        }
+
+        public RMAExecution withResultIn(Ref resultRef) {
+            rma = rma.withResultIn(resultRef.path());
+            return this;
+        }
+
+        public RMAExecution withResultIn(String resultPath) {
+            rma = rma.withResultIn(resultPath);
+            return this;
+        }
+
+        public RMAExecution setParam(String name, Object value) {
+            rma = rma.setParam(name, value);
+            return this;
+        }
+
+        public RMAExecution onComplete(ActionCompleteCallback cb) {
+            this.cb = cb;
+            Action completeAction = SimpleAction.create("cb");
+            rma = rma.onComplete(completeAction);
+            return this;
+        }
+
+        public void execute() {
+            fireRMAExecution(this);
+        }
+    }
+
+    private synchronized void fireRMAExecution(RMAExecution rmaExecution) {
+        currentCallback = rmaExecution.cb;
+        rmaExecution.contextRef.fire(rmaExecution.rma);
+    }
+
+
+
 }

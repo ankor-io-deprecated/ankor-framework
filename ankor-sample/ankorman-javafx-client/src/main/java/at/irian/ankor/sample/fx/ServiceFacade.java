@@ -3,6 +3,7 @@ package at.irian.ankor.sample.fx;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.fx.app.ActionCompleteCallback;
 import at.irian.ankor.fx.app.AppService;
+import at.irian.ankor.ref.RefFactory;
 
 /**
  * @author Thomas Spiegl
@@ -12,35 +13,61 @@ public class ServiceFacade {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ServiceFacade.class);
 
     private final AppService appService;
+    private RefFactory refFactory;
 
     public ServiceFacade(AppService appService) {
         this.appService = appService;
-    }
-
-    public void createAnimalSearchTab(String tabId, ActionCompleteCallback cb) {
-        Ref tabsRef = appService.getApplication().getRefFactory().rootRef().sub("tabs");
-        appService.executeAction(tabsRef, String.format("service.createAnimalSearchTab('%s')", tabId), "context." + tabId, cb);
-    }
-
-    public void createAnimalDetailTab(String tabId, ActionCompleteCallback cb) {
-        Ref tabsRef = appService.getApplication().getRefFactory().rootRef().sub("tabs");
-        appService.executeAction(tabsRef, String.format("service.createAnimalDetailTab('%s')", tabId), "context." + tabId, cb);
+        this.refFactory = appService.getApplication().getRefFactory();
     }
 
     public void initApplication(ActionCompleteCallback cb) {
-        Ref rootRef = appService.getApplication().getRefFactory().rootRef();
-        appService.executeAction(rootRef, "service.init()", rootRef.path(), cb);
+        Ref rootRef = refFactory.rootRef();
+        appService.remoteMethod("service.init()")
+                  .inContext(rootRef)
+                  .withResultIn(rootRef)
+                  .onComplete(cb)
+                  .execute();
+    }
+
+    public void createAnimalSearchTab(String tabId, ActionCompleteCallback cb) {
+        Ref tabsRef = refFactory.ref("root.tabs");
+        appService.remoteMethod("service.createAnimalSearchTab(tabId)")
+                .inContext(tabsRef)
+                .setParam("tabId", tabId)
+                .withResultIn(tabsRef.sub(tabId))
+                .onComplete(cb)
+                .execute();
+    }
+
+    public void createAnimalDetailTab(String tabId, ActionCompleteCallback cb) {
+        Ref tabsRef = refFactory.ref("root.tabs");
+        appService.remoteMethod("service.createAnimalDetailTab(tabId)")
+                  .inContext(tabsRef)
+                  .setParam("tabId", tabId)
+                  .withResultIn(tabsRef.sub(tabId))
+                  .onComplete(cb)
+                  .execute();
     }
 
     public void searchAnimals(Ref tabRef, ActionCompleteCallback cb) {
-        appService.executeAction(tabRef.sub("model"), "service.searchAnimals(context.filter)", "context.animals", cb);
+        appService.remoteMethod("service.searchAnimals(context.filter)")
+                  .inContext(tabRef.sub("model"))
+                  .withResultIn("context.animals")
+                  .onComplete(cb)
+                  .execute();
     }
 
     public void saveAnimal(Ref tabRef, ActionCompleteCallback cb) {
-        appService.executeAction(tabRef.sub("model"), "service.saveAnimal(context.animal)", null, cb);
+        appService.remoteMethod("service.saveAnimal(context.animal)")
+                  .inContext(tabRef.sub("model"))
+                  .onComplete(cb)
+                  .execute();
     }
 
     public void saveAnimals(Ref tabRef, ActionCompleteCallback cb) {
-        appService.executeAction(tabRef.sub("model"), "service.saveAnimals(context.animals)", null, cb);
+        appService.remoteMethod("service.saveAnimals(context.animals)")
+                  .inContext(tabRef.sub("model"))
+                  .onComplete(cb)
+                  .execute();
     }
 }
