@@ -73,6 +73,11 @@ class ELRef extends BaseRef {
     }
 
     @Override
+    public Ref sub(int index) {
+        return ELRefUtils.subRef(this, index);
+    }
+
+    @Override
     public Ref parent() {
         return ELRefUtils.parentRef(this);
     }

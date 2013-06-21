@@ -38,6 +38,12 @@ public interface Ref {
     Ref sub(String subPath);
 
     /**
+     * @param index index
+     * @return Ref to the indexed array element of the model object referenced by this Ref
+     */
+    Ref sub(int index);
+
+    /**
      * Returns an unwatched Ref for the model object referenced by this Ref. Calls to the {@link #setValue(Object)}
      * method of an unwatched Ref do not cause a change event.
      * @return unwatched Ref to the model object referenced by this Ref

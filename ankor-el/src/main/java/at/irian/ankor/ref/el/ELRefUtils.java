@@ -52,6 +52,11 @@ final class ELRefUtils {
         return ref(refContext, refContext.getPathSyntax().concat(ref.path(), subPath));
     }
 
+    static Ref subRef(ELRef ref, int index) {
+        ELRefContext refContext = ref.refContext();
+        return ref(refContext, refContext.getPathSyntax().addArrayIdx(ref.path(), index));
+    }
+
     static String path(ELRef elRef) {
         return valueExpressionToPath(elRef.valueExpression().getExpressionString());
     }
