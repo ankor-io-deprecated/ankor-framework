@@ -1,10 +1,11 @@
 package at.irian.ankor.el;
 
 import at.irian.ankor.ref.Ref;
+import com.typesafe.config.Config;
 
 import javax.el.*;
 import java.beans.FeatureDescriptor;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Iterator;
 
 /**
@@ -17,11 +18,9 @@ public class ModelContextELContext extends ELContext {
     private FunctionMapper functionMapper;
     private VariableMapper variableMapper;
 
-    public ModelContextELContext(ELContext baseELContext,
-                                 String contextVarName,
-                                 Ref contextRef) {
+    public ModelContextELContext(ELContext baseELContext, Config config, Ref modelContext) {
         this.elResolver = new CompositeELResolver();
-        this.elResolver.add(new ModelContextELResolver(contextVarName, contextRef));
+        this.elResolver.add(new ModelContextELResolver(config, modelContext));
         this.elResolver.add(baseELContext.getELResolver());
         this.functionMapper = baseELContext.getFunctionMapper();
         this.variableMapper = baseELContext.getVariableMapper();
@@ -46,11 +45,13 @@ public class ModelContextELContext extends ELContext {
     private static class ModelContextELResolver extends ELResolver {
 
         protected final String contextVarName;
-        protected final Ref contextRef;
+        protected final String contextRefVarName;
+        protected final Ref    contextRef;
 
-        public ModelContextELResolver(String contextVarName, Ref contextRef) {
-            this.contextVarName = contextVarName;
-            this.contextRef = contextRef;
+        public ModelContextELResolver(Config config, Ref modelContext) {
+            this.contextVarName     = config.getString("ankor.variable-names.context");
+            this.contextRefVarName  = config.getString("ankor.variable-names.contextRef");
+            this.contextRef = modelContext;
         }
 
         @Override
@@ -58,6 +59,9 @@ public class ModelContextELContext extends ELContext {
             if (base == null && contextVarName.equals(property)) {
                 context.setPropertyResolved(true);
                 return contextRef.getValue();
+            } else if (base == null && contextRefVarName.equals(property)) {
+                context.setPropertyResolved(true);
+                return contextRef;
             }
             return null;
         }
@@ -67,6 +71,9 @@ public class ModelContextELContext extends ELContext {
             if (base == null && contextVarName.equals(property)) {
                 context.setPropertyResolved(true);
                 return Object.class;
+            } else if (base == null && contextRefVarName.equals(property)) {
+                context.setPropertyResolved(true);
+                return Ref.class;
             }
             return null;
         }
@@ -76,23 +83,32 @@ public class ModelContextELContext extends ELContext {
             if (base == null && contextVarName.equals(property)) {
                 context.setPropertyResolved(true);
                 contextRef.setValue(value);
+            } else if (base == null && contextRefVarName.equals(property)) {
+                throw new PropertyNotWritableException(contextRefVarName);
             }
         }
 
         @Override
         public boolean isReadOnly(ELContext context, Object base, Object property) {
-            return false;
+            return base == null && contextRefVarName.equals(property);
         }
 
         @Override
         public Iterator<FeatureDescriptor> getFeatureDescriptors(ELContext context, Object base) {
             if (base == null) {
-                FeatureDescriptor featureDescriptor = new FeatureDescriptor();
-                featureDescriptor.setName(contextVarName);
-                featureDescriptor.setDisplayName(contextVarName);
-                featureDescriptor.setExpert(true);
-                featureDescriptor.setShortDescription(contextVarName + " ref");
-                return Collections.singleton(featureDescriptor).iterator();
+                FeatureDescriptor fd1 = new FeatureDescriptor();
+                fd1.setName(contextVarName);
+                fd1.setDisplayName(contextVarName);
+                fd1.setExpert(false);
+                fd1.setShortDescription("value of the current context");
+
+                FeatureDescriptor fd2 = new FeatureDescriptor();
+                fd2.setName(contextRefVarName);
+                fd2.setDisplayName(contextRefVarName);
+                fd2.setExpert(true);
+                fd2.setShortDescription("reference to the current context");
+
+                return Arrays.asList(fd1, fd2).iterator();
             }
             return null;
         }

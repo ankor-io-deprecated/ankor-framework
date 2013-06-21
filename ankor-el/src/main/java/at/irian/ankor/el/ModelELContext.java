@@ -1,6 +1,7 @@
 package at.irian.ankor.el;
 
 import at.irian.ankor.application.ModelHolder;
+import com.typesafe.config.Config;
 
 import javax.el.*;
 import java.beans.FeatureDescriptor;
@@ -17,13 +18,10 @@ public class ModelELContext extends ELContext {
     private FunctionMapper functionMapper;
     private VariableMapper variableMapper;
 
-    public ModelELContext(ELContext baseELContext,
-                          ModelHolder modelHolder,
-                          String modelRootVarName,
-                          String modelHolderVarName) {
+    public ModelELContext(ELContext baseELContext, ModelHolder modelHolder, Config config) {
         this.elResolver = new CompositeELResolver();
-        this.elResolver.add(new ModelRootELResolver(modelRootVarName, modelHolder));
-        this.elResolver.add(new ModelHolderELResolver(modelHolderVarName, modelHolder));
+        this.elResolver.add(new ModelRootELResolver(config, modelHolder));
+        this.elResolver.add(new ModelHolderELResolver(config, modelHolder));
         this.elResolver.add(baseELContext.getELResolver());
         this.functionMapper = baseELContext.getFunctionMapper();
         this.variableMapper = baseELContext.getVariableMapper();
@@ -47,8 +45,8 @@ public class ModelELContext extends ELContext {
 
     private static class ModelHolderELResolver extends SingleReadonlyVariableELResolver {
 
-        public ModelHolderELResolver(String modelHolderVarName, ModelHolder modelHolder) {
-            super(modelHolderVarName, modelHolder);
+        public ModelHolderELResolver(Config config, ModelHolder modelHolder) {
+            super(config.getString("ankor.variable-names.modelHolder"), modelHolder);
         }
 
         @Override
@@ -71,21 +69,10 @@ public class ModelELContext extends ELContext {
 
         private final ModelHolder modelHolder;
         private final String modelRootVarName;
-        private final FeatureDescriptor featureDescriptor;
 
-        public ModelRootELResolver(String modelRootVarName, ModelHolder modelHolder) {
+        public ModelRootELResolver(Config config, ModelHolder modelHolder) {
             this.modelHolder = modelHolder;
-            this.modelRootVarName = modelRootVarName;
-            this.featureDescriptor = createFeatureDescriptor(modelRootVarName);
-        }
-
-        private FeatureDescriptor createFeatureDescriptor(String modelRootVarName) {
-            FeatureDescriptor featureDescriptor = new FeatureDescriptor();
-            featureDescriptor.setName(modelRootVarName);
-            featureDescriptor.setDisplayName(modelRootVarName);
-            featureDescriptor.setExpert(false);
-            featureDescriptor.setShortDescription("root of the current model");
-            return featureDescriptor;
+            this.modelRootVarName    = config.getString("ankor.variable-names.modelRoot");
         }
 
         @Override
@@ -122,7 +109,12 @@ public class ModelELContext extends ELContext {
         @Override
         public Iterator<FeatureDescriptor> getFeatureDescriptors(ELContext context, Object base) {
             if (base == null) {
-                return Collections.singleton(featureDescriptor).iterator();
+                FeatureDescriptor fd1 = new FeatureDescriptor();
+                fd1.setName(modelRootVarName);
+                fd1.setDisplayName(modelRootVarName);
+                fd1.setExpert(false);
+                fd1.setShortDescription("root of the current model");
+                return Collections.singleton(fd1).iterator();
             }
             return null;
         }

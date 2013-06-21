@@ -1,6 +1,7 @@
 package at.irian.ankor.application;
 
 import at.irian.ankor.ref.RefFactory;
+import com.typesafe.config.Config;
 
 /**
  * @author Manfred Geiler

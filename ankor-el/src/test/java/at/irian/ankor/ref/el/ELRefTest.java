@@ -5,6 +5,8 @@ import at.irian.ankor.el.ModelELContext;
 import at.irian.ankor.el.StandardELContext;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefFactory;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,13 +26,12 @@ public class ELRefTest {
     public void setup() {
         this.modelHolder = new ModelHolder(Object.class);
         ExpressionFactory expressionFactory = ExpressionFactory.newInstance();
-        ModelELContext modelELContext = new ModelELContext(new StandardELContext(),
-                                                      modelHolder, null, null);
-        ELRefContext refContext = new ELRefContext(expressionFactory,
-                                                   modelELContext,
-                                                   null,
-                                                   null,
-                                                   "root", "context", null);
+        Config config = ConfigFactory.load();
+        ModelELContext modelELContext = new ModelELContext(new StandardELContext(), modelHolder, config);
+        ELRefContext refContext = ELRefContext.create(expressionFactory,
+                                                      modelELContext,
+                                                      null, null,
+                                                      config);
         this.refFactory = new ELRefFactory(refContext);
     }
 

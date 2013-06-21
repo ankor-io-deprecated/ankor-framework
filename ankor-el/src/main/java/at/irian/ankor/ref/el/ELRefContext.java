@@ -1,12 +1,14 @@
 package at.irian.ankor.ref.el;
 
 import at.irian.ankor.el.ModelContextELContext;
+import at.irian.ankor.el.SingleReadonlyVariableELContext;
 import at.irian.ankor.event.ActionNotifier;
 import at.irian.ankor.event.ChangeNotifier;
 import at.irian.ankor.path.PathSyntax;
 import at.irian.ankor.path.el.ELPathSyntax;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
+import com.typesafe.config.Config;
 
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
@@ -21,44 +23,66 @@ public class ELRefContext implements RefContext {
     private final ELContext elContext;
     private final ChangeNotifier changeNotifier;
     private final ActionNotifier actionNotifier;
+    private final Config config;
     private final String modelRootVarName;
-    private final String contextVarName;
     private final Ref modelContext;
 
-    public ELRefContext(ExpressionFactory expressionFactory,
-                        ELContext elContext,
-                        ChangeNotifier changeNotifier,
-                        ActionNotifier actionNotifier,
-                        String modelRootVarName,
-                        String contextVarName, Ref modelContext) {
+    private ELRefContext(ExpressionFactory expressionFactory,
+                         ELContext elContext,
+                         ChangeNotifier changeNotifier,
+                         ActionNotifier actionNotifier,
+                         Config config,
+                         String modelRootVarName,
+                         Ref modelContext) {
         this.expressionFactory = expressionFactory;
         this.elContext = elContext;
         this.changeNotifier = changeNotifier;
         this.actionNotifier = actionNotifier;
+        this.config = config;
         this.modelRootVarName = modelRootVarName;
-        this.contextVarName = contextVarName;
         this.modelContext = modelContext;
     }
 
+    public static ELRefContext create(ExpressionFactory expressionFactory,
+                                      ELContext elContext,
+                                      ChangeNotifier changeNotifier,
+                                      ActionNotifier actionNotifier,
+                                      Config config) {
+        ELRefContext refContext = new ELRefContext(expressionFactory,
+                                                   elContext,
+                                                   changeNotifier,
+                                                   actionNotifier,
+                                                   config,
+                                                   config.getString("ankor.variable-names.modelRoot"),
+                                                   null);
+        ELContext rootRefELContext = new SingleReadonlyVariableELContext(elContext,
+                                                             config.getString("ankor.variable-names.modelRootRef"),
+                                                             ELRefUtils.rootRef(refContext));
+        return refContext.with(rootRefELContext);
+    }
+
+
     public ELRefContext with(ELContext elContext) {
-        return new ELRefContext(expressionFactory, elContext, changeNotifier, actionNotifier, modelRootVarName,
-                                "context", modelContext);
+        return new ELRefContext(expressionFactory, elContext, changeNotifier, actionNotifier, config,
+                                modelRootVarName,
+                                modelContext);
     }
 
     public ELRefContext withNoModelChangeNotifier() {
-        return new ELRefContext(expressionFactory, elContext, null, actionNotifier, modelRootVarName,
-                                "context",
+        return new ELRefContext(expressionFactory, elContext, null, actionNotifier, config,
+                                modelRootVarName,
                                 modelContext);
     }
 
     @Override
     public ELRefContext withModelContext(Ref modelContext) {
-        ModelContextELContext elContext = new ModelContextELContext(this.elContext, contextVarName, modelContext);
+        ModelContextELContext elContext = new ModelContextELContext(this.elContext, config, modelContext);
         return new ELRefContext(expressionFactory,
                                 elContext,
                                 changeNotifier,
                                 actionNotifier,
-                                modelRootVarName, "context", modelContext);
+                                config,
+                                modelRootVarName, modelContext);
     }
 
     public ELContext getELContext() {

@@ -2,6 +2,7 @@ package at.irian.ankor.application;
 
 import at.irian.ankor.el.BeanResolverELContext;
 import at.irian.ankor.el.StandardELContext;
+import com.typesafe.config.ConfigFactory;
 
 import javax.el.ExpressionFactory;
 
@@ -15,7 +16,7 @@ public class DefaultApplication extends ELApplication {
 
     public DefaultApplication(Class<?> modelType, BeanResolver beanResolver) {
         super(modelType,
-              new DefaultConfig(),
+              ConfigFactory.load(),
               ExpressionFactory.newInstance(),
               new BeanResolverELContext(new StandardELContext(), beanResolver));
         this.beanResolver = beanResolver;

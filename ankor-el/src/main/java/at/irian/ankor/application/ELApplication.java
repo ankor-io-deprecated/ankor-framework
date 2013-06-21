@@ -4,6 +4,7 @@ import at.irian.ankor.el.ModelELContext;
 import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.ref.el.ELRefContext;
 import at.irian.ankor.ref.el.ELRefFactory;
+import com.typesafe.config.Config;
 
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
@@ -23,17 +24,12 @@ public class ELApplication extends Application {
                          ELContext baseELContext) {
         super(modelType, config);
         this.expressionFactory = expressionFactory;
-        ELContext modelELContext = new ModelELContext(baseELContext,
-                                                      getModelHolder(),
-                                                      getConfig().getModelRootVarName(),
-                                                      getConfig().getModelHolderVarName());
-        ELRefContext refContext = new ELRefContext(expressionFactory,
-                                                   modelELContext,
-                                                   new DefaultChangeNotifier(getListenerRegistry()),
-                                                   new DefaultActionNotifier(getListenerRegistry()),
-                                                   config.getModelRootVarName(),
-                                                   config.getContextVarName(),
-                                                   null);
+        ELContext modelELContext = new ModelELContext(baseELContext, getModelHolder(), config);
+        ELRefContext refContext = ELRefContext.create(expressionFactory,
+                                                      modelELContext,
+                                                      new DefaultChangeNotifier(getListenerRegistry()),
+                                                      new DefaultActionNotifier(getListenerRegistry()),
+                                                      config);
         this.refFactory = new ELRefFactory(refContext);
     }
 
