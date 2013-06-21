@@ -99,7 +99,7 @@ public class ServiceBean {
         }
     }
 
-    public Tab createAnimalSearchTab(final String tabId) {
+    public Tab createAnimalSearchTab(final Ref tabsRef, final String tabId) {
         Tab<AnimalSearchTab> tab = new Tab<AnimalSearchTab>(tabId);
         tab.setModel(new AnimalSearchTab());
         List<AnimalType> types = new ArrayList<AnimalType>(AnimalType.values().length + 1);
@@ -107,9 +107,8 @@ public class ServiceBean {
         types.add(null);
         tab.getModel().getFilter().setTypes(types);
         tab.getModel().getFilter().setFamilies(new ArrayList<AnimalFamily>(0));
-        application.getListenerRegistry().registerRemoteChangeListener(
-                application.getRefFactory().rootRef().sub("tabs")
-                        .sub(tabId).sub("model").sub("filter").sub("type"), new ChangeListener() {
+        application.getListenerRegistry()
+                   .registerRemoteChangeListener(tabsRef.sub(tabId).sub("model.filter.type"), new ChangeListener() {
             @Override
             public void processChange(Ref modelContext, Ref watchedProperty, Ref changedProperty) {
                 AnimalType type = changedProperty.getValue();
@@ -133,8 +132,7 @@ public class ServiceBean {
                 } else {
                     families = new ArrayList<AnimalFamily>(0);
                 }
-                application.getRefFactory().rootRef().sub("tabs")
-                        .sub(tabId).sub("model").sub("filter").sub("families").setValue(families); // TODO how to get this ref as a method param?
+                tabsRef.sub(tabId).sub("model.filter.families").setValue(families);
             }
         });
         return tab;
