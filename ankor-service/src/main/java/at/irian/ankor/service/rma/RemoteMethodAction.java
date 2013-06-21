@@ -2,6 +2,10 @@ package at.irian.ankor.service.rma;
 
 import at.irian.ankor.action.Action;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author MGeiler (Manfred Geiler)
  */
@@ -13,38 +17,52 @@ public class RemoteMethodAction implements Action {
     private final boolean autoRefreshActionContext;
     private final Action completeAction;
     private final Action errorAction;
+    private final Map<String, Object> params;
 
     private RemoteMethodAction(String methodExpression,
                                String resultPath,
                                boolean autoRefreshActionContext,
                                Action completeAction,
-                               Action errorAction) {
+                               Action errorAction, Map<String, Object> params) {
         this.methodExpression = methodExpression;
         this.resultPath = resultPath;
         this.autoRefreshActionContext = autoRefreshActionContext;
         this.completeAction = completeAction;
         this.errorAction = errorAction;
+        this.params = params;
     }
 
-
     public static RemoteMethodAction create(String methodExpression) {
-        return new RemoteMethodAction(methodExpression, null, false, null, null);
+        return new RemoteMethodAction(methodExpression, null, false, null, null, null);
     }
 
     public RemoteMethodAction withActionContextAutoRefresh() {
-        return new RemoteMethodAction(methodExpression, resultPath, true, completeAction, errorAction);
+        return new RemoteMethodAction(methodExpression, resultPath, true, completeAction, errorAction, params);
     }
 
     public RemoteMethodAction withResultIn(String resultPath) {
-        return new RemoteMethodAction(methodExpression, resultPath, autoRefreshActionContext, completeAction, errorAction);
+        return new RemoteMethodAction(methodExpression, resultPath, autoRefreshActionContext, completeAction, errorAction,
+                                      params);
     }
 
     public RemoteMethodAction onComplete(Action action) {
-        return new RemoteMethodAction(methodExpression, resultPath, autoRefreshActionContext, action, errorAction);
+        return new RemoteMethodAction(methodExpression, resultPath, autoRefreshActionContext, action, errorAction,
+                                      params);
     }
 
     public RemoteMethodAction onError(Action action) {
-        return new RemoteMethodAction(methodExpression, resultPath, autoRefreshActionContext, completeAction, action);
+        return new RemoteMethodAction(methodExpression, resultPath, autoRefreshActionContext, completeAction, action,
+                                      params);
+    }
+
+    public RemoteMethodAction setParam(String name, Object value) {
+        Map<String, Object> newParams = new HashMap<String, Object>();
+        if (params != null) {
+            newParams.putAll(params);
+        }
+        newParams.put(name, value);
+        return new RemoteMethodAction(methodExpression, resultPath, autoRefreshActionContext, completeAction, errorAction,
+                                      newParams);
     }
 
     public String getMethodExpression() {
@@ -70,6 +88,10 @@ public class RemoteMethodAction implements Action {
 
     public Action getErrorAction() {
         return errorAction;
+    }
+
+    public Map<String, Object> getParams() {
+        return params != null ? params : Collections.<String,Object>emptyMap();
     }
 
     @Override

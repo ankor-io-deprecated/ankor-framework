@@ -1,6 +1,8 @@
 package at.irian.ankor.service.rma;
 
 import at.irian.ankor.action.Action;
+import at.irian.ankor.application.BeanResolver;
+import at.irian.ankor.el.BeanResolverELContext;
 import at.irian.ankor.event.ActionListener;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefFactory;
@@ -9,6 +11,7 @@ import at.irian.ankor.ref.el.ELRefContext;
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
+import java.util.Map;
 
 /**
 * @author MGeiler (Manfred Geiler)
@@ -35,7 +38,7 @@ public class RemoteMethodActionListener implements ActionListener {
 
         Object result;
         try {
-            result = executeMethod(modelContext, action.getMethodExpression());
+            result = executeMethod(modelContext, action.getMethodExpression(), action.getParams());
         } catch (Exception e) {
             handleError(modelContext, action, e);
             return;
@@ -73,13 +76,26 @@ public class RemoteMethodActionListener implements ActionListener {
         }
     }
 
-    private Object executeMethod(Ref modelContext, String methodExpression) {
+    private Object executeMethod(Ref modelContext, String methodExpression, final Map<String, Object> params) {
         ELRefContext refContext = (ELRefContext) modelContext.refContext();
-        ELContext execELContext = refContext.withModelContext(modelContext).getELContext();
-        ValueExpression ve = expressionFactory.createValueExpression(execELContext,
+        ELContext modelContextELContext = refContext.withModelContext(modelContext).getELContext();
+
+        ELContext executionELContext;
+        if (params != null) {
+            executionELContext = new BeanResolverELContext(modelContextELContext, new BeanResolver() {
+                @Override
+                public Object resolveByName(String beanName) {
+                    return params.get(beanName);
+                }
+            });
+        } else {
+            executionELContext = modelContextELContext;
+        }
+
+        ValueExpression ve = expressionFactory.createValueExpression(executionELContext,
                                                                      "#{" + methodExpression + "}",
                                                                      Object.class);
-        return ve.getValue(execELContext);
+        return ve.getValue(executionELContext);
     }
 
 }
