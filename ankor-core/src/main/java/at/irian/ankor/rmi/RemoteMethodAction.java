@@ -1,4 +1,4 @@
-package at.irian.ankor.service.rma;
+package at.irian.ankor.rmi;
 
 import at.irian.ankor.action.Action;
 
@@ -12,12 +12,17 @@ import java.util.Map;
 public class RemoteMethodAction implements Action {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RemoteMethodAction.class);
 
-    private final String methodExpression;
-    private final String resultPath;
-    private final boolean autoRefreshActionContext;
-    private final Action completeAction;
-    private final Action errorAction;
-    private final Map<String, Object> params;
+    private String methodExpression;
+    private String resultPath;
+    private boolean autoRefreshActionContext;
+    private Action completeAction;
+    private Action errorAction;
+    private Map<String, Object> params;
+
+    /**
+     * for deserialization only
+     */
+    protected RemoteMethodAction() {}
 
     private RemoteMethodAction(String methodExpression,
                                String resultPath,
@@ -99,7 +104,10 @@ public class RemoteMethodAction implements Action {
         return "RemoteMethodAction{" +
                "methodExpression='" + methodExpression + '\'' +
                ", resultPath='" + resultPath + '\'' +
+               ", autoRefreshActionContext=" + autoRefreshActionContext +
                ", completeAction=" + completeAction +
-               '}';
+               ", errorAction=" + errorAction +
+               ", params=" + params +
+               "}";
     }
 }

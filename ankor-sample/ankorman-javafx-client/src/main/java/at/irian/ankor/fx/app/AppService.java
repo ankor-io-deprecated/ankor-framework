@@ -1,7 +1,7 @@
 package at.irian.ankor.fx.app;
 
 import at.irian.ankor.action.Action;
-import at.irian.ankor.service.rma.RemoteMethodAction;
+import at.irian.ankor.rmi.RemoteMethodAction;
 import at.irian.ankor.action.SimpleAction;
 import at.irian.ankor.application.Application;
 import at.irian.ankor.event.ActionListener;

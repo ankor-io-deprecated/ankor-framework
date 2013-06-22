@@ -2,6 +2,7 @@
   <dictionary name="manolito">
     <words>
       <w>ankor</w>
+      <w>deserialization</w>
       <w>deserialize</w>
       <w>synchronizer</w>
       <w>unregister</w>

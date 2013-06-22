@@ -1,6 +1,7 @@
 package at.irian.ankor.service;
 
-import at.irian.ankor.service.rma.RemoteMethodActionListener;
+import at.irian.ankor.rmi.ELRemoteMethodActionListener;
+import at.irian.ankor.rmi.RemoteMethodActionListener;
 import at.irian.ankor.application.ELApplication;
 
 /**
@@ -22,7 +23,7 @@ public abstract class ELAnkorServer extends AnkorServerBase {
     protected void registerDefaultListeners() {
         ELApplication application = (ELApplication)getApplication();
         RemoteMethodActionListener remoteMethodActionListener
-                = new RemoteMethodActionListener(application.getExpressionFactory(),
+                = new ELRemoteMethodActionListener(application.getExpressionFactory(),
                                                  application.getRefFactory());
         getApplication().getListenerRegistry().registerRemoteActionListener(null, remoteMethodActionListener);
     }

@@ -1,6 +1,7 @@
 package at.irian.ankor.messaging;
 
 import at.irian.ankor.action.Action;
+import at.irian.ankor.ref.Ref;
 
 /**
  * @author Manfred Geiler
@@ -8,14 +9,22 @@ import at.irian.ankor.action.Action;
 public class ActionMessage extends Message {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ActionMessage.class);
 
+    private Ref modelContext;
     private Action action;
 
-    protected ActionMessage() {
+    /**
+     * for deserialization only
+     */
+    protected ActionMessage() {}
+
+    protected ActionMessage(String messageId, Ref modelContext, Action action) {
+        super(messageId);
+        this.modelContext = modelContext;
+        this.action = action;
     }
 
-    public ActionMessage(String messageId, Action action) {
-        super(messageId);
-        this.action = action;
+    public Ref getModelContext() {
+        return modelContext;
     }
 
     public Action getAction() {
@@ -25,7 +34,9 @@ public class ActionMessage extends Message {
     @Override
     public String toString() {
         return "ActionMessage{" +
-               "action=" + action +
-               "} " + super.toString();
+               "messageId='" + getMessageId() + '\'' +
+               ", modelContext=" + modelContext +
+               ", action=" + action +
+               "}";
     }
 }

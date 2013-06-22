@@ -18,6 +18,11 @@ public abstract class MessageBus<S> {
         this.messageDeserializer = messageDeserializer;
     }
 
+    protected MessageBus(MessageMapper<S> messageMapper) {
+        this.messageSerializer = messageMapper;
+        this.messageDeserializer = messageMapper;
+    }
+
     public void sendMessage(Message msg) {
         sendSerializedMessage(messageSerializer.serialize(msg));
     }

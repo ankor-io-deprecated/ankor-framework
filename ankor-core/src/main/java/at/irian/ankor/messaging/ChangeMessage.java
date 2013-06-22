@@ -8,14 +8,22 @@ import at.irian.ankor.ref.Ref;
 public class ChangeMessage extends Message {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ChangeMessage.class);
 
+    private Ref modelContext;
     private Change change;
 
-    protected ChangeMessage() {
+    /**
+     * for deserialization only
+     */
+    protected ChangeMessage() {}
+
+    protected ChangeMessage(String messageId, Ref modelContext, Ref changedProperty, Object newValue) {
+        super(messageId);
+        this.modelContext = modelContext;
+        this.change = new Change(modelContext, changedProperty, newValue);
     }
 
-    public ChangeMessage(String messageId, Ref modelContext, Ref changedProperty, Object newValue) {
-        super(messageId);
-        this.change = new Change(modelContext, changedProperty, newValue);
+    public Ref getModelContext() {
+        return modelContext;
     }
 
     public Change getChange() {
@@ -23,20 +31,14 @@ public class ChangeMessage extends Message {
     }
 
     public static class Change {
-        private Ref modelContext;
         private Ref changedProperty;
         private Object newValue;
 
         Change() {}
 
         Change(Ref modelContext, Ref changedProperty, Object newValue) {
-            this.modelContext = modelContext;
             this.changedProperty = changedProperty;
             this.newValue = newValue;
-        }
-
-        public Ref getModelContext() {
-            return modelContext;
         }
 
         public Ref getChangedProperty() {
@@ -46,6 +48,22 @@ public class ChangeMessage extends Message {
         public Object getNewValue() {
             return newValue;
         }
+
+        @Override
+        public String toString() {
+            return "Change{" +
+                   "changedProperty=" + changedProperty +
+                   ", newValue=" + newValue +
+                   "}";
+        }
     }
 
+    @Override
+    public String toString() {
+        return "ChangeMessage{" +
+               "messageId='" + getMessageId() + '\'' +
+               ", modelContext=" + modelContext +
+               ", change=" + change +
+               "}";
+    }
 }

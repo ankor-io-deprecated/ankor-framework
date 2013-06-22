@@ -29,13 +29,6 @@
         </dependency>
 
         <dependency>
-            <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-service</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-mapper-asl</artifactId>
             <scope>compile</scope>

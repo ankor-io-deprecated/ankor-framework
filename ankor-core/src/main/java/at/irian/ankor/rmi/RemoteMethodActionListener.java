@@ -1,29 +1,23 @@
-package at.irian.ankor.service.rma;
+package at.irian.ankor.rmi;
 
 import at.irian.ankor.action.Action;
-import at.irian.ankor.application.BeanResolver;
-import at.irian.ankor.el.BeanResolverELContext;
 import at.irian.ankor.event.ActionListener;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefFactory;
-import at.irian.ankor.ref.el.ELRefContext;
 
-import javax.el.ELContext;
-import javax.el.ExpressionFactory;
-import javax.el.ValueExpression;
 import java.util.Map;
 
 /**
-* @author MGeiler (Manfred Geiler)
-*/
-public class RemoteMethodActionListener implements ActionListener {
+ * @author Manfred Geiler
+ */
+public abstract class RemoteMethodActionListener implements ActionListener {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RemoteMethodActionListener.class);
 
-    private final ExpressionFactory expressionFactory;
-    private final RefFactory refFactory;
+    protected final RefFactory refFactory;
 
-    public RemoteMethodActionListener(ExpressionFactory expressionFactory, RefFactory refFactory) {
-        this.expressionFactory = expressionFactory;
+    public RemoteMethodActionListener(
+            RefFactory refFactory) {
         this.refFactory = refFactory;
     }
 
@@ -55,7 +49,7 @@ public class RemoteMethodActionListener implements ActionListener {
 
     private void handleResult(Ref modelContext, String resultPath, Object result) {
         if (resultPath != null) {
-            ELRefContext refContext = (ELRefContext) modelContext.refContext();
+            RefContext refContext = modelContext.refContext();
             Ref resultRef = refFactory.ref(resultPath, refContext.withModelContext(modelContext));
             resultRef.setValue(result);
         }
@@ -76,26 +70,5 @@ public class RemoteMethodActionListener implements ActionListener {
         }
     }
 
-    private Object executeMethod(Ref modelContext, String methodExpression, final Map<String, Object> params) {
-        ELRefContext refContext = (ELRefContext) modelContext.refContext();
-        ELContext modelContextELContext = refContext.withModelContext(modelContext).getELContext();
-
-        ELContext executionELContext;
-        if (params != null) {
-            executionELContext = new BeanResolverELContext(modelContextELContext, new BeanResolver() {
-                @Override
-                public Object resolveByName(String beanName) {
-                    return params.get(beanName);
-                }
-            });
-        } else {
-            executionELContext = modelContextELContext;
-        }
-
-        ValueExpression ve = expressionFactory.createValueExpression(executionELContext,
-                                                                     "#{" + methodExpression + "}",
-                                                                     Object.class);
-        return ve.getValue(executionELContext);
-    }
-
+    protected abstract Object executeMethod(Ref modelContext, String methodExpression, Map<String, Object> params);
 }

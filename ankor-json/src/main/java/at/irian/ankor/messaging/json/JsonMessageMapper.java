@@ -4,7 +4,8 @@ import at.irian.ankor.action.Action;
 import at.irian.ankor.action.SimpleAction;
 import at.irian.ankor.messaging.*;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.service.rma.RemoteMethodAction;
+import at.irian.ankor.ref.RefFactory;
+import at.irian.ankor.rmi.RemoteMethodAction;
 import org.codehaus.jackson.*;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonMethod;
@@ -23,18 +24,19 @@ import java.util.Map;
 /**
  * @author Manfred Geiler
  */
-public class JsonMessageMapper implements MessageSerializer<String>, MessageDeserializer<String> {
+public class JsonMessageMapper implements MessageMapper<String> {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(JsonMessageMapper.class);
 
     private final ObjectMapper mapper;
 
-    public JsonMessageMapper() {
+    public JsonMessageMapper(RefFactory refFactory) {
         SimpleModule module =
                 new SimpleModule("PolymorphicMessageDeserializerModule",
                                  new Version(1, 0, 0, null));
         module.addDeserializer(Message.class, new MessageDeserializer());
         module.addDeserializer(Action.class, new ActionDeserializer());
         module.addSerializer(Ref.class, new RefSerializer());
+        module.addDeserializer(Ref.class, new RefDeserializer(refFactory));
 
         mapper = new ObjectMapper();
         mapper.setVisibility(JsonMethod.FIELD, JsonAutoDetect.Visibility.ANY);
@@ -135,4 +137,20 @@ public class JsonMessageMapper implements MessageSerializer<String>, MessageDese
         }
     }
 
+    class RefDeserializer extends StdDeserializer<Ref> {
+
+        private final RefFactory refFactory;
+
+        RefDeserializer(RefFactory refFactory) {
+            super(Ref.class);
+            this.refFactory = refFactory;
+        }
+
+        @Override
+        public Ref deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
+            ObjectMapper mapper = (ObjectMapper) jp.getCodec();
+            String path = mapper.readValue(jp, String.class);
+            return refFactory.ref(path);
+        }
+    }
 }
