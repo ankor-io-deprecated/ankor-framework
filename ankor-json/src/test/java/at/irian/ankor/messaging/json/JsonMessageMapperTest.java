@@ -63,7 +63,7 @@ public class JsonMessageMapperTest {
         Assert.assertEquals(ChangeMessage.class, desMsg.getClass());
         ChangeMessage changeMsg = (ChangeMessage) desMsg;
         ChangeMessage.Change change = changeMsg.getChange();
-        Assert.assertEquals("root", change.getChangedProperty().path());
+        Assert.assertEquals("root.test1", change.getChangedProperty().path());
     }
 
     @Test
@@ -80,7 +80,7 @@ public class JsonMessageMapperTest {
         Assert.assertEquals(ChangeMessage.class, desMsg.getClass());
         ChangeMessage changeMsg = (ChangeMessage) desMsg;
         ChangeMessage.Change change = changeMsg.getChange();
-        Assert.assertEquals("root.test1", change.getChangedProperty().path());
+        Assert.assertEquals("root", change.getChangedProperty().path());
     }
 
     @Test

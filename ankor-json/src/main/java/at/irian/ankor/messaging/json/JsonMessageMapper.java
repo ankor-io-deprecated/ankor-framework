@@ -2,21 +2,20 @@ package at.irian.ankor.messaging.json;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.SimpleAction;
-import at.irian.ankor.messaging.*;
+import at.irian.ankor.messaging.ActionMessage;
+import at.irian.ankor.messaging.ChangeMessage;
+import at.irian.ankor.messaging.Message;
+import at.irian.ankor.messaging.MessageMapper;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.rmi.RemoteMethodAction;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.Version;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -52,6 +51,8 @@ public class JsonMessageMapper implements MessageMapper<String> {
         mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
 
         mapper.configure(JsonGenerator.Feature.QUOTE_FIELD_NAMES, false);
+
+        mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
 
         mapper.enableDefaultTypingAsProperty(ObjectMapper.DefaultTyping.JAVA_LANG_OBJECT, "@javaType");
     }
