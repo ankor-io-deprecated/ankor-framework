@@ -21,8 +21,8 @@ public class Tests {
     @Test
     public void test_animal_search() throws Exception {
 
-        DefaultApplication application = SimpleApplication.create(TestModel.class);
-        SimpleAnkorServer server = new SimpleAnkorServer(application, "server");
+        DefaultApplication application = SimpleApplication.create(MyModel.class);
+        SimpleAnkorServer server = SimpleAnkorServer.create(application, "server");
 
         application.getListenerRegistry().registerRemoteActionListener(null, new InitActionListener());
         application.getListenerRegistry().registerRemoteActionListener(null, new NewContainerActionListener());
@@ -43,14 +43,14 @@ public class Tests {
     @Test
     public void test_animal_search_with_mock_client() throws Exception {
 
-        final DefaultApplication serverApp = SimpleApplication.create(TestModel.class);
-        SimpleAnkorServer server = new SimpleAnkorServer(serverApp, "server");
+        final DefaultApplication serverApp = SimpleApplication.create(MyModel.class);
+        SimpleAnkorServer server = SimpleAnkorServer.create(serverApp, "server");
         serverApp.getListenerRegistry().registerRemoteActionListener(null, new ActionListener() {
             @Override
             public void processAction(Ref modelContext, Action action) {
                 if (action.name().equals("init")) {
-                    LOG.info("Creating new TestModel");
-                    modelContext.root().setValue(new TestModel());
+                    LOG.info("Creating new MyModel");
+                    modelContext.root().setValue(new MyModel());
                     modelContext.fire(SimpleAction.create("initialized"));
                 }
             }
@@ -58,8 +58,8 @@ public class Tests {
         serverApp.getListenerRegistry().registerRemoteActionListener(null, new NewContainerActionListener());
         serverApp.getListenerRegistry().registerRemoteActionListener(null, new AnimalSearchActionListener());
 
-        final DefaultApplication clientApp = SimpleApplication.create(TestModel.class);
-        SimpleAnkorServer client = new SimpleAnkorServer(clientApp, "client");
+        final DefaultApplication clientApp = SimpleApplication.create(MyModel.class);
+        SimpleAnkorServer client = SimpleAnkorServer.create(clientApp, "client");
         clientApp.getListenerRegistry().registerRemoteActionListener(null, new ActionListener() {
             @Override
             public void processAction(Ref modelContext, Action action) {

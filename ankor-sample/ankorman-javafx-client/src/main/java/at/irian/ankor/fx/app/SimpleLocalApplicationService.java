@@ -4,7 +4,7 @@ import at.irian.ankor.application.Application;
 import at.irian.ankor.application.DefaultApplication;
 import at.irian.ankor.application.SimpleApplication;
 import at.irian.ankor.sample.fx.server.ServiceBean;
-import at.irian.ankor.sample.fx.view.model.RootModel;
+import at.irian.ankor.sample.fx.view.model.ModelRoot;
 import at.irian.ankor.service.SimpleAnkorServer;
 
 /**
@@ -30,14 +30,14 @@ public class SimpleLocalApplicationService {
     }
 
     public AppService create() {
-        final DefaultApplication serverApp = SimpleApplication.create(RootModel.class)
+        final DefaultApplication serverApp = SimpleApplication.create(ModelRoot.class)
                 .withBean(beanName, bean);
-        SimpleAnkorServer server = new SimpleAnkorServer(serverApp, "server");
+        SimpleAnkorServer server = SimpleAnkorServer.create(serverApp, "server");
         server.start();
         ((ServiceBean) bean).setApplication(serverApp); // TODO hack
 
-        DefaultApplication clientApp = SimpleApplication.create(RootModel.class);
-        SimpleAnkorServer client = new SimpleAnkorServer(clientApp, "client");
+        DefaultApplication clientApp = SimpleApplication.create(ModelRoot.class);
+        SimpleAnkorServer client = SimpleAnkorServer.create(clientApp, "client");
         client.start();
 
         server.setRemoteServer(client);

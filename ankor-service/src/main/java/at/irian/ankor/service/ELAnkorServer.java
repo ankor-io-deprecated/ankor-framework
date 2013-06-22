@@ -1,5 +1,7 @@
 package at.irian.ankor.service;
 
+import at.irian.ankor.messaging.MessageBus;
+import at.irian.ankor.messaging.MessageFactory;
 import at.irian.ankor.rmi.ELRemoteMethodActionListener;
 import at.irian.ankor.rmi.RemoteMethodActionListener;
 import at.irian.ankor.application.ELApplication;
@@ -10,8 +12,8 @@ import at.irian.ankor.application.ELApplication;
 public abstract class ELAnkorServer extends AnkorServerBase {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ELAnkorServer.class);
 
-    public ELAnkorServer(ELApplication application) {
-        super(application);
+    public ELAnkorServer(ELApplication application, MessageFactory messageFactory, MessageBus messageBus) {
+        super(application, messageFactory, messageBus);
     }
 
     @Override

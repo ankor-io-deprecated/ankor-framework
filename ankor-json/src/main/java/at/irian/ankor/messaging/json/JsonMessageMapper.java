@@ -6,16 +6,20 @@ import at.irian.ankor.messaging.*;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.rmi.RemoteMethodAction;
-import org.codehaus.jackson.*;
-import org.codehaus.jackson.annotate.JsonAutoDetect;
-import org.codehaus.jackson.annotate.JsonMethod;
-import org.codehaus.jackson.map.DeserializationContext;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializerProvider;
-import org.codehaus.jackson.map.deser.std.StdDeserializer;
-import org.codehaus.jackson.map.module.SimpleModule;
-import org.codehaus.jackson.map.ser.std.SerializerBase;
-import org.codehaus.jackson.node.ObjectNode;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -32,15 +36,23 @@ public class JsonMessageMapper implements MessageMapper<String> {
     public JsonMessageMapper(RefFactory refFactory) {
         SimpleModule module =
                 new SimpleModule("PolymorphicMessageDeserializerModule",
-                                 new Version(1, 0, 0, null));
+                                 new Version(1, 0, 0, null, null, null));
         module.addDeserializer(Message.class, new MessageDeserializer());
         module.addDeserializer(Action.class, new ActionDeserializer());
         module.addSerializer(Ref.class, new RefSerializer());
         module.addDeserializer(Ref.class, new RefDeserializer(refFactory));
 
         mapper = new ObjectMapper();
-        mapper.setVisibility(JsonMethod.FIELD, JsonAutoDetect.Visibility.ANY);
+        mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         mapper.registerModule(module);
+
+        mapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
+        mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+        mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+
+        mapper.configure(JsonGenerator.Feature.QUOTE_FIELD_NAMES, false);
+
+        mapper.enableDefaultTyping(ObjectMapper.DefaultTyping.JAVA_LANG_OBJECT);
     }
 
     @Override
@@ -71,27 +83,26 @@ public class JsonMessageMapper implements MessageMapper<String> {
         @Override
         public Message deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
             ObjectMapper mapper = (ObjectMapper) jp.getCodec();
-            ObjectNode root = (ObjectNode) mapper.readTree(jp);
-            Class<? extends Message> clazz = null;
-            Iterator<Map.Entry<String, JsonNode>> elementsIterator =
-                    root.getFields();
+            ObjectNode tree = mapper.readTree(jp);
+            Class<? extends Message> detectedType = null;
+            Iterator<Map.Entry<String, JsonNode>> elementsIterator = tree.fields();
             while (elementsIterator.hasNext())
             {
                 Map.Entry<String, JsonNode> element=elementsIterator.next();
                 String name = element.getKey();
                 if (name.equals("action")) {
-                    clazz = ActionMessage.class;
+                    detectedType = ActionMessage.class;
                     break;
                 }
                 if (name.equals("change")) {
-                    clazz = ChangeMessage.class;
+                    detectedType = ChangeMessage.class;
                     break;
                 }
             }
-            if (clazz == null) {
+            if (detectedType == null) {
                 throw new JsonParseException("Cannot determine Message type", jp.getCurrentLocation());
             }
-            return mapper.readValue(root, clazz);
+            return mapper.treeToValue(tree, detectedType);
         }
     }
 
@@ -104,27 +115,26 @@ public class JsonMessageMapper implements MessageMapper<String> {
         @Override
         public Action deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
             ObjectMapper mapper = (ObjectMapper) jp.getCodec();
-            ObjectNode root = (ObjectNode) mapper.readTree(jp);
-            Class<? extends Action> clazz = null;
-            Iterator<Map.Entry<String, JsonNode>> elementsIterator =
-                    root.getFields();
+            ObjectNode tree = mapper.readTree(jp);
+            Class<? extends Action> detectedType = null;
+            Iterator<Map.Entry<String, JsonNode>> elementsIterator = tree.fields();
             while (elementsIterator.hasNext())
             {
                 Map.Entry<String, JsonNode> element=elementsIterator.next();
                 String name = element.getKey();
                 if (name.equals("methodExpression")) {
-                    clazz = RemoteMethodAction.class;
+                    detectedType = RemoteMethodAction.class;
                     break;
                 }
             }
-            if (clazz == null) {
-                clazz = SimpleAction.class;
+            if (detectedType == null) {
+                detectedType = SimpleAction.class;
             }
-            return mapper.readValue(root, clazz);
+            return mapper.treeToValue(tree, detectedType);
         }
     }
 
-    class RefSerializer extends SerializerBase<Ref> {
+    class RefSerializer extends StdSerializer<Ref> {
 
         RefSerializer() {
             super(Ref.class);

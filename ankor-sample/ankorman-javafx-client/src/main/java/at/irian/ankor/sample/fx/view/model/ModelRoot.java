@@ -3,14 +3,14 @@ package at.irian.ankor.sample.fx.view.model;
 /**
  * @author Thomas Spiegl
  */
-public class RootModel {
-
+public class ModelRoot {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TestModel.class);
+
     private String userName;
     private String serverStatus;
     private Tabs tabs;
 
-    public RootModel() {
+    public ModelRoot() {
         tabs = new Tabs();
     }
 

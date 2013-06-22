@@ -9,7 +9,7 @@ import at.irian.ankor.sample.fx.server.model.AnimalSearchFilter;
 import at.irian.ankor.sample.fx.server.model.AnimalType;
 import at.irian.ankor.sample.fx.view.model.AnimalDetailTab;
 import at.irian.ankor.sample.fx.view.model.AnimalSearchTab;
-import at.irian.ankor.sample.fx.view.model.RootModel;
+import at.irian.ankor.sample.fx.view.model.ModelRoot;
 import at.irian.ankor.sample.fx.view.model.Tab;
 
 import java.util.ArrayList;
@@ -29,8 +29,8 @@ public class ServiceBean {
         this.application = application;
     }
 
-    public RootModel init() {
-        RootModel model = new RootModel();
+    public ModelRoot init() {
+        ModelRoot model = new ModelRoot();
         model.setUserName("John Doe");
         return model;
     }

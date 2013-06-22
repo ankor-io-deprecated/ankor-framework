@@ -3,7 +3,7 @@ package at.irian.ankor.sample.fx.view;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.fx.app.ActionCompleteCallback;
 import at.irian.ankor.fx.binding.BindingContext;
-import at.irian.ankor.sample.fx.view.model.RootModel;
+import at.irian.ankor.sample.fx.view.model.ModelRoot;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -40,9 +40,9 @@ public class MainController implements Initializable {
 
             public void onComplete() {
                 Ref rootRef = application().getRefFactory().rootRef();
-                RootModel rootModel = rootRef.getValue();
+                ModelRoot modelRoot = rootRef.getValue();
 
-                userName.setText(rootModel.getUserName());
+                userName.setText(modelRoot.getUserName());
 
                 bind(rootRef.sub("serverStatus"), serverStatus, bindingContext);
 

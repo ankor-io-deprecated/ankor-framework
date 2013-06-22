@@ -31,6 +31,10 @@ public abstract class MessageBus<S> {
         messageListeners.add(messageListener);
     }
 
+    public void unregisterMessageListener(MessageListener messageListener) {
+        messageListeners.remove(messageListener);
+    }
+
     protected void receiveMessage(Message msg) {
         if (msg instanceof ActionMessage) {
             for (MessageListener messageListener : messageListeners) {
@@ -47,7 +51,7 @@ public abstract class MessageBus<S> {
 
     protected abstract void sendSerializedMessage(S msg);
 
-    protected void receiveSerializedMessage(S msg) {
+    public void receiveSerializedMessage(S msg) {
         receiveMessage(messageDeserializer.deserialize(msg));
     }
 }

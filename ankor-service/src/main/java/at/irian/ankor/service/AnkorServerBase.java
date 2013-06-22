@@ -1,12 +1,13 @@
 package at.irian.ankor.service;
 
 import at.irian.ankor.action.Action;
-import at.irian.ankor.event.ActionListener;
-import at.irian.ankor.application.AutoUnregisterChangeListener;
-import at.irian.ankor.application.ListenerRegistry;
-import at.irian.ankor.application.BoundChangeListener;
-import at.irian.ankor.event.ChangeListener;
 import at.irian.ankor.application.Application;
+import at.irian.ankor.application.AutoUnregisterChangeListener;
+import at.irian.ankor.application.BoundChangeListener;
+import at.irian.ankor.application.ListenerRegistry;
+import at.irian.ankor.event.ActionListener;
+import at.irian.ankor.event.ChangeListener;
+import at.irian.ankor.messaging.*;
 import at.irian.ankor.ref.Ref;
 
 import java.util.Collection;
@@ -14,13 +15,17 @@ import java.util.Collection;
 /**
  * @author MGeiler (Manfred Geiler)
  */
-public abstract class AnkorServerBase {
+public abstract class AnkorServerBase implements MessageListener {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnkorServerBase.class);
 
-    protected final Application application;
+    private final Application application;
+    private final MessageFactory messageFactory;
+    private final MessageBus messageBus;
 
-    public AnkorServerBase(Application application) {
+    public AnkorServerBase(Application application, MessageFactory messageFactory, MessageBus messageBus) {
         this.application = application;
+        this.messageFactory = messageFactory;
+        this.messageBus = messageBus;
     }
 
     public void start() {
@@ -34,10 +39,13 @@ public abstract class AnkorServerBase {
         AutoUnregisterChangeListener autoUnregisterChangeListener = new AutoUnregisterChangeListener(listenerRegistry);
         listenerRegistry.registerLocalChangeListener(null, autoUnregisterChangeListener);
         listenerRegistry.registerRemoteChangeListener(null, autoUnregisterChangeListener);
-  }
+
+        messageBus.registerMessageListener(this);
+    }
 
     public void stop() {
         LOG.debug("Stopping {}", this);
+        messageBus.unregisterMessageListener(this);
         application.getListenerRegistry().unregisterAllListeners();
     }
 
@@ -46,14 +54,18 @@ public abstract class AnkorServerBase {
         return application;
     }
 
-    protected void receiveAction(Ref contextRef, Action action) {
-        LOG.debug("Remote action received by {} - {}: {}", AnkorServerBase.this, contextRef, action);
+    public MessageBus getMessageBus() {
+        return messageBus;
+    }
+
+    protected void receiveAction(Ref modelContext, Action action) {
+        LOG.debug("Remote action received by {} - {}: {}", AnkorServerBase.this, modelContext, action);
 
         // notify action listeners
         ListenerRegistry listenerRegistry = application.getListenerRegistry();
-        Collection<ActionListener> listeners = listenerRegistry.getRemoteActionListenersFor(contextRef);
+        Collection<ActionListener> listeners = listenerRegistry.getRemoteActionListenersFor(modelContext);
         for (ActionListener listener : listeners) {
-            listener.processAction(contextRef, action);
+            listener.processAction(modelContext, action);
         }
     }
 
@@ -78,7 +90,15 @@ public abstract class AnkorServerBase {
         }
     }
 
+    @Override
+    public void onActionMessage(ActionMessage message) {
+        receiveAction(message.getModelContext(), message.getAction());
+    }
 
+    @Override
+    public void onChangeMessage(ChangeMessage message) {
+        receiveChange(message.getModelContext(), message.getChange().getChangedProperty(), message.getChange().getNewValue());
+    }
 
 
     private class LocalActionListener implements ActionListener {
@@ -89,8 +109,9 @@ public abstract class AnkorServerBase {
         }
     }
 
-    protected abstract void sendAction(Ref contextRef, Action action);
-
+    private void sendAction(Ref modelContext, Action action) {
+        messageBus.sendMessage(messageFactory.createActionMessage(modelContext, action));
+    }
 
     private class LocalChangeListener implements ChangeListener {
         @Override
@@ -101,7 +122,8 @@ public abstract class AnkorServerBase {
         }
     }
 
-    protected abstract void sendChange(Ref contextRef, Ref changedRef, Object newValue);
-
+    private void sendChange(Ref contextRef, Ref changedRef, Object newValue) {
+        messageBus.sendMessage(messageFactory.createChangeMessage(contextRef, changedRef, newValue));
+    }
 
 }

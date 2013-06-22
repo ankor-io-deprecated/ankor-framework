@@ -14,14 +14,14 @@ public class InitActionListener implements ActionListener {
     @Override
     public void processAction(Ref modelContext, Action action) {
         if (action.name().equals("init")) {
-            LOG.info("Creating new TestModel");
+            LOG.info("Creating new MyModel");
             Ref root = modelContext.root();
             root.setValue(createNewModel());
             modelContext.fire(SimpleAction.create("initialized"));
         }
     }
 
-    private TestModel createNewModel() {
-        return new TestModel();
+    private MyModel createNewModel() {
+        return new MyModel();
     }
 }

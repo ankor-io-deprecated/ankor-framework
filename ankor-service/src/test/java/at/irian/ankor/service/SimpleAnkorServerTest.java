@@ -3,10 +3,10 @@ package at.irian.ankor.service;
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.SimpleAction;
 import at.irian.ankor.application.DefaultApplication;
+import at.irian.ankor.application.ListenerRegistry;
 import at.irian.ankor.application.SimpleApplication;
 import at.irian.ankor.event.ActionListener;
 import at.irian.ankor.event.ChangeListener;
-import at.irian.ankor.application.ListenerRegistry;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefFactory;
 import junit.framework.Assert;
@@ -27,7 +27,7 @@ public class SimpleAnkorServerTest {
     @Before
     public void setup() {
         application = SimpleApplication.create(TestModel.class);
-        server = new SimpleAnkorServer(application, "server");
+        server = SimpleAnkorServer.create(application, "server");
         refFactory = application.getRefFactory();
         listenerRegistry = application.getListenerRegistry();
     }
@@ -39,7 +39,7 @@ public class SimpleAnkorServerTest {
             @Override
             public void processAction(Ref modelContext, Action action) {
                 if (action.name().equals("init")) {
-                    LOG.info("Creating new TestModel");
+                    LOG.info("Creating new MyModel");
                     Ref root = modelContext.root();
                     root.setValue(new TestModel());
                     modelContext.fire(SimpleAction.create("initialized"));
@@ -126,7 +126,7 @@ public class SimpleAnkorServerTest {
 
 
     public static class TestModel {
-        //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TestModel.class);
+        //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(MyModel.class);
 
         private String userName;
         private TestUser testUser;
