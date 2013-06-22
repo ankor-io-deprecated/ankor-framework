@@ -12,11 +12,6 @@
     <packaging>jar</packaging>
     <name>AnkorMan Sample App - JavaFX Client</name>
 
-    <properties>
-        <javafx.version>2.2.21</javafx.version>
-        <javafx.runtime.lib.jar>${java.home}\lib\jfxrt.jar</javafx.runtime.lib.jar>
-    </properties>
-
     <dependencies>
 
         <dependency>
@@ -26,11 +21,10 @@
         </dependency>
 
         <dependency>
-            <groupId>javafx</groupId>
-            <artifactId>jfxrt</artifactId>
-            <version>${javafx.version}</version>
-            <scope>system</scope>
-            <systemPath>${javafx.runtime.lib.jar}</systemPath>
+            <groupId>at.irian.ankorman</groupId>
+            <artifactId>ankorman-server</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>

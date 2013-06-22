@@ -22,6 +22,10 @@ public class SimpleApplication extends DefaultApplication {
         return this;
     }
 
+    public SimpleApplication withBeanResolver(BeanResolver beanResolver) {
+        return new SimpleApplication(getModelHolder().getModelType(), beanResolver);
+    }
+
     private static class MyBeanResolver implements BeanResolver {
 
         private final Map<String, Object> beans = new HashMap<String, Object>();

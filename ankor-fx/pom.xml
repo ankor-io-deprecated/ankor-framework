@@ -12,6 +12,11 @@
     <packaging>jar</packaging>
     <name>Ankor - JavaFX Support</name>
 
+    <properties>
+        <javafx.version>2.2.21</javafx.version>
+        <javafx.runtime.lib.jar>${java.home}\lib\jfxrt.jar</javafx.runtime.lib.jar>
+    </properties>
+
     <dependencies>
 
         <dependency>
@@ -26,6 +31,14 @@
             <artifactId>ankor-service</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>javafx</groupId>
+            <artifactId>jfxrt</artifactId>
+            <version>${javafx.version}</version>
+            <scope>system</scope>
+            <systemPath>${javafx.runtime.lib.jar}</systemPath>
         </dependency>
 
     </dependencies>
