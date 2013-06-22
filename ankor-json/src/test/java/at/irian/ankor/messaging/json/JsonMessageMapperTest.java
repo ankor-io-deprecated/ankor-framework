@@ -26,7 +26,7 @@ public class JsonMessageMapperTest {
     @org.junit.Before
     public void setUp() throws Exception {
         Config config = ConfigFactory.load();
-        ELRefContext refContext = ELRefContext.create(new ModelHolder(Object.class), null, null, config);
+        ELRefContext refContext = ELRefContext.create(new ModelHolder(String.class), null, null, config);
         refFactory = new ELRefFactory(refContext);
         messageFactory = new MessageFactory();
         msgMapper = new JsonMessageMapper(refFactory);
@@ -53,6 +53,23 @@ public class JsonMessageMapperTest {
     public void testChange() throws Exception {
         Message msg = messageFactory.createChangeMessage(refFactory.rootRef(),
                                                          refFactory.ref("root.test1"),
+                                                         "new-value");
+        String json = msgMapper.serialize(msg);
+        LOG.info("JSON: {}", json);
+
+        Message desMsg = msgMapper.deserialize(json);
+        LOG.info("Message: {}", desMsg);
+
+        Assert.assertEquals(ChangeMessage.class, desMsg.getClass());
+        ChangeMessage changeMsg = (ChangeMessage) desMsg;
+        ChangeMessage.Change change = changeMsg.getChange();
+        Assert.assertEquals("root", change.getChangedProperty().path());
+    }
+
+    @Test
+    public void testChangeRoot() throws Exception {
+        Message msg = messageFactory.createChangeMessage(refFactory.rootRef(),
+                                                         refFactory.rootRef(),
                                                          "new-value");
         String json = msgMapper.serialize(msg);
         LOG.info("JSON: {}", json);

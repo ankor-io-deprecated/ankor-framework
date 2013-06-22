@@ -5,9 +5,9 @@ import at.irian.ankor.sample.fx.server.model.Animal;
 /**
  * @author Thomas Spiegl
  */
-public class AnimalDetailTab {
+public class AnimalDetailModel {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalDetailModel.class);
 
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalDetailTab.class);
     private Animal animal;
 
     public Animal getAnimal() {

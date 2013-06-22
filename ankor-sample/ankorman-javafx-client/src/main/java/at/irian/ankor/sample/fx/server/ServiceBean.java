@@ -7,8 +7,8 @@ import at.irian.ankor.sample.fx.server.model.Animal;
 import at.irian.ankor.sample.fx.server.model.AnimalFamily;
 import at.irian.ankor.sample.fx.server.model.AnimalSearchFilter;
 import at.irian.ankor.sample.fx.server.model.AnimalType;
-import at.irian.ankor.sample.fx.view.model.AnimalDetailTab;
-import at.irian.ankor.sample.fx.view.model.AnimalSearchTab;
+import at.irian.ankor.sample.fx.view.model.AnimalDetailModel;
+import at.irian.ankor.sample.fx.view.model.AnimalSearchModel;
 import at.irian.ankor.sample.fx.view.model.ModelRoot;
 import at.irian.ankor.sample.fx.view.model.Tab;
 
@@ -100,8 +100,8 @@ public class ServiceBean {
     }
 
     public Tab createAnimalSearchTab(final Ref tabsRef, final String tabId) {
-        Tab<AnimalSearchTab> tab = new Tab<AnimalSearchTab>(tabId);
-        tab.setModel(new AnimalSearchTab());
+        Tab<AnimalSearchModel> tab = new Tab<AnimalSearchModel>(tabId);
+        tab.setModel(new AnimalSearchModel());
         List<AnimalType> types = new ArrayList<AnimalType>(AnimalType.values().length + 1);
         types.addAll(Arrays.asList(AnimalType.values()));
         types.add(null);
@@ -139,15 +139,15 @@ public class ServiceBean {
     }
 
     public Tab createAnimalDetailTab(String tabId, String animalUUID) {
-        Tab<AnimalDetailTab> tab = new Tab<AnimalDetailTab>(tabId);
-        tab.setModel(new AnimalDetailTab());
+        Tab<AnimalDetailModel> tab = new Tab<AnimalDetailModel>(tabId);
+        tab.setModel(new AnimalDetailModel());
         tab.getModel().setAnimal(AnimalRepository.findAnimal(animalUUID));
         return tab;
     }
 
     public Tab createAnimalDetailTab(String tabId) {
-        Tab<AnimalDetailTab> tab = new Tab<AnimalDetailTab>(tabId);
-        tab.setModel(new AnimalDetailTab());
+        Tab<AnimalDetailModel> tab = new Tab<AnimalDetailModel>(tabId);
+        tab.setModel(new AnimalDetailModel());
         tab.getModel().setAnimal(new Animal());
         return tab;
     }

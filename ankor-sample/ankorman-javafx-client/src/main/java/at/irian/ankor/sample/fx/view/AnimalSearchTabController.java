@@ -6,7 +6,7 @@ import at.irian.ankor.ref.Ref;
 import at.irian.ankor.sample.fx.server.model.Animal;
 import at.irian.ankor.sample.fx.server.model.AnimalFamily;
 import at.irian.ankor.sample.fx.server.model.AnimalType;
-import at.irian.ankor.sample.fx.view.model.AnimalSearchTab;
+import at.irian.ankor.sample.fx.view.model.AnimalSearchModel;
 import at.irian.ankor.sample.fx.view.model.Tab;
 import at.irian.ankor.util.NilValue;
 import javafx.event.ActionEvent;
@@ -112,8 +112,8 @@ public class AnimalSearchTabController implements Initializable {
     protected void search(@SuppressWarnings("UnusedParameters") ActionEvent event) {
         facade().searchAnimals(getTabRef(), new ActionCompleteCallback() {
             public void onComplete() {
-                Tab<AnimalSearchTab> tab = getTabRef().getValue();
-                AnimalSearchTab model = tab.getModel();
+                Tab<AnimalSearchModel> tab = getTabRef().getValue();
+                AnimalSearchModel model = tab.getModel();
                 loadAnimals(model.getAnimals());
             }
         });

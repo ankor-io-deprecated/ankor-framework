@@ -1,5 +1,7 @@
 package at.irian.ankor.messaging;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+
 /**
  * @author Manfred Geiler
  */

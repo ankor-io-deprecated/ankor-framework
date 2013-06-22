@@ -1,6 +1,7 @@
 package at.irian.ankor.messaging;
 
 import at.irian.ankor.ref.Ref;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
  * @author Manfred Geiler
@@ -19,7 +20,7 @@ public class ChangeMessage extends Message {
     protected ChangeMessage(String messageId, Ref modelContext, Ref changedProperty, Object newValue) {
         super(messageId);
         this.modelContext = modelContext;
-        this.change = new Change(modelContext, changedProperty, newValue);
+        this.change = new Change(changedProperty, newValue);
     }
 
     public Ref getModelContext() {
@@ -36,7 +37,7 @@ public class ChangeMessage extends Message {
 
         Change() {}
 
-        Change(Ref modelContext, Ref changedProperty, Object newValue) {
+        public Change(Ref changedProperty, Object newValue) {
             this.changedProperty = changedProperty;
             this.newValue = newValue;
         }

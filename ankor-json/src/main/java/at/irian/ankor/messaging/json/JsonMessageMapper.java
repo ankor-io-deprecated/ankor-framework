@@ -7,6 +7,7 @@ import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.rmi.RemoteMethodAction;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -52,7 +53,7 @@ public class JsonMessageMapper implements MessageMapper<String> {
 
         mapper.configure(JsonGenerator.Feature.QUOTE_FIELD_NAMES, false);
 
-        mapper.enableDefaultTyping(ObjectMapper.DefaultTyping.JAVA_LANG_OBJECT);
+        mapper.enableDefaultTypingAsProperty(ObjectMapper.DefaultTyping.JAVA_LANG_OBJECT, "@javaType");
     }
 
     @Override

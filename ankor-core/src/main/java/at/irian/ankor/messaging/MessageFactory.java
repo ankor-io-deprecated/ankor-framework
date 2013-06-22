@@ -19,7 +19,7 @@ public class MessageFactory {
         return new ActionMessage(messageUUIDGenerator.createId(), modelContext, action);
     }
 
-    public Message createChangeMessage(Ref modelContext, Ref changedProperty, Object newValue) {
+    public <T> Message createChangeMessage(Ref modelContext, Ref changedProperty, T newValue) {
         return new ChangeMessage(messageUUIDGenerator.createId(), modelContext, changedProperty, newValue);
     }
 
