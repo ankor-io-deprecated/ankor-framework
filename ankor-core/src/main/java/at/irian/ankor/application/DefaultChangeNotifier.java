@@ -18,6 +18,11 @@ public class DefaultChangeNotifier implements ChangeNotifier {
 
     @Override
     public void broadcastChange(Ref modelContext, Ref changedProperty) {
+
+        if (changedProperty.isDeleted()) {
+            listenerRegistry.unregisterAllListenersFor(changedProperty);
+        }
+
         for (BoundChangeListener boundChangeListener : listenerRegistry.getLocalChangeListenersFor(changedProperty)) {
             ChangeListener listener = boundChangeListener.getListener();
             Ref watchedRef = boundChangeListener.getWatchedRef();

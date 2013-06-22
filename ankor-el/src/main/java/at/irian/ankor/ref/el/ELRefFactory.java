@@ -19,22 +19,22 @@ public class ELRefFactory implements RefFactory {
 
     @Override
     public Ref rootRef() {
-        return ELRefUtils.rootRef(refContext);
+        return ELRefUtils.rootRef(refContext, false);
     }
 
     @Override
     public Ref rootRef(RefContext newRefContext) {
-        return ELRefUtils.rootRef((ELRefContext) newRefContext);
+        return ELRefUtils.rootRef((ELRefContext) newRefContext, false);
     }
 
     @Override
     public Ref ref(String path) {
-        return ELRefUtils.ref(refContext, path);
+        return ELRefUtils.ref(refContext, path, false);
     }
 
     @Override
     public Ref ref(String path, RefContext newRefContext) {
-        return ELRefUtils.ref((ELRefContext) newRefContext, path);
+        return ELRefUtils.ref((ELRefContext) newRefContext, path, false);
     }
 
 }

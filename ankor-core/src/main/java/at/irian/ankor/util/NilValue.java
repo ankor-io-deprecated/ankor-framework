@@ -1,5 +1,7 @@
 package at.irian.ankor.util;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 /**
  * @author Manfred Geiler
  */
@@ -8,6 +10,7 @@ public final class NilValue {
 
     private static final NilValue INSTANCE = new NilValue();
 
+    @JsonCreator
     public static NilValue instance() {
         return INSTANCE;
     }

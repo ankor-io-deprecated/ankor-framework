@@ -119,23 +119,23 @@ public class ListenerRegistry {
     }
 
     public void unregisterAllListenersFor(Ref watchedRef) {
-        unregisterAllListenersFor(localActionListeners.entrySet().iterator(), watchedRef);
-        unregisterAllListenersFor(remoteActionListeners.entrySet().iterator(), watchedRef);
-        unregisterAllListenersFor(localChangeListeners.entrySet().iterator(), watchedRef);
-        unregisterAllListenersFor(remoteChangeListeners.entrySet().iterator(), watchedRef);
+        unregisterAllListenersFor(localActionListeners.keySet(), watchedRef);
+        unregisterAllListenersFor(remoteActionListeners.keySet(), watchedRef);
+        unregisterAllListenersFor(localChangeListeners.keySet(), watchedRef);
+        unregisterAllListenersFor(remoteChangeListeners.keySet(), watchedRef);
     }
 
-    private void unregisterAllListenersFor(Iterator entryIterator, Ref watchedRef) {
-        while (entryIterator.hasNext()) {
-            Map.Entry entry = (Map.Entry) entryIterator.next();
-            Ref listenerWatchedRef = (Ref) entry.getKey();
+    private void unregisterAllListenersFor(Set<Ref> watchedRefs, Ref watchedRef) {
+        Iterator<Ref> iterator = watchedRefs.iterator();
+        while (iterator.hasNext()) {
+            Ref listenerWatchedRef = iterator.next();
             if (listenerWatchedRef == null) {
                 if (watchedRef == null) {
-                    entryIterator.remove();
+                    iterator.remove();
                 }
             } else {
                 if (listenerWatchedRef.equals(watchedRef) || listenerWatchedRef.isDescendantOf(watchedRef)) {
-                    entryIterator.remove();
+                    iterator.remove();
                 }
             }
         }
@@ -159,6 +159,9 @@ public class ListenerRegistry {
                 if (listenersIterator.next() == listener) {
                     listenersIterator.remove();
                 }
+            }
+            if (listeners.isEmpty()) {
+                entryIterator.remove();
             }
         }
     }

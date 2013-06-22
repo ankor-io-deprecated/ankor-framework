@@ -16,12 +16,15 @@ class ELRef extends BaseRef {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ELRef.class);
 
     private final ValueExpression valueExpression;
+    private final boolean deleted;
 
-    ELRef(ELRefContext refContext, ValueExpression valueExpression) {
+    ELRef(ELRefContext refContext, ValueExpression valueExpression, boolean deleted) {
         super(refContext);
         this.valueExpression = valueExpression;
+        this.deleted = deleted;
     }
 
+    @Override
     public void setValue(Object newValue) {
         valueExpression.setValue(refContext().getELContext(), newValue);
         ChangeNotifier changeNotifier = refContext().getChangeNotifier();
@@ -30,19 +33,38 @@ class ELRef extends BaseRef {
         }
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T getValue() {
         return (T)valueExpression.getValue(refContext().getELContext());
     }
 
     @Override
+    public Ref delete() {
+        valueExpression.setValue(refContext().getELContext(), null);
+        ELRef deletedRef = new ELRef(refContext(), valueExpression, true);
+
+        ChangeNotifier changeNotifier = refContext().getChangeNotifier();
+        if (changeNotifier != null) {
+            changeNotifier.broadcastChange(refContext.getModelContext(), deletedRef);
+        }
+
+        return deletedRef;
+    }
+
+    @Override
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    @Override
     public Ref root() {
-        return ELRefUtils.rootRef(refContext());
+        return ELRefUtils.rootRef(refContext(), deleted);
     }
 
     @Override
     public Ref unwatched() {
-        return new ELRef(refContext().withNoModelChangeNotifier(), valueExpression);
+        return new ELRef(refContext().withNoModelChangeNotifier(), valueExpression, deleted);
     }
 
     @Override
@@ -69,17 +91,17 @@ class ELRef extends BaseRef {
 
     @Override
     public Ref sub(String subPath) {
-        return ELRefUtils.subRef(this, subPath);
+        return ELRefUtils.subRef(this, subPath, deleted);
     }
 
     @Override
     public Ref sub(int index) {
-        return ELRefUtils.subRef(this, index);
+        return ELRefUtils.subRef(this, index, deleted);
     }
 
     @Override
     public Ref parent() {
-        return ELRefUtils.parentRef(this);
+        return ELRefUtils.parentRef(this, deleted);
     }
 
     @Override
@@ -103,6 +125,6 @@ class ELRef extends BaseRef {
 
     @Override
     public Ref withRefContext(RefContext newRefContext) {
-        return ELRefUtils.ref((ELRefContext)newRefContext, path());
+        return ELRefUtils.ref((ELRefContext)newRefContext, path(), deleted);
     }
 }

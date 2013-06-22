@@ -4,12 +4,11 @@ import at.irian.ankor.fx.app.ActionCompleteCallback;
 import at.irian.ankor.fx.binding.BindingContext;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorman.sample1.fxclient.TabIds;
+import at.irian.ankorman.sample1.model.model.Tab;
 import at.irian.ankorman.sample1.model.model.animal.Animal;
 import at.irian.ankorman.sample1.model.model.animal.AnimalFamily;
 import at.irian.ankorman.sample1.model.model.animal.AnimalType;
 import at.irian.ankorman.sample1.model.model.animal.search.AnimalSearchModel;
-import at.irian.ankorman.sample1.model.model.Tab;
-import at.irian.ankor.util.NilValue;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -61,7 +60,7 @@ public class AnimalSearchTabController implements Initializable {
         tab.setOnClosed(new EventHandler<Event>() {
             @Override
             public void handle(Event event) {
-                getTabRef().setValue(NilValue.instance());
+                getTabRef().delete();
             }
         });
         facade().createAnimalSearchTab(tabId, new ActionCompleteCallback() {

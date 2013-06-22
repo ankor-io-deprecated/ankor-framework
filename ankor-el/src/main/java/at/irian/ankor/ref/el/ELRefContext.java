@@ -12,7 +12,6 @@ import at.irian.ankor.path.el.ELPathSyntax;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
 
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
@@ -61,7 +60,7 @@ public class ELRefContext implements RefContext {
                                                    null);
         ELContext rootRefELContext = new SingleReadonlyVariableELContext(elContext,
                                                              config.getString("ankor.variable-names.modelRootRef"),
-                                                             ELRefUtils.rootRef(refContext));
+                                                             ELRefUtils.rootRef(refContext, false));
         return refContext.with(rootRefELContext);
     }
 

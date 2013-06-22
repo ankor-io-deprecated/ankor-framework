@@ -3,7 +3,6 @@ package at.irian.ankorman.sample1.fxclient.animal;
 import at.irian.ankor.fx.app.ActionCompleteCallback;
 import at.irian.ankor.fx.binding.BindingContext;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.util.NilValue;
 import at.irian.ankorman.sample1.fxclient.TabIds;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -46,7 +45,7 @@ public class AnimalDetailTabController implements Initializable {
         tab.setOnClosed(new EventHandler<Event>() {
             @Override
             public void handle(Event event) {
-                getTabRef().setValue(NilValue.instance());
+                getTabRef().delete();
             }
         });
         facade().createAnimalDetailTab(tabId, new ActionCompleteCallback() {

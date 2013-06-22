@@ -9,6 +9,7 @@ import at.irian.ankor.event.ActionListener;
 import at.irian.ankor.event.ChangeListener;
 import at.irian.ankor.messaging.*;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.util.NilValue;
 
 import java.util.Collection;
 
@@ -36,9 +37,9 @@ public abstract class AnkorServerBase implements MessageListener {
         listenerRegistry.registerLocalChangeListener(null, new LocalChangeListener());
         listenerRegistry.registerLocalActionListener(null, new LocalActionListener());
 
-        AutoUnregisterChangeListener autoUnregisterChangeListener = new AutoUnregisterChangeListener(listenerRegistry);
-        listenerRegistry.registerLocalChangeListener(null, autoUnregisterChangeListener);
-        listenerRegistry.registerRemoteChangeListener(null, autoUnregisterChangeListener);
+        //AutoUnregisterChangeListener autoUnregisterChangeListener = new AutoUnregisterChangeListener(listenerRegistry);
+        //listenerRegistry.registerLocalChangeListener(null, autoUnregisterChangeListener);
+        //listenerRegistry.registerRemoteChangeListener(null, autoUnregisterChangeListener);
 
         messageBus.registerMessageListener(this);
     }
@@ -77,11 +78,17 @@ public abstract class AnkorServerBase implements MessageListener {
             changedRef = changedRef.withModelContext(modelContext);
         }
 
+        ListenerRegistry listenerRegistry = application.getListenerRegistry();
+
         // do change model (without notifying local listeners!)
-        changedRef.unwatched().setValue(newValue);
+        if (NilValue.instance() == newValue) {
+            changedRef = changedRef.unwatched().delete();
+            listenerRegistry.unregisterAllListenersFor(changedRef);
+        } else {
+            changedRef.unwatched().setValue(newValue);
+        }
 
         // notify change listeners
-        ListenerRegistry listenerRegistry = application.getListenerRegistry();
         Collection<BoundChangeListener> listenerInstances = listenerRegistry.getRemoteChangeListenersFor(changedRef);
         for (BoundChangeListener listenerInstance : listenerInstances) {
             ChangeListener listener = listenerInstance.getListener();
@@ -118,7 +125,11 @@ public abstract class AnkorServerBase implements MessageListener {
         public void processChange(Ref modelContext, Ref watchedProperty, Ref changedProperty) {
             Object newValue = changedProperty.getValue();
             LOG.debug("Local change detected by {} - {} => {}", AnkorServerBase.this, changedProperty, newValue);
-            sendChange(modelContext, changedProperty, newValue);
+            if (changedProperty.isDeleted()) {
+                sendChange(modelContext, changedProperty, NilValue.instance());
+            } else {
+                sendChange(modelContext, changedProperty, newValue);
+            }
         }
     }
 

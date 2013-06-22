@@ -20,6 +20,10 @@ public interface Ref {
      */
     <T> T getValue();
 
+    Ref delete();
+
+    boolean isDeleted();
+
     /**
      * @return Ref to the root object of the underlying model this Ref belongs to
      */

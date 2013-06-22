@@ -7,6 +7,7 @@ import at.irian.ankor.util.NilValue;
 /**
  * @author MGeiler (Manfred Geiler)
  */
+@Deprecated
 public class AutoUnregisterChangeListener implements ChangeListener {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AutoUnregisterChangeListener.class);
 
@@ -18,7 +19,7 @@ public class AutoUnregisterChangeListener implements ChangeListener {
 
     @Override
     public void processChange(Ref modelContext, Ref watchedProperty, Ref changedProperty) {
-        if (isNil(changedProperty.getValue())) {
+        if (changedProperty.isDeleted()) {
             listenerRegistry.unregisterAllListenersFor(changedProperty);
         }
     }

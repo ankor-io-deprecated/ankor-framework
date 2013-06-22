@@ -16,15 +16,15 @@ final class ELRefUtils {
 
     private ELRefUtils() {}
 
-    static Ref rootRef(ELRefContext refContext) {
-        return ref(refContext, refContext.getRootPath());
+    static Ref rootRef(ELRefContext refContext, boolean deleted) {
+        return ref(refContext, refContext.getRootPath(), deleted);
     }
 
-    static Ref ref(ELRefContext refContext, String path) {
+    static Ref ref(ELRefContext refContext, String path, boolean deleted) {
         return new ELRef(refContext, createValueExpression(refContext,
                                                            isRootPath(refContext, path)
                                                              ? refContext.getRootPath()
-                                                             : path));
+                                                             : path), deleted);
     }
 
     static ValueExpression createValueExpression(ELRefContext refContext, String path) {
@@ -38,23 +38,23 @@ final class ELRefUtils {
         return path == null || path.isEmpty() || path.equals(refContext.getRootPath());
     }
 
-    static Ref parentRef(ELRef ref) {
+    static Ref parentRef(ELRef ref, boolean deleted) {
         if (ref.isRoot()) {
             return null;
         } else {
             ELRefContext refContext = ref.refContext();
-            return ref(refContext, refContext.getPathSyntax().parentOf(ref.path()));
+            return ref(refContext, refContext.getPathSyntax().parentOf(ref.path()), deleted);
         }
     }
 
-    static Ref subRef(ELRef ref, String subPath) {
+    static Ref subRef(ELRef ref, String subPath, boolean deleted) {
         ELRefContext refContext = ref.refContext();
-        return ref(refContext, refContext.getPathSyntax().concat(ref.path(), subPath));
+        return ref(refContext, refContext.getPathSyntax().concat(ref.path(), subPath), deleted);
     }
 
-    static Ref subRef(ELRef ref, int index) {
+    static Ref subRef(ELRef ref, int index, boolean deleted) {
         ELRefContext refContext = ref.refContext();
-        return ref(refContext, refContext.getPathSyntax().addArrayIdx(ref.path(), index));
+        return ref(refContext, refContext.getPathSyntax().addArrayIdx(ref.path(), index), deleted);
     }
 
     static String path(ELRef elRef) {
