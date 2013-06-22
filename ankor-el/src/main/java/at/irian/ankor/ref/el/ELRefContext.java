@@ -1,7 +1,10 @@
 package at.irian.ankor.ref.el;
 
+import at.irian.ankor.application.ModelHolder;
 import at.irian.ankor.el.ModelContextELContext;
+import at.irian.ankor.el.ModelELContext;
 import at.irian.ankor.el.SingleReadonlyVariableELContext;
+import at.irian.ankor.el.StandardELContext;
 import at.irian.ankor.event.ActionNotifier;
 import at.irian.ankor.event.ChangeNotifier;
 import at.irian.ankor.path.PathSyntax;
@@ -9,6 +12,7 @@ import at.irian.ankor.path.el.ELPathSyntax;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
@@ -61,6 +65,14 @@ public class ELRefContext implements RefContext {
         return refContext.with(rootRefELContext);
     }
 
+    public static ELRefContext create(ModelHolder modelHolder,
+                                      ChangeNotifier changeNotifier,
+                                      ActionNotifier actionNotifier,
+                                      Config config) {
+        ExpressionFactory expressionFactory = ExpressionFactory.newInstance();
+        ModelELContext modelELContext = new ModelELContext(new StandardELContext(), modelHolder, config);
+        return create(expressionFactory, modelELContext, changeNotifier, actionNotifier, config);
+    }
 
     public ELRefContext with(ELContext elContext) {
         return new ELRefContext(expressionFactory, elContext, changeNotifier, actionNotifier, config,

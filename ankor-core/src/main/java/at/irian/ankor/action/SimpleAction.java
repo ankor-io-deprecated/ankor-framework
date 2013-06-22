@@ -6,7 +6,10 @@ package at.irian.ankor.action;
 public class SimpleAction implements Action {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SimpleAction.class);
 
-    private final String name;
+    private String name;
+
+    protected SimpleAction() {
+    }
 
     protected SimpleAction(String name) {
         this.name = name;

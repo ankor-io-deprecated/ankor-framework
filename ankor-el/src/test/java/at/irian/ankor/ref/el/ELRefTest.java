@@ -25,12 +25,8 @@ public class ELRefTest {
     @Before
     public void setup() {
         this.modelHolder = new ModelHolder(Object.class);
-        ExpressionFactory expressionFactory = ExpressionFactory.newInstance();
         Config config = ConfigFactory.load();
-        ModelELContext modelELContext = new ModelELContext(new StandardELContext(), modelHolder, config);
-        ELRefContext refContext = ELRefContext.create(expressionFactory,
-                                                      modelELContext,
-                                                      null, null,
+        ELRefContext refContext = ELRefContext.create(modelHolder, null, null,
                                                       config);
         this.refFactory = new ELRefFactory(refContext);
     }
