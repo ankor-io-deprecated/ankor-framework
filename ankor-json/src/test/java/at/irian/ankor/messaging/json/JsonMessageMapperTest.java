@@ -26,7 +26,8 @@ public class JsonMessageMapperTest {
     @org.junit.Before
     public void setUp() throws Exception {
         Config config = ConfigFactory.load();
-        ELRefContext refContext = ELRefContext.create(new ModelHolder(String.class), null, null, config);
+        ELRefContext refContext = ELRefContext.create(new ModelHolder(String.class), null, null, config,
+                                                      null);
         refFactory = new ELRefFactory(refContext);
         messageFactory = new MessageFactory();
         msgMapper = new JsonMessageMapper(refFactory);

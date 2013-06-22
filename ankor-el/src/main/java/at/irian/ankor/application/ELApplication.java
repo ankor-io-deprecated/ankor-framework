@@ -29,7 +29,7 @@ public class ELApplication extends Application {
                                                       modelELContext,
                                                       new DefaultChangeNotifier(getListenerRegistry()),
                                                       new DefaultActionNotifier(getListenerRegistry()),
-                                                      config);
+                                                      config, getListenerRegistry());
         this.refFactory = new ELRefFactory(refContext);
     }
 

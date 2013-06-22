@@ -1,8 +1,6 @@
 package at.irian.ankor.ref.el;
 
 import at.irian.ankor.application.ModelHolder;
-import at.irian.ankor.el.ModelELContext;
-import at.irian.ankor.el.StandardELContext;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefFactory;
 import com.typesafe.config.Config;
@@ -10,8 +8,6 @@ import com.typesafe.config.ConfigFactory;
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import javax.el.ExpressionFactory;
 
 /**
  * @author MGeiler (Manfred Geiler)
@@ -27,7 +23,7 @@ public class ELRefTest {
         this.modelHolder = new ModelHolder(Object.class);
         Config config = ConfigFactory.load();
         ELRefContext refContext = ELRefContext.create(modelHolder, null, null,
-                                                      config);
+                                                      config, null);
         this.refFactory = new ELRefFactory(refContext);
     }
 

@@ -1,6 +1,8 @@
 package at.irian.ankor.ref;
 
 import at.irian.ankor.action.Action;
+import at.irian.ankor.event.ActionListener;
+import at.irian.ankor.event.ChangeListener;
 
 /**
  * @author MGeiler (Manfred Geiler)
@@ -82,4 +84,8 @@ public interface Ref {
     Ref withRefContext(RefContext newRefContext);
 
     Ref withModelContext(Ref modelContext);
+
+    void registerRemoteChangeListener(ChangeListener listener);
+
+    void registerActionListener(ActionListener listener);
 }

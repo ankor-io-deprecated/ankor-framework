@@ -1,16 +1,15 @@
 package at.irian.ankorman.sample1.server;
 
-import at.irian.ankor.application.Application;
 import at.irian.ankor.event.ChangeListener;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankorman.sample1.model.model.animal.Animal;
-import at.irian.ankorman.sample1.model.model.animal.AnimalFamily;
-import at.irian.ankorman.sample1.model.model.animal.search.AnimalSearchFilter;
-import at.irian.ankorman.sample1.model.model.animal.AnimalType;
-import at.irian.ankorman.sample1.model.model.animal.edit.AnimalDetailModel;
-import at.irian.ankorman.sample1.model.model.animal.search.AnimalSearchModel;
 import at.irian.ankorman.sample1.model.model.ModelRoot;
 import at.irian.ankorman.sample1.model.model.Tab;
+import at.irian.ankorman.sample1.model.model.animal.Animal;
+import at.irian.ankorman.sample1.model.model.animal.AnimalFamily;
+import at.irian.ankorman.sample1.model.model.animal.AnimalType;
+import at.irian.ankorman.sample1.model.model.animal.edit.AnimalDetailModel;
+import at.irian.ankorman.sample1.model.model.animal.search.AnimalSearchFilter;
+import at.irian.ankorman.sample1.model.model.animal.search.AnimalSearchModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,12 +21,6 @@ import java.util.List;
 */
 @SuppressWarnings("UnusedDeclaration")
 public class ServiceBean {
-
-    private Application application;
-
-    public void setApplication(Application application) {
-        this.application = application;
-    }
 
     public ModelRoot init() {
         ModelRoot model = new ModelRoot();
@@ -99,7 +92,7 @@ public class ServiceBean {
         }
     }
 
-    public Tab createAnimalSearchTab(final Ref tabsRef, final String tabId) {
+    public Tab createAnimalSearchTab(Ref tabsRef, String tabId) {
         Tab<AnimalSearchModel> tab = new Tab<AnimalSearchModel>(tabId);
         tab.setModel(new AnimalSearchModel());
         List<AnimalType> types = new ArrayList<AnimalType>(AnimalType.values().length + 1);
@@ -107,8 +100,9 @@ public class ServiceBean {
         types.add(null);
         tab.getModel().getFilter().setTypes(types);
         tab.getModel().getFilter().setFamilies(new ArrayList<AnimalFamily>(0));
-        application.getListenerRegistry()
-                   .registerRemoteChangeListener(tabsRef.sub(tabId).sub("model.filter.type"), new ChangeListener() {
+
+        final Ref tabRef = tabsRef.sub(tabId);
+        tabRef.sub("model.filter.type").registerRemoteChangeListener(new ChangeListener() {
             @Override
             public void processChange(Ref modelContext, Ref watchedProperty, Ref changedProperty) {
                 AnimalType type = changedProperty.getValue();
@@ -132,9 +126,10 @@ public class ServiceBean {
                 } else {
                     families = new ArrayList<AnimalFamily>(0);
                 }
-                tabsRef.sub(tabId).sub("model.filter.families").setValue(families);
+                tabRef.sub("model.filter.families").setValue(families);
             }
         });
+
         return tab;
     }
 

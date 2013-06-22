@@ -1,5 +1,6 @@
 package at.irian.ankor.ref.el;
 
+import at.irian.ankor.application.ListenerRegistry;
 import at.irian.ankor.application.ModelHolder;
 import at.irian.ankor.el.ModelContextELContext;
 import at.irian.ankor.el.ModelELContext;
@@ -29,6 +30,7 @@ public class ELRefContext implements RefContext {
     private final Config config;
     private final String modelRootVarName;
     private final Ref modelContext;
+    private final ListenerRegistry listenerRegistry;
 
     private ELRefContext(ExpressionFactory expressionFactory,
                          ELContext elContext,
@@ -36,7 +38,8 @@ public class ELRefContext implements RefContext {
                          ActionNotifier actionNotifier,
                          Config config,
                          String modelRootVarName,
-                         Ref modelContext) {
+                         Ref modelContext,
+                         ListenerRegistry listenerRegistry) {
         this.expressionFactory = expressionFactory;
         this.elContext = elContext;
         this.changeNotifier = changeNotifier;
@@ -44,20 +47,22 @@ public class ELRefContext implements RefContext {
         this.config = config;
         this.modelRootVarName = modelRootVarName;
         this.modelContext = modelContext;
+        this.listenerRegistry = listenerRegistry;
     }
 
     public static ELRefContext create(ExpressionFactory expressionFactory,
                                       ELContext elContext,
                                       ChangeNotifier changeNotifier,
                                       ActionNotifier actionNotifier,
-                                      Config config) {
+                                      Config config, ListenerRegistry listenerRegistry) {
         ELRefContext refContext = new ELRefContext(expressionFactory,
                                                    elContext,
                                                    changeNotifier,
                                                    actionNotifier,
                                                    config,
                                                    config.getString("ankor.variable-names.modelRoot"),
-                                                   null);
+                                                   null,
+                                                   listenerRegistry);
         ELContext rootRefELContext = new SingleReadonlyVariableELContext(elContext,
                                                              config.getString("ankor.variable-names.modelRootRef"),
                                                              ELRefUtils.rootRef(refContext, false));
@@ -67,22 +72,22 @@ public class ELRefContext implements RefContext {
     public static ELRefContext create(ModelHolder modelHolder,
                                       ChangeNotifier changeNotifier,
                                       ActionNotifier actionNotifier,
-                                      Config config) {
+                                      Config config, ListenerRegistry listenerRegistry) {
         ExpressionFactory expressionFactory = ExpressionFactory.newInstance();
         ModelELContext modelELContext = new ModelELContext(new StandardELContext(), modelHolder, config);
-        return create(expressionFactory, modelELContext, changeNotifier, actionNotifier, config);
+        return create(expressionFactory, modelELContext, changeNotifier, actionNotifier, config, listenerRegistry);
     }
 
     public ELRefContext with(ELContext elContext) {
         return new ELRefContext(expressionFactory, elContext, changeNotifier, actionNotifier, config,
                                 modelRootVarName,
-                                modelContext);
+                                modelContext, listenerRegistry);
     }
 
     public ELRefContext withNoModelChangeNotifier() {
         return new ELRefContext(expressionFactory, elContext, null, actionNotifier, config,
                                 modelRootVarName,
-                                modelContext);
+                                modelContext, listenerRegistry);
     }
 
     @Override
@@ -93,7 +98,7 @@ public class ELRefContext implements RefContext {
                                 changeNotifier,
                                 actionNotifier,
                                 config,
-                                modelRootVarName, modelContext);
+                                modelRootVarName, modelContext, listenerRegistry);
     }
 
     public ELContext getELContext() {
@@ -119,6 +124,10 @@ public class ELRefContext implements RefContext {
     @Override
     public Ref getModelContext() {
         return modelContext;
+    }
+
+    public ListenerRegistry getListenerRegistry() {
+        return listenerRegistry;
     }
 
     @Override

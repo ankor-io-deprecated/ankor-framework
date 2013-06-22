@@ -1,7 +1,9 @@
 package at.irian.ankor.ref.el;
 
 import at.irian.ankor.action.Action;
+import at.irian.ankor.event.ActionListener;
 import at.irian.ankor.event.ActionNotifier;
+import at.irian.ankor.event.ChangeListener;
 import at.irian.ankor.event.ChangeNotifier;
 import at.irian.ankor.ref.BaseRef;
 import at.irian.ankor.ref.Ref;
@@ -126,5 +128,15 @@ class ELRef extends BaseRef {
     @Override
     public Ref withRefContext(RefContext newRefContext) {
         return ELRefUtils.ref((ELRefContext)newRefContext, path(), deleted);
+    }
+
+    @Override
+    public void registerRemoteChangeListener(ChangeListener listener) {
+        refContext().getListenerRegistry().registerRemoteChangeListener(this, listener);
+    }
+
+    @Override
+    public void registerActionListener(ActionListener listener) {
+        refContext().getListenerRegistry().registerRemoteActionListener(this, listener);
     }
 }

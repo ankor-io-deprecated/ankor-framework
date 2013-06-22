@@ -37,7 +37,7 @@ public class SimpleLocalAppServiceCreator {
         return this;
     }
 
-    public void create() {
+    public AppService create() {
         serverApplication = SimpleApplication.create(modelType)
                                                         .withBeanResolver(new BeanResolver() {
                                                             @Override
@@ -59,7 +59,7 @@ public class SimpleLocalAppServiceCreator {
             startServerStatusThread(serverApplication);
         }
 
-        appService = new AppService(clientApplication);
+        return new AppService(clientApplication);
     }
 
     public SimpleApplication getServerApplication() {

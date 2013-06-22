@@ -33,10 +33,7 @@ public class App extends javafx.application.Application {
                 .withModelType(ModelRoot.class)
                 .withBean("service", serviceBean)
                 .withServerStatusMessage(true);
-        appServiceCreator.create();
-        serviceBean.setApplication(appServiceCreator.getServerApplication());
-
-        appService = appServiceCreator.getAppService();
+        appService = appServiceCreator.create();
         serviceFacade = new ServiceFacade(appService);
 
         primaryStage.setTitle("Ankor FX Sample");
