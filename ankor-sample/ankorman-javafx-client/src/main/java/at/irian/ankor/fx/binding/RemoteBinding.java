@@ -39,26 +39,36 @@ public class RemoteBinding implements ChangeListener, javafx.beans.value.ChangeL
     }
 
     private void setRemoteValue(Ref valueRef) {
-        currentRemoteValue = valueRef.getValue();
-        if (currentRemoteValue instanceof String) {
-            property.setValue(currentRemoteValue);
-        } else if (currentRemoteValue instanceof List) {
+        Object remoteValue = valueRef.getValue();
+        if (remoteValue instanceof String) {
+            property.setValue(remoteValue);
+            currentRemoteValue = remoteValue;
+        } else if (remoteValue instanceof Enum) {
+            property.setValue(((Enum) remoteValue).name());
+            currentRemoteValue = ((Enum) remoteValue).name();
+        } else if (remoteValue instanceof List) {
             Object value = property.getValue();
             if (value instanceof ObservableList) {
                 ((ObservableList) value).clear();
-                ((ObservableList) value).addAll((Collection) valueRef.getValue());
+                Collection collection = valueRef.getValue();
+                ((ObservableList) value).addAll(collection);
+                currentRemoteValue = collection;
             } else {
                 if (value == null) {
-                    property.setValue(new ObservableListWrapper((List) valueRef.getValue()));
+                    ObservableList observableList = new ObservableListWrapper((List) valueRef.getValue());
+                    property.setValue(observableList);
+                    currentRemoteValue = observableList;
                     LOG.warn("Expected observable List found (null)");
                 } else {
                     LOG.warn(String.format("Expected observable List found (%s)", value.getClass().getName()));
                 }
             }
-        } else if (currentRemoteValue != null) {
-            property.setValue(currentRemoteValue.toString());
+        } else if (remoteValue != null) {
+            property.setValue(remoteValue.toString());
+            currentRemoteValue = remoteValue.toString();
         } else {
             property.setValue(null);
+            currentRemoteValue = null;
         }
     }
 
@@ -67,6 +77,7 @@ public class RemoteBinding implements ChangeListener, javafx.beans.value.ChangeL
     public void changed(ObservableValue<? extends Object> observableValue, Object oldValue, Object newValue)  {
         try {
             if (!isEqual(currentRemoteValue, newValue)) {
+                currentRemoteValue = newValue;
                 valueRef.setValue(newValue);
             }
         } catch(IllegalArgumentException ignored) {

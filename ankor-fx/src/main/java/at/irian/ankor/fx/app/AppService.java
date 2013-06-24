@@ -78,6 +78,11 @@ public class AppService {
             return this;
         }
 
+        public RMAExecution withActionContextAutoRefresh() {
+            rma = rma.withActionContextAutoRefresh();
+            return this;
+        }
+
         public RMAExecution onComplete(ActionCompleteCallback cb) {
             this.cb = cb;
             Action completeAction = SimpleAction.create("cb");

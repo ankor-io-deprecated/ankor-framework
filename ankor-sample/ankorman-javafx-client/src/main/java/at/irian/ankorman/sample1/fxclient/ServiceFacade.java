@@ -23,10 +23,10 @@ public class ServiceFacade {
     public void initApplication(ActionCompleteCallback cb) {
         Ref rootRef = refFactory.rootRef();
         appService.remoteMethod("service.init()")
-                  .inContext(rootRef)
-                  .withResultIn(rootRef)
-                  .onComplete(cb)
-                  .execute();
+                .inContext(rootRef)
+                .withResultIn(rootRef)
+                .onComplete(cb)
+                .execute();
     }
 
     public void createAnimalSearchTab(String tabId, ActionCompleteCallback cb) {
@@ -42,32 +42,32 @@ public class ServiceFacade {
     public void createAnimalDetailTab(String tabId, ActionCompleteCallback cb) {
         Ref tabsRef = refFactory.ref("root.tabs");
         appService.remoteMethod("service.createAnimalDetailTab(contextRef, tabId)")
-                  .inContext(tabsRef)
-                  .setParam("tabId", tabId)
-                  .withResultIn(tabsRef.sub(tabId))
-                  .onComplete(cb)
-                  .execute();
+                .inContext(tabsRef)
+                .setParam("tabId", tabId)
+                .withResultIn(tabsRef.sub(tabId))
+                .onComplete(cb)
+                .execute();
     }
 
     public void searchAnimals(Ref tabRef, ActionCompleteCallback cb) {
         appService.remoteMethod("service.searchAnimals(context.filter)")
-                  .inContext(tabRef.sub("model"))
-                  .withResultIn("context.animals")
-                  .onComplete(cb)
-                  .execute();
+                .inContext(tabRef.sub("model"))
+                .withResultIn("context.animals")
+                .onComplete(cb)
+                .execute();
     }
 
     public void saveAnimal(Ref tabRef, ActionCompleteCallback cb) {
         appService.remoteMethod("service.saveAnimal(context.animal)")
-                  .inContext(tabRef.sub("model"))
-                  .onComplete(cb)
-                  .execute();
+                .inContext(tabRef.sub("model"))
+                .onComplete(cb)
+                .execute();
     }
 
     public void saveAnimals(Ref tabRef, ActionCompleteCallback cb) {
         appService.remoteMethod("service.saveAnimals(context.animals)")
-                  .inContext(tabRef.sub("model"))
-                  .onComplete(cb)
-                  .execute();
+                .inContext(tabRef.sub("model"))
+                .onComplete(cb)
+                .execute();
     }
 }
