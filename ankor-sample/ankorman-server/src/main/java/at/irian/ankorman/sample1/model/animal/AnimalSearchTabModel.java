@@ -2,8 +2,6 @@ package at.irian.ankorman.sample1.model.animal;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-import java.util.List;
-
 /**
 * @author Thomas Spiegl
 */
@@ -13,7 +11,8 @@ public class AnimalSearchTabModel {
     @JsonTypeInfo(use = JsonTypeInfo.Id.NONE, defaultImpl = AnimalSelectItems.class)
     private AnimalSelectItems selectItems;
     @JsonTypeInfo(use = JsonTypeInfo.Id.NONE, defaultImpl = Animal.class)
-    private List<Animal> animals;
+    private Data<Animal> animals;
+
 
     @SuppressWarnings("UnusedDeclaration")
     protected AnimalSearchTabModel() {
@@ -22,19 +21,13 @@ public class AnimalSearchTabModel {
     public AnimalSearchTabModel(AnimalSelectItems selectItems) {
         this.filter = new AnimalSearchFilter();
         this.selectItems = selectItems;
+        this.animals = new Data<Animal>(new Paginator(0, 5));
     }
 
     public AnimalSearchFilter getFilter() {
         return filter;
     }
 
-    public List<Animal> getAnimals() {
-        return animals;
-    }
-
-    public void setAnimals(List<Animal> animals) {
-        this.animals = animals;
-    }
 
     public AnimalSelectItems getSelectItems() {
         return selectItems;
@@ -42,5 +35,13 @@ public class AnimalSearchTabModel {
 
     public void setSelectItems(AnimalSelectItems selectItems) {
         this.selectItems = selectItems;
+    }
+
+    public Data<Animal> getAnimals() {
+        return animals;
+    }
+
+    public void setAnimals(Data<Animal> animals) {
+        this.animals = animals;
     }
 }

@@ -4,13 +4,7 @@ import at.irian.ankor.event.ChangeListener;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorman.sample1.model.ModelRoot;
 import at.irian.ankorman.sample1.model.Tab;
-import at.irian.ankorman.sample1.model.animal.Animal;
-import at.irian.ankorman.sample1.model.animal.AnimalFamily;
-import at.irian.ankorman.sample1.model.animal.AnimalType;
-import at.irian.ankorman.sample1.model.animal.AnimalDetailTabModel;
-import at.irian.ankorman.sample1.model.animal.AnimalSearchFilter;
-import at.irian.ankorman.sample1.model.animal.AnimalSearchTabModel;
-import at.irian.ankorman.sample1.model.animal.AnimalSelectItems;
+import at.irian.ankorman.sample1.model.animal.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,22 +23,8 @@ public class ServiceBean {
         return model;
     }
 
-    public List<Animal> searchAnimals(AnimalSearchFilter filter) {
-        String nameFilter = filter.getName() != null && filter.getName().trim().length() > 0 ? filter.getName().toLowerCase() : null;
-        List<Animal> animals = AnimalRepository.getAnimals();
-        if (filter.getType() != null || nameFilter != null) {
-            for (Iterator<Animal> it = animals.iterator(); it.hasNext(); ) {
-                Animal current = it.next();
-                if (nameFilter != null && !current.getName().toLowerCase().contains(nameFilter)) {
-                    it.remove();
-                    continue;
-                }
-                if (filter.getType() != null && current.getType() != filter.getType()) {
-                    it.remove();
-                }
-            }
-        }
-        return animals;
+    public Data<Animal> searchAnimals(AnimalSearchFilter filter, Paginator paginator) {
+        return AnimalRepository.searchAnimals(filter, paginator.getFirst(), paginator.getMaxResults());
     }
 
     public void saveAnimal(Animal animal) {
@@ -61,6 +41,42 @@ public class ServiceBean {
             animals.add(new Animal("Eagle", AnimalType.Bird, AnimalFamily.Accipitridae));
             animals.add(new Animal("Blue Whale", AnimalType.Mammal, AnimalFamily.Balaenopteridae));
             animals.add(new Animal("Tiger", AnimalType.Mammal, AnimalFamily.Felidae));
+            for (int i = 0; i < 20; i++) {
+                animals.add(new Animal("Bird " + i, AnimalType.Bird, AnimalFamily.Accipitridae));
+            }
+        }
+
+        public static Data<Animal> searchAnimals(AnimalSearchFilter filter, int first, int maxResults) {
+            String nameFilter = filter.getName() != null && filter.getName().trim().length() > 0 ? filter.getName().toLowerCase() : null;
+            List<Animal> animals = getAnimals();
+            if (filter.getType() != null || nameFilter != null) {
+                for (Iterator<Animal> it = animals.iterator(); it.hasNext(); ) {
+                    Animal current = it.next();
+                    if (nameFilter != null && !current.getName().toLowerCase().contains(nameFilter)) {
+                        it.remove();
+                        continue;
+                    }
+                    if (filter.getType() != null && current.getType() != filter.getType()) {
+                        it.remove();
+                    }
+                }
+            }
+            if (first >= animals.size() -1) {
+                return new Data<Animal>(new Paginator(animals.size(), maxResults));
+            }
+            if (first < 0) {
+                first = 0;
+            }
+            int last = first + maxResults;
+            if (last >= animals.size() -1) {
+                last = animals.size() -1;
+            }
+
+            Data<Animal> data = new Data<Animal>(new Paginator(first, maxResults));
+
+            data.getRows().addAll(animals.subList(first, last));
+
+            return data;
         }
 
         private static List<Animal> getAnimals() {
@@ -103,10 +119,18 @@ public class ServiceBean {
         tabRef.sub("model.filter.name").registerRemoteChangeListener(new ChangeListener() {
                     @Override
                     public void processChange(Ref modelContext, Ref watchedProperty, Ref changedProperty) {
-                        List<Animal> animals = searchAnimals(tab.getModel().getFilter());
+                        Data<Animal> animals = searchAnimals(tab.getModel().getFilter(), tab.getModel().getAnimals().getPaginator());
                         tabsRef.sub(tabId).sub("model.animals").setValue(animals);
                     }
                 });
+
+        tabRef.sub("model.animals.paginator.first").registerRemoteChangeListener(new ChangeListener() {
+            @Override
+            public void processChange(Ref modelContext, Ref watchedProperty, Ref changedProperty) {
+                Data<Animal> animals = searchAnimals(tab.getModel().getFilter(), tab.getModel().getAnimals().getPaginator());
+                tabsRef.sub(tabId).sub("model.animals").setValue(animals);
+            }
+        });
 
         return tab;
     }

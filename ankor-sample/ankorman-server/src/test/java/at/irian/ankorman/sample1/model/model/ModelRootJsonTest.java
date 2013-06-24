@@ -7,11 +7,7 @@ import at.irian.ankor.messaging.json.JsonMessageMapper;
 import at.irian.ankor.ref.RefFactory;
 import at.irian.ankorman.sample1.model.ModelRoot;
 import at.irian.ankorman.sample1.model.Tab;
-import at.irian.ankorman.sample1.model.animal.Animal;
-import at.irian.ankorman.sample1.model.animal.AnimalFamily;
-import at.irian.ankorman.sample1.model.animal.AnimalType;
-import at.irian.ankorman.sample1.model.animal.AnimalSearchTabModel;
-import at.irian.ankorman.sample1.model.animal.AnimalSelectItems;
+import at.irian.ankorman.sample1.model.animal.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -49,7 +45,9 @@ public class ModelRootJsonTest {
         tab.setModel(model);
         List<Animal> animals = Arrays.asList(new Animal("fish", AnimalType.Fish, AnimalFamily.Accipitridae),
                                              new Animal("bird", AnimalType.Bird, AnimalFamily.Balaenopteridae));
-        model.setAnimals(animals);
+        Data<Animal> data = new Data<Animal>(new Paginator(0, 5));
+        data.setRows(animals);
+        model.setAnimals(data);
 
         String json = mapper.serialize(messageFactory.createChangeMessage(rf.rootRef(), rf.ref("root"), root));
         LOG.info(json);

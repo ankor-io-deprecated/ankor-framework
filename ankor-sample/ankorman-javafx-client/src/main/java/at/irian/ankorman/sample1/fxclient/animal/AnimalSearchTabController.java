@@ -7,15 +7,13 @@ import at.irian.ankorman.sample1.fxclient.TabIds;
 import at.irian.ankorman.sample1.model.animal.Animal;
 import at.irian.ankorman.sample1.model.animal.AnimalFamily;
 import at.irian.ankorman.sample1.model.animal.AnimalType;
+import at.irian.ankorman.sample1.model.animal.Paginator;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextInputControl;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 
@@ -30,6 +28,7 @@ import static at.irian.ankorman.sample1.fxclient.App.facade;
  * @author Thomas Spiegl
  */
 public class AnimalSearchTabController implements Initializable {
+
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalSearchTabController.class);
     @FXML
     private javafx.scene.control.Tab tab;
@@ -50,6 +49,11 @@ public class AnimalSearchTabController implements Initializable {
     private TableColumn<Animal, String> animalType;
     @FXML
     private TableColumn actionCol;
+
+    @FXML
+    private Button previous;
+    @FXML
+    private Button next;
 
     private String tabId = TabIds.next();
 
@@ -89,9 +93,30 @@ public class AnimalSearchTabController implements Initializable {
                         .createWithin(bindingContext);
 
                 newBinding()
-                        .bindValue(getTabRef().sub("model.animals"))
+                        .bindValue(getTabRef().sub("model.animals.rows"))
                         .toTable(animalTable)
                         .createWithin(bindingContext);
+
+                previous.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent actionEvent) {
+                        Ref paginatorRef = getTabRef().sub("model.animals.paginator");
+                        Paginator paginator = paginatorRef.getValue();
+                        paginator.previous();
+                        paginatorRef.setValue(paginator);
+                    }
+                });
+
+                next.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent actionEvent) {
+                        Ref paginatorRef = getTabRef().sub("model.animals.paginator");
+                        Paginator paginator = paginatorRef.getValue();
+                        paginator.next();
+                        paginatorRef.setValue(paginator);
+                    }
+                });
+
             }
         });
 
@@ -129,5 +154,4 @@ public class AnimalSearchTabController implements Initializable {
     protected void save(@SuppressWarnings("UnusedParameters") ActionEvent event) {
         facade().saveAnimals(getTabRef(), ActionCompleteCallback.empty);
     }
-
 }

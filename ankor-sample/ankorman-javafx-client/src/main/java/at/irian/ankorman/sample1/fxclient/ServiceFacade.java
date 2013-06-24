@@ -50,7 +50,7 @@ public class ServiceFacade {
     }
 
     public void searchAnimals(Ref tabRef, ActionCompleteCallback cb) {
-        appService.remoteMethod("service.searchAnimals(context.filter)")
+        appService.remoteMethod("service.searchAnimals(context.filter, context.animals.paginator)")
                 .inContext(tabRef.sub("model"))
                 .withResultIn("context.animals")
                 .onComplete(cb)
