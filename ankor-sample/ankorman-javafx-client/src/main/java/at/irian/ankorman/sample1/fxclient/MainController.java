@@ -3,7 +3,7 @@ package at.irian.ankorman.sample1.fxclient;
 import at.irian.ankor.fx.app.ActionCompleteCallback;
 import at.irian.ankor.fx.binding.BindingContext;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankorman.sample1.model.model.ModelRoot;
+import at.irian.ankorman.sample1.model.ModelRoot;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

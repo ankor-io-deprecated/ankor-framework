@@ -1,4 +1,4 @@
-package at.irian.ankorman.sample1.model.model;
+package at.irian.ankorman.sample1.model;
 
 /**
  * @author Thomas Spiegl

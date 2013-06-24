@@ -9,9 +9,12 @@
             <TextField fx:id="name" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
 
             <Label text="Type" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-            <TextField fx:id="type" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            <ComboBox fx:id="type" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
-            <Button text="Save" GridPane.columnIndex="1" GridPane.rowIndex="2"
+            <Label text="Family" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+            <ComboBox fx:id="family" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+            <Button text="Save" GridPane.columnIndex="1" GridPane.rowIndex="3"
                     onAction="#save"/>
         </GridPane>
         <Text fx:id="message" />

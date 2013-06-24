@@ -5,11 +5,11 @@ import at.irian.ankor.fx.app.ActionCompleteCallback;
 import at.irian.ankor.fx.binding.BindingContext;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorman.sample1.fxclient.TabIds;
-import at.irian.ankorman.sample1.model.model.Tab;
-import at.irian.ankorman.sample1.model.model.animal.Animal;
-import at.irian.ankorman.sample1.model.model.animal.AnimalFamily;
-import at.irian.ankorman.sample1.model.model.animal.AnimalType;
-import at.irian.ankorman.sample1.model.model.animal.search.AnimalSearchModel;
+import at.irian.ankorman.sample1.model.Tab;
+import at.irian.ankorman.sample1.model.animal.Animal;
+import at.irian.ankorman.sample1.model.animal.AnimalFamily;
+import at.irian.ankorman.sample1.model.animal.AnimalType;
+import at.irian.ankorman.sample1.model.animal.AnimalSearchTabModel;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -34,12 +34,12 @@ import static at.irian.ankorman.sample1.fxclient.App.facade;
 public class AnimalSearchTabController implements Initializable {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalSearchTabController.class);
     @FXML
-    protected javafx.scene.control.Tab tab;
+    private javafx.scene.control.Tab tab;
 
     @FXML
-    protected TextInputControl name;
+    private TextInputControl name;
     @FXML
-    protected ComboBox<AnimalType> type;
+    private ComboBox<AnimalType> type;
     @FXML
     private ComboBox<AnimalFamily> family;
 
@@ -68,7 +68,7 @@ public class AnimalSearchTabController implements Initializable {
 
             public void onComplete() {
                 Ref filterRef = getTabRef().sub("model").sub("filter");
-                // Bind filter items
+                Ref selItemsRef = getTabRef().sub("model").sub("selectItems");
 
                 newBinding()
                         .bindValue(filterRef.sub("name"))
@@ -78,13 +78,13 @@ public class AnimalSearchTabController implements Initializable {
                 newBinding()
                         .bindValue(filterRef.sub("type"))
                         .toCombo(type)
-                        .withItems(filterRef.sub("types"))
+                        .withItems(selItemsRef.sub("types"))
                         .createWithin(bindingContext);
 
                 newBinding()
                         .bindValue(filterRef.sub("family"))
                         .toCombo(family)
-                        .withItems(filterRef.sub("families"))
+                        .withItems(selItemsRef.sub("families"))
                         .createWithin(bindingContext);
 
                 application().getListenerRegistry().registerRemoteChangeListener(getTabRef().sub("model").sub("animals"), new ChangeListener() {
@@ -135,8 +135,8 @@ public class AnimalSearchTabController implements Initializable {
     protected void search(@SuppressWarnings("UnusedParameters") ActionEvent event) {
         facade().searchAnimals(getTabRef(), new ActionCompleteCallback() {
             public void onComplete() {
-                Tab<AnimalSearchModel> tab = getTabRef().getValue();
-                AnimalSearchModel model = tab.getModel();
+                Tab<AnimalSearchTabModel> tab = getTabRef().getValue();
+                AnimalSearchTabModel model = tab.getModel();
                 loadAnimals(model.getAnimals());
             }
         });

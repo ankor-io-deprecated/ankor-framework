@@ -41,7 +41,7 @@ public class ServiceFacade {
 
     public void createAnimalDetailTab(String tabId, ActionCompleteCallback cb) {
         Ref tabsRef = refFactory.ref("root.tabs");
-        appService.remoteMethod("service.createAnimalDetailTab(tabId)")
+        appService.remoteMethod("service.createAnimalDetailTab(contextRef, tabId)")
                   .inContext(tabsRef)
                   .setParam("tabId", tabId)
                   .withResultIn(tabsRef.sub(tabId))

@@ -4,6 +4,8 @@ import at.irian.ankor.fx.app.ActionCompleteCallback;
 import at.irian.ankor.fx.binding.BindingContext;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorman.sample1.fxclient.TabIds;
+import at.irian.ankorman.sample1.model.animal.AnimalFamily;
+import at.irian.ankorman.sample1.model.animal.AnimalType;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -11,6 +13,7 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.text.Text;
 
@@ -34,7 +37,9 @@ public class AnimalDetailTabController implements Initializable {
     @FXML
     private TextInputControl name;
     @FXML
-    private TextInputControl type;
+    private ComboBox<AnimalType> type;
+    @FXML
+    private ComboBox<AnimalFamily> family;
 
     private String tabId = TabIds.next();
 
@@ -52,6 +57,7 @@ public class AnimalDetailTabController implements Initializable {
 
             public void onComplete() {
                 Ref animalRef = getTabRef().sub("model").sub("animal");
+                Ref selItemsRef = getTabRef().sub("model").sub("selectItems");
 
                 newBinding()
                         .bindValue(animalRef.sub("name"))
@@ -59,17 +65,16 @@ public class AnimalDetailTabController implements Initializable {
                         .createWithin(bindingContext);
                 newBinding()
                         .bindValue(animalRef.sub("type"))
-                        .toInput(type)
+                        .toCombo(type)
+                        .withItems(selItemsRef.sub("types"))
+                        .createWithin(bindingContext);
+                newBinding()
+                        .bindValue(animalRef.sub("family"))
+                        .toCombo(family)
+                        .withItems(selItemsRef.sub("families"))
                         .createWithin(bindingContext);
 
-                // Bind Filter
                 name.textProperty().addListener(new ChangeListener<String>() {
-                    @Override
-                    public void changed(ObservableValue<? extends String> observableValue, String s, String s2) {
-                        message.setText("");
-                    }
-                });
-                type.textProperty().addListener(new ChangeListener<String>() {
                     @Override
                     public void changed(ObservableValue<? extends String> observableValue, String s, String s2) {
                         message.setText("");

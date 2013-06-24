@@ -3,7 +3,7 @@ package at.irian.ankorman.sample1.fxclient;
 import at.irian.ankor.application.Application;
 import at.irian.ankor.fx.app.AppService;
 import at.irian.ankor.fx.app.SimpleLocalAppServiceCreator;
-import at.irian.ankorman.sample1.model.model.ModelRoot;
+import at.irian.ankorman.sample1.model.ModelRoot;
 import at.irian.ankorman.sample1.server.ServiceBean;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;

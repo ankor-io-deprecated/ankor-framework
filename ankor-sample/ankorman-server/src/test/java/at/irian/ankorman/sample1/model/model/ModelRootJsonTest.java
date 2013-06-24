@@ -5,13 +5,17 @@ import at.irian.ankor.messaging.Message;
 import at.irian.ankor.messaging.MessageFactory;
 import at.irian.ankor.messaging.json.JsonMessageMapper;
 import at.irian.ankor.ref.RefFactory;
-import at.irian.ankorman.sample1.model.model.animal.Animal;
-import at.irian.ankorman.sample1.model.model.animal.AnimalFamily;
-import at.irian.ankorman.sample1.model.model.animal.AnimalType;
-import at.irian.ankorman.sample1.model.model.animal.search.AnimalSearchModel;
+import at.irian.ankorman.sample1.model.ModelRoot;
+import at.irian.ankorman.sample1.model.Tab;
+import at.irian.ankorman.sample1.model.animal.Animal;
+import at.irian.ankorman.sample1.model.animal.AnimalFamily;
+import at.irian.ankorman.sample1.model.animal.AnimalType;
+import at.irian.ankorman.sample1.model.animal.AnimalSearchTabModel;
+import at.irian.ankorman.sample1.model.animal.AnimalSelectItems;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -38,10 +42,10 @@ public class ModelRootJsonTest {
         ModelRoot root = new ModelRoot();
         root.setUserName("Max Muster");
 
-        Tab<AnimalSearchModel> tab = new Tab<AnimalSearchModel>("A1");
+        Tab<AnimalSearchTabModel> tab = new Tab<AnimalSearchTabModel>("A1");
         root.getTabs().put("A1", tab);
 
-        AnimalSearchModel model = new AnimalSearchModel();
+        AnimalSearchTabModel model = new AnimalSearchTabModel(new AnimalSelectItems(new ArrayList<AnimalType>(), new ArrayList<AnimalFamily>()));
         tab.setModel(model);
         List<Animal> animals = Arrays.asList(new Animal("fish", AnimalType.Fish, AnimalFamily.Accipitridae),
                                              new Animal("bird", AnimalType.Bird, AnimalFamily.Balaenopteridae));

@@ -2,14 +2,15 @@ package at.irian.ankorman.sample1.server;
 
 import at.irian.ankor.event.ChangeListener;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankorman.sample1.model.model.ModelRoot;
-import at.irian.ankorman.sample1.model.model.Tab;
-import at.irian.ankorman.sample1.model.model.animal.Animal;
-import at.irian.ankorman.sample1.model.model.animal.AnimalFamily;
-import at.irian.ankorman.sample1.model.model.animal.AnimalType;
-import at.irian.ankorman.sample1.model.model.animal.edit.AnimalDetailModel;
-import at.irian.ankorman.sample1.model.model.animal.search.AnimalSearchFilter;
-import at.irian.ankorman.sample1.model.model.animal.search.AnimalSearchModel;
+import at.irian.ankorman.sample1.model.ModelRoot;
+import at.irian.ankorman.sample1.model.Tab;
+import at.irian.ankorman.sample1.model.animal.Animal;
+import at.irian.ankorman.sample1.model.animal.AnimalFamily;
+import at.irian.ankorman.sample1.model.animal.AnimalType;
+import at.irian.ankorman.sample1.model.animal.AnimalDetailTabModel;
+import at.irian.ankorman.sample1.model.animal.AnimalSearchFilter;
+import at.irian.ankorman.sample1.model.animal.AnimalSearchTabModel;
+import at.irian.ankorman.sample1.model.animal.AnimalSelectItems;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -93,42 +94,12 @@ public class ServiceBean {
     }
 
     public Tab createAnimalSearchTab(final Ref tabsRef, final String tabId) {
-        final Tab<AnimalSearchModel> tab = new Tab<AnimalSearchModel>(tabId);
-        tab.setModel(new AnimalSearchModel());
-        List<AnimalType> types = new ArrayList<AnimalType>(AnimalType.values().length + 1);
-        types.addAll(Arrays.asList(AnimalType.values()));
-        types.add(null);
-        tab.getModel().getFilter().setTypes(types);
-        tab.getModel().getFilter().setFamilies(new ArrayList<AnimalFamily>(0));
+        final Tab<AnimalSearchTabModel> tab = new Tab<AnimalSearchTabModel>(tabId);
+        tab.setModel(new AnimalSearchTabModel(getAnimalSelectItems()));
 
-        final Ref tabRef = tabsRef.sub(tabId);
-        tabRef.sub("model.filter.type").registerRemoteChangeListener(new ChangeListener() {
-            @Override
-            public void processChange(Ref modelContext, Ref watchedProperty, Ref changedProperty) {
-                AnimalType type = changedProperty.getValue();
-                List<AnimalFamily> families;
-                if (type != null) {
-                    families = new ArrayList<AnimalFamily>();
-                    switch (type) {
-                        case Bird:
-                            families.add(AnimalFamily.Accipitridae);
-                            break;
-                        case Fish:
-                            families.add(AnimalFamily.Esocidae);
-                            families.add(AnimalFamily.Salmonidae);
-                            break;
-                        case Mammal:
-                            families.add(AnimalFamily.Balaenopteridae);
-                            families.add(AnimalFamily.Felidae);
-                            break;
-                    }
-                    families.add(null);
-                } else {
-                    families = new ArrayList<AnimalFamily>(0);
-                }
-                tabRef.sub("model.filter.families").setValue(families);
-            }
-        });
+        Ref tabRef = tabsRef.sub(tabId);
+        tabRef.sub("model.filter.type").registerRemoteChangeListener(new AnimalChangeListener(tabRef.sub("model.selectItems.families")));
+
         tabRef.sub("model.filter.name").registerRemoteChangeListener(new ChangeListener() {
                     @Override
                     public void processChange(Ref modelContext, Ref watchedProperty, Ref changedProperty) {
@@ -137,21 +108,25 @@ public class ServiceBean {
                     }
                 });
 
-
         return tab;
     }
 
-    public Tab createAnimalDetailTab(String tabId, String animalUUID) {
-        Tab<AnimalDetailModel> tab = new Tab<AnimalDetailModel>(tabId);
-        tab.setModel(new AnimalDetailModel());
-        tab.getModel().setAnimal(AnimalRepository.findAnimal(animalUUID));
-        return tab;
+    private AnimalSelectItems getAnimalSelectItems() {
+        List<AnimalType> types = new ArrayList<AnimalType>(AnimalType.values().length + 1);
+        types.addAll(Arrays.asList(AnimalType.values()));
+        types.add(null);
+        return new AnimalSelectItems(types, new ArrayList<AnimalFamily>());
     }
 
-    public Tab createAnimalDetailTab(String tabId) {
-        Tab<AnimalDetailModel> tab = new Tab<AnimalDetailModel>(tabId);
-        tab.setModel(new AnimalDetailModel());
+    public Tab createAnimalDetailTab(final Ref tabsRef, String tabId) {
+        Tab<AnimalDetailTabModel> tab = new Tab<AnimalDetailTabModel>(tabId);
+        tab.setModel(new AnimalDetailTabModel(new Animal(), getAnimalSelectItems()));
         tab.getModel().setAnimal(new Animal());
+
+        Ref tabRef = tabsRef.sub(tabId);
+
+        tabRef.sub("model.animal.type").registerRemoteChangeListener(new AnimalChangeListener(tabRef.sub("model.selectItems.families")));
+
         return tab;
     }
 
@@ -160,4 +135,39 @@ public class ServiceBean {
             AnimalRepository.saveAnimal(animal);
         }
     }
+
+    public static class AnimalChangeListener implements ChangeListener {
+
+        private final Ref ref;
+
+        public AnimalChangeListener(Ref ref) {
+            this.ref = ref;
+        }
+
+        @Override
+        public void processChange(Ref modelContext, Ref watchedProperty, Ref changedProperty) {
+            AnimalType type = changedProperty.getValue();
+            List<AnimalFamily> families;
+            if (type != null) {
+                families = new ArrayList<AnimalFamily>();
+                switch (type) {
+                    case Bird:
+                        families.add(AnimalFamily.Accipitridae);
+                        break;
+                    case Fish:
+                        families.add(AnimalFamily.Esocidae);
+                        families.add(AnimalFamily.Salmonidae);
+                        break;
+                    case Mammal:
+                        families.add(AnimalFamily.Balaenopteridae);
+                        families.add(AnimalFamily.Felidae);
+                        break;
+                }
+                families.add(null);
+            } else {
+                families = new ArrayList<AnimalFamily>(0);
+            }
+            ref.setValue(families);
+        }
+    };
 }
