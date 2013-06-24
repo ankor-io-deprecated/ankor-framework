@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import static at.irian.ankor.fx.binding.BindingsBuilder.newBinding;
+import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
 import static at.irian.ankorman.sample1.fxclient.App.application;
 import static at.irian.ankorman.sample1.fxclient.App.facade;
 
@@ -44,8 +44,7 @@ public class MainController implements Initializable {
 
                 userName.setText(modelRoot.getUserName());
 
-                newBinding()
-                        .bindValue(rootRef.sub("serverStatus"))
+                bindValue(rootRef.sub("serverStatus"))
                         .toText(serverStatus)
                         .createWithin(bindingContext);
 

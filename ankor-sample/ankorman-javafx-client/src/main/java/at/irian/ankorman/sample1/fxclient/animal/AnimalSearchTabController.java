@@ -21,7 +21,8 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import static at.irian.ankor.fx.binding.BindingsBuilder.newBinding;
+import static at.irian.ankor.fx.binding.ButtonBindingBuilder.onButtonClick;
+import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
 import static at.irian.ankorman.sample1.fxclient.App.application;
 import static at.irian.ankorman.sample1.fxclient.App.facade;
 
@@ -71,56 +72,50 @@ public class AnimalSearchTabController implements Initializable {
         facade().createAnimalSearchTab(tabId, new ActionCompleteCallback() {
 
             public void onComplete() {
-                Ref filterRef = getTabRef().sub("model").sub("filter");
-                Ref selItemsRef = getTabRef().sub("model").sub("selectItems");
+                Ref filterRef = getTabRef().sub("model.filter");
+                Ref selItemsRef = getTabRef().sub("model.selectItems");
+                Ref rowsRef = getTabRef().sub("model.animals.rows");
+                Ref paginatorRef = getTabRef().sub("model.animals.paginator");
 
-                initTable();
+                bindTableColumns();
 
-                newBinding()
-                        .bindValue(filterRef.sub("name"))
+                bindValue(filterRef.sub("name"))
                         .toInput(name)
                         .createWithin(bindingContext);
 
-                newBinding()
-                        .bindValue(filterRef.sub("type"))
+                bindValue(filterRef.sub("type"))
                         .toCombo(type)
                         .withSelectItems(selItemsRef.sub("types"))
                         .createWithin(bindingContext);
 
-                newBinding()
-                        .bindValue(filterRef.sub("family"))
+                bindValue(filterRef.sub("family"))
                         .toCombo(family)
                         .withSelectItems(selItemsRef.sub("families"))
                         .createWithin(bindingContext);
 
-                newBinding()
-                        .bindValue(getTabRef().sub("model.animals.rows"))
+                bindValue(rowsRef)
                         .toTable(animalTable)
                         .createWithin(bindingContext);
 
-                newBinding()
-                        .bindValue(getTabRef().sub("model.animals.paginator"))
-                        .toButton(previous)
-                        .onClick(new ClickAction() {
+                onButtonClick(previous)
+                        .refresh(paginatorRef)
+                        .call(new ClickAction() {
                             @Override
                             public void onClick(Ref valueRef) {
                                 Paginator paginator = valueRef.getValue();
                                 paginator.previous();
                             }
-                        })
-                        .createWithin(bindingContext);
+                        }).bind();
 
-                newBinding()
-                        .bindValue(getTabRef().sub("model.animals.paginator"))
-                        .toButton(next)
-                        .onClick(new ClickAction() {
+                onButtonClick(next)
+                        .refresh(paginatorRef)
+                        .call(new ClickAction() {
                             @Override
                             public void onClick(Ref valueRef) {
                                 Paginator paginator = valueRef.getValue();
                                 paginator.next();
                             }
-                        })
-                        .createWithin(bindingContext);
+                        }).bind();
             }
         });
 
@@ -132,7 +127,7 @@ public class AnimalSearchTabController implements Initializable {
     }
 
     @SuppressWarnings("unchecked")
-    private void initTable() {
+    private void bindTableColumns() {
 
         animalName.setCellValueFactory(new PropertyValueFactory<Animal, String>("name"));
         animalName.setCellFactory(TextFieldTableCell.<Animal>forTableColumn());

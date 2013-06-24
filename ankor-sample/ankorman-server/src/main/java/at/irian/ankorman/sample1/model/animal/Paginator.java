@@ -51,4 +51,7 @@ public class Paginator {
         first = first + maxResults;
     }
 
+    public void reset() {
+        first = 0;
+    }
 }

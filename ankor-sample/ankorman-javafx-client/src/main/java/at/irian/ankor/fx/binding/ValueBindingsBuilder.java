@@ -15,7 +15,7 @@ import javafx.scene.text.Text;
 /**
  * @author Thomas Spiegl
  */
-public class BindingsBuilder {
+public class ValueBindingsBuilder {
 
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(BindingsBuilder.class);
 
@@ -35,47 +35,47 @@ public class BindingsBuilder {
 
     private ClickAction clickAction;
 
-    public static BindingsBuilder newBinding() {
-        return new BindingsBuilder();
+    public static ValueBindingsBuilder bindValue(Ref value) {
+        return new ValueBindingsBuilder().forValue(value);
     }
 
-    public BindingsBuilder bindValue(Ref value) {
+    private ValueBindingsBuilder forValue(Ref value) {
         this.valueRef = value;
         return this;
     }
 
-    public BindingsBuilder toText(Text text) {
+    public ValueBindingsBuilder toText(Text text) {
         this.text = text;
         return this;
     }
 
-    public BindingsBuilder toButton(Button button) {
+    public ValueBindingsBuilder toButton(Button button) {
         this.button = button;
         return this;
     }
 
-    public BindingsBuilder onClick(ClickAction clickAction) {
+    public ValueBindingsBuilder onClick(ClickAction clickAction) {
         this.clickAction = clickAction;
         return this;
     }
 
-    public BindingsBuilder toInput(TextInputControl inputControl) {
+    public ValueBindingsBuilder toInput(TextInputControl inputControl) {
         this.inputControl = inputControl;
         return this;
     }
 
-    public BindingsBuilder toCombo(ComboBox comboBox) {
+    public ValueBindingsBuilder toCombo(ComboBox comboBox) {
         this.comboBox = comboBox;
         return this;
     }
 
-    public BindingsBuilder toTable(TableView tableView) {
+    public ValueBindingsBuilder toTable(TableView tableView) {
         this.tableView = tableView;
         return this;
     }
 
 
-    public BindingsBuilder withSelectItems(Ref itemsRef) {
+    public ValueBindingsBuilder withSelectItems(Ref itemsRef) {
         this.itemsRef = itemsRef;
         return this;
     }

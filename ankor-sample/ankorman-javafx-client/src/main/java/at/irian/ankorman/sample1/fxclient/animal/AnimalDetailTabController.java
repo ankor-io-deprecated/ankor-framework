@@ -20,7 +20,7 @@ import javafx.scene.text.Text;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import static at.irian.ankor.fx.binding.BindingsBuilder.newBinding;
+import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
 import static at.irian.ankorman.sample1.fxclient.App.application;
 import static at.irian.ankorman.sample1.fxclient.App.facade;
 
@@ -59,17 +59,14 @@ public class AnimalDetailTabController implements Initializable {
                 Ref animalRef = getTabRef().sub("model").sub("animal");
                 Ref selItemsRef = getTabRef().sub("model").sub("selectItems");
 
-                newBinding()
-                        .bindValue(animalRef.sub("name"))
+                bindValue(animalRef.sub("name"))
                         .toInput(name)
                         .createWithin(bindingContext);
-                newBinding()
-                        .bindValue(animalRef.sub("type"))
+                bindValue(animalRef.sub("type"))
                         .toCombo(type)
                         .withSelectItems(selItemsRef.sub("types"))
                         .createWithin(bindingContext);
-                newBinding()
-                        .bindValue(animalRef.sub("family"))
+                bindValue(animalRef.sub("family"))
                         .toCombo(family)
                         .withSelectItems(selItemsRef.sub("families"))
                         .createWithin(bindingContext);

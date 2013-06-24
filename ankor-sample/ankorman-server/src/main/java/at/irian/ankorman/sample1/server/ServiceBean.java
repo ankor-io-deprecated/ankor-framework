@@ -119,6 +119,7 @@ public class ServiceBean {
         tabRef.sub("model.filter.name").registerRemoteChangeListener(new ChangeListener() {
                     @Override
                     public void processChange(Ref modelContext, Ref watchedProperty, Ref changedProperty) {
+                        tab.getModel().getAnimals().getPaginator().reset();
                         Data<Animal> animals = searchAnimals(tab.getModel().getFilter(), tab.getModel().getAnimals().getPaginator());
                         tabsRef.sub(tabId).sub("model.animals").setValue(animals);
                     }
