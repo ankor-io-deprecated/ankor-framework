@@ -4,6 +4,9 @@ import at.irian.ankor.ref.Ref;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextInputControl;
@@ -28,6 +31,10 @@ public class BindingsBuilder {
 
     private TableView tableView;
 
+    private Button button;
+
+    private ClickAction clickAction;
+
     public static BindingsBuilder newBinding() {
         return new BindingsBuilder();
     }
@@ -39,6 +46,16 @@ public class BindingsBuilder {
 
     public BindingsBuilder toText(Text text) {
         this.text = text;
+        return this;
+    }
+
+    public BindingsBuilder toButton(Button button) {
+        this.button = button;
+        return this;
+    }
+
+    public BindingsBuilder onClick(ClickAction clickAction) {
+        this.clickAction = clickAction;
         return this;
     }
 
@@ -75,6 +92,17 @@ public class BindingsBuilder {
             bind(valueRef, inputControl, bindingContext);
         } else if (tableView != null) {
             bind(valueRef, tableView);
+        } else if(button != null) {
+            if (valueRef == null || clickAction == null) {
+                throw new IllegalStateException("Illegal Binding, missing valueRef or clickAction " + this);
+            }
+            button.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    clickAction.onClick(valueRef);
+                    valueRef.setValue(valueRef.getValue());
+                }
+            });
         } else {
             throw new IllegalStateException("Illegal Binding " + this);
         }

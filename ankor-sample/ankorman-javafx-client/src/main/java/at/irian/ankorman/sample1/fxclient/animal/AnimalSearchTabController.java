@@ -2,6 +2,7 @@ package at.irian.ankorman.sample1.fxclient.animal;
 
 import at.irian.ankor.fx.app.ActionCompleteCallback;
 import at.irian.ankor.fx.binding.BindingContext;
+import at.irian.ankor.fx.binding.ClickAction;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorman.sample1.fxclient.TabIds;
 import at.irian.ankorman.sample1.model.animal.Animal;
@@ -97,26 +98,29 @@ public class AnimalSearchTabController implements Initializable {
                         .toTable(animalTable)
                         .createWithin(bindingContext);
 
-                previous.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent actionEvent) {
-                        Ref paginatorRef = getTabRef().sub("model.animals.paginator");
-                        Paginator paginator = paginatorRef.getValue();
-                        paginator.previous();
-                        paginatorRef.setValue(paginator);
-                    }
-                });
+                newBinding()
+                        .bindValue(getTabRef().sub("model.animals.paginator"))
+                        .toButton(previous)
+                        .onClick(new ClickAction() {
+                            @Override
+                            public void onClick(Ref valueRef) {
+                                Paginator paginator = valueRef.getValue();
+                                paginator.previous();
+                            }
+                        })
+                        .createWithin(bindingContext);
 
-                next.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent actionEvent) {
-                        Ref paginatorRef = getTabRef().sub("model.animals.paginator");
-                        Paginator paginator = paginatorRef.getValue();
-                        paginator.next();
-                        paginatorRef.setValue(paginator);
-                    }
-                });
-
+                newBinding()
+                        .bindValue(getTabRef().sub("model.animals.paginator"))
+                        .toButton(next)
+                        .onClick(new ClickAction() {
+                            @Override
+                            public void onClick(Ref valueRef) {
+                                Paginator paginator = valueRef.getValue();
+                                paginator.next();
+                            }
+                        })
+                        .createWithin(bindingContext);
             }
         });
 
