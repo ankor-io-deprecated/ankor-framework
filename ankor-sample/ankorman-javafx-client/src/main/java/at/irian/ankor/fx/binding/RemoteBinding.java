@@ -2,6 +2,7 @@ package at.irian.ankor.fx.binding;
 
 import at.irian.ankor.event.ChangeListener;
 import at.irian.ankor.ref.Ref;
+import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -48,6 +49,7 @@ public class RemoteBinding implements ChangeListener, javafx.beans.value.ChangeL
                 ((ObservableList) value).addAll((Collection) valueRef.getValue());
             } else {
                 if (value == null) {
+                    property.setValue(new ObservableListWrapper((List) valueRef.getValue()));
                     LOG.warn("Expected observable List found (null)");
                 } else {
                     LOG.warn(String.format("Expected observable List found (%s)", value.getClass().getName()));

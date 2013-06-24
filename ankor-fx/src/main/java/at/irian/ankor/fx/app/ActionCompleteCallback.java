@@ -5,4 +5,10 @@ package at.irian.ankor.fx.app;
 */
 public interface ActionCompleteCallback {
     void onComplete();
+
+    static ActionCompleteCallback empty = new ActionCompleteCallback() {
+        @Override
+        public void onComplete() {
+        }
+    };
 }

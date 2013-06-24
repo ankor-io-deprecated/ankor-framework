@@ -5,6 +5,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.text.Text;
 
@@ -24,6 +25,8 @@ public class BindingsBuilder {
     private TextInputControl inputControl;
 
     private ComboBox comboBox;
+
+    private TableView tableView;
 
     public static BindingsBuilder newBinding() {
         return new BindingsBuilder();
@@ -47,10 +50,15 @@ public class BindingsBuilder {
     public BindingsBuilder toCombo(ComboBox comboBox) {
         this.comboBox = comboBox;
         return this;
-
     }
 
-    public BindingsBuilder withItems(Ref itemsRef) {
+    public BindingsBuilder toTable(TableView tableView) {
+        this.tableView = tableView;
+        return this;
+    }
+
+
+    public BindingsBuilder withSelectItems(Ref itemsRef) {
         this.itemsRef = itemsRef;
         return this;
     }
@@ -65,6 +73,8 @@ public class BindingsBuilder {
             bind(valueRef, itemsRef, comboBox);
         } else if (inputControl != null) {
             bind(valueRef, inputControl, bindingContext);
+        } else if (tableView != null) {
+            bind(valueRef, tableView);
         } else {
             throw new IllegalStateException("Illegal Binding " + this);
         }
@@ -97,6 +107,10 @@ public class BindingsBuilder {
 
     private static void bind(final Ref valueRef, final TextInputControl control, BindingContext context) {
         new RemoteBinding(valueRef, createProperty(control.textProperty(), context));
+    }
+
+    private static void bind(Ref valueRef, TableView tableView) {
+        new RemoteBinding(valueRef, tableView.itemsProperty());
     }
 
     private static SimpleStringProperty createProperty(StringProperty stringProperty, BindingContext context) {

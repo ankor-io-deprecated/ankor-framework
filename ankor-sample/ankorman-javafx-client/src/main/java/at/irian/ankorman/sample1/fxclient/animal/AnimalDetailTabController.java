@@ -66,12 +66,12 @@ public class AnimalDetailTabController implements Initializable {
                 newBinding()
                         .bindValue(animalRef.sub("type"))
                         .toCombo(type)
-                        .withItems(selItemsRef.sub("types"))
+                        .withSelectItems(selItemsRef.sub("types"))
                         .createWithin(bindingContext);
                 newBinding()
                         .bindValue(animalRef.sub("family"))
                         .toCombo(family)
-                        .withItems(selItemsRef.sub("families"))
+                        .withSelectItems(selItemsRef.sub("families"))
                         .createWithin(bindingContext);
 
                 name.textProperty().addListener(new ChangeListener<String>() {

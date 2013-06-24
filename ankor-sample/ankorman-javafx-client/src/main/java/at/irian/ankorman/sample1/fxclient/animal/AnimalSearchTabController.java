@@ -1,14 +1,11 @@
 package at.irian.ankorman.sample1.fxclient.animal;
 
-import at.irian.ankor.event.ChangeListener;
 import at.irian.ankor.fx.app.ActionCompleteCallback;
 import at.irian.ankor.fx.binding.BindingContext;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorman.sample1.fxclient.TabIds;
-import at.irian.ankorman.sample1.model.Tab;
 import at.irian.ankorman.sample1.model.animal.Animal;
 import at.irian.ankorman.sample1.model.animal.AnimalFamily;
-import at.irian.ankorman.sample1.model.animal.AnimalSearchTabModel;
 import at.irian.ankorman.sample1.model.animal.AnimalType;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -23,7 +20,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 
 import static at.irian.ankor.fx.binding.BindingsBuilder.newBinding;
@@ -73,6 +69,8 @@ public class AnimalSearchTabController implements Initializable {
                 Ref filterRef = getTabRef().sub("model").sub("filter");
                 Ref selItemsRef = getTabRef().sub("model").sub("selectItems");
 
+                initTable();
+
                 newBinding()
                         .bindValue(filterRef.sub("name"))
                         .toInput(name)
@@ -81,21 +79,19 @@ public class AnimalSearchTabController implements Initializable {
                 newBinding()
                         .bindValue(filterRef.sub("type"))
                         .toCombo(type)
-                        .withItems(selItemsRef.sub("types"))
+                        .withSelectItems(selItemsRef.sub("types"))
                         .createWithin(bindingContext);
 
                 newBinding()
                         .bindValue(filterRef.sub("family"))
                         .toCombo(family)
-                        .withItems(selItemsRef.sub("families"))
+                        .withSelectItems(selItemsRef.sub("families"))
                         .createWithin(bindingContext);
 
-                application().getListenerRegistry().registerRemoteChangeListener(getTabRef().sub("model").sub("animals"), new ChangeListener() {
-                    @Override
-                    public void processChange(Ref modelContext, Ref watchedProperty, Ref changedProperty) {
-                        loadAnimals((List<Animal>) changedProperty.getValue()); // TODO use binding for animals, observable List
-                    }
-                });
+                newBinding()
+                        .bindValue(getTabRef().sub("model.animals"))
+                        .toTable(animalTable)
+                        .createWithin(bindingContext);
             }
         });
 
@@ -107,9 +103,7 @@ public class AnimalSearchTabController implements Initializable {
     }
 
     @SuppressWarnings("unchecked")
-    private void loadAnimals(final List<Animal> animals) {
-
-        animalTable.getItems().setAll(animals);
+    private void initTable() {
 
         animalName.setCellValueFactory(new PropertyValueFactory<Animal, String>("name"));
         animalName.setCellFactory(TextFieldTableCell.<Animal>forTableColumn());
@@ -128,21 +122,12 @@ public class AnimalSearchTabController implements Initializable {
 
     @FXML
     protected void search(@SuppressWarnings("UnusedParameters") ActionEvent event) {
-        facade().searchAnimals(getTabRef(), new ActionCompleteCallback() {
-            public void onComplete() {
-                Tab<AnimalSearchTabModel> tab = getTabRef().getValue();
-                AnimalSearchTabModel model = tab.getModel();
-                loadAnimals(model.getAnimals());
-            }
-        });
+        facade().searchAnimals(getTabRef(), ActionCompleteCallback.empty);
     }
 
     @FXML
     protected void save(@SuppressWarnings("UnusedParameters") ActionEvent event) {
-        facade().saveAnimals(getTabRef(), new ActionCompleteCallback() {
-            public void onComplete() {
-            }
-        });
+        facade().saveAnimals(getTabRef(), ActionCompleteCallback.empty);
     }
 
 }
