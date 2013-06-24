@@ -8,17 +8,19 @@ import at.irian.ankorman.sample1.fxclient.TabIds;
 import at.irian.ankorman.sample1.model.Tab;
 import at.irian.ankorman.sample1.model.animal.Animal;
 import at.irian.ankorman.sample1.model.animal.AnimalFamily;
-import at.irian.ankorman.sample1.model.animal.AnimalType;
 import at.irian.ankorman.sample1.model.animal.AnimalSearchTabModel;
+import at.irian.ankorman.sample1.model.animal.AnimalType;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextInputControl;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.util.Callback;
 
 import java.net.URL;
 import java.util.List;
@@ -41,6 +43,7 @@ public class AnimalSearchTabController implements Initializable {
     @FXML
     private ComboBox<AnimalType> type;
     @FXML
+
     private ComboBox<AnimalFamily> family;
 
     @FXML
@@ -121,14 +124,6 @@ public class AnimalSearchTabController implements Initializable {
 
         animalType.setCellValueFactory(new PropertyValueFactory<Animal, String>("type"));
 
-        actionCol.setCellFactory(
-                new Callback<TableColumn<Animal, String>, TableCell<Animal, String>>() {
-                    @Override
-                    public TableCell<Animal, String> call(TableColumn<Animal, String> p) {
-                        return new ButtonCell();
-                    }
-
-                });
     }
 
     @FXML
@@ -150,32 +145,4 @@ public class AnimalSearchTabController implements Initializable {
         });
     }
 
-    @FXML
-    protected void edit(@SuppressWarnings("UnusedParameters") ActionEvent event) {
-        System.out.println("yes");
-    }
-
-    private class ButtonCell extends TableCell<Animal, String> {
-        final Button cellButton = new Button("Action");
-
-        ButtonCell(){
-            cellButton.setOnAction(new EventHandler<ActionEvent>(){
-                @Override
-                public void handle(ActionEvent t) {
-                    //Animal animal = animalTable.getItems().get(getTableRow().getIndex());
-
-                    //facade().createAnimalDetailTab();
-                }
-            });
-        }
-
-        //Display button if the row is not empty
-        @Override
-        protected void updateItem(String t, boolean empty) {
-            super.updateItem(t, empty);
-            if(empty){
-                setGraphic(cellButton);
-            }
-        }
-    }
 }
