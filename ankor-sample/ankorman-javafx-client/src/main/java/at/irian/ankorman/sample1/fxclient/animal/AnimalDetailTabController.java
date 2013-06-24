@@ -17,7 +17,7 @@ import javafx.scene.text.Text;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import static at.irian.ankor.fx.binding.ModelBindings.bind;
+import static at.irian.ankor.fx.binding.BindingsBuilder.newBinding;
 import static at.irian.ankorman.sample1.fxclient.App.application;
 import static at.irian.ankorman.sample1.fxclient.App.facade;
 
@@ -53,9 +53,16 @@ public class AnimalDetailTabController implements Initializable {
             public void onComplete() {
                 Ref animalRef = getTabRef().sub("model").sub("animal");
 
+                newBinding()
+                        .bindValue(animalRef.sub("name"))
+                        .toInput(name)
+                        .createWithin(bindingContext);
+                newBinding()
+                        .bindValue(animalRef.sub("type"))
+                        .toInput(type)
+                        .createWithin(bindingContext);
+
                 // Bind Filter
-                bind(animalRef.sub("name"), name, bindingContext);
-                bind(animalRef.sub("type"), type, bindingContext);
                 name.textProperty().addListener(new ChangeListener<String>() {
                     @Override
                     public void changed(ObservableValue<? extends String> observableValue, String s, String s2) {

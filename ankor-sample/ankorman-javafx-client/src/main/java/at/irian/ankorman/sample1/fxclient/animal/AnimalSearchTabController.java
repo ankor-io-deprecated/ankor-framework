@@ -24,7 +24,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import static at.irian.ankor.fx.binding.ModelBindings.bind;
+import static at.irian.ankor.fx.binding.BindingsBuilder.newBinding;
 import static at.irian.ankorman.sample1.fxclient.App.application;
 import static at.irian.ankorman.sample1.fxclient.App.facade;
 
@@ -69,9 +69,18 @@ public class AnimalSearchTabController implements Initializable {
             public void onComplete() {
                 Ref filterRef = getTabRef().sub("model").sub("filter");
                 // Bind filter items
-                bind(filterRef.sub("name"), name, bindingContext);
-                bind(filterRef.sub("type"), filterRef.sub("types"), type);
-                bind(filterRef.sub("family"), filterRef.sub("families"), family);
+
+                newBinding()
+                        .bindValue(filterRef.sub("name"))
+                        .toInput(name)
+                        .createWithin(bindingContext);
+
+                newBinding()
+                        .bindValue(filterRef.sub("type"))
+                        .toCombo(type)
+                        .withItems(filterRef.sub("families"))
+                        .createWithin(bindingContext);
+
                 application().getListenerRegistry().registerRemoteChangeListener(getTabRef().sub("model").sub("animals"), new ChangeListener() {
                     @Override
                     public void processChange(Ref modelContext, Ref watchedProperty, Ref changedProperty) {

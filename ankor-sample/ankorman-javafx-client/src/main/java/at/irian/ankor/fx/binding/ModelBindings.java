@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * @author Thomas Spiegl
  */
-public class ModelBindings {
+class ModelBindings {
 
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelBinding.class);
 

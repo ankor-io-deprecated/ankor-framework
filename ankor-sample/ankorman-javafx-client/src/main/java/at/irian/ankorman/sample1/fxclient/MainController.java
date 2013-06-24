@@ -1,8 +1,8 @@
 package at.irian.ankorman.sample1.fxclient;
 
-import at.irian.ankor.ref.Ref;
 import at.irian.ankor.fx.app.ActionCompleteCallback;
 import at.irian.ankor.fx.binding.BindingContext;
+import at.irian.ankor.ref.Ref;
 import at.irian.ankorman.sample1.model.model.ModelRoot;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -16,9 +16,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import static at.irian.ankor.fx.binding.BindingsBuilder.newBinding;
 import static at.irian.ankorman.sample1.fxclient.App.application;
 import static at.irian.ankorman.sample1.fxclient.App.facade;
-import static at.irian.ankor.fx.binding.ModelBindings.bind;
 
 /**
  * @author Thomas Spiegl
@@ -44,7 +44,10 @@ public class MainController implements Initializable {
 
                 userName.setText(modelRoot.getUserName());
 
-                bind(rootRef.sub("serverStatus"), serverStatus, bindingContext);
+                newBinding()
+                        .bindValue(rootRef.sub("serverStatus"))
+                        .toText(serverStatus)
+                        .createWithin(bindingContext);
 
             }
         });
