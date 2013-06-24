@@ -92,8 +92,8 @@ public class ServiceBean {
         }
     }
 
-    public Tab createAnimalSearchTab(Ref tabsRef, String tabId) {
-        Tab<AnimalSearchModel> tab = new Tab<AnimalSearchModel>(tabId);
+    public Tab createAnimalSearchTab(final Ref tabsRef, final String tabId) {
+        final Tab<AnimalSearchModel> tab = new Tab<AnimalSearchModel>(tabId);
         tab.setModel(new AnimalSearchModel());
         List<AnimalType> types = new ArrayList<AnimalType>(AnimalType.values().length + 1);
         types.addAll(Arrays.asList(AnimalType.values()));
@@ -129,6 +129,14 @@ public class ServiceBean {
                 tabRef.sub("model.filter.families").setValue(families);
             }
         });
+        tabRef.sub("model.filter.name").registerRemoteChangeListener(new ChangeListener() {
+                    @Override
+                    public void processChange(Ref modelContext, Ref watchedProperty, Ref changedProperty) {
+                        List<Animal> animals = searchAnimals(tab.getModel().getFilter());
+                        tabsRef.sub(tabId).sub("model.animals").setValue(animals);
+                    }
+                });
+
 
         return tab;
     }

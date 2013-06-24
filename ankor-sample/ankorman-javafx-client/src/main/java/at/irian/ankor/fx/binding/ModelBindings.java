@@ -123,7 +123,7 @@ public class ModelBindings {
         prop.addListener(new javafx.beans.value.ChangeListener<String>() {
             public void changed(ObservableValue<? extends String> observableValue, String oldValue, String newValue) {
                 try {
-                    modelRef.setValue(newValue);
+                    modelRef.setValue(newValue); // TODO during remote change, this is getting called as well
                 } catch(IllegalArgumentException ignored) {
                 }
             }

@@ -1,5 +1,6 @@
 package at.irian.ankorman.sample1.fxclient.animal;
 
+import at.irian.ankor.event.ChangeListener;
 import at.irian.ankor.fx.app.ActionCompleteCallback;
 import at.irian.ankor.fx.binding.BindingContext;
 import at.irian.ankor.ref.Ref;
@@ -71,8 +72,15 @@ public class AnimalSearchTabController implements Initializable {
                 bind(filterRef.sub("name"), name, bindingContext);
                 bind(filterRef.sub("type"), filterRef.sub("types"), type);
                 bind(filterRef.sub("family"), filterRef.sub("families"), family);
+                application().getListenerRegistry().registerRemoteChangeListener(getTabRef().sub("model").sub("animals"), new ChangeListener() {
+                    @Override
+                    public void processChange(Ref modelContext, Ref watchedProperty, Ref changedProperty) {
+                        loadAnimals((List<Animal>) changedProperty.getValue()); // TODO use binding for animals, observable List
+                    }
+                });
             }
         });
+
     }
 
     private Ref getTabRef() {
