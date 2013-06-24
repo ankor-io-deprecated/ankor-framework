@@ -78,6 +78,12 @@ public class AnimalSearchTabController implements Initializable {
                 newBinding()
                         .bindValue(filterRef.sub("type"))
                         .toCombo(type)
+                        .withItems(filterRef.sub("types"))
+                        .createWithin(bindingContext);
+
+                newBinding()
+                        .bindValue(filterRef.sub("family"))
+                        .toCombo(family)
                         .withItems(filterRef.sub("families"))
                         .createWithin(bindingContext);
 

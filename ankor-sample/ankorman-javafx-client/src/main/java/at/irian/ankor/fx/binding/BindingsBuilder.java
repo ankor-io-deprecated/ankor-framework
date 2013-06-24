@@ -1,6 +1,9 @@
 package at.irian.ankor.fx.binding;
 
 import at.irian.ankor.ref.Ref;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.text.Text;
@@ -54,14 +57,14 @@ public class BindingsBuilder {
 
     public void createWithin(BindingContext bindingContext) {
         if (text != null) {
-            ModelBindings.bind(valueRef, text, bindingContext);
+            bind(valueRef, text, bindingContext);
         } else if (comboBox != null) {
             if (itemsRef == null) {
                 throw new IllegalStateException("Illegal Binding, missing itemsRef " + this);
             }
-            ModelBindings.bind(valueRef, itemsRef, comboBox);
+            bind(valueRef, itemsRef, comboBox);
         } else if (inputControl != null) {
-            ModelBindings.bind(valueRef, inputControl, bindingContext);
+            bind(valueRef, inputControl, bindingContext);
         } else {
             throw new IllegalStateException("Illegal Binding " + this);
         }
@@ -78,4 +81,29 @@ public class BindingsBuilder {
         sb.append('}');
         return sb.toString();
     }
+
+
+    // static utils
+
+    private static void bind(final Ref valueRef, final Ref itemsRef, final ComboBox comboBox) {
+        //noinspection unchecked
+        new RemoteBinding(valueRef, comboBox.valueProperty());
+        new RemoteBinding(itemsRef, comboBox.itemsProperty());
+    }
+
+    private static void bind(final Ref valueRef, final Text text, BindingContext context) {
+        new RemoteBinding(valueRef, createProperty(text.textProperty(), context));
+    }
+
+    private static void bind(final Ref valueRef, final TextInputControl control, BindingContext context) {
+        new RemoteBinding(valueRef, createProperty(control.textProperty(), context));
+    }
+
+    private static SimpleStringProperty createProperty(StringProperty stringProperty, BindingContext context) {
+        SimpleStringProperty prop = new SimpleStringProperty();
+        Bindings.bindBidirectional(prop, stringProperty);
+        context.add(prop);
+        return prop;
+    }
+
 }

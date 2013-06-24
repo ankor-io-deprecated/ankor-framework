@@ -41,7 +41,6 @@ public class App extends javafx.application.Application {
         Pane myPane = FXMLLoader.load(getClass().getClassLoader().getResource("main.fxml"));
 
         Scene myScene = new Scene(myPane);
-        myScene.getStylesheets().add("path/to/custom.css");
         primaryStage.setScene(myScene);
         primaryStage.show();
     }
