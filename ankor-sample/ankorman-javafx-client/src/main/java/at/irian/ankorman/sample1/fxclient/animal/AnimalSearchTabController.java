@@ -23,7 +23,7 @@ import java.util.ResourceBundle;
 
 import static at.irian.ankor.fx.binding.ButtonBindingBuilder.onButtonClick;
 import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
-import static at.irian.ankorman.sample1.fxclient.App.application;
+import static at.irian.ankorman.sample1.fxclient.App.ankorContext;
 import static at.irian.ankorman.sample1.fxclient.App.facade;
 
 /**
@@ -69,31 +69,31 @@ public class AnimalSearchTabController implements Initializable {
         tab.setOnClosed(new EventHandler<Event>() {
             @Override
             public void handle(Event event) {
-                getTabRef().delete();
+                getTabRef().setValue(null);
             }
         });
         facade().createAnimalSearchTab(tabId, new ActionCompleteCallback() {
 
             public void onComplete() {
-                Ref filterRef = getTabRef().sub("model.filter");
-                Ref selItemsRef = getTabRef().sub("model.selectItems");
-                Ref rowsRef = getTabRef().sub("model.animals.rows");
-                Ref paginatorRef = getTabRef().sub("model.animals.paginator");
+                Ref filterRef = getTabRef().append("model.filter");
+                Ref selItemsRef = getTabRef().append("model.selectItems");
+                Ref rowsRef = getTabRef().append("model.animals.rows");
+                Ref paginatorRef = getTabRef().append("model.animals.paginator");
 
                 bindTableColumns();
 
-                bindValue(filterRef.sub("name"))
+                bindValue(filterRef.append("name"))
                         .toInput(name)
                         .createWithin(bindingContext);
 
-                bindValue(filterRef.sub("type"))
+                bindValue(filterRef.append("type"))
                         .toInput(type)
-                        .withSelectItems(selItemsRef.sub("types"))
+                        .withSelectItems(selItemsRef.append("types"))
                         .createWithin(bindingContext);
 
-                bindValue(filterRef.sub("family"))
+                bindValue(filterRef.append("family"))
                         .toInput(family)
-                        .withSelectItems(selItemsRef.sub("families"))
+                        .withSelectItems(selItemsRef.append("families"))
                         .createWithin(bindingContext);
 
                 bindValue(rowsRef)
@@ -139,8 +139,8 @@ public class AnimalSearchTabController implements Initializable {
     }
 
     private Ref getTabRef() {
-        Ref rootRef = application().getRefFactory().rootRef();
-        return rootRef.sub(String.format("tabs.%s", tabId));
+        Ref rootRef = ankorContext().getRefFactory().rootRef();
+        return rootRef.append(String.format("tabs.%s", tabId));
     }
 
     @SuppressWarnings("unchecked")
@@ -153,7 +153,7 @@ public class AnimalSearchTabController implements Initializable {
                     @Override
                     public void handle(TableColumn.CellEditEvent<Animal, String> t) {
                         int rowNum = t.getTablePosition().getRow();
-                        getTabRef().sub("model").sub(String.format("animals[%d].name", rowNum)).setValue(t.getNewValue());
+                        getTabRef().append("model").append(String.format("animals[%d].name", rowNum)).setValue(t.getNewValue());
                     }
                 });
 

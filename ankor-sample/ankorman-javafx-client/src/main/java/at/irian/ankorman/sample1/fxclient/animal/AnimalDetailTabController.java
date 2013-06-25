@@ -21,7 +21,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
-import static at.irian.ankorman.sample1.fxclient.App.application;
+import static at.irian.ankorman.sample1.fxclient.App.ankorContext;
 import static at.irian.ankorman.sample1.fxclient.App.facade;
 
 /**
@@ -50,25 +50,25 @@ public class AnimalDetailTabController implements Initializable {
         tab.setOnClosed(new EventHandler<Event>() {
             @Override
             public void handle(Event event) {
-                getTabRef().delete();
+                getTabRef().setValue(null);
             }
         });
         facade().createAnimalDetailTab(tabId, new ActionCompleteCallback() {
 
             public void onComplete() {
-                Ref animalRef = getTabRef().sub("model").sub("animal");
-                Ref selItemsRef = getTabRef().sub("model").sub("selectItems");
+                Ref animalRef = getTabRef().append("model").append("animal");
+                Ref selItemsRef = getTabRef().append("model").append("selectItems");
 
-                bindValue(animalRef.sub("name"))
+                bindValue(animalRef.append("name"))
                         .toInput(name)
                         .createWithin(bindingContext);
-                bindValue(animalRef.sub("type"))
+                bindValue(animalRef.append("type"))
                         .toInput(type)
-                        .withSelectItems(selItemsRef.sub("types"))
+                        .withSelectItems(selItemsRef.append("types"))
                         .createWithin(bindingContext);
-                bindValue(animalRef.sub("family"))
+                bindValue(animalRef.append("family"))
                         .toInput(family)
-                        .withSelectItems(selItemsRef.sub("families"))
+                        .withSelectItems(selItemsRef.append("families"))
                         .createWithin(bindingContext);
 
                 name.textProperty().addListener(new ChangeListener<String>() {
@@ -82,8 +82,8 @@ public class AnimalDetailTabController implements Initializable {
     }
 
     private Ref getTabRef() {
-        Ref rootRef = application().getRefFactory().rootRef();
-        return rootRef.sub(String.format("tabs.%s", tabId));
+        Ref rootRef = ankorContext().getRefFactory().rootRef();
+        return rootRef.append(String.format("tabs.%s", tabId));
     }
 
     @FXML

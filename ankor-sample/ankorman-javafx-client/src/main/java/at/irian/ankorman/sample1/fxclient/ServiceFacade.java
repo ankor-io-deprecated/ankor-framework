@@ -17,7 +17,7 @@ public class ServiceFacade {
 
     public ServiceFacade(AppService appService) {
         this.appService = appService;
-        this.refFactory = appService.getApplication().getRefFactory();
+        this.refFactory = appService.getAnkorContext().getRefFactory();
     }
 
     public void initApplication(ActionCompleteCallback cb) {
@@ -34,7 +34,7 @@ public class ServiceFacade {
         appService.remoteMethod("service.createAnimalSearchTab(contextRef, tabId)")
                 .inContext(tabsRef)
                 .setParam("tabId", tabId)
-                .withResultIn(tabsRef.sub(tabId))
+                .withResultIn(tabsRef.append(tabId))
                 .onComplete(cb)
                 .execute();
     }
@@ -44,14 +44,14 @@ public class ServiceFacade {
         appService.remoteMethod("service.createAnimalDetailTab(contextRef, tabId)")
                 .inContext(tabsRef)
                 .setParam("tabId", tabId)
-                .withResultIn(tabsRef.sub(tabId))
+                .withResultIn(tabsRef.append(tabId))
                 .onComplete(cb)
                 .execute();
     }
 
     public void searchAnimals(Ref tabRef, ActionCompleteCallback cb) {
         appService.remoteMethod("service.searchAnimals(context.filter, context.animals.paginator)")
-                .inContext(tabRef.sub("model"))
+                .inContext(tabRef.append("model"))
                 .withResultIn("context.animals")
                 .onComplete(cb)
                 .execute();
@@ -59,14 +59,14 @@ public class ServiceFacade {
 
     public void saveAnimal(Ref tabRef, ActionCompleteCallback cb) {
         appService.remoteMethod("service.saveAnimal(context.animal)")
-                .inContext(tabRef.sub("model"))
+                .inContext(tabRef.append("model"))
                 .onComplete(cb)
                 .execute();
     }
 
     public void saveAnimals(Ref tabRef, ActionCompleteCallback cb) {
         appService.remoteMethod("service.saveAnimals(context.animals)")
-                .inContext(tabRef.sub("model"))
+                .inContext(tabRef.append("model"))
                 .onComplete(cb)
                 .execute();
     }

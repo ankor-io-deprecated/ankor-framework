@@ -17,7 +17,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
-import static at.irian.ankorman.sample1.fxclient.App.application;
+import static at.irian.ankorman.sample1.fxclient.App.ankorContext;
 import static at.irian.ankorman.sample1.fxclient.App.facade;
 
 /**
@@ -39,12 +39,12 @@ public class MainController implements Initializable {
         facade().initApplication(new ActionCompleteCallback() {
 
             public void onComplete() {
-                Ref rootRef = application().getRefFactory().rootRef();
+                Ref rootRef = ankorContext().getRefFactory().rootRef();
                 ModelRoot modelRoot = rootRef.getValue();
 
                 userName.setText(modelRoot.getUserName());
 
-                bindValue(rootRef.sub("serverStatus"))
+                bindValue(rootRef.append("serverStatus"))
                         .toText(serverStatus)
                         .createWithin(bindingContext);
 

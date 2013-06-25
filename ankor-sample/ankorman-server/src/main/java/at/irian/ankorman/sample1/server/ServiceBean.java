@@ -1,6 +1,6 @@
 package at.irian.ankorman.sample1.server;
 
-import at.irian.ankor.event.ChangeListener;
+import at.irian.ankor.ref.ChangeListener;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorman.sample1.model.ModelRoot;
 import at.irian.ankorman.sample1.model.Tab;
@@ -113,23 +113,26 @@ public class ServiceBean {
         final Tab<AnimalSearchTabModel> tab = new Tab<AnimalSearchTabModel>(tabId);
         tab.setModel(new AnimalSearchTabModel(getAnimalSelectItems()));
 
-        Ref tabRef = tabsRef.sub(tabId);
-        tabRef.sub("model.filter.type").registerRemoteChangeListener(new AnimalChangeListener(tabRef.sub("model.selectItems.families")));
+        Ref tabRef = tabsRef.append(tabId);
+        tabRef.append("model.filter.type").addChangeListener(new AnimalTypeChangeListener(tabRef.append(
+                "model.selectItems.families")));
 
-        tabRef.sub("model.filter.name").registerRemoteChangeListener(new ChangeListener() {
-                    @Override
-                    public void processChange(Ref modelContext, Ref watchedProperty, Ref changedProperty) {
-                        tab.getModel().getAnimals().getPaginator().reset();
-                        Data<Animal> animals = searchAnimals(tab.getModel().getFilter(), tab.getModel().getAnimals().getPaginator());
-                        tabsRef.sub(tabId).sub("model.animals").setValue(animals);
-                    }
-                });
-
-        tabRef.sub("model.animals.paginator.first").registerRemoteChangeListener(new ChangeListener() {
+        tabRef.append("model.filter.name").addChangeListener(new ChangeListener() {
             @Override
-            public void processChange(Ref modelContext, Ref watchedProperty, Ref changedProperty) {
-                Data<Animal> animals = searchAnimals(tab.getModel().getFilter(), tab.getModel().getAnimals().getPaginator());
-                tabsRef.sub(tabId).sub("model.animals").setValue(animals);
+            public void processChange(Ref changedProperty, Ref watchedProperty) {
+                tab.getModel().getAnimals().getPaginator().reset();
+                Data<Animal> animals = searchAnimals(tab.getModel().getFilter(),
+                                                     tab.getModel().getAnimals().getPaginator());
+                tabsRef.append(tabId).append("model.animals").setValue(animals);
+            }
+        });
+
+        tabRef.append("model.animals.paginator.first").addChangeListener(new ChangeListener() {
+            @Override
+            public void processChange(Ref changedProperty, Ref watchedProperty) {
+                Data<Animal> animals = searchAnimals(tab.getModel().getFilter(),
+                                                     tab.getModel().getAnimals().getPaginator());
+                tabsRef.append(tabId).append("model.animals").setValue(animals);
             }
         });
 
@@ -148,9 +151,10 @@ public class ServiceBean {
         tab.setModel(new AnimalDetailTabModel(new Animal(), getAnimalSelectItems()));
         tab.getModel().setAnimal(new Animal());
 
-        Ref tabRef = tabsRef.sub(tabId);
+        Ref tabRef = tabsRef.append(tabId);
 
-        tabRef.sub("model.animal.type").registerRemoteChangeListener(new AnimalChangeListener(tabRef.sub("model.selectItems.families")));
+        tabRef.append("model.animal.type").addChangeListener(new AnimalTypeChangeListener(tabRef.append(
+                "model.selectItems.families")));
 
         return tab;
     }
@@ -161,16 +165,16 @@ public class ServiceBean {
         }
     }
 
-    public static class AnimalChangeListener implements ChangeListener {
+    public static class AnimalTypeChangeListener implements ChangeListener {
 
         private final Ref ref;
 
-        public AnimalChangeListener(Ref ref) {
+        public AnimalTypeChangeListener(Ref ref) {
             this.ref = ref;
         }
 
         @Override
-        public void processChange(Ref modelContext, Ref watchedProperty, Ref changedProperty) {
+        public void processChange(Ref changedProperty, Ref watchedProperty) {
             AnimalType type = changedProperty.getValue();
             List<AnimalFamily> families;
             if (type != null) {
