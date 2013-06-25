@@ -1,6 +1,6 @@
 package at.irian.ankor.fx.binding;
 
-import at.irian.ankor.event.ChangeListener;
+import at.irian.ankor.ref.ChangeListener;
 import at.irian.ankor.ref.Ref;
 import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.beans.property.Property;
@@ -29,12 +29,12 @@ public class RemoteBinding implements ChangeListener, javafx.beans.value.ChangeL
 
         setRemoteValue(valueRef);
 
-        this.valueRef.registerRemoteChangeListener(this);
+        this.valueRef.addChangeListener(this);
         this.property.addListener(this);
     }
 
     @Override
-    public void processChange(Ref modelContext, Ref watchedProperty, Ref changedProperty) {
+    public void processChange(Ref changedProperty, Ref watchedProperty) {
         setRemoteValue(watchedProperty);
     }
 

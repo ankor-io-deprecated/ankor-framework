@@ -1,10 +1,11 @@
 package at.irian.ankorman.sample1.model.model;
 
-import at.irian.ankor.application.SimpleApplication;
+import at.irian.ankor.context.AnkorContext;
 import at.irian.ankor.messaging.Message;
 import at.irian.ankor.messaging.MessageFactory;
 import at.irian.ankor.messaging.json.JsonMessageMapper;
 import at.irian.ankor.ref.RefFactory;
+import at.irian.ankor.system.SimpleAnkorSystem;
 import at.irian.ankorman.sample1.model.ModelRoot;
 import at.irian.ankorman.sample1.model.Tab;
 import at.irian.ankorman.sample1.model.animal.*;
@@ -27,10 +28,11 @@ public class ModelRootJsonTest {
 
     @Before
     public void setUp() throws Exception {
-        SimpleApplication application = SimpleApplication.create(ModelRoot.class);
-        messageFactory = new MessageFactory();
-        rf = application.getRefFactory();
-        mapper = new JsonMessageMapper(rf);
+        SimpleAnkorSystem system = SimpleAnkorSystem.create("test", ModelRoot.class);
+        messageFactory = system.getMessageFactory();
+        AnkorContext ankorContext = system.getAnkorContextFactory().create();
+        rf = ankorContext.getRefFactory();
+        mapper = new JsonMessageMapper();
     }
 
     @Test
@@ -49,13 +51,13 @@ public class ModelRootJsonTest {
         data.setRows(animals);
         model.setAnimals(data);
 
-        String json = mapper.serialize(messageFactory.createChangeMessage(rf.rootRef(), rf.ref("root"), root));
+        String json = mapper.serialize(messageFactory.createChangeMessage(rf.rootRef().path(), rf.ref("root").path(), root));
         LOG.info(json);
 
         Message message = mapper.deserialize(json);
         LOG.info(message.toString());
 
-        json = mapper.serialize(messageFactory.createChangeMessage(rf.rootRef(), rf.ref("root.tabs.A1.model.animals"), animals));
+        json = mapper.serialize(messageFactory.createChangeMessage(rf.rootRef().path(), rf.ref("root.tabs.A1.model.animals").path(), animals));
         LOG.info(json);
     }
 }
