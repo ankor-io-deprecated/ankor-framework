@@ -1,9 +1,6 @@
 package at.irian.ankor.el;
 
-import javax.el.ELContext;
-import javax.el.ELResolver;
-import javax.el.FunctionMapper;
-import javax.el.VariableMapper;
+import javax.el.*;
 
 /**
  * @author Manfred Geiler
@@ -21,6 +18,12 @@ public class StandardELContext extends ELContext {
         this.variableMapper = new StandardVariableMapper();
     }
 
+    protected StandardELContext(ELResolver elResolver, FunctionMapper functionMapper, VariableMapper variableMapper) {
+        this.elResolver = elResolver;
+        this.functionMapper = functionMapper;
+        this.variableMapper = variableMapper;
+    }
+
     @Override
     public ELResolver getELResolver() {
         return elResolver;
@@ -34,6 +37,13 @@ public class StandardELContext extends ELContext {
     @Override
     public VariableMapper getVariableMapper() {
         return variableMapper;
+    }
+
+    public StandardELContext withAdditional(ELResolver additionalELResolver) {
+        CompositeELResolver newCompELResolver = new CompositeELResolver();
+        newCompELResolver.add(additionalELResolver);
+        newCompELResolver.add(this.elResolver);
+        return new StandardELContext(newCompELResolver, functionMapper, variableMapper);
     }
 
 }

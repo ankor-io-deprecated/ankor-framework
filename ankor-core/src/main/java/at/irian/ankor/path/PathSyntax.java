@@ -11,5 +11,7 @@ public interface PathSyntax {
 
     String addArrayIdx(String path, int index);
 
+    String addLiteralMapKey(String path, String literalKey);
+
     String addMapKey(String path, String key);
 }

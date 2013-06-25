@@ -1,7 +1,6 @@
 package at.irian.ankor.messaging;
 
 import at.irian.ankor.action.Action;
-import at.irian.ankor.ref.Ref;
 
 /**
  * @author Manfred Geiler
@@ -15,12 +14,12 @@ public class MessageFactory {
         this.messageUUIDGenerator = new MessageUUIDGenerator();
     }
 
-    public Message createActionMessage(Ref modelContext, Action action) {
-        return new ActionMessage(messageUUIDGenerator.createId(), modelContext, action);
+    public Message createActionMessage(String modelContextPath, String actionPropertyPath, Action action) {
+        return new ActionMessage(messageUUIDGenerator.createId(), modelContextPath, actionPropertyPath, action);
     }
 
-    public <T> Message createChangeMessage(Ref modelContext, Ref changedProperty, T newValue) {
-        return new ChangeMessage(messageUUIDGenerator.createId(), modelContext, changedProperty, newValue);
+    public <T> Message createChangeMessage(String modelContextPath, String changedPropertyPath, T newValue) {
+        return new ChangeMessage(messageUUIDGenerator.createId(), modelContextPath, changedPropertyPath, newValue);
     }
 
 }

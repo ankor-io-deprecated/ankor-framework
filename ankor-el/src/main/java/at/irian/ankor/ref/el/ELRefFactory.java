@@ -1,40 +1,48 @@
 package at.irian.ankor.ref.el;
 
+import at.irian.ankor.el.ELUtils;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefFactory;
+
+import javax.el.ValueExpression;
 
 /**
  * @author MGeiler (Manfred Geiler)
  */
 public class ELRefFactory implements RefFactory {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RefFactory.class);
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ELRefFactory.class);
 
     private final ELRefContext refContext;
 
-
-    public ELRefFactory(ELRefContext refContext) {
+    ELRefFactory(ELRefContext refContext) {
         this.refContext = refContext;
     }
 
     @Override
     public Ref rootRef() {
-        return ELRefUtils.rootRef(refContext, false);
-    }
-
-    @Override
-    public Ref rootRef(RefContext newRefContext) {
-        return ELRefUtils.rootRef((ELRefContext) newRefContext, false);
+        return root(refContext);
     }
 
     @Override
     public Ref ref(String path) {
-        return ELRefUtils.ref(refContext, path, false);
+        return ref(refContext, path);
     }
 
-    @Override
-    public Ref ref(String path, RefContext newRefContext) {
-        return ELRefUtils.ref((ELRefContext) newRefContext, path, false);
+
+    private static Ref root(ELRefContext refContext) {
+        return ref(refContext, refContext.getModelRootVarName());
     }
+
+    private static Ref ref(ELRefContext ref2Context, String path) {
+        ValueExpression ve = createValueExpressionFor(ref2Context, path);
+        return new ELRef(ve, ref2Context);
+    }
+
+    private static ValueExpression createValueExpressionFor(ELRefContext ref2Context, String path) {
+        return ref2Context.getExpressionFactory().createValueExpression(ref2Context.getElContext(),
+                                                                        ELUtils.pathToExpr(path),
+                                                                        Object.class);
+    }
+
 
 }

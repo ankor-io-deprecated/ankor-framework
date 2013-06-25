@@ -43,7 +43,12 @@ public class ELPathSyntax implements PathSyntax {
     }
 
     @Override
-    public String addMapKey(String path, String key) {
-        return path + '[' + key + ']';
+    public String addLiteralMapKey(String path, String literalKey) {
+        return path + "['" + literalKey + "']";
+    }
+
+    @Override
+    public String addMapKey(String path, String literalKey) {
+        return path + '[' + literalKey + ']';
     }
 }

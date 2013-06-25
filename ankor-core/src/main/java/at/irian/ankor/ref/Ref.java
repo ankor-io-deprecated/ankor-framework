@@ -1,8 +1,7 @@
 package at.irian.ankor.ref;
 
 import at.irian.ankor.action.Action;
-import at.irian.ankor.event.ActionListener;
-import at.irian.ankor.event.ChangeListener;
+import at.irian.ankor.event.ModelEvent;
 
 /**
  * @author MGeiler (Manfred Geiler)
@@ -22,9 +21,11 @@ public interface Ref {
      */
     <T> T getValue();
 
-    Ref delete();
-
-    boolean isDeleted();
+    /**
+     * @return true, if the value of this Ref can be resolved;
+     *         false, if resolving the value would cause an Exception (because the parent Ref no longer exists)
+     */
+    boolean isValid();
 
     /**
      * @return Ref to the root object of the underlying model this Ref belongs to
@@ -38,29 +39,26 @@ public interface Ref {
     Ref parent();
 
     /**
-     * @param subPath name of a property or a valid property path (see TBD for supported path syntax)
+     * @param propertyOrSubPath name of a property or a valid property path (see {@link at.irian.ankor.path.PathSyntax})
      * @return Ref to the model object this path evaluates to relative to this Ref
      */
-    Ref sub(String subPath);
+    Ref append(String propertyOrSubPath);
 
     /**
      * @param index index
      * @return Ref to the indexed array element of the model object referenced by this Ref
      */
-    Ref sub(int index);
+    Ref appendIdx(int index);
+
+    Ref appendLiteralKey(String literalKey);
+
+    Ref appendPathKey(String pathKey);
 
     /**
-     * Returns an unwatched Ref for the model object referenced by this Ref. Calls to the {@link #setValue(Object)}
-     * method of an unwatched Ref do not cause a change event.
-     * @return unwatched Ref to the model object referenced by this Ref
+     * Fire an event with this Ref as the source.
+     * @param event an ModelEvent
      */
-    Ref unwatched();
-
-    /**
-     * Fire an action with this Ref as the action context.
-     * @param action an Action
-     */
-    void fire(Action action);
+    void fire(ModelEvent event);
 
     /**
      * @return the full structural path of this Ref
@@ -79,13 +77,13 @@ public interface Ref {
 
     boolean isRoot();
 
-    RefContext refContext();
+    RefContext getRefContext();
 
     Ref withRefContext(RefContext newRefContext);
 
-    Ref withModelContext(Ref modelContext);
+    void addChangeListener(ChangeListener listener);
 
-    void registerRemoteChangeListener(ChangeListener listener);
+    void addActionListener(ActionListener listener);
 
-    void registerActionListener(ActionListener listener);
+    void fireAction(Action action);
 }

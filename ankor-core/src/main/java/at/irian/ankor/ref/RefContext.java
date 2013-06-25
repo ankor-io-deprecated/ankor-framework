@@ -6,7 +6,13 @@ import at.irian.ankor.path.PathSyntax;
  * @author MGeiler (Manfred Geiler)
  */
 public interface RefContext {
-    Ref getModelContext();
-    RefContext withModelContext(Ref modelContext);
+
+    String getModelContextPath();
+
+    RefContext withModelContextPath(String modelContextPath);
+
     PathSyntax getPathSyntax();
+
+    RefFactory getRefFactory();
+
 }

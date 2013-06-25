@@ -1,7 +1,6 @@
 package at.irian.ankor.messaging;
 
 import at.irian.ankor.action.Action;
-import at.irian.ankor.ref.Ref;
 
 /**
  * @author Manfred Geiler
@@ -9,22 +8,29 @@ import at.irian.ankor.ref.Ref;
 public class ActionMessage extends Message {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ActionMessage.class);
 
-    private Ref modelContext;
+    private String modelContextPath;
+    private String actionPropertyPath;
     private Action action;
 
     /**
      * for deserialization only
      */
+    @SuppressWarnings("UnusedDeclaration")
     protected ActionMessage() {}
 
-    protected ActionMessage(String messageId, Ref modelContext, Action action) {
+    protected ActionMessage(String messageId, String modelContextPath, String actionPropertyPath, Action action) {
         super(messageId);
-        this.modelContext = modelContext;
+        this.modelContextPath = modelContextPath;
+        this.actionPropertyPath = actionPropertyPath;
         this.action = action;
     }
 
-    public Ref getModelContext() {
-        return modelContext;
+    public String getModelContextPath() {
+        return modelContextPath;
+    }
+
+    public String getActionPropertyPath() {
+        return actionPropertyPath;
     }
 
     public Action getAction() {
@@ -34,9 +40,9 @@ public class ActionMessage extends Message {
     @Override
     public String toString() {
         return "ActionMessage{" +
-               "messageId='" + getMessageId() + '\'' +
-               ", modelContext=" + modelContext +
+               "modelContextPath='" + modelContextPath + '\'' +
+               ", actionPropertyPath='" + actionPropertyPath + '\'' +
                ", action=" + action +
-               "}";
+               '}';
     }
 }

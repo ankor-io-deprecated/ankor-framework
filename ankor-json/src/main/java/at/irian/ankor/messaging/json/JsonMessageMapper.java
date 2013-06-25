@@ -6,8 +6,6 @@ import at.irian.ankor.messaging.ActionMessage;
 import at.irian.ankor.messaging.ChangeMessage;
 import at.irian.ankor.messaging.Message;
 import at.irian.ankor.messaging.MessageMapper;
-import at.irian.ankor.ref.Ref;
-import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.rmi.RemoteMethodAction;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -15,11 +13,13 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.Version;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -33,14 +33,14 @@ public class JsonMessageMapper implements MessageMapper<String> {
 
     private final ObjectMapper mapper;
 
-    public JsonMessageMapper(RefFactory refFactory) {
+    public JsonMessageMapper() {
         SimpleModule module =
                 new SimpleModule("PolymorphicMessageDeserializerModule",
                                  new Version(1, 0, 0, null, null, null));
         module.addDeserializer(Message.class, new MessageDeserializer());
         module.addDeserializer(Action.class, new ActionDeserializer());
-        module.addSerializer(Ref.class, new RefSerializer());
-        module.addDeserializer(Ref.class, new RefDeserializer(refFactory));
+        //module.addSerializer(Ref.class, new RefSerializer());
+        //module.addDeserializer(Ref.class, new RefDeserializer(refFactory));
 
         mapper = new ObjectMapper();
         mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
@@ -136,33 +136,30 @@ public class JsonMessageMapper implements MessageMapper<String> {
         }
     }
 
-    class RefSerializer extends StdSerializer<Ref> {
-
-        RefSerializer() {
-            super(Ref.class);
-        }
-
-        @Override
-        public void serialize(Ref value, JsonGenerator jgen, SerializerProvider provider)
-                throws IOException {
-            jgen.writeString(value.path());
-        }
-    }
-
-    class RefDeserializer extends StdDeserializer<Ref> {
-
-        private final RefFactory refFactory;
-
-        RefDeserializer(RefFactory refFactory) {
-            super(Ref.class);
-            this.refFactory = refFactory;
-        }
-
-        @Override
-        public Ref deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
-            ObjectMapper mapper = (ObjectMapper) jp.getCodec();
-            String path = mapper.readValue(jp, String.class);
-            return refFactory.ref(path);
-        }
-    }
+//    class RefSerializer extends StdSerializer<Ref> {
+//
+//        RefSerializer() {
+//            super(Ref.class);
+//        }
+//
+//        @Override
+//        public void serialize(Ref value, JsonGenerator jgen, SerializerProvider provider)
+//                throws IOException {
+//            jgen.writeString(value.path());
+//        }
+//    }
+//
+//    class RefDeserializer extends StdDeserializer<Ref> {
+//
+//        RefDeserializer() {
+//            super(Ref.class);
+//        }
+//
+//        @Override
+//        public Ref deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
+//            ObjectMapper mapper = (ObjectMapper) jp.getCodec();
+//            String path = mapper.readValue(jp, String.class);
+//            return refFactory.ref(path);
+//        }
+//    }
 }

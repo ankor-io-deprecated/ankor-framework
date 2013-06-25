@@ -22,13 +22,15 @@ public class RemoteMethodAction implements Action {
     /**
      * for deserialization only
      */
+    @SuppressWarnings("UnusedDeclaration")
     protected RemoteMethodAction() {}
 
     private RemoteMethodAction(String methodExpression,
                                String resultPath,
                                boolean autoRefreshActionContext,
                                Action completeAction,
-                               Action errorAction, Map<String, Object> params) {
+                               Action errorAction,
+                               Map<String, Object> params) {
         this.methodExpression = methodExpression;
         this.resultPath = resultPath;
         this.autoRefreshActionContext = autoRefreshActionContext;
@@ -42,22 +44,23 @@ public class RemoteMethodAction implements Action {
     }
 
     public RemoteMethodAction withActionContextAutoRefresh() {
-        return new RemoteMethodAction(methodExpression, resultPath, true, completeAction, errorAction, params);
+        return new RemoteMethodAction(methodExpression, resultPath, true,
+                                      completeAction, errorAction, params);
     }
 
     public RemoteMethodAction withResultIn(String resultPath) {
-        return new RemoteMethodAction(methodExpression, resultPath, autoRefreshActionContext, completeAction, errorAction,
-                                      params);
+        return new RemoteMethodAction(methodExpression, resultPath, autoRefreshActionContext,
+                                      completeAction, errorAction, params);
     }
 
     public RemoteMethodAction onComplete(Action action) {
-        return new RemoteMethodAction(methodExpression, resultPath, autoRefreshActionContext, action, errorAction,
-                                      params);
+        return new RemoteMethodAction(methodExpression, resultPath, autoRefreshActionContext,
+                                      action, errorAction, params);
     }
 
     public RemoteMethodAction onError(Action action) {
-        return new RemoteMethodAction(methodExpression, resultPath, autoRefreshActionContext, completeAction, action,
-                                      params);
+        return new RemoteMethodAction(methodExpression, resultPath, autoRefreshActionContext,
+                                      completeAction, action, params);
     }
 
     public RemoteMethodAction setParam(String name, Object value) {
@@ -66,16 +69,13 @@ public class RemoteMethodAction implements Action {
             newParams.putAll(params);
         }
         newParams.put(name, value);
-        return new RemoteMethodAction(methodExpression, resultPath, autoRefreshActionContext, completeAction, errorAction,
+        return new RemoteMethodAction(methodExpression, resultPath, autoRefreshActionContext,
+                                      completeAction,
+                                      errorAction,
                                       newParams);
     }
 
     public String getMethodExpression() {
-        return methodExpression;
-    }
-
-    @Override
-    public String name() {
         return methodExpression;
     }
 

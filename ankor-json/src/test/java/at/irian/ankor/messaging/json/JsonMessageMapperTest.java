@@ -2,14 +2,11 @@ package at.irian.ankor.messaging.json;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.SimpleAction;
-import at.irian.ankor.application.ModelHolder;
-import at.irian.ankor.messaging.*;
-import at.irian.ankor.ref.RefFactory;
-import at.irian.ankor.ref.el.ELRefContext;
-import at.irian.ankor.ref.el.ELRefFactory;
+import at.irian.ankor.messaging.ActionMessage;
+import at.irian.ankor.messaging.ChangeMessage;
+import at.irian.ankor.messaging.Message;
+import at.irian.ankor.messaging.MessageFactory;
 import at.irian.ankor.rmi.RemoteMethodAction;
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
 import junit.framework.Assert;
 import org.junit.Test;
 
@@ -19,24 +16,19 @@ import org.junit.Test;
 public class JsonMessageMapperTest {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(JsonMessageMapperTest.class);
 
-    private RefFactory refFactory;
     private MessageFactory messageFactory;
     private JsonMessageMapper msgMapper;
 
     @org.junit.Before
     public void setUp() throws Exception {
-        Config config = ConfigFactory.load();
-        ELRefContext refContext = ELRefContext.create(new ModelHolder(String.class), null, null, config,
-                                                      null);
-        refFactory = new ELRefFactory(refContext);
         messageFactory = new MessageFactory();
-        msgMapper = new JsonMessageMapper(refFactory);
+        msgMapper = new JsonMessageMapper();
     }
 
     @Test
     public void testSimpleAction() throws Exception {
-        Action action = SimpleAction.create("test");
-        Message msg = messageFactory.createActionMessage(refFactory.rootRef(), action);
+        Action action = new SimpleAction("test");
+        Message msg = messageFactory.createActionMessage("root.tabs.A1.tab", "context.model", action);
         String json = msgMapper.serialize(msg);
         LOG.info("JSON: {}", json);
 
@@ -47,14 +39,12 @@ public class JsonMessageMapperTest {
         ActionMessage actionMsg = (ActionMessage) desMsg;
         Assert.assertEquals(SimpleAction.class, actionMsg.getAction().getClass());
         SimpleAction simpleAction = (SimpleAction) actionMsg.getAction();
-        Assert.assertEquals("test", simpleAction.name());
+        Assert.assertEquals("test", simpleAction.getName());
     }
 
     @Test
     public void testChange() throws Exception {
-        Message msg = messageFactory.createChangeMessage(refFactory.rootRef(),
-                                                         refFactory.ref("root.test1"),
-                                                         "new-value");
+        Message msg = messageFactory.createChangeMessage("roor", "root.test1", "new-value");
         String json = msgMapper.serialize(msg);
         LOG.info("JSON: {}", json);
 
@@ -64,14 +54,12 @@ public class JsonMessageMapperTest {
         Assert.assertEquals(ChangeMessage.class, desMsg.getClass());
         ChangeMessage changeMsg = (ChangeMessage) desMsg;
         ChangeMessage.Change change = changeMsg.getChange();
-        Assert.assertEquals("root.test1", change.getChangedProperty().path());
+        Assert.assertEquals("root.test1", change.getChangedProperty());
     }
 
     @Test
     public void testChangeRoot() throws Exception {
-        Message msg = messageFactory.createChangeMessage(refFactory.rootRef(),
-                                                         refFactory.rootRef(),
-                                                         "new-value");
+        Message msg = messageFactory.createChangeMessage("root", "root", "new-value");
         String json = msgMapper.serialize(msg);
         LOG.info("JSON: {}", json);
 
@@ -81,17 +69,17 @@ public class JsonMessageMapperTest {
         Assert.assertEquals(ChangeMessage.class, desMsg.getClass());
         ChangeMessage changeMsg = (ChangeMessage) desMsg;
         ChangeMessage.Change change = changeMsg.getChange();
-        Assert.assertEquals("root", change.getChangedProperty().path());
+        Assert.assertEquals("root", change.getChangedProperty());
     }
 
     @Test
     public void testRMA() throws Exception {
-        Action action = RemoteMethodAction.create("serviceBean.saveAnimal(context.model, overwrite)")
+        Action action = RemoteMethodAction.create("serviceBean.saveAnimal(context.animal, overwrite)")
                                           .withResultIn("context.successMsg")
-                                          .onComplete(SimpleAction.create("completeAction"))
-                                          .onError(SimpleAction.create("errorAction"))
+                                          .onComplete(new SimpleAction("completeAction"))
+                                          .onError(new SimpleAction("errorAction"))
                                           .setParam("overwrite", true);
-        Message msg = messageFactory.createActionMessage(refFactory.rootRef(), action);
+        Message msg = messageFactory.createActionMessage("root.tabs.A1.tab.model", "context.animal", action);
         String json = msgMapper.serialize(msg);
         LOG.info("JSON: {}", json);
 
@@ -103,7 +91,7 @@ public class JsonMessageMapperTest {
         Assert.assertEquals(RemoteMethodAction.class, actionMsg.getAction().getClass());
         RemoteMethodAction rma = (RemoteMethodAction) actionMsg.getAction();
         Assert.assertEquals("context.successMsg", rma.getResultPath());
-        Assert.assertEquals("completeAction", rma.getCompleteAction().name());
+        Assert.assertEquals("completeAction", ((SimpleAction)rma.getCompleteAction()).getName());
     }
 
 }

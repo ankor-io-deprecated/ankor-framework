@@ -8,19 +8,13 @@ public class SimpleAction implements Action {
 
     private String name;
 
-    protected SimpleAction() {
-    }
+    protected SimpleAction() {}
 
-    protected SimpleAction(String name) {
+    public SimpleAction(String name) {
         this.name = name;
     }
 
-    public static SimpleAction create(String name) {
-        return new SimpleAction(name);
-    }
-
-    @Override
-    public String name() {
+    public String getName() {
         return name;
     }
 

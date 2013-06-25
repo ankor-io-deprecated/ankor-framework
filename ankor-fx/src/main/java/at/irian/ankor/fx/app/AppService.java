@@ -1,11 +1,13 @@
 package at.irian.ankor.fx.app;
 
 import at.irian.ankor.action.Action;
-import at.irian.ankor.rmi.RemoteMethodAction;
+import at.irian.ankor.action.ActionEventListener;
 import at.irian.ankor.action.SimpleAction;
-import at.irian.ankor.application.Application;
-import at.irian.ankor.event.ActionListener;
+import at.irian.ankor.context.AnkorContext;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.rmi.RemoteMethodAction;
+import at.irian.ankor.system.AnkorSystem;
+import at.irian.ankor.system.SimpleAnkorSystem;
 
 /**
  * @author Thomas Spiegl
@@ -14,34 +16,33 @@ public class AppService {
 
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AppService.class);
 
-    private final Application application;
+    private final AnkorSystem system;
+    private final AnkorContext ankorContext;
 
     private ActionCompleteCallback currentCallback = null;
 
-    public AppService(Application application) {
-        application.getListenerRegistry().registerRemoteActionListener(null,
-                new ActionListener() {
-                    public void processAction(Ref modelContext, Action action) {
-                        if (currentCallback != null && action.name().equals("cb")) {
-                            currentCallback.onComplete();
-                        }
-                    }
-                });
-        this.application = application;
-    }
+    public AppService(SimpleAnkorSystem system) {
+        this.system = system;
+        this.ankorContext = system.getAnkorContextFactory().create();
 
-    public Application getApplication() {
-        return application;
+        system.getGlobalEventBus().addListener(new ActionEventListener(null) {
+            @Override
+            public void processAction(Ref actionProperty, Action action) {
+                if (currentCallback != null && action instanceof SimpleAction && ((SimpleAction) action).getName().equals("cb")) {
+                    currentCallback.onComplete();
+                }
+            }
+        });
     }
 
     @Deprecated
     public synchronized void executeAction(Ref contextRef, String actionMethod, String resultPath, ActionCompleteCallback cb) {
-        Action completeAction = SimpleAction.create("cb");
+        Action completeAction = new SimpleAction("cb");
         currentCallback = cb;
-        contextRef.fire(RemoteMethodAction
-                .create(actionMethod)
-                .withResultIn(resultPath)
-                .onComplete(completeAction));
+        contextRef.fireAction(RemoteMethodAction
+                                      .create(actionMethod)
+                                      .withResultIn(resultPath)
+                                      .onComplete(completeAction));
     }
 
 
@@ -85,7 +86,7 @@ public class AppService {
 
         public RMAExecution onComplete(ActionCompleteCallback cb) {
             this.cb = cb;
-            Action completeAction = SimpleAction.create("cb");
+            Action completeAction = new SimpleAction("cb");
             rma = rma.onComplete(completeAction);
             return this;
         }
@@ -97,9 +98,11 @@ public class AppService {
 
     private synchronized void fireRMAExecution(RMAExecution rmaExecution) {
         currentCallback = rmaExecution.cb;
-        rmaExecution.contextRef.fire(rmaExecution.rma);
+        rmaExecution.contextRef.fireAction(rmaExecution.rma);
     }
 
 
-
+    public AnkorContext getAnkorContext() {
+        return ankorContext;
+    }
 }

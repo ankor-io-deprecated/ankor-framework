@@ -1,30 +1,28 @@
 package at.irian.ankor.messaging;
 
-import at.irian.ankor.ref.Ref;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
 /**
  * @author Manfred Geiler
  */
 public class ChangeMessage extends Message {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ChangeMessage.class);
 
-    private Ref modelContext;
+    private String modelContextPath;
     private Change change;
 
     /**
      * for deserialization only
      */
+    @SuppressWarnings("UnusedDeclaration")
     protected ChangeMessage() {}
 
-    protected ChangeMessage(String messageId, Ref modelContext, Ref changedProperty, Object newValue) {
+    protected ChangeMessage(String messageId, String modelContextPath, String changedPropertyPath, Object newValue) {
         super(messageId);
-        this.modelContext = modelContext;
-        this.change = new Change(changedProperty, newValue);
+        this.modelContextPath = modelContextPath;
+        this.change = new Change(changedPropertyPath, newValue);
     }
 
-    public Ref getModelContext() {
-        return modelContext;
+    public String getModelContextPath() {
+        return modelContextPath;
     }
 
     public Change getChange() {
@@ -32,17 +30,18 @@ public class ChangeMessage extends Message {
     }
 
     public static class Change {
-        private Ref changedProperty;
+        private String changedProperty;
         private Object newValue;
 
-        Change() {}
+        @SuppressWarnings("UnusedDeclaration")
+        protected Change() {}
 
-        public Change(Ref changedProperty, Object newValue) {
+        public Change(String changedProperty, Object newValue) {
             this.changedProperty = changedProperty;
             this.newValue = newValue;
         }
 
-        public Ref getChangedProperty() {
+        public String getChangedProperty() {
             return changedProperty;
         }
 
@@ -63,7 +62,7 @@ public class ChangeMessage extends Message {
     public String toString() {
         return "ChangeMessage{" +
                "messageId='" + getMessageId() + '\'' +
-               ", modelContext=" + modelContext +
+               ", modelContextPath=" + modelContextPath +
                ", change=" + change +
                "}";
     }
