@@ -4,17 +4,16 @@
     <VBox prefHeight="300" spacing="10" >
         <GridPane alignment="center" hgap="10" vgap="5" >
 
-            <Label text="Name" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+            <Label text="Name" labelFor="$name" GridPane.columnIndex="0" GridPane.rowIndex="0" />
             <TextField fx:id="name" GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
-            <Label text="Type" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+            <Label text="Type" labelFor="$type" GridPane.columnIndex="0" GridPane.rowIndex="1" />
             <ComboBox fx:id="type" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
-            <Label text="Family" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+            <Label text="Family" labelFor="$family" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
             <ComboBox fx:id="family" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
-            <Button text="Search" GridPane.columnIndex="1" GridPane.rowIndex="3"
-                    onAction="#search"/>
+            <Button fx:id="search" text="Search" GridPane.columnIndex="1" GridPane.rowIndex="3" />
         </GridPane>
         <HBox spacing="10">
             <Button fx:id="previous" text="Previous" GridPane.columnIndex="1" GridPane.rowIndex="3" />
@@ -26,7 +25,6 @@
                 <TableColumn prefWidth="100" fx:id="animalType" text="Type" editable="true" />
             </columns>
         </TableView>
-        <Button text="Save" GridPane.columnIndex="1" GridPane.rowIndex="2"
-                onAction="#save"/>
+        <Button fx:id="save" text="Save" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
     </VBox>
 </Tab>

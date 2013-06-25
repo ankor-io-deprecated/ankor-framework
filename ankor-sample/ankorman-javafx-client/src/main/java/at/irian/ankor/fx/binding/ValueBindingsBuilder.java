@@ -64,7 +64,7 @@ public class ValueBindingsBuilder {
         return this;
     }
 
-    public ValueBindingsBuilder toCombo(ComboBox comboBox) {
+    public ValueBindingsBuilder toInput(ComboBox comboBox) {
         this.comboBox = comboBox;
         return this;
     }

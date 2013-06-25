@@ -9,11 +9,11 @@ import at.irian.ankorman.sample1.model.animal.Animal;
 import at.irian.ankorman.sample1.model.animal.AnimalFamily;
 import at.irian.ankorman.sample1.model.animal.AnimalType;
 import at.irian.ankorman.sample1.model.animal.Paginator;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
@@ -33,29 +33,32 @@ public class AnimalSearchTabController implements Initializable {
 
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalSearchTabController.class);
     @FXML
-    private javafx.scene.control.Tab tab;
+    protected javafx.scene.control.Tab tab;
 
     @FXML
-    private TextInputControl name;
+    protected TextInputControl name;
     @FXML
-    private ComboBox<AnimalType> type;
+    protected ComboBox<AnimalType> type;
     @FXML
 
-    private ComboBox<AnimalFamily> family;
+    protected ComboBox<AnimalFamily> family;
 
     @FXML
-    private TableView<Animal> animalTable;
+    protected TableView<Animal> animalTable;
     @FXML
-    private TableColumn<Animal, String> animalName;
+    protected TableColumn<Animal, String> animalName;
     @FXML
-    private TableColumn<Animal, String> animalType;
-    @FXML
-    private TableColumn actionCol;
+    protected TableColumn<Animal, String> animalType;
 
     @FXML
-    private Button previous;
+    protected Button previous;
     @FXML
-    private Button next;
+    protected Button next;
+
+    @FXML
+    protected Button search;
+    @FXML
+    protected Button save;
 
     private String tabId = TabIds.next();
 
@@ -84,12 +87,12 @@ public class AnimalSearchTabController implements Initializable {
                         .createWithin(bindingContext);
 
                 bindValue(filterRef.sub("type"))
-                        .toCombo(type)
+                        .toInput(type)
                         .withSelectItems(selItemsRef.sub("types"))
                         .createWithin(bindingContext);
 
                 bindValue(filterRef.sub("family"))
-                        .toCombo(family)
+                        .toInput(family)
                         .withSelectItems(selItemsRef.sub("families"))
                         .createWithin(bindingContext);
 
@@ -98,24 +101,38 @@ public class AnimalSearchTabController implements Initializable {
                         .createWithin(bindingContext);
 
                 onButtonClick(previous)
-                        .refresh(paginatorRef)
-                        .call(new ClickAction() {
+                        .callAction(new ClickAction<Paginator>() {
                             @Override
-                            public void onClick(Ref valueRef) {
-                                Paginator paginator = valueRef.getValue();
+                            public void onClick(Paginator paginator) {
                                 paginator.previous();
                             }
-                        }).bind();
+                        })
+                        .withParam(paginatorRef).create();
 
                 onButtonClick(next)
-                        .refresh(paginatorRef)
-                        .call(new ClickAction() {
+                        .callAction(new ClickAction<Paginator>() {
                             @Override
-                            public void onClick(Ref valueRef) {
-                                Paginator paginator = valueRef.getValue();
+                            public void onClick(Paginator paginator) {
                                 paginator.next();
                             }
-                        }).bind();
+                        })
+                        .withParam(paginatorRef).create();
+
+                onButtonClick(save)
+                        .callAction(new ClickAction() {
+                            @Override
+                            public void onClick(Object value) {
+                                facade().saveAnimals(getTabRef(), ActionCompleteCallback.empty);
+                            }
+                        });
+
+                onButtonClick(search)
+                        .callAction(new ClickAction() {
+                            @Override
+                            public void onClick(Object value) {
+                                facade().searchAnimals(getTabRef(), ActionCompleteCallback.empty);
+                            }
+                        });
             }
         });
 
@@ -144,13 +161,4 @@ public class AnimalSearchTabController implements Initializable {
 
     }
 
-    @FXML
-    protected void search(@SuppressWarnings("UnusedParameters") ActionEvent event) {
-        facade().searchAnimals(getTabRef(), ActionCompleteCallback.empty);
-    }
-
-    @FXML
-    protected void save(@SuppressWarnings("UnusedParameters") ActionEvent event) {
-        facade().saveAnimals(getTabRef(), ActionCompleteCallback.empty);
-    }
 }

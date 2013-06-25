@@ -31,15 +31,15 @@ public class AnimalDetailTabController implements Initializable {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalSearchTabController.class);
 
     @FXML
-    private Text message;
+    protected Text message;
     @FXML
-    private javafx.scene.control.Tab tab;
+    protected javafx.scene.control.Tab tab;
     @FXML
-    private TextInputControl name;
+    protected TextInputControl name;
     @FXML
-    private ComboBox<AnimalType> type;
+    protected ComboBox<AnimalType> type;
     @FXML
-    private ComboBox<AnimalFamily> family;
+    protected ComboBox<AnimalFamily> family;
 
     private String tabId = TabIds.next();
 
@@ -63,11 +63,11 @@ public class AnimalDetailTabController implements Initializable {
                         .toInput(name)
                         .createWithin(bindingContext);
                 bindValue(animalRef.sub("type"))
-                        .toCombo(type)
+                        .toInput(type)
                         .withSelectItems(selItemsRef.sub("types"))
                         .createWithin(bindingContext);
                 bindValue(animalRef.sub("family"))
-                        .toCombo(family)
+                        .toInput(family)
                         .withSelectItems(selItemsRef.sub("families"))
                         .createWithin(bindingContext);
 

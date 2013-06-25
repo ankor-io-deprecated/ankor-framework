@@ -27,25 +27,27 @@ public class ButtonBindingBuilder {
         return this;
     }
 
-    public ButtonBindingBuilder call(ClickAction clickAction) {
+    public ButtonBindingBuilder callAction(ClickAction clickAction) {
         this.clickAction = clickAction;
         return this;
     }
 
-    public ButtonBindingBuilder refresh(Ref valueRef) {
+    public ButtonBindingBuilder withParam(Ref valueRef) {
         this.valueRef = valueRef;
         return this;
     }
 
-    public void bind() {
-        if (valueRef == null || clickAction == null) {
-            throw new IllegalStateException("Illegal Binding, missing valueRef or clickAction " + this);
-        }
+    public void create() {
         button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                clickAction.onClick(valueRef);
-                valueRef.setValue(valueRef.getValue());
+                if (clickAction != null) {
+                    //noinspection unchecked
+                    clickAction.onClick(valueRef != null ? valueRef.getValue() : null);
+                }
+                if (valueRef != null) {
+                    valueRef.setValue(valueRef.getValue());
+                }
             }
         });
     }
