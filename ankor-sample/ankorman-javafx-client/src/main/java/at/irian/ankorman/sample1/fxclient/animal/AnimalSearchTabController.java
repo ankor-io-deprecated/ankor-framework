@@ -13,7 +13,6 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
@@ -49,14 +48,14 @@ public class AnimalSearchTabController implements Initializable {
     protected TableColumn<Animal, String> animalName;
     @FXML
     protected TableColumn<Animal, String> animalType;
+    @FXML
+    protected TableColumn<Animal, String> animalFamily;
 
     @FXML
     protected Button previous;
     @FXML
     protected Button next;
 
-    @FXML
-    protected Button search;
     @FXML
     protected Button save;
 
@@ -126,13 +125,6 @@ public class AnimalSearchTabController implements Initializable {
                             }
                         });
 
-                onButtonClick(search)
-                        .callAction(new ClickAction() {
-                            @Override
-                            public void onClick(Object value) {
-                                facade().searchAnimals(getTabRef(), ActionCompleteCallback.empty);
-                            }
-                        });
             }
         });
 
@@ -158,7 +150,7 @@ public class AnimalSearchTabController implements Initializable {
                 });
 
         animalType.setCellValueFactory(new PropertyValueFactory<Animal, String>("type"));
-
+        animalFamily.setCellValueFactory(new PropertyValueFactory<Animal, String>("family"));
     }
 
 }

@@ -8,7 +8,7 @@ import java.net.Socket;
  * @author MGeiler (Manfred Geiler)
  */
 public class SocketMessageLoop<S> extends AbstractMessageLoop<S> {
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SocketMessageLoop.class);
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SocketMessageLoop.class);
 
     private final String remoteHost;
     private final int remotePort;

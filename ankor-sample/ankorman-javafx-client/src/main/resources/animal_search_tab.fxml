@@ -12,8 +12,6 @@
 
             <Label text="Family" labelFor="$family" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
             <ComboBox fx:id="family" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-
-            <Button fx:id="search" text="Search" GridPane.columnIndex="1" GridPane.rowIndex="3" />
         </GridPane>
         <HBox spacing="10">
             <Button fx:id="previous" text="Previous" GridPane.columnIndex="1" GridPane.rowIndex="3" />
@@ -22,7 +20,8 @@
         <TableView fx:id="animalTable" editable="true" prefHeight="200">
             <columns>
                 <TableColumn prefWidth="250" fx:id="animalName" text="Name" editable="true" />
-                <TableColumn prefWidth="100" fx:id="animalType" text="Type" editable="true" />
+                <TableColumn prefWidth="100" fx:id="animalType" text="Type" editable="false" />
+                <TableColumn prefWidth="100" fx:id="animalFamily" text="Family" editable="false" />
             </columns>
         </TableView>
         <Button fx:id="save" text="Save" GridPane.columnIndex="1" GridPane.rowIndex="2"/>

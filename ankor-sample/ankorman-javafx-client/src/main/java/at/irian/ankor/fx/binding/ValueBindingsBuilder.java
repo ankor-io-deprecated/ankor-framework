@@ -6,7 +6,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextInputControl;
@@ -31,10 +30,6 @@ public class ValueBindingsBuilder {
 
     private TableView tableView;
 
-    private Button button;
-
-    private ClickAction clickAction;
-
     public static ValueBindingsBuilder bindValue(Ref value) {
         return new ValueBindingsBuilder().forValue(value);
     }
@@ -46,16 +41,6 @@ public class ValueBindingsBuilder {
 
     public ValueBindingsBuilder toText(Text text) {
         this.text = text;
-        return this;
-    }
-
-    public ValueBindingsBuilder toButton(Button button) {
-        this.button = button;
-        return this;
-    }
-
-    public ValueBindingsBuilder onClick(ClickAction clickAction) {
-        this.clickAction = clickAction;
         return this;
     }
 
@@ -92,17 +77,6 @@ public class ValueBindingsBuilder {
             bind(valueRef, inputControl, bindingContext);
         } else if (tableView != null) {
             bind(valueRef, tableView);
-        } else if(button != null) {
-            if (valueRef == null || clickAction == null) {
-                throw new IllegalStateException("Illegal Binding, missing valueRef or clickAction " + this);
-            }
-            button.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent actionEvent) {
-                    clickAction.onClick(valueRef);
-                    valueRef.setValue(valueRef.getValue());
-                }
-            });
         } else {
             throw new IllegalStateException("Illegal Binding " + this);
         }
@@ -125,20 +99,20 @@ public class ValueBindingsBuilder {
 
     private static void bind(final Ref valueRef, final Ref itemsRef, final ComboBox comboBox) {
         //noinspection unchecked
-        new RemoteBinding(valueRef, comboBox.valueProperty());
-        new RemoteBinding(itemsRef, comboBox.itemsProperty());
+        new RefPropertyBinding(valueRef, comboBox.valueProperty());
+        new RefPropertyBinding(itemsRef, comboBox.itemsProperty());
     }
 
     private static void bind(final Ref valueRef, final Text text, BindingContext context) {
-        new RemoteBinding(valueRef, createProperty(text.textProperty(), context));
+        new RefPropertyBinding(valueRef, createProperty(text.textProperty(), context));
     }
 
     private static void bind(final Ref valueRef, final TextInputControl control, BindingContext context) {
-        new RemoteBinding(valueRef, createProperty(control.textProperty(), context));
+        new RefPropertyBinding(valueRef, createProperty(control.textProperty(), context));
     }
 
     private static void bind(Ref valueRef, TableView tableView) {
-        new RemoteBinding(valueRef, tableView.itemsProperty());
+        new RefPropertyBinding(valueRef, tableView.itemsProperty());
     }
 
     private static SimpleStringProperty createProperty(StringProperty stringProperty, BindingContext context) {

@@ -54,14 +54,14 @@ public class ServiceBean {
                     Animal current = it.next();
                     if (nameFilter != null && !current.getName().toLowerCase().contains(nameFilter)) {
                         it.remove();
-                        continue;
-                    }
-                    if (filter.getType() != null && current.getType() != filter.getType()) {
+                    } else if (filter.getType() != null && current.getType() != filter.getType()) {
+                        it.remove();
+                    } else if (filter.getFamily() != null && current.getFamily() != filter.getFamily()) {
                         it.remove();
                     }
                 }
             }
-            if (first >= animals.size() -1) {
+            if (first >= animals.size()) {
                 return new Data<Animal>(new Paginator(animals.size(), maxResults));
             }
             if (first < 0) {
@@ -114,18 +114,19 @@ public class ServiceBean {
         tab.setModel(new AnimalSearchTabModel(getAnimalSelectItems()));
 
         Ref tabRef = tabsRef.append(tabId);
+        tabRef.append("model.filter.name").addChangeListener(new ChangeListener() {
+            @Override
+            public void processChange(Ref changedProperty, Ref filterNameRef) {
+                reloadAnimals(filterNameRef);
+            }
+        });
         tabRef.append("model.filter.type").addChangeListener(new AnimalTypeChangeListener(tabRef.append(
                 "model.selectItems.families")));
 
-        tabRef.append("model.filter.name").addChangeListener(new ChangeListener() {
+        tabRef.append("model.filter.family").addChangeListener(new ChangeListener() {
             @Override
-            public void processChange(Ref changedProperty, Ref watchedProperty) {
-                Ref modelRef = watchedProperty.parent().parent();
-                AnimalSearchTabModel model = modelRef.getValue();
-                model.getAnimals().getPaginator().reset();
-                Data<Animal> animals = searchAnimals(model.getFilter(),
-                                                     model.getAnimals().getPaginator());
-                modelRef.append("animals").setValue(animals);
+            public void processChange(Ref changedProperty, Ref ref) {
+                reloadAnimals(ref);
             }
         });
 
@@ -144,10 +145,18 @@ public class ServiceBean {
         return tab;
     }
 
+    private void reloadAnimals(Ref filterNameRef) {
+        Ref modelRef = parent(AnimalSearchTabModel.class, filterNameRef);
+        AnimalSearchTabModel model = modelRef.getValue();
+        model.getAnimals().getPaginator().reset();
+        Data<Animal> animals = searchAnimals(model.getFilter(),
+                                             model.getAnimals().getPaginator());
+        modelRef.append("animals").setValue(animals);
+    }
+
     private AnimalSelectItems getAnimalSelectItems() {
         List<AnimalType> types = new ArrayList<AnimalType>(AnimalType.values().length + 1);
         types.addAll(Arrays.asList(AnimalType.values()));
-        types.add(null);
         return new AnimalSelectItems(types, new ArrayList<AnimalFamily>());
     }
 
@@ -170,7 +179,7 @@ public class ServiceBean {
         }
     }
 
-    public static class AnimalTypeChangeListener implements ChangeListener {
+    public class AnimalTypeChangeListener implements ChangeListener {
 
         private final Ref ref;
 
@@ -197,11 +206,24 @@ public class ServiceBean {
                         families.add(AnimalFamily.Felidae);
                         break;
                 }
-                families.add(null);
             } else {
                 families = new ArrayList<AnimalFamily>(0);
             }
             ref.setValue(families);
+            parent(AnimalSearchTabModel.class, ref).append("filter.family").setValue(null);
+            reloadAnimals(watchedProperty.parent()); // TODO will be called 2x if filter.family changes as well
         }
-    };
+    }
+
+    static Ref parent(Class clazz, Ref ref) {
+        while (ref != null) {
+            Object value = ref.getValue();
+            if (value != null && value.getClass().getName().equals(clazz.getName())) {
+                //noinspection unchecked
+                return ref;
+            }
+            ref = ref.parent();
+        }
+        throw new IllegalStateException(String.format("Parent not found for type %s(%s)", clazz.getName(), ref));
+    }
 }
