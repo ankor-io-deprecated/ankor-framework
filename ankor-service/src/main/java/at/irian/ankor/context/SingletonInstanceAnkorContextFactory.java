@@ -1,8 +1,8 @@
 package at.irian.ankor.context;
 
-import at.irian.ankor.event.UnsynchronizedEventBus;
+import at.irian.ankor.event.UnsynchronizedListenersHolder;
 import at.irian.ankor.el.StandardELContext;
-import at.irian.ankor.event.EventBus;
+import at.irian.ankor.event.ListenersHolder;
 import at.irian.ankor.messaging.MessageSender;
 import at.irian.ankor.ref.el.ELRefContext;
 import com.typesafe.config.Config;
@@ -18,10 +18,10 @@ public class SingletonInstanceAnkorContextFactory implements AnkorContextFactory
     private final AnkorContext ankorContext;
 
     public SingletonInstanceAnkorContextFactory(Class<?> modelType,
-                                                EventBus globalEventBus,
+                                                ListenersHolder globalListenersHolder,
                                                 StandardELContext baseELContext,
                                                 Config config, MessageSender messageSender) {
-        ModelHolder modelHolder = new ModelHolder(modelType, new UnsynchronizedEventBus(globalEventBus));
+        ModelHolder modelHolder = new ModelHolder(modelType, new UnsynchronizedListenersHolder(globalListenersHolder));
         ELRefContext refContext = ELRefContext.create(ExpressionFactory.newInstance(),
                                                       baseELContext,
                                                       config,

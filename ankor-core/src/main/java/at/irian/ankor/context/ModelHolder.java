@@ -1,6 +1,6 @@
 package at.irian.ankor.context;
 
-import at.irian.ankor.event.EventBus;
+import at.irian.ankor.event.ListenersHolder;
 
 /**
  * @author MGeiler (Manfred Geiler)
@@ -9,12 +9,12 @@ public class ModelHolder {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelHolder.class);
 
     private final Class<?> modelType;
-    private final EventBus eventBus;
+    private final ListenersHolder listenersHolder;
     private Object model;
 
-    public ModelHolder(Class<?> modelType, EventBus eventBus) {
+    public ModelHolder(Class<?> modelType, ListenersHolder listenersHolder) {
         this.modelType = modelType;
-        this.eventBus = eventBus;
+        this.listenersHolder = listenersHolder;
         this.model = null;
     }
 
@@ -22,8 +22,8 @@ public class ModelHolder {
         return modelType;
     }
 
-    public EventBus getEventBus() {
-        return eventBus;
+    public ListenersHolder getListenersHolder() {
+        return listenersHolder;
     }
 
     @SuppressWarnings("unchecked")

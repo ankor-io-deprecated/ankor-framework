@@ -25,7 +25,7 @@ public class AppService {
         this.system = system;
         this.ankorContext = system.getAnkorContextFactory().create();
 
-        system.getGlobalEventBus().addListener(new ActionEventListener(null) {
+        system.getGlobalListenersHolder().addListener(new ActionEventListener(null) {
             @Override
             public void processAction(Ref actionProperty, Action action) {
                 if (currentCallback != null && action instanceof SimpleAction && ((SimpleAction) action).getName().equals("cb")) {

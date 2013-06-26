@@ -10,6 +10,7 @@ import at.irian.ankor.ref.Ref;
 public class ChangeEvent extends ModelEvent {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ChangeEvent.class);
 
+    @Deprecated
     private final String modelContextPath;
 
     public ChangeEvent(Ref changedProperty) {
@@ -25,6 +26,7 @@ public class ChangeEvent extends ModelEvent {
         return (Ref)source;
     }
 
+    @Deprecated
     public ChangeEvent withModelContextPath(String modelContextPath) {
         return new ChangeEvent(getChangedProperty(), modelContextPath);
     }
@@ -47,6 +49,10 @@ public class ChangeEvent extends ModelEvent {
 //        if (modelContextPath != null) {
 //            changedProperty = changedProperty.withRefContext(changedProperty.getRefContext().withModelContextPath(modelContextPath));
 //        }
+
+
+
+
         ((ChangeEventListener)listener).processChange(changedProperty);
     }
 

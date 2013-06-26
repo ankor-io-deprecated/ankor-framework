@@ -5,7 +5,7 @@ import at.irian.ankor.el.ModelContextELResolver;
 import at.irian.ankor.el.ModelHolderELResolver;
 import at.irian.ankor.el.ModelRootELResolver;
 import at.irian.ankor.el.StandardELContext;
-import at.irian.ankor.event.EventBus;
+import at.irian.ankor.event.ListenersHolder;
 import at.irian.ankor.path.PathSyntax;
 import at.irian.ankor.path.el.ELPathSyntax;
 import at.irian.ankor.ref.RefContext;
@@ -26,20 +26,20 @@ public class ELRefContext implements RefContext {
     private final Config config;
     private final String modelRootVarName;
     private final String modelContextPath;
-    private final EventBus eventBus;
+    private final ListenersHolder listenersHolder;
     private final ELRefFactory refFactory;
 
     private ELRefContext(ExpressionFactory expressionFactory,
                          StandardELContext elContext,
                          Config config,
-                         EventBus eventBus,
+                         ListenersHolder listenersHolder,
                          String modelContextPath) {
         this.expressionFactory = expressionFactory;
         this.elContext = elContext;
         this.config = config;
         this.modelRootVarName = config.getString("ankor.variable-names.modelRoot");
         this.modelContextPath = modelContextPath;
-        this.eventBus = eventBus;
+        this.listenersHolder = listenersHolder;
         this.refFactory = new ELRefFactory(this);
     }
 
@@ -49,7 +49,7 @@ public class ELRefContext implements RefContext {
                                       ModelHolder modelHolder) {
         StandardELContext elContext = baseELContext.withAdditional(new ModelRootELResolver(config, modelHolder))
                                                    .withAdditional(new ModelHolderELResolver(config, modelHolder));
-        return new ELRefContext(expressionFactory, elContext, config, modelHolder.getEventBus(), null);
+        return new ELRefContext(expressionFactory, elContext, config, modelHolder.getListenersHolder(), null);
     }
 
     @Override
@@ -65,8 +65,8 @@ public class ELRefContext implements RefContext {
         return elContext;
     }
 
-    EventBus getEventBus() {
-        return eventBus;
+    ListenersHolder getListenersHolder() {
+        return listenersHolder;
     }
 
     String getModelRootVarName() {
@@ -93,7 +93,7 @@ public class ELRefContext implements RefContext {
     public ELRefContext withAdditionalELResolver(ELResolver elResolver) {
         return new ELRefContext(expressionFactory,
                                 elContext.withAdditional(elResolver),
-                                config, eventBus, modelContextPath);
+                                config, listenersHolder, modelContextPath);
     }
 
 }

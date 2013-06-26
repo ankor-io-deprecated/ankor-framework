@@ -5,7 +5,7 @@ import at.irian.ankor.action.ActionEventListener;
 import at.irian.ankor.change.ChangeEventListener;
 import at.irian.ankor.context.AnkorContext;
 import at.irian.ankor.context.AnkorContextFactory;
-import at.irian.ankor.event.EventBus;
+import at.irian.ankor.event.ListenersHolder;
 import at.irian.ankor.messaging.*;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.rmi.RemoteMethodActionEventListener;
@@ -19,7 +19,7 @@ public class AnkorSystem {
     private final String name;
     private final MessageFactory messageFactory;
     private final MessageBus messageBus;
-    private final EventBus globalEventBus;
+    private final ListenersHolder globalListenersHolder;
     private final AnkorContextFactory ankorContextFactory;
     private final RemoteMethodActionEventListener remoteMethodActionEventListener;
     private ChangeEventListener changeEventListener;
@@ -29,13 +29,13 @@ public class AnkorSystem {
     protected AnkorSystem(String name,
                           MessageFactory messageFactory,
                           MessageBus messageBus,
-                          EventBus globalEventBus,
+                          ListenersHolder globalListenersHolder,
                           AnkorContextFactory ankorContextFactory,
                           RemoteMethodActionEventListener remoteMethodActionEventListener) {
         this.name = name;
         this.messageFactory = messageFactory;
         this.messageBus = messageBus;
-        this.globalEventBus = globalEventBus;
+        this.globalListenersHolder = globalListenersHolder;
         this.ankorContextFactory = ankorContextFactory;
         this.remoteMethodActionEventListener = remoteMethodActionEventListener;
     }
@@ -56,8 +56,8 @@ public class AnkorSystem {
         return messageBus;
     }
 
-    public EventBus getGlobalEventBus() {
-        return globalEventBus;
+    public ListenersHolder getGlobalListenersHolder() {
+        return globalListenersHolder;
     }
 
     @Override
@@ -97,7 +97,7 @@ public class AnkorSystem {
                 AnkorContext.getCurrentInstance().getMessageSender().sendMessage(message);
 
                 if (newValue == null) {
-                    AnkorContext.getCurrentInstance().getModelHolder().getEventBus().cleanupListeners();
+                    AnkorContext.getCurrentInstance().getModelHolder().getListenersHolder().cleanupListeners();
                 }
             }
         };
@@ -142,12 +142,12 @@ public class AnkorSystem {
             }
         };
 
-        globalEventBus.addListener(actionEventListener);
-        globalEventBus.addListener(changeEventListener);
+        globalListenersHolder.addListener(actionEventListener);
+        globalListenersHolder.addListener(changeEventListener);
         messageBus.registerMessageListener(messageListener);
 
         if (remoteMethodActionEventListener != null) {
-            globalEventBus.addListener(remoteMethodActionEventListener);
+            globalListenersHolder.addListener(remoteMethodActionEventListener);
         }
     }
 
@@ -172,17 +172,17 @@ public class AnkorSystem {
         }
 
         if (changeEventListener != null) {
-            globalEventBus.removeListener(changeEventListener);
+            globalListenersHolder.removeListener(changeEventListener);
             changeEventListener = null;
         }
 
         if (actionEventListener != null) {
-            globalEventBus.removeListener(actionEventListener);
+            globalListenersHolder.removeListener(actionEventListener);
             actionEventListener = null;
         }
 
         if (remoteMethodActionEventListener != null) {
-            globalEventBus.removeListener(remoteMethodActionEventListener);
+            globalListenersHolder.removeListener(remoteMethodActionEventListener);
         }
     }
 

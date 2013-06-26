@@ -8,19 +8,19 @@ import java.util.List;
 /**
  * @author MGeiler (Manfred Geiler)
  */
-public class UnsynchronizedEventBus implements EventBus {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(UnsynchronizedEventBus.class);
+public class UnsynchronizedListenersHolder implements ListenersHolder {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(UnsynchronizedListenersHolder.class);
 
-    private final EventBus parentEventBus;
+    private final ListenersHolder parentListenersHolder;
     private final List<ModelEventListener> listeners;
     private List<ModelEventListener> listenersCopy = null;
 
-    public UnsynchronizedEventBus() {
+    public UnsynchronizedListenersHolder() {
         this(null);
     }
 
-    public UnsynchronizedEventBus(EventBus parentEventBus) {
-        this.parentEventBus = parentEventBus;
+    public UnsynchronizedListenersHolder(ListenersHolder parentListenersHolder) {
+        this.parentListenersHolder = parentListenersHolder;
         this.listeners = new ArrayList<ModelEventListener>();
     }
 
@@ -42,6 +42,9 @@ public class UnsynchronizedEventBus implements EventBus {
     public List<ModelEventListener> getListeners() {
         if (listenersCopy == null) {
             listenersCopy = new ArrayList<ModelEventListener>(listeners);
+            if (parentListenersHolder != null) {
+                listenersCopy.addAll(parentListenersHolder.getListeners());
+            }
         }
         return Collections.unmodifiableList(listenersCopy);
     }
@@ -61,21 +64,9 @@ public class UnsynchronizedEventBus implements EventBus {
             listenersCopy = null;
         }
 
-        if (parentEventBus != null) {
-            parentEventBus.cleanupListeners();
+        if (parentListenersHolder != null) {
+            parentListenersHolder.cleanupListeners();
         }
     }
 
-    @Override
-    public void fire(ModelEvent event) {
-        for (ModelEventListener listener : getListeners()) {
-            if (event.isAppropriateListener(listener)) {
-                event.processBy(listener);
-            }
-        }
-
-        if (parentEventBus != null) {
-            parentEventBus.fire(event);
-        }
-    }
 }

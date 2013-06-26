@@ -6,18 +6,21 @@ import at.irian.ankor.action.ActionEventListener;
 import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.change.ChangeEventListener;
 import at.irian.ankor.el.ELUtils;
-import at.irian.ankor.event.ModelEvent;
+import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.path.PathSyntax;
 import at.irian.ankor.ref.*;
+import at.irian.ankor.util.ObjectUtils;
 
 import javax.el.ValueExpression;
 import javax.el.ValueReference;
+import java.util.IdentityHashMap;
+import java.util.Map;
 
 /**
  * @author MGeiler (Manfred Geiler)
  */
 class ELRef implements Ref {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ELRef.class);
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ELRef.class);
 
     private final ValueExpression ve;
     private final ELRefContext refContext;
@@ -29,23 +32,59 @@ class ELRef implements Ref {
 
     @Override
     public void setValue(Object newValue) {
-        Object oldValue;
-        try {
-            oldValue = getValue();
-        } catch (Exception e) {
-            throw new IllegalArgumentException("invalid ref", e);
+
+        ChangeEvent changeEvent = new ChangeEvent(this);
+
+        // remember old watched values
+        IdentityHashMap<ModelEventListener, Object> oldWatchedValues = new IdentityHashMap<ModelEventListener, Object>();
+        for (ModelEventListener listener : refContext.getListenersHolder().getListeners()) {
+            if (changeEvent.isAppropriateListener(listener)) {
+                Ref watchedProperty = ((ChangeEventListener) listener).getWatchedProperty();
+                if (watchedProperty != null) {
+                    Object oldWatchedValue = watchedProperty.getValue();
+                    oldWatchedValues.put(listener, oldWatchedValue);
+                } else {
+                    oldWatchedValues.put(listener, null);
+                }
+            }
         }
-//            if (newValue != oldValue) {
-//                // todo: is this ok?
+
+        // set the new value
         ve.setValue(refContext.getElContext(), newValue);
-        refContext.getEventBus().fire(new ChangeEvent(this));
-//            }
+
+        // invoke all listeners where watched value has changed
+        for (Map.Entry<ModelEventListener, Object> entry : oldWatchedValues.entrySet()) {
+            ModelEventListener listener = entry.getKey();
+            Object oldWatchedValue = entry.getValue();
+
+            boolean process;
+            Ref watchedProperty = ((ChangeEventListener) listener).getWatchedProperty();
+            if (watchedProperty != null) {
+                Object newWatchedValue = watchedProperty.getValue();
+                process = !ObjectUtils.nullSafeEquals(oldWatchedValue, newWatchedValue);
+            } else {
+                process = true;
+            }
+
+            if (process) {
+                try {
+                    changeEvent.processBy(listener);
+                } catch (Exception e) {
+                    LOG.error("Listener " + listener + " threw exception while processing " + changeEvent, e);
+                }
+            }
+        }
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getValue() {
-        return (T)ve.getValue(refContext.getElContext());
+        try {
+            return (T)ve.getValue(refContext.getElContext());
+        } catch (Exception e) {
+            LOG.warn("unable to get value of " + this, e);
+            return null;
+        }
     }
 
     @Override
@@ -98,13 +137,17 @@ class ELRef implements Ref {
     }
 
     @Override
-    public void fire(ModelEvent event) {
-        refContext.getEventBus().fire(event);
-    }
-
-    @Override
     public void fireAction(Action action) {
-        refContext.getEventBus().fire(new ActionEvent(this, action));
+        ActionEvent actionEvent = new ActionEvent(this, action);
+        for (ModelEventListener listener : refContext.getListenersHolder().getListeners()) {
+            if (actionEvent.isAppropriateListener(listener)) {
+                try {
+                    actionEvent.processBy(listener);
+                } catch (Exception e) {
+                    LOG.error("Listener " + listener + " threw exception while processing " + actionEvent, e);
+                }
+            }
+        }
     }
 
     @Override
@@ -149,7 +192,7 @@ class ELRef implements Ref {
                 listener.processChange(changedProperty, getWatchedProperty());
             }
         };
-        refContext.getEventBus().addListener(eventListener);
+        refContext.getListenersHolder().addListener(eventListener);
     }
 
     @Override
@@ -160,7 +203,7 @@ class ELRef implements Ref {
                 listener.processAction(getWatchedProperty(), action);
             }
         };
-        refContext.getEventBus().addListener(eventListener);
+        refContext.getListenersHolder().addListener(eventListener);
     }
 
     @Override
@@ -177,4 +220,10 @@ class ELRef implements Ref {
     public int hashCode() {
         return expression().hashCode();
     }
+
+    @Override
+    public String toString() {
+        return "Ref{" + path() + "}";
+    }
+
 }

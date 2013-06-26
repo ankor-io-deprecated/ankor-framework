@@ -55,12 +55,6 @@ public interface Ref {
     Ref appendPathKey(String pathKey);
 
     /**
-     * Fire an event with this Ref as the source.
-     * @param event an ModelEvent
-     */
-    void fire(ModelEvent event);
-
-    /**
      * @return the full structural path of this Ref
      */
     String path();
