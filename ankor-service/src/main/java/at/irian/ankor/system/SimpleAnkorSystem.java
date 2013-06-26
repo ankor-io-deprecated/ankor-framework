@@ -53,7 +53,8 @@ public class SimpleAnkorSystem extends AnkorSystem {
         Config config = ConfigFactory.load();
 
         AnkorContextFactory ankorContextFactory
-                = new SingletonInstanceAnkorContextFactory(modelType, globalEventBus, elContext, config);
+                = new SingletonInstanceAnkorContextFactory(modelType, globalEventBus, elContext, config,
+                                                           messageLoop.getMessageBus());
 
         return new SimpleAnkorSystem(messageFactory, messageLoop, globalEventBus, ankorContextFactory, name, null);
     }

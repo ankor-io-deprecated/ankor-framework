@@ -80,20 +80,10 @@ public class AnkorSystem {
         actionEventListener = new ActionEventListener(null) {
             @Override
             public void processAction(Ref actionProperty, Action action) {
-                Message msg = AnkorContext.getCurrentInstance().getCurrentRemoteMessage();
-                if (msg instanceof ActionMessage) {
-                    ActionMessage actionMessage = (ActionMessage) msg;
-                    if (actionMessage.getActionPropertyPath().equals(actionProperty.path())
-                        && actionMessage.getAction() == action) {
-                        // this action was caused by a remote action message, must not relay it back
-                        return;
-                    }
-                }
-
                 String modelContextPath = actionProperty.getRefContext().getModelContextPath();
                 String actionPropertyPath = actionProperty.path();
                 Message message = messageFactory.createActionMessage(modelContextPath, actionPropertyPath, action);
-                messageBus.sendMessage(message);
+                AnkorContext.getCurrentInstance().getMessageSender().sendMessage(message);
             }
         };
 
@@ -101,21 +91,10 @@ public class AnkorSystem {
             @Override
             public void processChange(Ref changedProperty) {
                 Object newValue = changedProperty.getValue();
-
-                Message msg = AnkorContext.getCurrentInstance().getCurrentRemoteMessage();
-                if (msg instanceof ChangeMessage) {
-                    ChangeMessage changeMessage = (ChangeMessage) msg;
-                    if (changeMessage.getChange().getChangedProperty().equals(changedProperty.path())
-                        && changeMessage.getChange().getNewValue() == newValue) {
-                        // this change event was caused by a remote change message, must not relay it back
-                        return;
-                    }
-                }
-
                 String modelContextPath = changedProperty.getRefContext().getModelContextPath();
                 String changedPropertyPath = changedProperty.path();
                 Message message = messageFactory.createChangeMessage(modelContextPath, changedPropertyPath, newValue);
-                messageBus.sendMessage(message);
+                AnkorContext.getCurrentInstance().getMessageSender().sendMessage(message);
 
                 if (newValue == null) {
                     AnkorContext.getCurrentInstance().getModelHolder().getEventBus().cleanupListeners();
@@ -126,8 +105,7 @@ public class AnkorSystem {
         messageListener = new MessageListener() {
             @Override
             public void onActionMessage(ActionMessage message) {
-                AnkorContext ankorContext = ankorContextFactory.create();
-                ankorContext.setCurrentRemoteMessage(message);
+                AnkorContext ankorContext = createAnkorContextFor(message);
                 AnkorContext.setCurrentInstance(ankorContext);
                 try {
                     Ref actionProperty = ankorContext.getRefFactory().ref(message.getActionPropertyPath());
@@ -140,15 +118,14 @@ public class AnkorSystem {
                     }
                     actionProperty.fireAction(message.getAction());
                 } finally {
-                    ankorContext.setCurrentRemoteMessage(null);
+                    ankorContext.getMessageSender().flush();
                     AnkorContext.setCurrentInstance(null);
                 }
             }
 
             @Override
             public void onChangeMessage(ChangeMessage message) {
-                AnkorContext ankorContext = ankorContextFactory.create();
-                ankorContext.setCurrentRemoteMessage(message);
+                AnkorContext ankorContext = createAnkorContextFor(message);
                 AnkorContext.setCurrentInstance(ankorContext);
                 try {
                     Ref changedProperty = ankorContext.getRefFactory().ref(message.getChange().getChangedProperty());
@@ -159,7 +136,7 @@ public class AnkorSystem {
                         changedProperty.setValue(message.getChange().getNewValue());
                     }
                 } finally {
-                    ankorContext.setCurrentRemoteMessage(null);
+                    ankorContext.getMessageSender().flush();
                     AnkorContext.setCurrentInstance(null);
                 }
             }
@@ -172,6 +149,15 @@ public class AnkorSystem {
         if (remoteMethodActionEventListener != null) {
             globalEventBus.addListener(remoteMethodActionEventListener);
         }
+    }
+
+    private AnkorContext createAnkorContextFor(Message message) {
+        AnkorContext ankorContext = ankorContextFactory.create();
+        ReducingMessageSender reducingMessageSender = new ReducingMessageSender(ankorContext.getMessageSender(),
+                                                                                ankorContext.getPathSyntax());
+        CircuitBreakerMessageSender circuitBreaker
+                = new CircuitBreakerMessageSender(reducingMessageSender, message);
+        return ankorContext.withMessageSender(circuitBreaker);
     }
 
 

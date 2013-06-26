@@ -28,6 +28,10 @@ public class LoopbackMessageBus<S> extends MessageBus<S> {
     }
 
     @Override
+    public void flush() {
+    }
+
+    @Override
     public String toString() {
         return name;
     }

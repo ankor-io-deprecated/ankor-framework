@@ -49,6 +49,35 @@ public class ChangeMessage extends Message {
             return newValue;
         }
 
+        @SuppressWarnings("RedundantIfStatement")
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            Change change = (Change) o;
+
+            if (!changedProperty.equals(change.changedProperty)) {
+                return false;
+            }
+            if (newValue != null ? !newValue.equals(change.newValue) : change.newValue != null) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = changedProperty.hashCode();
+            result = 31 * result + (newValue != null ? newValue.hashCode() : 0);
+            return result;
+        }
+
         @Override
         public String toString() {
             return "Change{" +
@@ -56,6 +85,37 @@ public class ChangeMessage extends Message {
                    ", newValue=" + newValue +
                    "}";
         }
+    }
+
+    @SuppressWarnings("RedundantIfStatement")
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        ChangeMessage that = (ChangeMessage) o;
+
+        if (!change.equals(that.change)) {
+            return false;
+        }
+        if (modelContextPath != null
+            ? !modelContextPath.equals(that.modelContextPath)
+            : that.modelContextPath != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = modelContextPath != null ? modelContextPath.hashCode() : 0;
+        result = 31 * result + change.hashCode();
+        return result;
     }
 
     @Override

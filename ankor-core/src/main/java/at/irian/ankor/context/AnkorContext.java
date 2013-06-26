@@ -1,6 +1,7 @@
 package at.irian.ankor.context;
 
-import at.irian.ankor.messaging.Message;
+import at.irian.ankor.messaging.MessageSender;
+import at.irian.ankor.path.PathSyntax;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefFactory;
 
@@ -9,13 +10,16 @@ import at.irian.ankor.ref.RefFactory;
  */
 public class AnkorContext {
 
-    protected final ModelHolder modelHolder;
-    protected final RefContext refContext;
-    private Message currentRemoteMessage;
+    private final ModelHolder modelHolder;
+    private final RefContext refContext;
+    private final MessageSender messageSender;
 
-    public AnkorContext(ModelHolder modelHolder, RefContext refContext) {
+    public AnkorContext(ModelHolder modelHolder,
+                        RefContext refContext,
+                        MessageSender messageSender) {
         this.modelHolder = modelHolder;
         this.refContext = refContext;
+        this.messageSender = messageSender;
     }
 
     public ModelHolder getModelHolder() {
@@ -26,14 +30,17 @@ public class AnkorContext {
         return refContext.getRefFactory();
     }
 
-    public Message getCurrentRemoteMessage() {
-        return currentRemoteMessage;
+    public AnkorContext withMessageSender(MessageSender messageSender) {
+        return new AnkorContext(modelHolder, refContext, messageSender);
     }
 
-    public void setCurrentRemoteMessage(Message currentRemoteMessage) {
-        this.currentRemoteMessage = currentRemoteMessage;
+    public MessageSender getMessageSender() {
+        return messageSender;
     }
 
+    public PathSyntax getPathSyntax() {
+        return refContext.getPathSyntax();
+    }
 
     private static final ThreadLocal<AnkorContext> THREAD_INSTANCE = new ThreadLocal<AnkorContext>() {
         @Override

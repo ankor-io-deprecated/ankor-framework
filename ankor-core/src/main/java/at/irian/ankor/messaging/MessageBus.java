@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * @author Manfred Geiler
  */
-public abstract class MessageBus<S> {
+public abstract class MessageBus<S> implements MessageSender {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(MessageBus.class);
 
     private final MessageSerializer<S> messageSerializer;
@@ -24,6 +24,7 @@ public abstract class MessageBus<S> {
         this.messageDeserializer = messageMapper;
     }
 
+    @Override
     public void sendMessage(Message msg) {
         sendSerializedMessage(messageSerializer.serialize(msg));
     }

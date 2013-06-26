@@ -14,4 +14,8 @@ public interface PathSyntax {
     String addLiteralMapKey(String path, String literalKey);
 
     String addMapKey(String path, String key);
+
+    boolean isParentChild(String parent, String child);
+
+    boolean isDescendant(String descendant, String ancestor);
 }

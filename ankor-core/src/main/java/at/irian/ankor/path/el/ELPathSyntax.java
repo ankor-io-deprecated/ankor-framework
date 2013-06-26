@@ -32,6 +32,10 @@ public class ELPathSyntax implements PathSyntax {
         throw new IllegalArgumentException("Not a valid path: " + path);
     }
 
+    boolean isHasParent(String path) {
+        return path.indexOf('.') >= 0 || path.indexOf('[') >= 0;
+    }
+
     @Override
     public String concat(String path, String subPath) {
         return path + '.' + subPath;
@@ -50,5 +54,16 @@ public class ELPathSyntax implements PathSyntax {
     @Override
     public String addMapKey(String path, String literalKey) {
         return path + '[' + literalKey + ']';
+    }
+
+    @Override
+    public boolean isParentChild(String parent, String child) {
+        return isHasParent(child) && parentOf(child).equals(parent);
+    }
+
+    @Override
+    public boolean isDescendant(String descendant, String ancestor) {
+        return isParentChild(ancestor, descendant)
+               || isHasParent(descendant) && isDescendant(parentOf(descendant), ancestor);
     }
 }

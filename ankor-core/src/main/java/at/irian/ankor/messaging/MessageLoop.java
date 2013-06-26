@@ -31,6 +31,10 @@ public class MessageLoop<S> {
                     Thread.currentThread().interrupt();
                 }
             }
+
+            @Override
+            public void flush() {
+            }
         };
         this.receiveLoop = new Runnable() {
             @Override

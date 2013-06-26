@@ -110,7 +110,7 @@ public class ServiceBean {
     }
 
     public Tab createAnimalSearchTab(final Ref tabsRef, final String tabId) {
-        final Tab<AnimalSearchTabModel> tab = new Tab<AnimalSearchTabModel>(tabId);
+        Tab<AnimalSearchTabModel> tab = new Tab<AnimalSearchTabModel>(tabId);
         tab.setModel(new AnimalSearchTabModel(getAnimalSelectItems()));
 
         Ref tabRef = tabsRef.append(tabId);
@@ -120,19 +120,24 @@ public class ServiceBean {
         tabRef.append("model.filter.name").addChangeListener(new ChangeListener() {
             @Override
             public void processChange(Ref changedProperty, Ref watchedProperty) {
-                tab.getModel().getAnimals().getPaginator().reset();
-                Data<Animal> animals = searchAnimals(tab.getModel().getFilter(),
-                                                     tab.getModel().getAnimals().getPaginator());
-                tabsRef.append(tabId).append("model.animals").setValue(animals);
+                Ref modelRef = watchedProperty.parent().parent();
+                AnimalSearchTabModel model = modelRef.getValue();
+                model.getAnimals().getPaginator().reset();
+                Data<Animal> animals = searchAnimals(model.getFilter(),
+                                                     model.getAnimals().getPaginator());
+                modelRef.append("animals").setValue(animals);
             }
         });
 
         tabRef.append("model.animals.paginator.first").addChangeListener(new ChangeListener() {
             @Override
             public void processChange(Ref changedProperty, Ref watchedProperty) {
-                Data<Animal> animals = searchAnimals(tab.getModel().getFilter(),
-                                                     tab.getModel().getAnimals().getPaginator());
-                tabsRef.append(tabId).append("model.animals").setValue(animals);
+                Ref animalsRef = watchedProperty.parent().parent();
+                Ref modelRef = animalsRef.parent();
+                AnimalSearchTabModel model = modelRef.getValue();
+                Data<Animal> animals = searchAnimals(model.getFilter(),
+                                                     model.getAnimals().getPaginator());
+                animalsRef.setValue(animals);
             }
         });
 
@@ -175,7 +180,7 @@ public class ServiceBean {
 
         @Override
         public void processChange(Ref changedProperty, Ref watchedProperty) {
-            AnimalType type = changedProperty.getValue();
+            AnimalType type = watchedProperty.getValue();
             List<AnimalFamily> families;
             if (type != null) {
                 families = new ArrayList<AnimalFamily>();

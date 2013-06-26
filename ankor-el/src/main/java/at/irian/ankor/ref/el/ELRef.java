@@ -28,9 +28,18 @@ class ELRef implements Ref {
     }
 
     @Override
-    public void setValue(Object value) {
-        ve.setValue(refContext.getElContext(), value);
+    public void setValue(Object newValue) {
+        Object oldValue;
+        try {
+            oldValue = getValue();
+        } catch (Exception e) {
+            throw new IllegalArgumentException("invalid ref", e);
+        }
+//            if (newValue != oldValue) {
+//                // todo: is this ok?
+        ve.setValue(refContext.getElContext(), newValue);
         refContext.getEventBus().fire(new ChangeEvent(this));
+//            }
     }
 
     @SuppressWarnings("unchecked")
