@@ -1,8 +1,10 @@
 package at.irian.ankor.fx.app;
 
 import at.irian.ankor.context.AnkorContext;
+import at.irian.ankor.system.AnkorSystem;
 import at.irian.ankor.system.BeanResolver;
 import at.irian.ankor.system.SimpleAnkorSystem;
+import at.irian.ankor.system.SocketAnkorSystem;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,15 +12,19 @@ import java.util.Map;
 /**
  * @author Thomas Spiegl
  */
-public class SimpleLocalAppServiceBuilder {
+public class SocketAppServiceBuilder {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SimpleAppServiceFactory.class);
+
+    private static final String HOST = "localhost";
+    private static final int serverPort = 8080;
+    private static final int clientPort = 9090;
 
     private final BeanResolver beanResolver;
     private Class<?> modelType = Object.class;
     private Map<String, Object> beans = new HashMap<String, Object>();
     private boolean serverStatusMessage;
 
-    public SimpleLocalAppServiceBuilder() {
+    public SocketAppServiceBuilder() {
         beanResolver = new BeanResolver() {
             @Override
             public Object resolveByName(String beanName) {
@@ -27,42 +33,47 @@ public class SimpleLocalAppServiceBuilder {
         };
     }
 
-    public SimpleLocalAppServiceBuilder withModelType(Class<?> modelType) {
+    public SocketAppServiceBuilder withModelType(Class<?> modelType) {
         this.modelType = modelType;
         return this;
     }
 
-    public SimpleLocalAppServiceBuilder withBean(String beanName, Object bean) {
+    public SocketAppServiceBuilder withBean(String beanName, Object bean) {
         this.beans.put(beanName, bean);
         return this;
     }
 
-    public SimpleLocalAppServiceBuilder withServerStatusMessage(boolean value) {
+    public SocketAppServiceBuilder withServerStatusMessage(boolean value) {
         serverStatusMessage = value;
         return this;
     }
 
     public AppService create() {
         // create
-        SimpleAnkorSystem serverSystem = SimpleAnkorSystem.create("server", modelType, beanResolver)
-                                                          .withRemoteMethodActionListenerEnabled();
-        SimpleAnkorSystem clientSystem = SimpleAnkorSystem.create("client", modelType);
 
-        // connect
-        clientSystem.connectTo(serverSystem);
+        Thread serverThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                AnkorSystem serverSystem = SocketAnkorSystem.create("server", modelType, beanResolver, HOST, clientPort, serverPort)
+                        .withRemoteMethodActionListenerEnabled();
+                serverSystem.start();
+                if (serverStatusMessage) {
+                    startServerStatusThread(serverSystem);
+                }
+            }
+        });
+        serverThread.setDaemon(true);
+
+        SocketAnkorSystem clientSystem = SocketAnkorSystem.create("client", modelType, null, HOST, serverPort, clientPort);
 
         // start
-        serverSystem.start();
+        serverThread.start();
         clientSystem.start();
-
-        if (serverStatusMessage) {
-            startServerStatusThread(serverSystem);
-        }
 
         return new AppService(clientSystem);
     }
 
-    public void startServerStatusThread(final SimpleAnkorSystem system) {
+    public static void startServerStatusThread(final AnkorSystem system) {
         final long started = System.currentTimeMillis();
         new Thread(new Runnable() {
             public void run() {

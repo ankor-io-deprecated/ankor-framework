@@ -11,8 +11,8 @@ import at.irian.ankor.path.PathSyntax;
 import at.irian.ankor.ref.*;
 import at.irian.ankor.util.ObjectUtils;
 
+import javax.el.PropertyNotFoundException;
 import javax.el.ValueExpression;
-import javax.el.ValueReference;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
@@ -59,11 +59,18 @@ class ELRef implements Ref {
 
             boolean process;
             Ref watchedProperty = ((ChangeEventListener) listener).getWatchedProperty();
-            if (watchedProperty != null) {
-                Object newWatchedValue = watchedProperty.getValue();
-                process = !ObjectUtils.nullSafeEquals(oldWatchedValue, newWatchedValue);
-            } else {
+            if (watchedProperty == null) {
+                // this is a global listener
                 process = true;
+            } else {
+                if (newValue == null && watchedProperty.isDescendantOf(this)) {
+                    // this ref is a parent of the watched property
+                    process = false;
+                } else {
+                    // check if watched value has changed
+                    Object newWatchedValue = watchedProperty.getValue();
+                    process = !ObjectUtils.nullSafeEquals(oldWatchedValue, newWatchedValue);
+                }
             }
 
             if (process) {
@@ -89,13 +96,12 @@ class ELRef implements Ref {
 
     @Override
     public boolean isValid() {
-        if (isRoot()) {
-            Object modelRoot = ve.getValue(refContext.getElContext());
-            return modelRoot != null;
-        } else {
-            ValueReference valueReference = ve.getValueReference(refContext.getElContext());
-            return valueReference != null && valueReference.getBase() != null;
+        try {
+            ve.getValueReference(refContext.getElContext());
+        } catch (PropertyNotFoundException e) {
+            return false;
         }
+        return true;
     }
 
     @Override

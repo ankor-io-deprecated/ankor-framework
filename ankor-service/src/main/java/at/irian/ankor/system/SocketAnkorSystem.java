@@ -6,28 +6,23 @@ import at.irian.ankor.el.BeanResolverELResolver;
 import at.irian.ankor.el.StandardELContext;
 import at.irian.ankor.event.ListenersHolder;
 import at.irian.ankor.event.UnsynchronizedListenersHolder;
-import at.irian.ankor.messaging.LoopbackMessageBus;
-import at.irian.ankor.messaging.MessageFactory;
-import at.irian.ankor.messaging.PipeMessageLoop;
+import at.irian.ankor.messaging.*;
 import at.irian.ankor.messaging.json.JsonMessageMapper;
 import at.irian.ankor.rmi.ELRemoteMethodActionEventListener;
 import at.irian.ankor.rmi.RemoteMethodActionEventListener;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-
 /**
  * @author MGeiler (Manfred Geiler)
  */
-public class SimpleAnkorSystem extends AnkorSystem {
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SimpleAnkorSystem.class);
+public class SocketAnkorSystem extends AnkorSystem {
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SocketAnkorSystem.class);
 
-    private final PipeMessageLoop<String> messageLoop;
+    private final MessageLoop<String> messageLoop;
 
-    protected SimpleAnkorSystem(MessageFactory messageFactory,
-                                PipeMessageLoop<String> messageLoop,
+    protected SocketAnkorSystem(MessageFactory messageFactory,
+                                MessageLoop<String> messageLoop,
                                 ListenersHolder listenersHolder,
                                 AnkorContextFactory ankorContextFactory,
                                 String name,
@@ -38,10 +33,12 @@ public class SimpleAnkorSystem extends AnkorSystem {
     }
 
 
-    public static SimpleAnkorSystem create(String name, Class<?> modelType, BeanResolver beanResolver) {
+    public static SocketAnkorSystem create(String name, Class<?> modelType, BeanResolver beanResolver,
+                                           String remoteHost, int remotePort, int localPort) {
         MessageFactory messageFactory = new MessageFactory();
 
-        PipeMessageLoop<String> messageLoop = new PipeMessageLoop<String>(name, new JsonMessageMapper());
+        MessageLoop<String> messageLoop = new SocketMessageLoop<String>(name, new JsonMessageMapper(),
+                remoteHost, remotePort, localPort);
 
         UnsynchronizedListenersHolder globalEventBus = new UnsynchronizedListenersHolder();
 
@@ -56,15 +53,15 @@ public class SimpleAnkorSystem extends AnkorSystem {
                 = new SingletonInstanceAnkorContextFactory(modelType, globalEventBus, elContext, config,
                                                            messageLoop.getMessageBus());
 
-        return new SimpleAnkorSystem(messageFactory, messageLoop, globalEventBus, ankorContextFactory, name, null);
+        return new SocketAnkorSystem(messageFactory, messageLoop, globalEventBus, ankorContextFactory, name, null);
     }
 
-    public static SimpleAnkorSystem create(String name, Class<?> modelType) {
-        return create(name, modelType, null);
+    public static SocketAnkorSystem create(String name, Class<?> modelType) {
+        return create(name, modelType, null, null);
     }
 
-    public SimpleAnkorSystem withRemoteMethodActionListenerEnabled() {
-        return new SimpleAnkorSystem(getMessageFactory(),
+    public SocketAnkorSystem withRemoteMethodActionListenerEnabled() {
+        return new SocketAnkorSystem(getMessageFactory(),
                                      messageLoop,
                                      getGlobalListenersHolder(),
                                      getAnkorContextFactory(),
@@ -73,7 +70,7 @@ public class SimpleAnkorSystem extends AnkorSystem {
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public static SimpleAnkorSystem create(String name, Class<?> modelType,
+    public static SocketAnkorSystem create(String name, Class<?> modelType,
                                      final String singletonBeanName, final Object singletonBean) {
         return create(name, modelType, new BeanResolver() {
             @Override
@@ -84,26 +81,8 @@ public class SimpleAnkorSystem extends AnkorSystem {
                     return null;
                 }
             }
-        });
+        }, null, 0, 0);
     }
-
-    public void connectTo(SimpleAnkorSystem other) {
-        if (isStarted()) {
-            throw new IllegalStateException("cannot connect a started system");
-        }
-
-        BlockingQueue<String> thisToOtherQueue = new LinkedBlockingQueue<String>();
-        BlockingQueue<String> otherToThisQueue = new LinkedBlockingQueue<String>();
-
-        this.messageLoop.setSendQueue(thisToOtherQueue);
-        this.messageLoop.setReceiveQueue(otherToThisQueue);
-
-        other.messageLoop.setSendQueue(otherToThisQueue);
-        other.messageLoop.setReceiveQueue(thisToOtherQueue);
-
-        LOG.info("{} is now connected to {}", this, other);
-    }
-
 
     @Override
     public void start() {

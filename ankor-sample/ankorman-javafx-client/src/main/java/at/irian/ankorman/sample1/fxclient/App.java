@@ -3,6 +3,7 @@ package at.irian.ankorman.sample1.fxclient;
 import at.irian.ankor.context.AnkorContext;
 import at.irian.ankor.fx.app.AppService;
 import at.irian.ankor.fx.app.SimpleLocalAppServiceBuilder;
+import at.irian.ankor.fx.app.SocketAppServiceBuilder;
 import at.irian.ankorman.sample1.model.ModelRoot;
 import at.irian.ankorman.sample1.server.ServiceBean;
 import javafx.fxml.FXMLLoader;
@@ -29,12 +30,8 @@ public class App extends javafx.application.Application {
 
         ServiceBean serviceBean = new ServiceBean();
 
-        SimpleLocalAppServiceBuilder appServiceBuilder = new SimpleLocalAppServiceBuilder()
-                .withModelType(ModelRoot.class)
-                .withBean("service", serviceBean)
-                //.withServerStatusMessage(true);
-                .withServerStatusMessage(false);
-        appService = appServiceBuilder.create();
+        //createSimpleAppService(serviceBean);
+        createSocketAppService(serviceBean);
         serviceFacade = new ServiceFacade(appService);
 
         primaryStage.setTitle("Ankor FX Sample");
@@ -44,6 +41,22 @@ public class App extends javafx.application.Application {
         myScene.getStylesheets().add("style.css");
         primaryStage.setScene(myScene);
         primaryStage.show();
+    }
+
+    private void createSimpleAppService(ServiceBean serviceBean) {
+        SimpleLocalAppServiceBuilder appServiceBuilder = new SimpleLocalAppServiceBuilder()
+                .withModelType(ModelRoot.class)
+                .withBean("service", serviceBean)
+                .withServerStatusMessage(true);
+        appService = appServiceBuilder.create();
+    }
+
+    private void createSocketAppService(ServiceBean serviceBean) {
+        SocketAppServiceBuilder appServiceBuilder = new SocketAppServiceBuilder()
+                .withModelType(ModelRoot.class)
+                .withBean("service", serviceBean)
+                .withServerStatusMessage(true);
+        appService = appServiceBuilder.create();
     }
 
     public static ServiceFacade facade() {

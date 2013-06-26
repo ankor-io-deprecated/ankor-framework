@@ -7,7 +7,6 @@ import at.irian.ankor.context.AnkorContext;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.rmi.RemoteMethodAction;
 import at.irian.ankor.system.AnkorSystem;
-import at.irian.ankor.system.SimpleAnkorSystem;
 
 /**
  * @author Thomas Spiegl
@@ -16,14 +15,13 @@ public class AppService {
 
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AppService.class);
 
-    private final AnkorSystem system;
     private final AnkorContext ankorContext;
 
     private ActionCompleteCallback currentCallback = null;
 
-    public AppService(SimpleAnkorSystem system) {
-        this.system = system;
+    public AppService(AnkorSystem system) {
         this.ankorContext = system.getAnkorContextFactory().create();
+        AnkorContext.setCurrentInstance(ankorContext);
 
         system.getGlobalListenersHolder().addListener(new ActionEventListener(null) {
             @Override
