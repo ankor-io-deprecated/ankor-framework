@@ -18,3 +18,5 @@ classes/
 target/
 overlays/
 *.versionsBackup
+node_modules/
+*.pyc
