@@ -14,28 +14,49 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.Tab?>
-<BorderPane  fx:controller="at.irian.ankorman.sample1.fxclient.MainController" xmlns:fx="http://javafx.com/fxml" prefHeight="500" prefWidth="600">
-    <top>
-        <VBox>
-            <HBox prefHeight="20" spacing="5">
+<?import javafx.stage.Window?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuItem?>
+
+<AnchorPane fx:controller="at.irian.ankorman.sample1.fxclient.MainController" id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="549.0" prefWidth="711.0" xmlns:fx="http://javafx.com/fxml">
+    <children>
+        <VBox layoutX="0.0" layoutY="0.0" prefHeight="549.0" prefWidth="711.0">
+            <children>
+                <HBox prefHeight="25.0" prefWidth="711.0">
+                    <children>
+                        <MenuBar minHeight="21.0" prefHeight="34.0" prefWidth="711.0">
+                            <menus>
+                                <Menu mnemonicParsing="false" text="Animal">
+                                    <items>
+                                        <MenuItem mnemonicParsing="false" text="Animal Search" onAction="#openAnimalSearchTab"/>
+                                        <MenuItem mnemonicParsing="false" text="Animal Detail" onAction="#openAnimalDetailTab"/>
+                                    </items>
+                                </Menu>
+                                <Menu mnemonicParsing="false" text="Help">
+                                    <items>
+                                        <MenuItem mnemonicParsing="false" text="About" />
+                                    </items>
+                                </Menu>
+                            </menus>
+                        </MenuBar>
+                    </children>
+                </HBox>
+                <HBox prefHeight="449.0" prefWidth="711.0">
+                    <children>
+                        <TabPane fx:id="tabPane" prefHeight="449.0" prefWidth="711.0" tabClosingPolicy="ALL_TABS">
+                            <tabs>
+                            </tabs>
+                        </TabPane>
+                    </children>
+                </HBox>
+            </children>
+            <HBox spacing="10">
                 <Text text="User: "/><Text fx:id="userName"/>
                 <Text text="Server says: "/><Text fx:id="serverStatus"/>
             </HBox>
-            <HBox prefHeight="20" spacing="5">
-                <Button text="Animal Search" GridPane.columnIndex="1" GridPane.rowIndex="2"
-                        onAction="#openAnimalSearchTab"/>
-                <Button text="New Animal" GridPane.columnIndex="1" GridPane.rowIndex="2"
-                        onAction="#openAnimalDetailTab"/>
-            </HBox>
         </VBox>
-    </top>
-    <center>
-        <TabPane fx:id="tabPane">
-            <tabs>
-            </tabs>
-        </TabPane>
-    </center>
-    <bottom>
-        <Text text="(c) IRIAN 2013"/>
-    </bottom>
-</BorderPane>
+    </children>
+</AnchorPane>

@@ -68,8 +68,8 @@ public class ServiceBean {
                 first = 0;
             }
             int last = first + maxResults;
-            if (last >= animals.size() -1) {
-                last = animals.size() -1;
+            if (last > animals.size()) {
+                last = animals.size();
             }
 
             Data<Animal> data = new Data<Animal>(new Paginator(first, maxResults));
