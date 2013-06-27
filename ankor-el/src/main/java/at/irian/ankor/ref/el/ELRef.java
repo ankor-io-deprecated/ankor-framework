@@ -2,7 +2,7 @@ package at.irian.ankor.ref.el;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionEvent;
-import at.irian.ankor.change.ChangeEvent;
+import at.irian.ankor.change.RefValueChanger;
 import at.irian.ankor.el.ELUtils;
 import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.path.PathSyntax;
@@ -10,12 +10,11 @@ import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.ref.impl.AbstractRef;
-import at.irian.ankor.util.ObjectUtils;
 
 import javax.el.PropertyNotFoundException;
 import javax.el.ValueExpression;
-import java.util.IdentityHashMap;
-import java.util.Map;
+
+import static at.irian.ankor.change.RefValueChanger.SetValueCallback;
 
 /**
  * @author MGeiler (Manfred Geiler)
@@ -31,64 +30,15 @@ class ELRef extends AbstractRef {
         this.refContext = refContext;
     }
 
+    @SuppressWarnings("SimplifiableIfStatement")
     @Override
-    public void setValue(Object newValue) {
-
-        ChangeEvent changeEvent = new ChangeEvent(this);
-        Object oldValue = getValue();
-
-        // remember old watched values
-        IdentityHashMap<ModelEventListener, Object> oldWatchedValues = new IdentityHashMap<ModelEventListener, Object>();
-        for (ModelEventListener listener : refContext.allEventListeners()) {
-            if (listener instanceof ChangeEvent.Listener) {
-                Ref watchedProperty = ((ChangeEvent.Listener) listener).getWatchedProperty();
-                if (watchedProperty != null) {
-                    Object oldWatchedValue = watchedProperty.getValue();
-                    oldWatchedValues.put(listener, oldWatchedValue);
-                } else {
-                    oldWatchedValues.put(listener, null);
-                }
-            } else if (listener instanceof ChangeEvent.TreeListener) {
-                oldWatchedValues.put(listener, null);
+    public void setValue(final Object newValue) {
+        new RefValueChanger(this).setValueTo(newValue, new SetValueCallback() {
+            @Override
+            public void doSetValue() {
+                ve.setValue(refContext.getElContext(), newValue);
             }
-        }
-
-        // set the new value
-        ve.setValue(refContext.getElContext(), newValue);
-
-        // invoke all listeners of which the watched value has changed
-        for (Map.Entry<ModelEventListener, Object> entry : oldWatchedValues.entrySet()) {
-            ModelEventListener listener = entry.getKey();
-            Object oldWatchedValue = entry.getValue();
-
-            boolean process;
-            if (listener instanceof ChangeEvent.Listener) {
-                Ref watchedProperty = ((ChangeEvent.Listener) listener).getWatchedProperty();
-                if (watchedProperty == null) {
-                    // this is a global listener
-                    process = true;
-                } else {
-                    if (newValue == null && watchedProperty.isDescendantOf(this)) {
-                        // this ref is a parent of the watched property
-                        process = false;
-                    } else {
-                        // check if watched value has changed
-                        Object newWatchedValue = watchedProperty.getValue();
-                        process = !ObjectUtils.nullSafeEquals(oldWatchedValue, newWatchedValue);
-                    }
-                }
-            } else {
-                process = !ObjectUtils.nullSafeEquals(oldValue, newValue);
-            }
-
-            if (process) {
-                try {
-                    changeEvent.processBy(listener);
-                } catch (Exception e) {
-                    LOG.error("Listener " + listener + " threw exception while processing " + changeEvent, e);
-                }
-            }
-        }
+        });
     }
 
     @SuppressWarnings("unchecked")

@@ -34,7 +34,7 @@ public class ServiceFacade {
         appService.remoteMethod("service.createAnimalSearchTab(contextRef, tabId)")
                 .inContext(tabsRef)
                 .setParam("tabId", tabId)
-                .withResultIn(tabsRef.append(tabId))
+                //.withResultIn(tabsRef.append(tabId))
                 .onComplete(cb)
                 .execute();
     }
@@ -44,7 +44,7 @@ public class ServiceFacade {
         appService.remoteMethod("service.createAnimalDetailTab(contextRef, tabId)")
                 .inContext(tabsRef)
                 .setParam("tabId", tabId)
-                .withResultIn(tabsRef.append(tabId))
+                //.withResultIn(tabsRef.append(tabId))
                 .onComplete(cb)
                 .execute();
     }

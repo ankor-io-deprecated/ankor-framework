@@ -109,45 +109,40 @@ public class ServiceBean {
         }
     }
 
-    public Tab createAnimalSearchTab(final Ref tabsRef, final String tabId) {
-        Tab<AnimalSearchTabModel> tab = new Tab<AnimalSearchTabModel>(tabId);
-        tab.setModel(new AnimalSearchTabModel(getAnimalSelectItems()));
+    public void createAnimalSearchTab(final Ref tabsRef, final String tabId) {
+        AnimalSearchModel model = new AnimalSearchModel(getAnimalSelectItems());
+
+        Tab<AnimalSearchModel> tab = new Tab<AnimalSearchModel>(tabId);
+        tab.setModel(model);
 
         Ref tabRef = tabsRef.append(tabId);
-//        tabRef.append("model.filter.name").addValueChangeListener(new ChangeListener() {
-//            @Override
-//            public void processChange(Ref changedProperty, Ref filterNameRef) {
-//                reloadAnimals(filterNameRef);
-//            }
-//        });
-        tabRef.append("model.filter.type").addValueChangeListener(
-                new AnimalTypeChangeListener());
+        tabRef.setValue(tab);
 
-        tabRef.append("model.filter").addDelayedTreeChangeListener(new ChangeListener() {
+        tabRef.append("model.filter.type").addPropChangeListener(new AnimalTypeChangeListener());
+
+        tabRef.append("model.filter").addTreeChangeListener(new ChangeListener() {
             @Override
-            public void processChange(Ref changedProperty, Ref filterRef) {
+            public void processChange(Ref filterRef, Ref changedProperty) {
                 reloadAnimals(filterRef);
             }
-        }, 2000L);
+        }, 200L);
 
-        tabRef.append("model.animals.paginator.first").addValueChangeListener(new ChangeListener() {
+        tabRef.append("model.animals.paginator.first").addPropChangeListener(new ChangeListener() {
             @Override
-            public void processChange(Ref changedProperty, Ref watchedProperty) {
-                Ref animalsRef = watchedProperty.parent().parent();
-                Ref modelRef = animalsRef.parent();
-                AnimalSearchTabModel model = modelRef.getValue();
+            public void processChange(Ref firstProperty, Ref changedProperty) {
+                Ref modelRef = firstProperty.ancestor("model");
+                AnimalSearchModel model = modelRef.getValue();
                 Data<Animal> animals = searchAnimals(model.getFilter(),
                                                      model.getAnimals().getPaginator());
+                Ref animalsRef = firstProperty.ancestor("animals");
                 animalsRef.setValue(animals);
             }
         });
-
-        return tab;
     }
 
     private void reloadAnimals(Ref filterRef) {
         Ref modelRef = filterRef.ancestor("model");
-        AnimalSearchTabModel model = modelRef.getValue();
+        AnimalSearchModel model = modelRef.getValue();
         model.getAnimals().getPaginator().reset();
         Data<Animal> animals = searchAnimals(model.getFilter(),
                                              model.getAnimals().getPaginator());
@@ -160,16 +155,17 @@ public class ServiceBean {
         return new AnimalSelectItems(types, new ArrayList<AnimalFamily>());
     }
 
-    public Tab createAnimalDetailTab(final Ref tabsRef, String tabId) {
-        Tab<AnimalDetailTabModel> tab = new Tab<AnimalDetailTabModel>(tabId);
-        tab.setModel(new AnimalDetailTabModel(new Animal(), getAnimalSelectItems()));
-        tab.getModel().setAnimal(new Animal());
+    public void createAnimalDetailTab(final Ref tabsRef, String tabId) {
+
+        AnimalDetailModel model = new AnimalDetailModel(new Animal(), getAnimalSelectItems());
+
+        Tab<AnimalDetailModel> tab = new Tab<AnimalDetailModel>(tabId);
+        tab.setModel(model);
 
         Ref tabRef = tabsRef.append(tabId);
+        tabRef.setValue(tab);
 
-        tabRef.append("model.animal.type").addValueChangeListener(new AnimalTypeChangeListener());
-
-        return tab;
+        tabRef.append("model.animal.type").addPropChangeListener(new AnimalTypeChangeListener());
     }
 
     public void saveAnimals(List<Animal> animals) {
@@ -179,11 +175,9 @@ public class ServiceBean {
     }
 
     public class AnimalTypeChangeListener implements ChangeListener {
-
-
         @Override
-        public void processChange(Ref changedProperty, Ref watchedProperty) {
-            AnimalType type = watchedProperty.getValue();
+        public void processChange(Ref typeRef, Ref changedProperty) {
+            AnimalType type = typeRef.getValue();
             List<AnimalFamily> families;
             if (type != null) {
                 families = new ArrayList<AnimalFamily>();
@@ -203,7 +197,7 @@ public class ServiceBean {
             } else {
                 families = new ArrayList<AnimalFamily>(0);
             }
-            Ref modelRef = watchedProperty.ancestor("model");
+            Ref modelRef = typeRef.ancestor("model");
             Ref familiesRef = modelRef.append("selectItems.families");
             familiesRef.setValue(families);
             familiesRef.ancestor("model").append("filter.family").setValue(null);

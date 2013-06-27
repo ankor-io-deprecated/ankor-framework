@@ -1,9 +1,10 @@
 package at.irian.ankor.ref.impl;
 
+import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionEvent;
 import at.irian.ankor.change.ChangeEvent;
+import at.irian.ankor.change.ChangeEventListener;
 import at.irian.ankor.change.DelayedChangeEventListener;
-import at.irian.ankor.change.DelayedTreeChangeEventListener;
 import at.irian.ankor.ref.ActionListener;
 import at.irian.ankor.ref.ChangeListener;
 import at.irian.ankor.ref.Ref;
@@ -18,28 +19,28 @@ public abstract class AbstractRef implements Ref {
     public abstract RefContextImplementor context();
 
     @Override
-    public void addValueChangeListener(final ChangeListener listener) {
-        context().modelEventListeners().add(new ChangeEvent.Listener(this) {
+    public void addPropChangeListener(final ChangeListener listener) {
+        context().modelEventListeners().add(new ChangeEventListener(this) {
             @Override
             public void process(ChangeEvent event) {
-                processValueChangeEvent(event.getChangedProperty(), getWatchedProperty(), listener);
+                processPropChangeEvent(event.getChangedProperty(), getWatchedProperty(), listener);
             }
         });
     }
 
     @Override
-    public void addDelayedValueChangeListener(final ChangeListener listener, long delayMilliseconds) {
+    public void addPropChangeListener(final ChangeListener listener, long delayMilliseconds) {
         context().modelEventListeners().add(new DelayedChangeEventListener(this, delayMilliseconds) {
             @Override
             public void processImmediately(ChangeEvent event) {
-                processValueChangeEvent(event.getChangedProperty(), getWatchedProperty(), listener);
+                processPropChangeEvent(event.getChangedProperty(), getWatchedProperty(), listener);
             }
         });
     }
 
     @Override
     public void addTreeChangeListener(final ChangeListener listener) {
-        context().modelEventListeners().add(new ChangeEvent.TreeListener(this) {
+        context().modelEventListeners().add(new ChangeEventListener(this) {
             @Override
             public void process(ChangeEvent event) {
                 processTreeChangeEvent(event.getChangedProperty(), getWatchedProperty(), listener);
@@ -48,8 +49,8 @@ public abstract class AbstractRef implements Ref {
     }
 
     @Override
-    public void addDelayedTreeChangeListener(final ChangeListener listener, long delayMilliseconds) {
-        context().modelEventListeners().add(new DelayedTreeChangeEventListener(this, delayMilliseconds) {
+    public void addTreeChangeListener(final ChangeListener listener, long delayMilliseconds) {
+        context().modelEventListeners().add(new DelayedChangeEventListener(this, delayMilliseconds) {
             @Override
             public void processImmediately(ChangeEvent event) {
                 processTreeChangeEvent(event.getChangedProperty(), getWatchedProperty(), listener);
@@ -58,30 +59,46 @@ public abstract class AbstractRef implements Ref {
     }
 
     @Override
-    public void addActionListener(final ActionListener actionListener) {
+    public void addPropActionListener(final ActionListener listener) {
         context().modelEventListeners().add(new ActionEvent.Listener(this) {
             @Override
             public void process(ActionEvent event) {
-                Ref actionProperty = event.getActionProperty();
-                Ref watchedProperty = getWatchedProperty();
-                if (watchedProperty.equals(actionProperty)) {
-                    actionListener.processAction(watchedProperty, event.getAction());
-                }
+                processPropActionEvent(event.getActionProperty(), getWatchedProperty(), listener, event.getAction());
             }
         });
     }
 
 
-    private void processValueChangeEvent(Ref changedProperty, Ref watchedProperty, ChangeListener listener) {
-        if (watchedProperty.equals(changedProperty) || watchedProperty.isDescendantOf(changedProperty)) {
-            listener.processChange(changedProperty, watchedProperty);
+
+    private void processPropChangeEvent(Ref changedProperty, Ref watchedProperty, ChangeListener listener) {
+        if (isRelevantPropChange(changedProperty, watchedProperty)) {
+            listener.processChange(watchedProperty, changedProperty);
         }
     }
 
+    private boolean isRelevantPropChange(Ref changedProperty, Ref watchedProperty) {
+        return watchedProperty.equals(changedProperty) || watchedProperty.isDescendantOf(changedProperty);
+    }
+
     private void processTreeChangeEvent(Ref changedProperty, Ref watchedProperty, ChangeListener listener) {
-        if (watchedProperty.equals(changedProperty) || watchedProperty.isAncestorOf(changedProperty)) {
-            listener.processChange(changedProperty, watchedProperty);
+        if (isRelevantTreeChange(changedProperty, watchedProperty)) {
+            listener.processChange(watchedProperty, changedProperty);
         }
+    }
+
+    private boolean isRelevantTreeChange(Ref changedProperty, Ref watchedProperty) {
+        return watchedProperty.equals(changedProperty) || watchedProperty.isAncestorOf(changedProperty);
+    }
+
+    private void processPropActionEvent(Ref actionProperty, Ref watchedProperty,
+                                        ActionListener listener, Action action) {
+        if (isRelevantActionProperty(actionProperty, watchedProperty)) {
+            listener.processAction(watchedProperty, action);
+        }
+    }
+
+    private boolean isRelevantActionProperty(Ref actionProperty, Ref watchedProperty) {
+        return watchedProperty.equals(actionProperty);
     }
 
 }

@@ -5,6 +5,6 @@ package at.irian.ankor.ref;
  */
 public interface ChangeListener {
 
-    void processChange(Ref changedProperty, Ref watchedProperty);
+    void processChange(Ref watchedProperty, Ref changedProperty);
 
 }

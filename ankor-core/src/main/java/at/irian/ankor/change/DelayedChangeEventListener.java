@@ -8,7 +8,7 @@ import at.irian.ankor.ref.Ref;
 /**
  * @author Manfred Geiler
  */
-public abstract class DelayedChangeEventListener extends ChangeEvent.Listener
+public abstract class DelayedChangeEventListener extends ChangeEventListener
         implements DelayedModelEventListener<ChangeEvent> {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(DelayedChangeEventListener.class);
 

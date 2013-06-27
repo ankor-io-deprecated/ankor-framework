@@ -2,6 +2,7 @@ package at.irian.ankor.system;
 
 import at.irian.ankor.action.ActionEvent;
 import at.irian.ankor.change.ChangeEvent;
+import at.irian.ankor.change.ChangeEventListener;
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.messaging.*;
 import at.irian.ankor.ref.Ref;
@@ -21,7 +22,7 @@ public class AnkorSystem {
     private final EventListeners globalEventListeners;
     private final RefContextFactory refContextFactory;
     private final RemoteMethodActionEventListener remoteMethodActionEventListener;
-    private ChangeEvent.Listener changeEventListener;
+    private ChangeEventListener changeEventListener;
     private ActionEvent.Listener actionEventListener;
     private MessageListener messageListener;
 
@@ -89,7 +90,7 @@ public class AnkorSystem {
             }
         };
 
-        changeEventListener = new ChangeEvent.Listener(null) {
+        changeEventListener = new ChangeEventListener(null) {
             @Override
             public void process(ChangeEvent event) {
                 Ref changedProperty = event.getChangedProperty();

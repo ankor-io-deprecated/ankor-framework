@@ -5,12 +5,12 @@ import at.irian.ankor.ref.Ref;
 /**
  * @author Manfred Geiler
  */
-public abstract class PropertyWatchModelEventListener implements ModelEventListener {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(PropertyWatchModelEventListener.class);
+public abstract class PropertyWatcherModelEventListener implements ModelEventListener, PropertyWatcher {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(PropertyWatcherModelEventListener.class);
 
     private final Ref watchedProperty;
 
-    protected PropertyWatchModelEventListener(Ref watchedProperty) {
+    protected PropertyWatcherModelEventListener(Ref watchedProperty) {
         this.watchedProperty = watchedProperty;
     }
 

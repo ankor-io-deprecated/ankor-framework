@@ -80,13 +80,13 @@ public interface Ref {
 
     void fireAction(Action action);
 
-    void addActionListener(ActionListener listener);
+    void addPropActionListener(ActionListener listener);
 
-    void addValueChangeListener(ChangeListener listener);
+    void addPropChangeListener(ChangeListener listener);
 
-    void addDelayedValueChangeListener(ChangeListener listener, long delayMilliseconds);
+    void addPropChangeListener(ChangeListener listener, long delayMilliseconds);
 
     void addTreeChangeListener(ChangeListener listener);
 
-    void addDelayedTreeChangeListener(ChangeListener listener, long delayMilliseconds);
+    void addTreeChangeListener(ChangeListener listener, long delayMilliseconds);
 }

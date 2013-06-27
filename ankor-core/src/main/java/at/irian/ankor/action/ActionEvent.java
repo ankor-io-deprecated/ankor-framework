@@ -2,7 +2,7 @@ package at.irian.ankor.action;
 
 import at.irian.ankor.event.ModelEvent;
 import at.irian.ankor.event.ModelEventListener;
-import at.irian.ankor.event.PropertyWatchModelEventListener;
+import at.irian.ankor.event.PropertyWatcherModelEventListener;
 import at.irian.ankor.ref.Ref;
 
 /**
@@ -35,7 +35,7 @@ public class ActionEvent extends ModelEvent {
         ((Listener) listener).process(this);
     }
 
-    public abstract static class Listener extends PropertyWatchModelEventListener {
+    public abstract static class Listener extends PropertyWatcherModelEventListener {
 
         protected Listener(Ref watchedProperty) {
             super(watchedProperty);

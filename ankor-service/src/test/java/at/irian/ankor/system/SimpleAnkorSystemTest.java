@@ -28,7 +28,7 @@ public class SimpleAnkorSystemTest {
     
 //    @Test
 //    public void test_remote_init_action() throws Exception {
-//        refFactory.rootRef().addActionListener(new ActionListener() {
+//        refFactory.rootRef().addPropActionListener(new ActionListener() {
 //            @Override
 //            public void process(Ref sourceProperty, Action action) {
 //                if (action instanceof SimpleAction && ((SimpleAction) action).getName().equals("init")) {

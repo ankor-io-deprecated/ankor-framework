@@ -38,10 +38,10 @@ public class ModelRootJsonTest {
         ModelRoot root = new ModelRoot();
         root.setUserName("Max Muster");
 
-        Tab<AnimalSearchTabModel> tab = new Tab<AnimalSearchTabModel>("A1");
+        Tab<AnimalSearchModel> tab = new Tab<AnimalSearchModel>("A1");
         root.getTabs().put("A1", tab);
 
-        AnimalSearchTabModel model = new AnimalSearchTabModel(new AnimalSelectItems(new ArrayList<AnimalType>(), new ArrayList<AnimalFamily>()));
+        AnimalSearchModel model = new AnimalSearchModel(new AnimalSelectItems(new ArrayList<AnimalType>(), new ArrayList<AnimalFamily>()));
         tab.setModel(model);
         List<Animal> animals = Arrays.asList(new Animal("fish", AnimalType.Fish, AnimalFamily.Accipitridae),
                                              new Animal("bird", AnimalType.Bird, AnimalFamily.Balaenopteridae));

@@ -2,7 +2,6 @@ package at.irian.ankor.change;
 
 import at.irian.ankor.event.ModelEvent;
 import at.irian.ankor.event.ModelEventListener;
-import at.irian.ankor.event.PropertyWatchModelEventListener;
 import at.irian.ankor.ref.Ref;
 
 /**
@@ -21,33 +20,14 @@ public class ChangeEvent extends ModelEvent {
 
     @Override
     public boolean isAppropriateListener(ModelEventListener listener) {
-        return listener instanceof Listener || listener instanceof TreeListener;
+        return listener instanceof ChangeEventListener;
     }
 
     @Override
     public void processBy(ModelEventListener listener) {
-        if (listener instanceof Listener) {
-            ((Listener)listener).process(this);
-        } else {
-            ((TreeListener)listener).process(this);
+        if (listener instanceof ChangeEventListener) {
+            ((ChangeEventListener)listener).process(this);
         }
     }
 
-    public abstract static class Listener extends PropertyWatchModelEventListener {
-
-        protected Listener(Ref watchedProperty) {
-            super(watchedProperty);
-        }
-
-        public abstract void process(ChangeEvent event);
-    }
-
-    public abstract static class TreeListener extends PropertyWatchModelEventListener {
-
-        protected TreeListener(Ref watchedProperty) {
-            super(watchedProperty);
-        }
-
-        public abstract void process(ChangeEvent event);
-    }
 }

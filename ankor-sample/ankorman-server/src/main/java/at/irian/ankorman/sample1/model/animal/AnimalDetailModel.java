@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 /**
  * @author Thomas Spiegl
  */
-public class AnimalDetailTabModel {
+public class AnimalDetailModel {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalDetailModel.class);
 
     private Animal animal;
@@ -14,10 +14,10 @@ public class AnimalDetailTabModel {
     private AnimalSelectItems selectItems;
 
     @SuppressWarnings("UnusedDeclaration")
-    protected AnimalDetailTabModel() {
+    protected AnimalDetailModel() {
     }
 
-    public AnimalDetailTabModel(Animal animal, AnimalSelectItems selectItems) {
+    public AnimalDetailModel(Animal animal, AnimalSelectItems selectItems) {
         this.selectItems = selectItems;
         this.animal = animal;
     }

@@ -30,12 +30,12 @@ public class RefPropertyBinding implements ChangeListener, javafx.beans.value.Ch
 
         setPropertyValue(valueRef);
 
-        this.valueRef.addValueChangeListener(this);
+        this.valueRef.addPropChangeListener(this);
         this.property.addListener(this);
     }
 
     @Override
-    public void processChange(Ref changedProperty, final Ref watchedProperty) {
+    public void processChange(final Ref watchedProperty, Ref changedProperty) {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {

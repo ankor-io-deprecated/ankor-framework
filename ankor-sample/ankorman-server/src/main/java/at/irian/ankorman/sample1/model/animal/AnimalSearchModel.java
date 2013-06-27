@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 /**
 * @author Thomas Spiegl
 */
-public class AnimalSearchTabModel {
+public class AnimalSearchModel {
 
     private AnimalSearchFilter filter;
     @JsonTypeInfo(use = JsonTypeInfo.Id.NONE, defaultImpl = AnimalSelectItems.class)
@@ -15,10 +15,10 @@ public class AnimalSearchTabModel {
 
 
     @SuppressWarnings("UnusedDeclaration")
-    protected AnimalSearchTabModel() {
+    protected AnimalSearchModel() {
     }
 
-    public AnimalSearchTabModel(AnimalSelectItems selectItems) {
+    public AnimalSearchModel(AnimalSelectItems selectItems) {
         this.filter = new AnimalSearchFilter();
         this.selectItems = selectItems;
         this.animals = new Data<Animal>(new Paginator(0, 5));
