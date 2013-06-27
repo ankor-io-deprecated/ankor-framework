@@ -146,7 +146,7 @@ public class ServiceBean {
     }
 
     private void reloadAnimals(Ref filterNameRef) {
-        Ref modelRef = parent(AnimalSearchTabModel.class, filterNameRef);
+        Ref modelRef = filterNameRef.ancestor("model");
         AnimalSearchTabModel model = modelRef.getValue();
         model.getAnimals().getPaginator().reset();
         Data<Animal> animals = searchAnimals(model.getFilter(),
@@ -210,20 +210,9 @@ public class ServiceBean {
                 families = new ArrayList<AnimalFamily>(0);
             }
             familiesRef.setValue(families);
-            parent(AnimalSearchTabModel.class, familiesRef).append("filter.family").setValue(null);
+            familiesRef.ancestor("model").append("filter.family").setValue(null);
             reloadAnimals(watchedProperty.parent()); // TODO will be called 2x if filter.family changes as well
         }
     }
 
-    static Ref parent(Class clazz, Ref ref) {
-        while (ref != null) {
-            Object value = ref.getValue();
-            if (value != null && value.getClass().getName().equals(clazz.getName())) {
-                //noinspection unchecked
-                return ref;
-            }
-            ref = ref.isRoot() ? null : ref.parent();
-        }
-        throw new IllegalStateException(String.format("Parent not found for type %s(%s)", clazz.getName(), ref));
-    }
 }
