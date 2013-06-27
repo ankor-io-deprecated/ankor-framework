@@ -114,13 +114,21 @@ public class ServiceBean {
         tab.setModel(new AnimalSearchTabModel(getAnimalSelectItems()));
 
         Ref tabRef = tabsRef.append(tabId);
-        tabRef.append("model.filter").addTreeChangeListener(new ChangeListener() {
+//        tabRef.append("model.filter.name").addValueChangeListener(new ChangeListener() {
+//            @Override
+//            public void processChange(Ref changedProperty, Ref filterNameRef) {
+//                reloadAnimals(filterNameRef);
+//            }
+//        });
+        tabRef.append("model.filter.type").addValueChangeListener(new AnimalTypeChangeListener(tabRef.append(
+                "model.selectItems.families")));
+
+        tabRef.append("model.filter").addDelayedTreeChangeListener(new ChangeListener() {
             @Override
-            public void processChange(Ref changedProperty, Ref filterNameRef) {
-                reloadAnimals(filterNameRef);
+            public void processChange(Ref changedProperty, Ref filterRef) {
+                reloadAnimals(filterRef);
             }
-        });
-        tabRef.append("model.filter.type").addValueChangeListener(new AnimalTypeChangeListener());
+        }, 2000L);
 
         tabRef.append("model.animals.paginator.first").addValueChangeListener(new ChangeListener() {
             @Override
@@ -137,8 +145,8 @@ public class ServiceBean {
         return tab;
     }
 
-    private void reloadAnimals(Ref filterNameRef) {
-        Ref modelRef = filterNameRef.ancestor("model");
+    private void reloadAnimals(Ref filterRef) {
+        Ref modelRef = filterRef.ancestor("model");
         AnimalSearchTabModel model = modelRef.getValue();
         model.getAnimals().getPaginator().reset();
         Data<Animal> animals = searchAnimals(model.getFilter(),

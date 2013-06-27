@@ -9,6 +9,7 @@ import at.irian.ankor.path.PathSyntax;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefFactory;
+import at.irian.ankor.ref.impl.AbstractRef;
 import at.irian.ankor.util.ObjectUtils;
 
 import javax.el.PropertyNotFoundException;
@@ -34,6 +35,7 @@ class ELRef extends AbstractRef {
     public void setValue(Object newValue) {
 
         ChangeEvent changeEvent = new ChangeEvent(this);
+        Object oldValue = getValue();
 
         // remember old watched values
         IdentityHashMap<ModelEventListener, Object> oldWatchedValues = new IdentityHashMap<ModelEventListener, Object>();
@@ -46,6 +48,8 @@ class ELRef extends AbstractRef {
                 } else {
                     oldWatchedValues.put(listener, null);
                 }
+            } else if (listener instanceof ChangeEvent.TreeListener) {
+                oldWatchedValues.put(listener, null);
             }
         }
 
@@ -58,19 +62,23 @@ class ELRef extends AbstractRef {
             Object oldWatchedValue = entry.getValue();
 
             boolean process;
-            Ref watchedProperty = ((ChangeEvent.Listener) listener).getWatchedProperty();
-            if (watchedProperty == null) {
-                // this is a global listener
-                process = true;
-            } else {
-                if (newValue == null && watchedProperty.isDescendantOf(this)) {
-                    // this ref is a parent of the watched property
-                    process = false;
+            if (listener instanceof ChangeEvent.Listener) {
+                Ref watchedProperty = ((ChangeEvent.Listener) listener).getWatchedProperty();
+                if (watchedProperty == null) {
+                    // this is a global listener
+                    process = true;
                 } else {
-                    // check if watched value has changed
-                    Object newWatchedValue = watchedProperty.getValue();
-                    process = !ObjectUtils.nullSafeEquals(oldWatchedValue, newWatchedValue);
+                    if (newValue == null && watchedProperty.isDescendantOf(this)) {
+                        // this ref is a parent of the watched property
+                        process = false;
+                    } else {
+                        // check if watched value has changed
+                        Object newWatchedValue = watchedProperty.getValue();
+                        process = !ObjectUtils.nullSafeEquals(oldWatchedValue, newWatchedValue);
+                    }
                 }
+            } else {
+                process = !ObjectUtils.nullSafeEquals(oldValue, newValue);
             }
 
             if (process) {

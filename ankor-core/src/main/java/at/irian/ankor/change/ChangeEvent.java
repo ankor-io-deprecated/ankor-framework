@@ -21,17 +21,30 @@ public class ChangeEvent extends ModelEvent {
 
     @Override
     public boolean isAppropriateListener(ModelEventListener listener) {
-        return listener instanceof Listener;
+        return listener instanceof Listener || listener instanceof TreeListener;
     }
 
     @Override
     public void processBy(ModelEventListener listener) {
-        ((Listener)listener).process(this);
+        if (listener instanceof Listener) {
+            ((Listener)listener).process(this);
+        } else {
+            ((TreeListener)listener).process(this);
+        }
     }
 
     public abstract static class Listener extends PropertyWatchModelEventListener {
 
         protected Listener(Ref watchedProperty) {
+            super(watchedProperty);
+        }
+
+        public abstract void process(ChangeEvent event);
+    }
+
+    public abstract static class TreeListener extends PropertyWatchModelEventListener {
+
+        protected TreeListener(Ref watchedProperty) {
             super(watchedProperty);
         }
 
