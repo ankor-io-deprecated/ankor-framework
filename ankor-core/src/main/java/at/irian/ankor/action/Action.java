@@ -1,7 +1,7 @@
 package at.irian.ankor.action;
 
 /**
- * @author MGeiler (Manfred Geiler)
+ * @author Manfred Geiler
  */
 public interface Action {
 }

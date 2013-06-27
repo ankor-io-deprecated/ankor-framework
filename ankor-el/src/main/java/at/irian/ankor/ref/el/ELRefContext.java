@@ -20,7 +20,7 @@ import javax.el.ExpressionFactory;
 import java.util.Iterator;
 
 /**
- * @author MGeiler (Manfred Geiler)
+ * @author Manfred Geiler
  */
 public class ELRefContext implements RefContext, RefContextImplementor {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ELRefContext.class);

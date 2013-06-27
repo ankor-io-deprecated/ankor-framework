@@ -5,7 +5,7 @@ import at.irian.ankor.ref.Ref;
 import java.util.EventObject;
 
 /**
- * @author MGeiler (Manfred Geiler)
+ * @author Manfred Geiler
  */
 public abstract class ModelEvent extends EventObject {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelEvent.class);

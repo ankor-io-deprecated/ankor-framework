@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author MGeiler (Manfred Geiler)
+ * @author Manfred Geiler
  */
 public class RemoteMethodAction implements Action {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RemoteMethodAction.class);

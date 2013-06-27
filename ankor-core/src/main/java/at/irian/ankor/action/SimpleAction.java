@@ -1,7 +1,7 @@
 package at.irian.ankor.action;
 
 /**
- * @author MGeiler (Manfred Geiler)
+ * @author Manfred Geiler
  */
 public class SimpleAction implements Action {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SimpleAction.class);

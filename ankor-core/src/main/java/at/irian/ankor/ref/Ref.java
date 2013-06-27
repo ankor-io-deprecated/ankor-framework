@@ -3,7 +3,7 @@ package at.irian.ankor.ref;
 import at.irian.ankor.action.Action;
 
 /**
- * @author MGeiler (Manfred Geiler)
+ * @author Manfred Geiler
  */
 public interface Ref {
 

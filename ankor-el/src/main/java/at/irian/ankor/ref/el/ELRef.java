@@ -17,7 +17,7 @@ import javax.el.ValueExpression;
 import static at.irian.ankor.change.RefValueChanger.SetValueCallback;
 
 /**
- * @author MGeiler (Manfred Geiler)
+ * @author Manfred Geiler
  */
 class ELRef extends AbstractRef {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ELRef.class);

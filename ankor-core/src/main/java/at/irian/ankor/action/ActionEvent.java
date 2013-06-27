@@ -6,7 +6,7 @@ import at.irian.ankor.event.PropertyWatcherModelEventListener;
 import at.irian.ankor.ref.Ref;
 
 /**
- * @author MGeiler (Manfred Geiler)
+ * @author Manfred Geiler
  */
 public class ActionEvent extends ModelEvent {
 

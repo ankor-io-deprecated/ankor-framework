@@ -9,7 +9,7 @@ import java.beans.FeatureDescriptor;
 import java.util.Iterator;
 
 /**
-* @author MGeiler (Manfred Geiler)
+* @author Manfred Geiler
 */
 public class BeanResolverELResolver extends ELResolver {
 

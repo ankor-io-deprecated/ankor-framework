@@ -1,7 +1,7 @@
 package at.irian.ankor.el;
 
 /**
- * @author MGeiler (Manfred Geiler)
+ * @author Manfred Geiler
  */
 public final class ELUtils {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ELUtils.class);

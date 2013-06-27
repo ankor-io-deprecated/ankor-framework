@@ -5,7 +5,7 @@ import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.ref.Ref;
 
 /**
- * @author MGeiler (Manfred Geiler)
+ * @author Manfred Geiler
  */
 public class ChangeEvent extends ModelEvent {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ChangeEvent.class);

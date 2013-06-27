@@ -6,7 +6,7 @@ import at.irian.ankor.ref.RefFactory;
 import org.junit.Before;
 
 /**
- * @author MGeiler (Manfred Geiler)
+ * @author Manfred Geiler
  */
 public class SimpleAnkorSystemTest {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SimpleAnkorSystemTest.class);

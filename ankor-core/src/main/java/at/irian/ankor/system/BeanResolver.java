@@ -1,7 +1,7 @@
 package at.irian.ankor.system;
 
 /**
- * @author MGeiler (Manfred Geiler)
+ * @author Manfred Geiler
  */
 public interface BeanResolver {
     Object resolveByName(String beanName);

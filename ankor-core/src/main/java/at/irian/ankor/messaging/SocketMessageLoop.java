@@ -5,7 +5,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 /**
- * @author MGeiler (Manfred Geiler)
+ * @author Manfred Geiler
  */
 public class SocketMessageLoop<S> extends AbstractMessageLoop<S> {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SocketMessageLoop.class);

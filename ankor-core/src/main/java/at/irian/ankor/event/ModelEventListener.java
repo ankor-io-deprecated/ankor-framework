@@ -1,7 +1,7 @@
 package at.irian.ankor.event;
 
 /**
- * @author MGeiler (Manfred Geiler)
+ * @author Manfred Geiler
  */
 public interface ModelEventListener {
 

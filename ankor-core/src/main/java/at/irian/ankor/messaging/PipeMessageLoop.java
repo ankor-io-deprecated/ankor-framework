@@ -3,7 +3,7 @@ package at.irian.ankor.messaging;
 import java.util.concurrent.BlockingQueue;
 
 /**
- * @author MGeiler (Manfred Geiler)
+ * @author Manfred Geiler
  */
 public class PipeMessageLoop<S> extends AbstractMessageLoop<S> {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(PipeMessageLoop.class);

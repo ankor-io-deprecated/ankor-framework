@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.Iterator;
 
 /**
-* @author MGeiler (Manfred Geiler)
+* @author Manfred Geiler
 */
 public class ModelHolderELResolver extends SingleReadonlyVariableELResolver {
 

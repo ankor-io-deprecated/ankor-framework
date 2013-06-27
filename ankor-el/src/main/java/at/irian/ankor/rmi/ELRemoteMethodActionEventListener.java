@@ -11,7 +11,7 @@ import javax.el.ValueExpression;
 import java.util.Map;
 
 /**
-* @author MGeiler (Manfred Geiler)
+* @author Manfred Geiler
 */
 public class ELRemoteMethodActionEventListener extends RemoteMethodActionEventListener {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RemoteMethodActionEventListener.class);

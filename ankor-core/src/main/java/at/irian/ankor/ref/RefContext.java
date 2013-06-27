@@ -5,7 +5,7 @@ import at.irian.ankor.messaging.MessageSender;
 import at.irian.ankor.path.PathSyntax;
 
 /**
- * @author MGeiler (Manfred Geiler)
+ * @author Manfred Geiler
  */
 public interface RefContext {
 

@@ -7,7 +7,7 @@ import at.irian.ankor.ref.RefFactory;
 import javax.el.ValueExpression;
 
 /**
- * @author MGeiler (Manfred Geiler)
+ * @author Manfred Geiler
  */
 public class ELRefFactory implements RefFactory {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ELRefFactory.class);

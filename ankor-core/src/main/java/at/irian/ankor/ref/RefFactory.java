@@ -1,7 +1,7 @@
 package at.irian.ankor.ref;
 
 /**
- * @author MGeiler (Manfred Geiler)
+ * @author Manfred Geiler
  */
 public interface RefFactory {
     Ref rootRef();
