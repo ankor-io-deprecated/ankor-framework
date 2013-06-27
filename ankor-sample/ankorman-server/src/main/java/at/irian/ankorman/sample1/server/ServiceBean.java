@@ -120,8 +120,8 @@ public class ServiceBean {
 //                reloadAnimals(filterNameRef);
 //            }
 //        });
-        tabRef.append("model.filter.type").addValueChangeListener(new AnimalTypeChangeListener(tabRef.append(
-                "model.selectItems.families")));
+        tabRef.append("model.filter.type").addValueChangeListener(
+                new AnimalTypeChangeListener());
 
         tabRef.append("model.filter").addDelayedTreeChangeListener(new ChangeListener() {
             @Override
