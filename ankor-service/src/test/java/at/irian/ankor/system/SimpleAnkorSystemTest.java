@@ -30,7 +30,7 @@ public class SimpleAnkorSystemTest {
 //    public void test_remote_init_action() throws Exception {
 //        refFactory.rootRef().addActionListener(new ActionListener() {
 //            @Override
-//            public void processAction(Ref sourceProperty, Action action) {
+//            public void process(Ref sourceProperty, Action action) {
 //                if (action instanceof SimpleAction && ((SimpleAction) action).getName().equals("init")) {
 //                    LOG.info("Creating new MyModel");
 //                    Ref root = sourceProperty.root();
@@ -93,7 +93,7 @@ public class SimpleAnkorSystemTest {
 //
 //        listenerRegistry.registerRemoteActionListener(refFactory.ref("root.userName"), new at.irian.ankor.event.ActionListener() {
 //            @Override
-//            public void processAction(Ref source, ActionEvent actionEvent) {
+//            public void process(Ref source, ActionEvent actionEvent) {
 //                if (actionEvent.name().equals("loadUser")) {
 //                    String userName = "Max Muster";
 //                    source.setValue(userName);

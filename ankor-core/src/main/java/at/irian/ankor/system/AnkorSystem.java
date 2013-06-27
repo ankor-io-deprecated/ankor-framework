@@ -1,6 +1,5 @@
 package at.irian.ankor.system;
 
-import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionEvent;
 import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.event.EventListeners;
@@ -79,17 +78,21 @@ public class AnkorSystem {
 
         actionEventListener = new ActionEvent.Listener(null) {
             @Override
-            public void processAction(Ref actionProperty, Action action) {
+            public void process(ActionEvent event) {
+                Ref actionProperty = event.getActionProperty();
                 String modelContextPath = actionProperty.context().getModelContextPath();
                 String actionPropertyPath = actionProperty.path();
-                Message message = messageFactory.createActionMessage(modelContextPath, actionPropertyPath, action);
+                Message message = messageFactory.createActionMessage(modelContextPath,
+                                                                     actionPropertyPath,
+                                                                     event.getAction());
                 actionProperty.context().messageSender().sendMessage(message);
             }
         };
 
         changeEventListener = new ChangeEvent.Listener(null) {
             @Override
-            public void processChange(Ref changedProperty) {
+            public void process(ChangeEvent event) {
+                Ref changedProperty = event.getChangedProperty();
                 Object newValue = changedProperty.getValue();
                 RefContext refContext = changedProperty.context();
                 String modelContextPath = refContext.getModelContextPath();

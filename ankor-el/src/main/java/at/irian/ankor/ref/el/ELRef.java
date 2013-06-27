@@ -38,7 +38,7 @@ class ELRef extends AbstractRef {
         // remember old watched values
         IdentityHashMap<ModelEventListener, Object> oldWatchedValues = new IdentityHashMap<ModelEventListener, Object>();
         for (ModelEventListener listener : refContext.allEventListeners()) {
-            if (changeEvent.isAppropriateListener(listener)) {
+            if (listener instanceof ChangeEvent.Listener) {
                 Ref watchedProperty = ((ChangeEvent.Listener) listener).getWatchedProperty();
                 if (watchedProperty != null) {
                     Object oldWatchedValue = watchedProperty.getValue();

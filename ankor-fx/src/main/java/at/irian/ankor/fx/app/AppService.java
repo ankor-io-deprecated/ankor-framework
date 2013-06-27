@@ -23,9 +23,13 @@ public class AppService {
         refFactory = system.getRefContextFactory().create().refFactory();
 
         system.getGlobalEventListeners().add(new ActionEvent.Listener(null) {
+
             @Override
-            public void processAction(Ref actionProperty, Action action) {
-                if (currentCallback != null && action instanceof SimpleAction && ((SimpleAction) action).getName().equals("cb")) {
+            public void process(ActionEvent event) {
+                Action action = event.getAction();
+                if (currentCallback != null
+                    && action instanceof SimpleAction
+                    && ((SimpleAction) action).getName().equals("cb")) {
                     currentCallback.onComplete();
                 }
             }

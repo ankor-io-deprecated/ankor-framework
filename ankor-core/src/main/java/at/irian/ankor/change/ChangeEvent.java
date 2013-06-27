@@ -26,7 +26,7 @@ public class ChangeEvent extends ModelEvent {
 
     @Override
     public void processBy(ModelEventListener listener) {
-        ((Listener)listener).processChange(getChangedProperty());
+        ((Listener)listener).process(this);
     }
 
     public abstract static class Listener extends PropertyWatchModelEventListener {
@@ -35,6 +35,6 @@ public class ChangeEvent extends ModelEvent {
             super(watchedProperty);
         }
 
-        public abstract void processChange(Ref changedProperty);
+        public abstract void process(ChangeEvent event);
     }
 }

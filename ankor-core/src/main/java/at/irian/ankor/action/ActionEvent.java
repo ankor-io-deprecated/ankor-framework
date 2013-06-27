@@ -32,7 +32,7 @@ public class ActionEvent extends ModelEvent {
 
     @Override
     public void processBy(ModelEventListener listener) {
-        ((Listener)listener).processAction(getActionProperty(), getAction());
+        ((Listener) listener).process(this);
     }
 
     public abstract static class Listener extends PropertyWatchModelEventListener {
@@ -41,6 +41,6 @@ public class ActionEvent extends ModelEvent {
             super(watchedProperty);
         }
 
-        public abstract void processAction(Ref actionProperty, Action action);
+        public abstract void process(ActionEvent event);
     }
 }

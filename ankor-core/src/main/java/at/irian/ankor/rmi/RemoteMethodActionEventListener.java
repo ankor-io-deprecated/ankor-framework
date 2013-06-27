@@ -18,9 +18,10 @@ public abstract class RemoteMethodActionEventListener extends ActionEvent.Listen
     }
 
     @Override
-    public void processAction(Ref sourceProperty, Action action) {
+    public void process(ActionEvent event) {
+        Action action = event.getAction();
         if (action instanceof RemoteMethodAction) {
-            processMethodAction(sourceProperty, (RemoteMethodAction) action);
+            processMethodAction(event.getActionProperty(), (RemoteMethodAction) action);
         }
     }
 

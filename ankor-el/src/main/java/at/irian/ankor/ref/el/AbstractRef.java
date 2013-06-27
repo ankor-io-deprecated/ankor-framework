@@ -1,6 +1,5 @@
 package at.irian.ankor.ref.el;
 
-import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionEvent;
 import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.ref.ActionListener;
@@ -21,10 +20,11 @@ public abstract class AbstractRef implements Ref {
     public void addValueChangeListener(final ChangeListener listener) {
         context().modelEventListeners().add(new ChangeEvent.Listener(this) {
             @Override
-            public void processChange(Ref changedProperty) {
+            public void process(ChangeEvent event) {
+                Ref changedProperty = event.getChangedProperty();
                 Ref watchedProperty = getWatchedProperty();
                 if (watchedProperty.equals(changedProperty) || watchedProperty.isDescendantOf(changedProperty)) {
-                    listener.processChange(changedProperty, getWatchedProperty());
+                    listener.processChange(changedProperty, watchedProperty);
                 }
             }
         });
@@ -34,10 +34,11 @@ public abstract class AbstractRef implements Ref {
     public void addTreeChangeListener(final ChangeListener listener) {
         context().modelEventListeners().add(new ChangeEvent.Listener(this) {
             @Override
-            public void processChange(Ref changedProperty) {
+            public void process(ChangeEvent event) {
+                Ref changedProperty = event.getChangedProperty();
                 Ref watchedProperty = getWatchedProperty();
                 if (watchedProperty.equals(changedProperty) || watchedProperty.isAncestorOf(changedProperty)) {
-                    listener.processChange(changedProperty, getWatchedProperty());
+                    listener.processChange(changedProperty, watchedProperty);
                 }
             }
         });
@@ -47,10 +48,11 @@ public abstract class AbstractRef implements Ref {
     public void addActionListener(final ActionListener actionListener) {
         context().modelEventListeners().add(new ActionEvent.Listener(this) {
             @Override
-            public void processAction(Ref actionProperty, Action action) {
+            public void process(ActionEvent event) {
+                Ref actionProperty = event.getActionProperty();
                 Ref watchedProperty = getWatchedProperty();
                 if (watchedProperty.equals(actionProperty)) {
-                    actionListener.processAction(getWatchedProperty(), action);
+                    actionListener.processAction(watchedProperty, event.getAction());
                 }
             }
         });
