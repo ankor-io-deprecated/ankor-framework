@@ -2,6 +2,7 @@ package at.irian.ankor.change;
 
 import at.irian.ankor.event.ModelEvent;
 import at.irian.ankor.event.ModelEventListener;
+import at.irian.ankor.event.PropertyWatchModelEventListener;
 import at.irian.ankor.ref.Ref;
 
 /**
@@ -10,50 +11,30 @@ import at.irian.ankor.ref.Ref;
 public class ChangeEvent extends ModelEvent {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ChangeEvent.class);
 
-    @Deprecated
-    private final String modelContextPath;
-
     public ChangeEvent(Ref changedProperty) {
-        this(changedProperty, null);
-    }
-
-    protected ChangeEvent(Ref changedProperty, String modelContextPath) {
         super(changedProperty);
-        this.modelContextPath = modelContextPath;
     }
 
     public Ref getChangedProperty() {
         return (Ref)source;
     }
 
-    @Deprecated
-    public ChangeEvent withModelContextPath(String modelContextPath) {
-        return new ChangeEvent(getChangedProperty(), modelContextPath);
-    }
-
     @Override
     public boolean isAppropriateListener(ModelEventListener listener) {
-        if (listener instanceof ChangeEventListener) {
-            Ref watchedProperty = ((ChangeEventListener) listener).getWatchedProperty();
-            Ref changedProperty = getChangedProperty();
-            if (watchedProperty == null || watchedProperty.equals(changedProperty) || watchedProperty.isDescendantOf(changedProperty)) {
-                return true;
-            }
-        }
-        return false;
+        return listener instanceof Listener;
     }
 
     @Override
     public void processBy(ModelEventListener listener) {
-        Ref changedProperty = getChangedProperty();
-//        if (modelContextPath != null) {
-//            changedProperty = changedProperty.withRefContext(changedProperty.context().withModelContextPath(modelContextPath));
-//        }
-
-
-
-
-        ((ChangeEventListener)listener).processChange(changedProperty);
+        ((Listener)listener).processChange(getChangedProperty());
     }
 
+    public abstract static class Listener extends PropertyWatchModelEventListener {
+
+        protected Listener(Ref watchedProperty) {
+            super(watchedProperty);
+        }
+
+        public abstract void processChange(Ref changedProperty);
+    }
 }

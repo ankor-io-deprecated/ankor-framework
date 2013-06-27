@@ -1,7 +1,7 @@
 package at.irian.ankor.fx.app;
 
 import at.irian.ankor.action.Action;
-import at.irian.ankor.action.ActionEventListener;
+import at.irian.ankor.action.ActionEvent;
 import at.irian.ankor.action.SimpleAction;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefFactory;
@@ -22,7 +22,7 @@ public class AppService {
 
         refFactory = system.getRefContextFactory().create().refFactory();
 
-        system.getGlobalEventListeners().add(new ActionEventListener(null) {
+        system.getGlobalEventListeners().add(new ActionEvent.Listener(null) {
             @Override
             public void processAction(Ref actionProperty, Action action) {
                 if (currentCallback != null && action instanceof SimpleAction && ((SimpleAction) action).getName().equals("cb")) {

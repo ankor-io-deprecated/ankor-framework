@@ -114,23 +114,23 @@ public class ServiceBean {
         tab.setModel(new AnimalSearchTabModel(getAnimalSelectItems()));
 
         Ref tabRef = tabsRef.append(tabId);
-        tabRef.append("model.filter.name").addChangeListener(new ChangeListener() {
+        tabRef.append("model.filter.name").addValueChangeListener(new ChangeListener() {
             @Override
             public void processChange(Ref changedProperty, Ref filterNameRef) {
                 reloadAnimals(filterNameRef);
             }
         });
-        tabRef.append("model.filter.type").addChangeListener(new AnimalTypeChangeListener(tabRef.append(
+        tabRef.append("model.filter.type").addValueChangeListener(new AnimalTypeChangeListener(tabRef.append(
                 "model.selectItems.families")));
 
-        tabRef.append("model.filter.family").addChangeListener(new ChangeListener() {
+        tabRef.append("model.filter.family").addValueChangeListener(new ChangeListener() {
             @Override
             public void processChange(Ref changedProperty, Ref ref) {
                 reloadAnimals(ref);
             }
         });
 
-        tabRef.append("model.animals.paginator.first").addChangeListener(new ChangeListener() {
+        tabRef.append("model.animals.paginator.first").addValueChangeListener(new ChangeListener() {
             @Override
             public void processChange(Ref changedProperty, Ref watchedProperty) {
                 Ref animalsRef = watchedProperty.parent().parent();
@@ -167,7 +167,8 @@ public class ServiceBean {
 
         Ref tabRef = tabsRef.append(tabId);
 
-        tabRef.append("model.animal.type").addChangeListener(new AnimalTypeChangeListener(tabRef.append("model.selectItems.families")));
+        tabRef.append("model.animal.type").addValueChangeListener(new AnimalTypeChangeListener(tabRef.append(
+                "model.selectItems.families")));
 
         return tab;
     }

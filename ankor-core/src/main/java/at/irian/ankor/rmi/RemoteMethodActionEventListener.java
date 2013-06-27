@@ -1,7 +1,7 @@
 package at.irian.ankor.rmi;
 
 import at.irian.ankor.action.Action;
-import at.irian.ankor.action.ActionEventListener;
+import at.irian.ankor.action.ActionEvent;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 
@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * @author Manfred Geiler
  */
-public abstract class RemoteMethodActionEventListener extends ActionEventListener {
+public abstract class RemoteMethodActionEventListener extends ActionEvent.Listener {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RemoteMethodActionEventListener.class);
 
     protected RemoteMethodActionEventListener() {

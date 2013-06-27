@@ -1,8 +1,8 @@
 package at.irian.ankor.system;
 
 import at.irian.ankor.action.Action;
-import at.irian.ankor.action.ActionEventListener;
-import at.irian.ankor.change.ChangeEventListener;
+import at.irian.ankor.action.ActionEvent;
+import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.messaging.*;
 import at.irian.ankor.ref.Ref;
@@ -22,8 +22,8 @@ public class AnkorSystem {
     private final EventListeners globalEventListeners;
     private final RefContextFactory refContextFactory;
     private final RemoteMethodActionEventListener remoteMethodActionEventListener;
-    private ChangeEventListener changeEventListener;
-    private ActionEventListener actionEventListener;
+    private ChangeEvent.Listener changeEventListener;
+    private ActionEvent.Listener actionEventListener;
     private MessageListener messageListener;
 
     protected AnkorSystem(String name,
@@ -77,7 +77,7 @@ public class AnkorSystem {
             throw new IllegalStateException("already started?");
         }
 
-        actionEventListener = new ActionEventListener(null) {
+        actionEventListener = new ActionEvent.Listener(null) {
             @Override
             public void processAction(Ref actionProperty, Action action) {
                 String modelContextPath = actionProperty.context().getModelContextPath();
@@ -87,7 +87,7 @@ public class AnkorSystem {
             }
         };
 
-        changeEventListener = new ChangeEventListener(null) {
+        changeEventListener = new ChangeEvent.Listener(null) {
             @Override
             public void processChange(Ref changedProperty) {
                 Object newValue = changedProperty.getValue();

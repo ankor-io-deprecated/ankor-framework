@@ -3,7 +3,6 @@ package at.irian.ankor.ref.el;
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionEvent;
 import at.irian.ankor.change.ChangeEvent;
-import at.irian.ankor.change.ChangeEventListener;
 import at.irian.ankor.el.ELUtils;
 import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.path.PathSyntax;
@@ -40,7 +39,7 @@ class ELRef extends AbstractRef {
         IdentityHashMap<ModelEventListener, Object> oldWatchedValues = new IdentityHashMap<ModelEventListener, Object>();
         for (ModelEventListener listener : refContext.allEventListeners()) {
             if (changeEvent.isAppropriateListener(listener)) {
-                Ref watchedProperty = ((ChangeEventListener) listener).getWatchedProperty();
+                Ref watchedProperty = ((ChangeEvent.Listener) listener).getWatchedProperty();
                 if (watchedProperty != null) {
                     Object oldWatchedValue = watchedProperty.getValue();
                     oldWatchedValues.put(listener, oldWatchedValue);
@@ -59,7 +58,7 @@ class ELRef extends AbstractRef {
             Object oldWatchedValue = entry.getValue();
 
             boolean process;
-            Ref watchedProperty = ((ChangeEventListener) listener).getWatchedProperty();
+            Ref watchedProperty = ((ChangeEvent.Listener) listener).getWatchedProperty();
             if (watchedProperty == null) {
                 // this is a global listener
                 process = true;

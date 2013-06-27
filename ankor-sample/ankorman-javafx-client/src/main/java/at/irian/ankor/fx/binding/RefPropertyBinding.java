@@ -30,7 +30,7 @@ public class RefPropertyBinding implements ChangeListener, javafx.beans.value.Ch
 
         setPropertyValue(valueRef);
 
-        this.valueRef.addChangeListener(this);
+        this.valueRef.addValueChangeListener(this);
         this.property.addListener(this);
     }
 

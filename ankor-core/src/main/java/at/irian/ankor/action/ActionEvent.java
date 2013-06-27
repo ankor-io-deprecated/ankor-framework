@@ -2,6 +2,7 @@ package at.irian.ankor.action;
 
 import at.irian.ankor.event.ModelEvent;
 import at.irian.ankor.event.ModelEventListener;
+import at.irian.ankor.event.PropertyWatchModelEventListener;
 import at.irian.ankor.ref.Ref;
 
 /**
@@ -26,18 +27,20 @@ public class ActionEvent extends ModelEvent {
 
     @Override
     public boolean isAppropriateListener(ModelEventListener listener) {
-        if (listener instanceof ActionEventListener) {
-            Ref watchedProperty = ((ActionEventListener) listener).getWatchedProperty();
-            Ref actionProperty = getActionProperty();
-            if (watchedProperty == null || watchedProperty.equals(actionProperty)) {
-                return true;
-            }
-        }
-        return false;
+        return listener instanceof Listener;
     }
 
     @Override
     public void processBy(ModelEventListener listener) {
-        ((ActionEventListener)listener).processAction(getActionProperty(), getAction());
+        ((Listener)listener).processAction(getActionProperty(), getAction());
+    }
+
+    public abstract static class Listener extends PropertyWatchModelEventListener {
+
+        protected Listener(Ref watchedProperty) {
+            super(watchedProperty);
+        }
+
+        public abstract void processAction(Ref actionProperty, Action action);
     }
 }

@@ -74,9 +74,11 @@ public interface Ref {
 
     Ref withRefContext(RefContext newRefContext);
 
-    void addChangeListener(ChangeListener listener);
+    void fireAction(Action action);
 
     void addActionListener(ActionListener listener);
 
-    void fireAction(Action action);
+    void addValueChangeListener(ChangeListener listener);
+
+    void addTreeChangeListener(ChangeListener listener);
 }
