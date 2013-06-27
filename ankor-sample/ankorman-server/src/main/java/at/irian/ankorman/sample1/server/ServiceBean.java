@@ -114,21 +114,13 @@ public class ServiceBean {
         tab.setModel(new AnimalSearchTabModel(getAnimalSelectItems()));
 
         Ref tabRef = tabsRef.append(tabId);
-        tabRef.append("model.filter.name").addValueChangeListener(new ChangeListener() {
+        tabRef.append("model.filter").addTreeChangeListener(new ChangeListener() {
             @Override
             public void processChange(Ref changedProperty, Ref filterNameRef) {
                 reloadAnimals(filterNameRef);
             }
         });
-        tabRef.append("model.filter.type").addValueChangeListener(new AnimalTypeChangeListener(tabRef.append(
-                "model.selectItems.families")));
-
-        tabRef.append("model.filter.family").addValueChangeListener(new ChangeListener() {
-            @Override
-            public void processChange(Ref changedProperty, Ref ref) {
-                reloadAnimals(ref);
-            }
-        });
+        tabRef.append("model.filter.type").addValueChangeListener(new AnimalTypeChangeListener());
 
         tabRef.append("model.animals.paginator.first").addValueChangeListener(new ChangeListener() {
             @Override
@@ -167,8 +159,7 @@ public class ServiceBean {
 
         Ref tabRef = tabsRef.append(tabId);
 
-        tabRef.append("model.animal.type").addValueChangeListener(new AnimalTypeChangeListener(tabRef.append(
-                "model.selectItems.families")));
+        tabRef.append("model.animal.type").addValueChangeListener(new AnimalTypeChangeListener());
 
         return tab;
     }
@@ -181,11 +172,6 @@ public class ServiceBean {
 
     public class AnimalTypeChangeListener implements ChangeListener {
 
-        private final Ref familiesRef;
-
-        public AnimalTypeChangeListener(Ref familiesRef) {
-            this.familiesRef = familiesRef;
-        }
 
         @Override
         public void processChange(Ref changedProperty, Ref watchedProperty) {
@@ -209,9 +195,10 @@ public class ServiceBean {
             } else {
                 families = new ArrayList<AnimalFamily>(0);
             }
+            Ref modelRef = watchedProperty.ancestor("model");
+            Ref familiesRef = modelRef.append("selectItems.families");
             familiesRef.setValue(families);
             familiesRef.ancestor("model").append("filter.family").setValue(null);
-            reloadAnimals(watchedProperty.parent()); // TODO will be called 2x if filter.family changes as well
         }
     }
 
