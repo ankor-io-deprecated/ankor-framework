@@ -66,4 +66,14 @@ public class ELPathSyntax implements PathSyntax {
         return isParentChild(ancestor, descendant)
                || isHasParent(descendant) && isDescendant(parentOf(descendant), ancestor);
     }
+
+    @Override
+    public String getPropertyName(String path) {
+        int dot = path.lastIndexOf('.');
+        if (dot > 0) {
+            return path.substring(dot + 1);
+        } else {
+            throw new IllegalArgumentException("Not a valid path: " + path);
+        }
+    }
 }

@@ -68,6 +68,10 @@ public interface Ref {
      */
     boolean isAncestorOf(Ref ref);
 
+    String propertyName();
+
+    Ref ancestor(String ancestorPropertyName);
+
     boolean isRoot();
 
     RefContext context();

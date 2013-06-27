@@ -18,4 +18,6 @@ public interface PathSyntax {
     boolean isParentChild(String parent, String child);
 
     boolean isDescendant(String descendant, String ancestor);
+
+    String getPropertyName(String path);
 }

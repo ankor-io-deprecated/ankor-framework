@@ -176,6 +176,23 @@ class ELRef extends AbstractRef {
     }
 
     @Override
+    public String propertyName() {
+        return refContext.pathSyntax().getPropertyName(path());
+    }
+
+    @Override
+    public Ref ancestor(String ancestorPropertyName) {
+        if (isRoot()) {
+            throw new IllegalArgumentException("No ancestor with name " + ancestorPropertyName);
+        }
+        Ref parent = parent();
+        if (parent.propertyName().equals(ancestorPropertyName)) {
+            return parent;
+        }
+        return parent.ancestor(ancestorPropertyName);
+    }
+
+    @Override
     public boolean isRoot() {
         return path().equals(refContext.getModelRootVarName());
     }
