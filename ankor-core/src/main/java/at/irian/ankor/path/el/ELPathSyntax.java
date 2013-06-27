@@ -69,11 +69,16 @@ public class ELPathSyntax implements PathSyntax {
 
     @Override
     public String getPropertyName(String path) {
-        int dot = path.lastIndexOf('.');
-        if (dot > 0) {
-            return path.substring(dot + 1);
+        if (path.endsWith("]")) {
+            int i = path.lastIndexOf('[');
+            return path.substring(i, path.length() - 1);
         } else {
-            throw new IllegalArgumentException("Not a valid path: " + path);
+            int i = path.lastIndexOf('.');
+            if (i > 0) {
+                return path.substring(i + 1);
+            } else {
+                throw new IllegalArgumentException("Not a valid path: " + path);
+            }
         }
     }
 }
