@@ -21,8 +21,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
-import static at.irian.ankorman.sample1.fxclient.App.ankorContext;
 import static at.irian.ankorman.sample1.fxclient.App.facade;
+import static at.irian.ankorman.sample1.fxclient.App.refFactory;
 
 /**
  * @author Thomas Spiegl
@@ -82,7 +82,7 @@ public class AnimalDetailTabController implements Initializable {
     }
 
     private Ref getTabRef() {
-        Ref rootRef = ankorContext().getRefFactory().rootRef();
+        Ref rootRef = refFactory().rootRef();
         return rootRef.append(String.format("tabs.%s", tabId));
     }
 

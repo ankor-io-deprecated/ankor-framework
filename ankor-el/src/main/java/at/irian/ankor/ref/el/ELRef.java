@@ -2,13 +2,14 @@ package at.irian.ankor.ref.el;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionEvent;
-import at.irian.ankor.action.ActionEventListener;
 import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.change.ChangeEventListener;
 import at.irian.ankor.el.ELUtils;
 import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.path.PathSyntax;
-import at.irian.ankor.ref.*;
+import at.irian.ankor.ref.Ref;
+import at.irian.ankor.ref.RefContext;
+import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.util.ObjectUtils;
 
 import javax.el.PropertyNotFoundException;
@@ -19,7 +20,7 @@ import java.util.Map;
 /**
  * @author MGeiler (Manfred Geiler)
  */
-class ELRef implements Ref {
+class ELRef extends AbstractRef {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ELRef.class);
 
     private final ValueExpression ve;
@@ -37,7 +38,7 @@ class ELRef implements Ref {
 
         // remember old watched values
         IdentityHashMap<ModelEventListener, Object> oldWatchedValues = new IdentityHashMap<ModelEventListener, Object>();
-        for (ModelEventListener listener : refContext.getListenersHolder().getListeners()) {
+        for (ModelEventListener listener : refContext.allEventListeners()) {
             if (changeEvent.isAppropriateListener(listener)) {
                 Ref watchedProperty = ((ChangeEventListener) listener).getWatchedProperty();
                 if (watchedProperty != null) {
@@ -52,7 +53,7 @@ class ELRef implements Ref {
         // set the new value
         ve.setValue(refContext.getElContext(), newValue);
 
-        // invoke all listeners where watched value has changed
+        // invoke all listeners of which the watched value has changed
         for (Map.Entry<ModelEventListener, Object> entry : oldWatchedValues.entrySet()) {
             ModelEventListener listener = entry.getKey();
             Object oldWatchedValue = entry.getValue();
@@ -118,9 +119,9 @@ class ELRef implements Ref {
         }
     }
 
-    private PathSyntax pathSyntax() {return refContext.getPathSyntax();}
+    private PathSyntax pathSyntax() {return refContext.pathSyntax();}
 
-    private RefFactory refFactory() {return refContext.getRefFactory();}
+    private RefFactory refFactory() {return refContext.refFactory();}
 
     @Override
     public Ref append(String propertyOrSubPath) {
@@ -145,7 +146,7 @@ class ELRef implements Ref {
     @Override
     public void fireAction(Action action) {
         ActionEvent actionEvent = new ActionEvent(this, action);
-        for (ModelEventListener listener : refContext.getListenersHolder().getListeners()) {
+        for (ModelEventListener listener : refContext.allEventListeners()) {
             if (actionEvent.isAppropriateListener(listener)) {
                 try {
                     actionEvent.processBy(listener);
@@ -181,35 +182,13 @@ class ELRef implements Ref {
     }
 
     @Override
-    public RefContext getRefContext() {
+    public ELRefContext context() {
         return refContext;
     }
 
     @Override
     public Ref withRefContext(RefContext newRefContext) {
         return new ELRef(ve, (ELRefContext)newRefContext);
-    }
-
-    @Override
-    public void addChangeListener(final ChangeListener listener) {
-        ChangeEventListener eventListener = new ChangeEventListener(this) {
-            @Override
-            public void processChange(Ref changedProperty) {
-                listener.processChange(changedProperty, getWatchedProperty());
-            }
-        };
-        refContext.getListenersHolder().addListener(eventListener);
-    }
-
-    @Override
-    public void addActionListener(final ActionListener listener) {
-        ActionEventListener eventListener = new ActionEventListener(this) {
-            @Override
-            public void processAction(Ref actionProperty, Action action) {
-                listener.processAction(getWatchedProperty(), action);
-            }
-        };
-        refContext.getListenersHolder().addListener(eventListener);
     }
 
     @Override

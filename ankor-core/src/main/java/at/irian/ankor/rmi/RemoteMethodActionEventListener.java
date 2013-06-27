@@ -45,8 +45,8 @@ public abstract class RemoteMethodActionEventListener extends ActionEventListene
 
     private void handleResult(Ref modelContext, String resultPath, Object result) {
         if (resultPath != null) {
-            RefContext refContext = modelContext.getRefContext();
-            Ref resultRef = refContext.getRefFactory().ref(resultPath);
+            RefContext refContext = modelContext.context();
+            Ref resultRef = refContext.refFactory().ref(resultPath);
             resultRef.setValue(result);
         }
     }

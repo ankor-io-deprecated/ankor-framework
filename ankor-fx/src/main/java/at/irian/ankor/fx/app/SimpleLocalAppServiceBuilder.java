@@ -1,6 +1,6 @@
 package at.irian.ankor.fx.app;
 
-import at.irian.ankor.context.AnkorContext;
+import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.system.BeanResolver;
 import at.irian.ankor.system.SimpleAnkorSystem;
 
@@ -66,8 +66,7 @@ public class SimpleLocalAppServiceBuilder {
         final long started = System.currentTimeMillis();
         new Thread(new Runnable() {
             public void run() {
-                AnkorContext ankorContext = system.getAnkorContextFactory().create();
-                AnkorContext.setCurrentInstance(ankorContext);
+                RefFactory refFactory = system.getRefContextFactory().create().refFactory();
                 boolean interrupted = false;
                 while (!interrupted) {
                     try {
@@ -76,7 +75,7 @@ public class SimpleLocalAppServiceBuilder {
                         long upSinceSeconds = (System.currentTimeMillis() - started) / 1000;
                         String serverStatus = String.format("server up time %ds", upSinceSeconds);
 
-                        ankorContext.getRefFactory().rootRef().append("serverStatus").setValue(serverStatus);
+                        refFactory.rootRef().append("serverStatus").setValue(serverStatus);
 
                     } catch (InterruptedException e) {
                         interrupted = true;

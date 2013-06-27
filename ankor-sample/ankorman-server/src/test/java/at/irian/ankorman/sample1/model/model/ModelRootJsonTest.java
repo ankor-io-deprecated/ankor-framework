@@ -1,6 +1,5 @@
 package at.irian.ankorman.sample1.model.model;
 
-import at.irian.ankor.context.AnkorContext;
 import at.irian.ankor.messaging.Message;
 import at.irian.ankor.messaging.MessageFactory;
 import at.irian.ankor.messaging.json.JsonMessageMapper;
@@ -30,8 +29,7 @@ public class ModelRootJsonTest {
     public void setUp() throws Exception {
         SimpleAnkorSystem system = SimpleAnkorSystem.create("test", ModelRoot.class);
         messageFactory = system.getMessageFactory();
-        AnkorContext ankorContext = system.getAnkorContextFactory().create();
-        rf = ankorContext.getRefFactory();
+        rf = system.getRefContextFactory().create().refFactory();
         mapper = new JsonMessageMapper();
     }
 

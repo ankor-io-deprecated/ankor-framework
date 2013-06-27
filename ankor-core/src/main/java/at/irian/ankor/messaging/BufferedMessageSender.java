@@ -39,6 +39,7 @@ public class BufferedMessageSender implements MessageSender {
         for (Message message : messages) {
             original.sendMessage(message);
         }
+        messages.clear();
     }
 
 }

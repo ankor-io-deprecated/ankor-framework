@@ -3,8 +3,8 @@ package at.irian.ankor.fx.app;
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionEventListener;
 import at.irian.ankor.action.SimpleAction;
-import at.irian.ankor.context.AnkorContext;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.rmi.RemoteMethodAction;
 import at.irian.ankor.system.AnkorSystem;
 
@@ -15,15 +15,14 @@ public class AppService {
 
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AppService.class);
 
-    private final AnkorContext ankorContext;
-
     private ActionCompleteCallback currentCallback = null;
+    private RefFactory refFactory;
 
     public AppService(AnkorSystem system) {
-        this.ankorContext = system.getAnkorContextFactory().create();
-        AnkorContext.setCurrentInstance(ankorContext);
 
-        system.getGlobalListenersHolder().addListener(new ActionEventListener(null) {
+        refFactory = system.getRefContextFactory().create().refFactory();
+
+        system.getGlobalEventListeners().add(new ActionEventListener(null) {
             @Override
             public void processAction(Ref actionProperty, Action action) {
                 if (currentCallback != null && action instanceof SimpleAction && ((SimpleAction) action).getName().equals("cb")) {
@@ -46,6 +45,10 @@ public class AppService {
 
     public RMAExecution remoteMethod(String method) {
         return new RMAExecution(method);
+    }
+
+    public RefFactory getRefFactory() {
+        return refFactory;
     }
 
     public class RMAExecution {
@@ -99,8 +102,4 @@ public class AppService {
         rmaExecution.contextRef.fireAction(rmaExecution.rma);
     }
 
-
-    public AnkorContext getAnkorContext() {
-        return ankorContext;
-    }
 }

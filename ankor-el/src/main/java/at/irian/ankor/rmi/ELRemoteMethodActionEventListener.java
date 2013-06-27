@@ -24,7 +24,7 @@ public class ELRemoteMethodActionEventListener extends RemoteMethodActionEventLi
 
     @Override
     protected Object executeMethod(Ref modelContext, String methodExpression, final Map<String, Object> params) {
-        ELRefContext refContext = (ELRefContext) modelContext.getRefContext();
+        ELRefContext refContext = (ELRefContext) modelContext.context();
         //ELContext modelContextELContext = refContext.withModelContext(modelContext).getELContext();
 
         StandardELContext executionELContext = refContext.getElContext();

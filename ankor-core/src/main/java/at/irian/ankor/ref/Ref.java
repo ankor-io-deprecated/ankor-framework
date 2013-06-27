@@ -1,7 +1,6 @@
 package at.irian.ankor.ref;
 
 import at.irian.ankor.action.Action;
-import at.irian.ankor.event.ModelEvent;
 
 /**
  * @author MGeiler (Manfred Geiler)
@@ -71,7 +70,7 @@ public interface Ref {
 
     boolean isRoot();
 
-    RefContext getRefContext();
+    RefContext context();
 
     Ref withRefContext(RefContext newRefContext);
 

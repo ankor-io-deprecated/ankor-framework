@@ -1,8 +1,8 @@
 package at.irian.ankorman.sample1.fxclient;
 
-import at.irian.ankor.ref.Ref;
 import at.irian.ankor.fx.app.ActionCompleteCallback;
 import at.irian.ankor.fx.app.AppService;
+import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefFactory;
 
 /**
@@ -17,7 +17,7 @@ public class ServiceFacade {
 
     public ServiceFacade(AppService appService) {
         this.appService = appService;
-        this.refFactory = appService.getAnkorContext().getRefFactory();
+        this.refFactory = appService.getRefFactory();
     }
 
     public void initApplication(ActionCompleteCallback cb) {

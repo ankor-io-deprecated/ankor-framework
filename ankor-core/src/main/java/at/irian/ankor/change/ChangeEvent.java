@@ -47,7 +47,7 @@ public class ChangeEvent extends ModelEvent {
     public void processBy(ModelEventListener listener) {
         Ref changedProperty = getChangedProperty();
 //        if (modelContextPath != null) {
-//            changedProperty = changedProperty.withRefContext(changedProperty.getRefContext().withModelContextPath(modelContextPath));
+//            changedProperty = changedProperty.withRefContext(changedProperty.context().withModelContextPath(modelContextPath));
 //        }
 
 

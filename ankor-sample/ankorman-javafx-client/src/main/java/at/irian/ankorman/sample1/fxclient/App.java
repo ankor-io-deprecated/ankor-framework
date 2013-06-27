@@ -1,9 +1,9 @@
 package at.irian.ankorman.sample1.fxclient;
 
-import at.irian.ankor.context.AnkorContext;
 import at.irian.ankor.fx.app.AppService;
 import at.irian.ankor.fx.app.SimpleLocalAppServiceBuilder;
 import at.irian.ankor.fx.app.SocketAppServiceBuilder;
+import at.irian.ankor.ref.RefFactory;
 import at.irian.ankorman.sample1.model.ModelRoot;
 import at.irian.ankorman.sample1.server.ServiceBean;
 import javafx.fxml.FXMLLoader;
@@ -55,7 +55,8 @@ public class App extends javafx.application.Application {
         SocketAppServiceBuilder appServiceBuilder = new SocketAppServiceBuilder()
                 .withModelType(ModelRoot.class)
                 .withBean("service", serviceBean)
-                .withServerStatusMessage(true);
+                //.withServerStatusMessage(true);
+                .withServerStatusMessage(false);
         appService = appServiceBuilder.create();
     }
 
@@ -63,8 +64,7 @@ public class App extends javafx.application.Application {
         return serviceFacade;
     }
 
-    public static AnkorContext ankorContext() {
-        return appService.getAnkorContext();
+    public static RefFactory refFactory() {
+        return appService.getRefFactory();
     }
-
 }

@@ -17,8 +17,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
-import static at.irian.ankorman.sample1.fxclient.App.ankorContext;
 import static at.irian.ankorman.sample1.fxclient.App.facade;
+import static at.irian.ankorman.sample1.fxclient.App.refFactory;
 
 /**
  * @author Thomas Spiegl
@@ -39,7 +39,7 @@ public class MainController implements Initializable {
         facade().initApplication(new ActionCompleteCallback() {
 
             public void onComplete() {
-                Ref rootRef = ankorContext().getRefFactory().rootRef();
+                Ref rootRef = refFactory().rootRef();
                 ModelRoot modelRoot = rootRef.getValue();
 
                 userName.setText(modelRoot.getUserName());

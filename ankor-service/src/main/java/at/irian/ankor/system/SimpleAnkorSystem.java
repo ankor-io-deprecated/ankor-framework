@@ -1,15 +1,15 @@
 package at.irian.ankor.system;
 
-import at.irian.ankor.context.AnkorContextFactory;
-import at.irian.ankor.context.SingletonInstanceAnkorContextFactory;
 import at.irian.ankor.el.BeanResolverELResolver;
 import at.irian.ankor.el.StandardELContext;
-import at.irian.ankor.event.ListenersHolder;
-import at.irian.ankor.event.UnsynchronizedListenersHolder;
+import at.irian.ankor.event.ArrayListEventListeners;
+import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.messaging.LoopbackMessageBus;
 import at.irian.ankor.messaging.MessageFactory;
 import at.irian.ankor.messaging.PipeMessageLoop;
 import at.irian.ankor.messaging.json.JsonMessageMapper;
+import at.irian.ankor.ref.RefContextFactory;
+import at.irian.ankor.ref.el.SimpleELRefContextFactory;
 import at.irian.ankor.rmi.ELRemoteMethodActionEventListener;
 import at.irian.ankor.rmi.RemoteMethodActionEventListener;
 import com.typesafe.config.Config;
@@ -28,11 +28,11 @@ public class SimpleAnkorSystem extends AnkorSystem {
 
     protected SimpleAnkorSystem(MessageFactory messageFactory,
                                 PipeMessageLoop<String> messageLoop,
-                                ListenersHolder listenersHolder,
-                                AnkorContextFactory ankorContextFactory,
+                                RefContextFactory refContextFactory,
+                                EventListeners globalEventListeners,
                                 String name,
                                 RemoteMethodActionEventListener remoteMethodActionEventListener) {
-        super(name, messageFactory, messageLoop.getMessageBus(), listenersHolder, ankorContextFactory,
+        super(name, messageFactory, messageLoop.getMessageBus(), globalEventListeners, refContextFactory,
               remoteMethodActionEventListener);
         this.messageLoop = messageLoop;
     }
@@ -43,7 +43,7 @@ public class SimpleAnkorSystem extends AnkorSystem {
 
         PipeMessageLoop<String> messageLoop = new PipeMessageLoop<String>(name, new JsonMessageMapper());
 
-        UnsynchronizedListenersHolder globalEventBus = new UnsynchronizedListenersHolder();
+        EventListeners globalEventListeners = new ArrayListEventListeners();
 
         StandardELContext elContext = new StandardELContext();
         if (beanResolver != null) {
@@ -52,11 +52,13 @@ public class SimpleAnkorSystem extends AnkorSystem {
 
         Config config = ConfigFactory.load();
 
-        AnkorContextFactory ankorContextFactory
-                = new SingletonInstanceAnkorContextFactory(modelType, globalEventBus, elContext, config,
-                                                           messageLoop.getMessageBus());
+        SimpleELRefContextFactory refContextFactory = new SimpleELRefContextFactory(config,
+                                                                                    modelType,
+                                                                                    elContext,
+                                                                                    globalEventListeners,
+                                                                                    messageLoop.getMessageBus());
 
-        return new SimpleAnkorSystem(messageFactory, messageLoop, globalEventBus, ankorContextFactory, name, null);
+        return new SimpleAnkorSystem(messageFactory, messageLoop, refContextFactory, globalEventListeners, name, null);
     }
 
     public static SimpleAnkorSystem create(String name, Class<?> modelType) {
@@ -66,8 +68,8 @@ public class SimpleAnkorSystem extends AnkorSystem {
     public SimpleAnkorSystem withRemoteMethodActionListenerEnabled() {
         return new SimpleAnkorSystem(getMessageFactory(),
                                      messageLoop,
-                                     getGlobalListenersHolder(),
-                                     getAnkorContextFactory(),
+                                     getRefContextFactory(),
+                                     getGlobalEventListeners(),
                                      getName(),
                                      new ELRemoteMethodActionEventListener());
     }

@@ -167,8 +167,7 @@ public class ServiceBean {
 
         Ref tabRef = tabsRef.append(tabId);
 
-        tabRef.append("model.animal.type").addChangeListener(new AnimalTypeChangeListener(tabRef.append(
-                "model.selectItems.families")));
+        tabRef.append("model.animal.type").addChangeListener(new AnimalTypeChangeListener(tabRef.append("model.selectItems.families")));
 
         return tab;
     }
@@ -181,10 +180,10 @@ public class ServiceBean {
 
     public class AnimalTypeChangeListener implements ChangeListener {
 
-        private final Ref ref;
+        private final Ref familiesRef;
 
-        public AnimalTypeChangeListener(Ref ref) {
-            this.ref = ref;
+        public AnimalTypeChangeListener(Ref familiesRef) {
+            this.familiesRef = familiesRef;
         }
 
         @Override
@@ -209,8 +208,8 @@ public class ServiceBean {
             } else {
                 families = new ArrayList<AnimalFamily>(0);
             }
-            ref.setValue(families);
-            parent(AnimalSearchTabModel.class, ref).append("filter.family").setValue(null);
+            familiesRef.setValue(families);
+            parent(AnimalSearchTabModel.class, familiesRef).append("filter.family").setValue(null);
             reloadAnimals(watchedProperty.parent()); // TODO will be called 2x if filter.family changes as well
         }
     }
@@ -222,7 +221,7 @@ public class ServiceBean {
                 //noinspection unchecked
                 return ref;
             }
-            ref = ref.parent();
+            ref = ref.isRoot() ? null : ref.parent();
         }
         throw new IllegalStateException(String.format("Parent not found for type %s(%s)", clazz.getName(), ref));
     }
