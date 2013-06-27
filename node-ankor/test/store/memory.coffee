@@ -3,8 +3,11 @@ ankor = require("../testmodel")
 
 describe("MemoryStore", ->
     context = null
-    beforeEach(->
-        context = ankor.instantiateContext()
+    beforeEach((done) ->
+        ankor.instantiateContext((err, createdContext) ->
+            context = createdContext
+            done(err)
+        )
     )
     describe("#save", ->
         it("should save a given context object", (done) ->

@@ -19,4 +19,8 @@ target/
 overlays/
 *.versionsBackup
 node_modules/
+node-ankor/demo/lib/dojo
+node-ankor/demo/lib/dijit
+node-ankor/demo/lib/dojox
+node-ankor/demo/lib/util
 *.pyc

@@ -8,16 +8,16 @@ exports.MemoryStore = class MemoryStore
     save: (context, cb) ->
         assert(context instanceof Context, "MemoryStore#save only accepts Context objects")
         
-        @contexts[context.uuid] = context
+        @contexts[context.id] = context
         
         if cb
             cb(null)
 
-    load: (contextUuid, cb) ->
+    load: (contextId, cb) ->
         if not cb 
             return
 
-        if contextUuid not of @contexts
+        if contextId not of @contexts
             cb(new Error("Context not found"))
         else
-            cb(null, @contexts[contextUuid])
+            cb(null, @contexts[contextId])

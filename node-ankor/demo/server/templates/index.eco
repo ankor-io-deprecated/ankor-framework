@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AnkorMan</title>
+    <script src="/js/dojo/dojo.js"></script>
+</head>
+<body>
+    <script>
+        require([
+            "ankor/Ankor",
+            "ankor/transport/PollingTransport",
+            "dojo/domReady!"
+        ], function(Ankor, PollingTransport) {
+            var ankorSystem = new Ankor({
+                transport: new PollingTransport("/ankor"),
+                contextId: "<%= @ankorContextId %>"
+            });
+        });
+    </script>
+</body>
+</html>

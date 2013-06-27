@@ -1,3 +1,6 @@
+# 1. Make it work with MemoryStore Session & Ankor
+# 2. Make it work with RedisStore Session & Ankor
+
 #   DONE - 1. First create the model defintion itself (like sequelize and stateful)
 #   DONE - 2. Create the model instantiation
 #   3. Add server side event handling with path and value that changed and so on?
@@ -90,6 +93,7 @@ assert = require("assert")
 {Model} = require("./model/Model")
 {Context} = require("./model/Context")
 {MemoryStore} = require("./store/MemoryStore")
+{PollingMiddlewareTransport} = require("./transport/PollingMiddlewareTransport")
 
 module.exports = class Ankor
     #Type Accessors
@@ -111,13 +115,13 @@ module.exports = class Ankor
     #############
     constructor: (config) ->
         @inited = false
+        @rootType = null
+        
         @typeRegistry = new TypeRegistry()
         @store = config?.store
-        #@transport = config?.transport        
-        @rootType = null
+        @transport = config?.transport        
 
-        #assert(@transport, "No transport defined")
-
+        assert(@transport, "No transport defined")
         if not @store
             @store = new MemoryStore()
 
@@ -163,11 +167,21 @@ module.exports = class Ankor
             assert(type instanceof Type, "Value of property #{propertyName} has to be a type object")
             assert(@typeRegistry.isTypeRegistered(type), "Given type is not registered with this instance")
 
-    instantiateContext: ->
-        @inited = true
-        return new Context(new Model(@rootType))
-
     instantiateModel: (name) ->
         type = @typeRegistry.getType(name)
         return new Model(type)
-    
+
+    instantiateContext: (cb) ->
+        @inited = true
+        
+        context = new Context(@, new Model(@rootType))
+        context.save((err) ->
+            if err
+                context = null
+            if cb
+                cb(err, context)
+        )
+
+Ankor.transports = {
+    PollingMiddlewareTransport: PollingMiddlewareTransport
+}

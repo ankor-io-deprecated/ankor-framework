@@ -6,14 +6,17 @@ ankor = require("./testmodel")
 
 describe("Ankor", ->
     context = null
-    beforeEach(->
-        context = ankor.instantiateContext()
+    beforeEach((done) ->
+        ankor.instantiateContext((err, createdContext) ->
+            context = createdContext
+            done(err)
+        )
     )
     describe("#instantiateContext", ->
-        it("should return a Context object with a uuid, session and model", ->
+        it("should return a Context object with a id, session and model", ->
             expect(context).to.be.an.instanceof(Context)
-            expect(context.uuid).to.be.a("string")
-            expect(context.uuid).to.have.length(36)
+            expect(context.id).to.be.a("string")
+            expect(context.id).to.have.length(36)
             expect(context.model).to.be.an.instanceof(Model)
             expect(context.session).to.be.an("object")
         )

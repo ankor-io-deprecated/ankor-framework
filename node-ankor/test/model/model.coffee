@@ -4,8 +4,11 @@ ankor = require("../testmodel")
 
 describe("Model", ->
     context = null
-    beforeEach(->
-        context = ankor.instantiateContext()
+    beforeEach((done) ->
+        ankor.instantiateContext((err, createdContext) ->
+            context = createdContext
+            done(err)
+        )
     )
     describe("#constructor", ->
         it("should automatically instantiate list properties", ->

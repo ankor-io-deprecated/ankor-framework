@@ -1,16 +1,31 @@
 {bind} = require("underscore")
-{ContextDepending} = require("../base/context/ContextDepending")
+{ContextDepending} = require("../base/ContextDepending")
 
 exports.AppRouter = class AppRouter extends ContextDepending
     constructor: ->
         super()
 
+        @dependOn("ankorService")
+
     init: (app) ->
         app.get("/", bind(@index, @))
+        app.get("/debugMemoryStore", bind(@debugMemoryStore, @))
 
     index: (req, res, next) ->
-        #Create Ankor context for this new request
-        #ankorContext = ...
+        @ankorService.ankor.instantiateContext((err, context) ->
+            if err
+                return next(err)
 
-        #Provide template with contextId which has to be given to the Client side script?
-        #templateContext = { ankorContextId: ankorContext.getId() }
+            res.render("index", {
+                ankorContextId: context.id
+            })
+        )
+
+    debugMemoryStore: (req, res, next) ->
+        data = {}
+        for contextId, context of  @ankorService.ankor.store.contexts
+            data[contextId] = {
+                model: context.model,
+                session: context.session
+            }
+        res.json(data)
