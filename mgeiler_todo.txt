@@ -1,6 +1,11 @@
 
 - RMA durch abstraktere Action ersetzen
-  * Idee: Konvention   action="saveAnimals"  findet autom. annotated methode beim Bean
+  * Idee: Konvention   action="saveAnimal"  findet autom. annotated methode beim Bean
+  * eigenes modul "ankor-annotation"
+
+  @AnkorAction("save", actionPropertyType=Animal.class)
+  public void saveAnimal(Ref animalRef)
+
 
 - Konzept "model context" auflassen
 
