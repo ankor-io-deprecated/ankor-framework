@@ -1,0 +1,6 @@
+
+- RMA durch abstraktere Action ersetzen
+  * Idee: Konvention   action="saveAnimals"  findet autom. annotated methode beim Bean
+
+- Konzept "model context" auflassen
+
