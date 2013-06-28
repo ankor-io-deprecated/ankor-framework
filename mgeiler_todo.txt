@@ -23,3 +23,9 @@
 - JSF client
 
 - Servlet container server (HTTP, user session)
+
+- getrennte Instanzen server / client
+
+- messages mit task executor abarbeiten
+
+- Resource saving / loading ("Tierbilder")
