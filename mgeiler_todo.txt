@@ -12,3 +12,12 @@
 
 - Konzept "model context" auflassen
 
+- model zugriffe (oder listener aufrufe) synchronized machen?
+
+- basis klasse AbstractAnkorSystem
+
+- multi threaded test server
+
+- JSF client
+
+- Servlet container server (HTTP, user session)
