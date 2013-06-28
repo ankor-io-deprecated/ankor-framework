@@ -111,6 +111,15 @@ public class ServiceBean {
             return result;
         }
 
+        public static boolean isAnimalNameAlreadyExists(String name) {
+            for (Animal animal : animals) {
+                if (animal.getName().equalsIgnoreCase(name)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public static void saveAnimal(Animal animal) {
             if (ObjectUtils.isEmpty(animal.getName())) {
                 throw new IllegalArgumentException("Animal name is empty");
@@ -215,6 +224,22 @@ public class ServiceBean {
         tabRef.setValue(tab);
 
         tabRef.append("model.animal.type").addPropChangeListener(new AnimalTypeChangeListener());
+
+        tabRef.append("model.animal.name").addPropChangeListener(new ChangeListener() {
+            @Override
+            public void processChange(Ref nameRef, Ref changedProperty) {
+                Ref nameStatusRef = nameRef.ancestor("model").append("nameStatus");
+                String name = nameRef.getValue();
+                if (AnimalRepository.isAnimalNameAlreadyExists(name)) {
+                    nameStatusRef.setValue("name already exists");
+                } else if (name.length() > 10) {
+                    nameStatusRef.setValue("name is too long");
+                } else {
+                    nameStatusRef.setValue("");
+                }
+            }
+        });
+
     }
 
     public void saveAnimals(List<Animal> animals) {

@@ -15,6 +15,7 @@ public class Animal {
 
     public Animal() {
         this.uuid = UUID.randomUUID().toString();
+        this.name = "";
     }
 
     public Animal(Animal other) {

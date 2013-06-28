@@ -6,8 +6,6 @@ import at.irian.ankor.ref.Ref;
 import at.irian.ankorman.sample1.fxclient.TabIds;
 import at.irian.ankorman.sample1.model.animal.AnimalFamily;
 import at.irian.ankorman.sample1.model.animal.AnimalType;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -15,6 +13,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextInputControl;
+import javafx.scene.text.Text;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -33,6 +32,8 @@ public class AnimalDetailTabController implements Initializable {
     protected javafx.scene.control.Tab tab;
     @FXML
     protected TextInputControl name;
+    @FXML
+    protected Text nameStatus;
     @FXML
     protected ComboBox<AnimalType> type;
     @FXML
@@ -53,11 +54,15 @@ public class AnimalDetailTabController implements Initializable {
         facade().createAnimalDetailTab(tabId, new ActionCompleteCallback() {
 
             public void onComplete() {
-                Ref animalRef = getTabRef().append("model").append("animal");
-                Ref selItemsRef = getTabRef().append("model").append("selectItems");
+                Ref modelRef = getTabRef().append("model");
+                Ref animalRef = modelRef.append("animal");
+                Ref selItemsRef = modelRef.append("selectItems");
 
                 bindValue(animalRef.append("name"))
                         .toInput(name)
+                        .createWithin(bindingContext);
+                bindValue(modelRef.append("nameStatus"))
+                        .toText(nameStatus)
                         .createWithin(bindingContext);
                 bindValue(animalRef.append("type"))
                         .toInput(type)

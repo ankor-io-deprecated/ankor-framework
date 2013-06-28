@@ -14,6 +14,8 @@ public class AnimalDetailModel {
 
     private Animal animal;
 
+    private String nameStatus;
+
     @JsonTypeInfo(use = JsonTypeInfo.Id.NONE, defaultImpl = AnimalSelectItems.class)
     private AnimalSelectItems selectItems;
 
@@ -48,5 +50,13 @@ public class AnimalDetailModel {
 
     public void setSaved(boolean saved) {
         this.saved = saved;
+    }
+
+    public String getNameStatus() {
+        return nameStatus;
+    }
+
+    public void setNameStatus(String nameStatus) {
+        this.nameStatus = nameStatus;
     }
 }

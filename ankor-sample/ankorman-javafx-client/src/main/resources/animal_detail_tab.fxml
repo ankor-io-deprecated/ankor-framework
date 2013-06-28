@@ -12,6 +12,7 @@
     <GridPane alignment="TOP_LEFT" hgap="10.0" vgap="5.0">
       <Label text="Name" GridPane.columnIndex="0" GridPane.rowIndex="0" />
       <TextField fx:id="name" prefWidth="208.5" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+      <Text fx:id="nameStatus" fill="#cc3100" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
       <Label text="Type" GridPane.columnIndex="0" GridPane.rowIndex="1" />
       <ComboBox fx:id="type" prefWidth="209.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
       <Label text="Family" GridPane.columnIndex="0" GridPane.rowIndex="2" />
