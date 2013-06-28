@@ -78,7 +78,7 @@ public class ServiceBean {
             data.getRows().addAll(animals.subList(first, last));
 
             try {
-                Thread.sleep(2000L);
+                Thread.sleep(300L);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }

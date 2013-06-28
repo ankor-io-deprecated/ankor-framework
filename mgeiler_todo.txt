@@ -5,8 +5,8 @@
 
 
 
-  @AnkorAction("save", actionPropertyType=Animal.class)
-  public void saveAnimal(Ref animalRef)
+  @AnkorAction("save", actionPropertyType=Animal.class, params = {@AnkorObjParam("model.filter")})
+  public void saveAnimal(Ref animalRef, Object filter)
 
 
 
