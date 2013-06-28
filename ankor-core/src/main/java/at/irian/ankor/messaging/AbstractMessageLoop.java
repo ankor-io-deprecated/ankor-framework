@@ -11,15 +11,15 @@ public abstract class AbstractMessageLoop<S> implements MessageLoop<S> {
     protected final Runnable receiveLoop;
     private Thread receiveLoopThread;
 
-    public AbstractMessageLoop(final String name, MessageMapper<S> messageMapper) {
-        this.name = name;
+    public AbstractMessageLoop(final String systemName, MessageMapper<S> messageMapper) {
+        this.name = systemName;
         this.messageBus = new MessageBus<S>(messageMapper) {
             @Override
             protected void sendSerializedMessage(S msg) {
                 if (!isConnected()) {
                     throw new IllegalStateException("not connected");
                 }
-                LOG.debug("{} sends {}", name, msg);
+                LOG.debug("{} sends {}", systemName, msg);
                 send(msg);
             }
 
@@ -34,11 +34,11 @@ public abstract class AbstractMessageLoop<S> implements MessageLoop<S> {
                     throw new IllegalStateException("not connected");
                 }
                 boolean interrupted = false;
-                LOG.debug("{} is listening...", name);
+                LOG.debug("{} is listening...", systemName);
                 while (!interrupted) {
                     try {
                         S msg = receive();
-                        LOG.debug("{} receives {}", name, msg);
+                        LOG.debug("{} receives {}", systemName, msg);
                         messageBus.receiveSerializedMessage(msg);
                     } catch (InterruptedException e) {
                         interrupted = true;
@@ -59,7 +59,7 @@ public abstract class AbstractMessageLoop<S> implements MessageLoop<S> {
         if (receiveLoopThread != null) {
             throw new IllegalStateException("Already started");
         }
-        receiveLoopThread = new Thread(receiveLoop);
+        receiveLoopThread = new Thread(receiveLoop, "Ankor '" + name + "'");
         receiveLoopThread.setDaemon(true);
         receiveLoopThread.start();
         LOG.info("{} started", this);

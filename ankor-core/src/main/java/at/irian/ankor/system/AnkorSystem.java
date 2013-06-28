@@ -16,7 +16,7 @@ import at.irian.ankor.rmi.RemoteMethodActionEventListener;
 public class AnkorSystem {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnkorSystem.class);
 
-    private final String name;
+    private final String systemName;
     private final MessageFactory messageFactory;
     private final MessageBus messageBus;
     private final EventListeners globalEventListeners;
@@ -26,13 +26,13 @@ public class AnkorSystem {
     private ActionEvent.Listener actionEventListener;
     private MessageListener messageListener;
 
-    protected AnkorSystem(String name,
+    protected AnkorSystem(String systemName,
                           MessageFactory messageFactory,
                           MessageBus messageBus,
                           EventListeners globalEventListeners,
                           RefContextFactory refContextFactory,
                           RemoteMethodActionEventListener remoteMethodActionEventListener) {
-        this.name = name;
+        this.systemName = systemName;
         this.messageFactory = messageFactory;
         this.messageBus = messageBus;
         this.globalEventListeners = globalEventListeners;
@@ -40,8 +40,8 @@ public class AnkorSystem {
         this.remoteMethodActionEventListener = remoteMethodActionEventListener;
     }
 
-    public String getName() {
-        return name;
+    public String getSystemName() {
+        return systemName;
     }
 
     public MessageFactory getMessageFactory() {
@@ -62,7 +62,7 @@ public class AnkorSystem {
 
     @Override
     public String toString() {
-        return "AnkorSystem{'" + name + "'}";
+        return "AnkorSystem{'" + systemName + "'}";
     }
 
     public boolean isStarted() {
@@ -115,10 +115,12 @@ public class AnkorSystem {
                 Ref actionProperty = initialRefContext.refFactory().ref(message.getActionPropertyPath());
                 if (message.getModelContextPath() != null) {
                     // if there is an explicit context in the message we use that, ...
-                    actionProperty = actionProperty.withRefContext(actionProperty.context().withModelContextPath(message.getModelContextPath()));
+                    actionProperty = actionProperty.withContext(actionProperty.context()
+                                                                              .withModelContextPath(message.getModelContextPath()));
                 } else {
                     // ... else we use the action source ref as the context of this action
-                    actionProperty = actionProperty.withRefContext(actionProperty.context().withModelContextPath(message.getActionPropertyPath()));
+                    actionProperty = actionProperty.withContext(actionProperty.context()
+                                                                              .withModelContextPath(message.getActionPropertyPath()));
                 }
                 actionProperty.fireAction(message.getAction());
                 initialRefContext.messageSender().flush();
@@ -129,7 +131,8 @@ public class AnkorSystem {
                 RefContext initialRefContext = createRefContextFor(message);
                 Ref changedProperty = initialRefContext.refFactory().ref(message.getChange().getChangedProperty());
                 if (message.getModelContextPath() != null) {
-                    changedProperty = changedProperty.withRefContext(changedProperty.context().withModelContextPath(message.getModelContextPath()));
+                    changedProperty = changedProperty.withContext(changedProperty.context()
+                                                                                 .withModelContextPath(message.getModelContextPath()));
                 }
                 if (changedProperty.isRoot() || changedProperty.isValid()) {
                     changedProperty.setValue(message.getChange().getNewValue());

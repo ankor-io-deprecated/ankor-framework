@@ -161,7 +161,7 @@ class ELRef extends AbstractRef {
     }
 
     @Override
-    public Ref withRefContext(RefContext newRefContext) {
+    public Ref withContext(RefContext newRefContext) {
         return new ELRef(ve, (ELRefContext)newRefContext);
     }
 

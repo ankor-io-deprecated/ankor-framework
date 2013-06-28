@@ -2,6 +2,7 @@ package at.irian.ankor.ref.el;
 
 import at.irian.ankor.context.ModelHolder;
 import at.irian.ankor.el.StandardELContext;
+import at.irian.ankor.event.EventDelaySupport;
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.messaging.MessageSender;
 import com.typesafe.config.Config;
@@ -18,12 +19,14 @@ public class SimpleELRefContextFactory extends ELRefContextFactory {
                                      Class<?> modelType,
                                      StandardELContext baseELContext,
                                      EventListeners globalEventListeners,
-                                     MessageSender messageSender) {
+                                     MessageSender messageSender,
+                                     EventDelaySupport eventDelaySupport) {
         super(config,
               ModelHolder.create(modelType),
               ExpressionFactory.newInstance(),
               baseELContext,
               globalEventListeners,
-              messageSender);
+              messageSender,
+              eventDelaySupport);
     }
 }

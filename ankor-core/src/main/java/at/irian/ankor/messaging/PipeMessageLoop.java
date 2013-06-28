@@ -6,13 +6,13 @@ import java.util.concurrent.BlockingQueue;
  * @author Manfred Geiler
  */
 public class PipeMessageLoop<S> extends AbstractMessageLoop<S> {
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(PipeMessageLoop.class);
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(PipeMessageLoop.class);
 
     private BlockingQueue<S> sendQueue;
     private BlockingQueue<S> receiveQueue;
 
-    public PipeMessageLoop(final String name, MessageMapper<S> messageMapper) {
-        super(name, messageMapper);
+    public PipeMessageLoop(final String systemName, MessageMapper<S> messageMapper) {
+        super(systemName, messageMapper);
     }
 
     @Override

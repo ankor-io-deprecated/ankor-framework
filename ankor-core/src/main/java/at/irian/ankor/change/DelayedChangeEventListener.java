@@ -4,6 +4,7 @@ import at.irian.ankor.event.DelayedModelEventListener;
 import at.irian.ankor.event.EventDelay;
 import at.irian.ankor.event.EventDelaySupport;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.ref.impl.RefContextImplementor;
 
 /**
  * @author Manfred Geiler
@@ -16,7 +17,8 @@ public abstract class DelayedChangeEventListener extends ChangeEventListener
 
     public DelayedChangeEventListener(Ref watchedProperty, long delayMilliseconds) {
         super(watchedProperty);
-        this.delay = EventDelaySupport.getInstance().createEventDelayFor(this, delayMilliseconds);
+        EventDelaySupport eventDelaySupport = ((RefContextImplementor) watchedProperty.context()).eventDelaySupport();
+        this.delay = eventDelaySupport.createEventDelayFor(this, delayMilliseconds);
     }
 
     @Override

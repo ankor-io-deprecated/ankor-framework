@@ -2,9 +2,8 @@ package at.irian.ankor.ref.el;
 
 import at.irian.ankor.context.ModelHolder;
 import at.irian.ankor.el.ModelContextELResolver;
-import at.irian.ankor.el.ModelHolderELResolver;
-import at.irian.ankor.el.ModelRootELResolver;
 import at.irian.ankor.el.StandardELContext;
+import at.irian.ankor.event.EventDelaySupport;
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.messaging.MessageSender;
@@ -34,35 +33,26 @@ public class ELRefContext implements RefContext, RefContextImplementor {
     private final ELRefFactory refFactory;
     private final ModelHolder modelHolder;
     private final MessageSender messageSender;
+    private final EventDelaySupport eventDelaySupport;
 
     ELRefContext(ExpressionFactory expressionFactory,
-                         StandardELContext elContext,
-                         Config config,
-                         EventListeners globalEventListeners,
-                         String modelContextPath,
-                         ModelHolder modelHolder, MessageSender messageSender) {
+                 StandardELContext elContext,
+                 Config config,
+                 EventListeners globalEventListeners,
+                 String modelContextPath,
+                 ModelHolder modelHolder,
+                 MessageSender messageSender,
+                 EventDelaySupport eventDelaySupport) {
         this.expressionFactory = expressionFactory;
         this.elContext = elContext;
         this.config = config;
         this.modelHolder = modelHolder;
         this.messageSender = messageSender;
+        this.eventDelaySupport = eventDelaySupport;
         this.modelRootVarName = config.getString("ankor.variable-names.modelRoot");
         this.modelContextPath = modelContextPath;
         this.globalEventListeners = globalEventListeners;
         this.refFactory = new ELRefFactory(this);
-    }
-
-    @Deprecated //todo weg
-    public static ELRefContext create(ExpressionFactory expressionFactory,
-                                      StandardELContext baseELContext,
-                                      Config config,
-                                      ModelHolder modelHolder,
-                                      EventListeners globalEventListeners,
-                                      MessageSender messageSender) {
-        StandardELContext elContext = baseELContext.withAdditional(new ModelRootELResolver(config, modelHolder))
-                                                   .withAdditional(new ModelHolderELResolver(config, modelHolder));
-        return new ELRefContext(expressionFactory, elContext, config, globalEventListeners, null,
-                                modelHolder, messageSender);
     }
 
     @Override
@@ -72,7 +62,8 @@ public class ELRefContext implements RefContext, RefContextImplementor {
 
     @Override
     public ELRefContext withMessageSender(MessageSender newMessageSender) {
-        return new ELRefContext(expressionFactory, elContext, config, globalEventListeners, modelContextPath, modelHolder, newMessageSender);
+        return new ELRefContext(expressionFactory, elContext, config, globalEventListeners, modelContextPath, modelHolder, newMessageSender,
+                                eventDelaySupport);
     }
 
     @Override
@@ -163,6 +154,10 @@ public class ELRefContext implements RefContext, RefContextImplementor {
         return modelContextPath;
     }
 
+    public EventDelaySupport eventDelaySupport() {
+        return eventDelaySupport;
+    }
+
     public ELRefContext withModelContextPath(String modelContextPath) {
         return withAdditionalELResolver(new ModelContextELResolver(expressionFactory,
                                                                    config,
@@ -173,7 +168,8 @@ public class ELRefContext implements RefContext, RefContextImplementor {
     public ELRefContext withAdditionalELResolver(ELResolver elResolver) {
         return new ELRefContext(expressionFactory,
                                 elContext.withAdditional(elResolver),
-                                config, globalEventListeners, modelContextPath, modelHolder, messageSender);
+                                config, globalEventListeners, modelContextPath, modelHolder, messageSender,
+                                eventDelaySupport);
     }
 
 }

@@ -3,6 +3,7 @@ package at.irian.ankor.system;
 import at.irian.ankor.el.BeanResolverELResolver;
 import at.irian.ankor.el.StandardELContext;
 import at.irian.ankor.event.ArrayListEventListeners;
+import at.irian.ankor.event.EventDelaySupport;
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.messaging.LoopbackMessageBus;
 import at.irian.ankor.messaging.MessageFactory;
@@ -37,11 +38,11 @@ public class SocketAnkorSystem extends AnkorSystem {
     }
 
 
-    public static SocketAnkorSystem create(String name, Class<?> modelType, BeanResolver beanResolver,
+    public static SocketAnkorSystem create(String systemName, Class<?> modelType, BeanResolver beanResolver,
                                            String remoteHost, int remotePort, int localPort) {
         MessageFactory messageFactory = new MessageFactory();
 
-        MessageLoop<String> messageLoop = new SocketMessageLoop<String>(name, new JsonMessageMapper(),
+        MessageLoop<String> messageLoop = new SocketMessageLoop<String>(systemName, new JsonMessageMapper(),
                 remoteHost, remotePort, localPort);
 
         EventListeners globalEventListeners = new ArrayListEventListeners();
@@ -53,15 +54,18 @@ public class SocketAnkorSystem extends AnkorSystem {
 
         Config config = ConfigFactory.load();
 
+        EventDelaySupport eventDelaySupport = new EventDelaySupport(systemName);
+
         SimpleELRefContextFactory refContextFactory = new SimpleELRefContextFactory(config,
                                                                                     modelType,
                                                                                     elContext,
                                                                                     globalEventListeners,
-                                                                                    messageLoop.getMessageBus());
+                                                                                    messageLoop.getMessageBus(),
+                                                                                    eventDelaySupport);
 
         return new SocketAnkorSystem(messageFactory, messageLoop, globalEventListeners,
                                      refContextFactory,
-                                     name, null
+                                     systemName, null
         );
     }
 
@@ -73,7 +77,7 @@ public class SocketAnkorSystem extends AnkorSystem {
         return new SocketAnkorSystem(getMessageFactory(),
                                      messageLoop,
                                      getGlobalEventListeners(),
-                                     getRefContextFactory(), getName(),
+                                     getRefContextFactory(), getSystemName(),
                                      new ELRemoteMethodActionEventListener());
     }
 

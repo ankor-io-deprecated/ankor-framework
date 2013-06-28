@@ -24,5 +24,4 @@ public interface RefContext {
     MessageSender messageSender();
 
     RefContext withMessageSender(MessageSender newMessageSender);
-
 }

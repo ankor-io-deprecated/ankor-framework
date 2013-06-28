@@ -5,6 +5,7 @@ import at.irian.ankor.action.Action;
 /**
  * @author Manfred Geiler
  */
+@SuppressWarnings("UnusedDeclaration")
 public interface Ref {
 
     /**
@@ -76,7 +77,7 @@ public interface Ref {
 
     RefContext context();
 
-    Ref withRefContext(RefContext newRefContext);
+    Ref withContext(RefContext newContext);
 
     void fireAction(Action action);
 

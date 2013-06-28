@@ -3,6 +3,7 @@ package at.irian.ankor.system;
 import at.irian.ankor.el.BeanResolverELResolver;
 import at.irian.ankor.el.StandardELContext;
 import at.irian.ankor.event.ArrayListEventListeners;
+import at.irian.ankor.event.EventDelaySupport;
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.messaging.LoopbackMessageBus;
 import at.irian.ankor.messaging.MessageFactory;
@@ -38,10 +39,10 @@ public class SimpleAnkorSystem extends AnkorSystem {
     }
 
 
-    public static SimpleAnkorSystem create(String name, Class<?> modelType, BeanResolver beanResolver) {
+    public static SimpleAnkorSystem create(String systemName, Class<?> modelType, BeanResolver beanResolver) {
         MessageFactory messageFactory = new MessageFactory();
 
-        PipeMessageLoop<String> messageLoop = new PipeMessageLoop<String>(name, new JsonMessageMapper());
+        PipeMessageLoop<String> messageLoop = new PipeMessageLoop<String>(systemName, new JsonMessageMapper());
 
         EventListeners globalEventListeners = new ArrayListEventListeners();
 
@@ -52,13 +53,17 @@ public class SimpleAnkorSystem extends AnkorSystem {
 
         Config config = ConfigFactory.load();
 
+        EventDelaySupport eventDelaySupport = new EventDelaySupport(systemName);
+
         SimpleELRefContextFactory refContextFactory = new SimpleELRefContextFactory(config,
                                                                                     modelType,
                                                                                     elContext,
                                                                                     globalEventListeners,
-                                                                                    messageLoop.getMessageBus());
+                                                                                    messageLoop.getMessageBus(),
+                                                                                    eventDelaySupport);
 
-        return new SimpleAnkorSystem(messageFactory, messageLoop, refContextFactory, globalEventListeners, name, null);
+        return new SimpleAnkorSystem(messageFactory, messageLoop, refContextFactory, globalEventListeners,
+                                     systemName, null);
     }
 
     public static SimpleAnkorSystem create(String name, Class<?> modelType) {
@@ -70,7 +75,7 @@ public class SimpleAnkorSystem extends AnkorSystem {
                                      messageLoop,
                                      getRefContextFactory(),
                                      getGlobalEventListeners(),
-                                     getName(),
+                                     getSystemName(),
                                      new ELRemoteMethodActionEventListener());
     }
 

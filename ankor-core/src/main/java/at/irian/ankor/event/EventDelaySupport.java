@@ -2,6 +2,7 @@ package at.irian.ankor.event;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 
 /**
  * @author Manfred Geiler
@@ -11,19 +12,17 @@ public class EventDelaySupport {
 
     private final ScheduledExecutorService executorService;
 
-    public EventDelaySupport() {
-        this.executorService = Executors.newSingleThreadScheduledExecutor();
+    public EventDelaySupport(final String systemName) {
+        this.executorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                return new Thread(r, "Ankor '" + systemName + "' - event delayer");
+            }
+        });
     }
 
     public EventDelay createEventDelayFor(DelayedModelEventListener listener, long delayMilliseconds) {
         return new UnsynchronizedEventDelay(executorService, listener, delayMilliseconds);
     }
 
-
-
-    public static final EventDelaySupport INSTANCE = new EventDelaySupport();
-
-    public static EventDelaySupport getInstance() {
-        return INSTANCE;
-    }
 }
