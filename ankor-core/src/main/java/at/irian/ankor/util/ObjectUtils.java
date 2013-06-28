@@ -12,4 +12,7 @@ public final class ObjectUtils {
         return o1 == null && o2 == null || o1 != null && o2 != null && o1.equals(o2);
     }
 
+    public static boolean isEmpty(String name) {
+        return name == null || name.trim().isEmpty();
+    }
 }

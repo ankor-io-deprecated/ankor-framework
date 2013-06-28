@@ -5,9 +5,11 @@
 
 
 
-  @AnkorAction("save", actionPropertyType=Animal.class, params = {@AnkorObjParam("model.filter")})
-  public void saveAnimal(Ref animalRef, Object filter)
-
+  @AnkorAction(actionName="save", actionPropertyType=AnimalDetailModel.class)
+  public void saveAnimal(
+    @AnkorActionPropertyRef Ref modelRef,
+    @AnkorActionParam("tabId") String tabId,
+    @AnkorActionProperty("animal") Animal animal)
 
 
 - Konzept "model context" auflassen

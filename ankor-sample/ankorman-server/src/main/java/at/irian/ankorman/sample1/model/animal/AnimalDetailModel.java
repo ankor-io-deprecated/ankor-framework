@@ -1,5 +1,6 @@
 package at.irian.ankorman.sample1.model.animal;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
@@ -7,6 +8,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  */
 public class AnimalDetailModel {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalDetailModel.class);
+
+    @JsonIgnore
+    private boolean saved = false;
 
     private Animal animal;
 
@@ -36,5 +40,13 @@ public class AnimalDetailModel {
 
     public void setSelectItems(AnimalSelectItems selectItems) {
         this.selectItems = selectItems;
+    }
+
+    public boolean isSaved() {
+        return saved;
+    }
+
+    public void setSaved(boolean saved) {
+        this.saved = saved;
     }
 }

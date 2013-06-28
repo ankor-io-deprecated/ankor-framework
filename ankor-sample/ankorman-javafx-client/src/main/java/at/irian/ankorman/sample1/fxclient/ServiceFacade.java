@@ -58,7 +58,7 @@ public class ServiceFacade {
     }
 
     public void saveAnimal(Ref tabRef, ActionCompleteCallback cb) {
-        appService.remoteMethod("service.saveAnimal(context.animal)")
+        appService.remoteMethod("service.saveAnimal(contextRef)")
                 .inContext(tabRef.append("model"))
                 .onComplete(cb)
                 .execute();

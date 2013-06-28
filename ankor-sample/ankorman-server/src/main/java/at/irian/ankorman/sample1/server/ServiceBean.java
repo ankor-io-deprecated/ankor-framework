@@ -2,6 +2,7 @@ package at.irian.ankorman.sample1.server;
 
 import at.irian.ankor.ref.ChangeListener;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.util.ObjectUtils;
 import at.irian.ankorman.sample1.model.ModelRoot;
 import at.irian.ankorman.sample1.model.Tab;
 import at.irian.ankorman.sample1.model.animal.*;
@@ -28,8 +29,24 @@ public class ServiceBean {
         return AnimalRepository.searchAnimals(filter, paginator.getFirst(), paginator.getMaxResults());
     }
 
-    public void saveAnimal(Animal animal) {
-        AnimalRepository.saveAnimal(animal);
+    public void saveAnimal(Ref modelRef) {
+        AnimalDetailModel model = modelRef.getValue();
+        String status;
+        if (model.isSaved()) {
+            status = "Error: Animal already saved";
+        } else {
+            try {
+                AnimalRepository.saveAnimal(model.getAnimal());
+                modelRef.append("saved").setValue(true);
+                status = "Animal successfully saved";
+            } catch (Exception e) {
+                status = "Error: " + e.getMessage();
+                if (!(e instanceof IllegalArgumentException || e instanceof IllegalStateException)) {
+                    LOG.error("Error saving animal " + model.getAnimal().getUuid(), e);
+                }
+            }
+        }
+        modelRef.root().append("serverStatus").setValue(status);
     }
 
     private static class AnimalRepository {
@@ -95,6 +112,20 @@ public class ServiceBean {
         }
 
         public static void saveAnimal(Animal animal) {
+            if (ObjectUtils.isEmpty(animal.getName())) {
+                throw new IllegalArgumentException("Animal name is empty");
+            }
+            if (animal.getType() == null) {
+                throw new IllegalArgumentException("Animal type is empty");
+            }
+            if (animal.getFamily() == null) {
+                throw new IllegalArgumentException("Animal family is empty");
+            }
+            for (Animal a : animals) {
+                if (!a.getUuid().equals(animal.getUuid()) && a.getName().equals(animal.getName())) {
+                    throw new IllegalStateException("Animal with name " + animal.getName() + " already exists");
+                }
+            }
             int i = 0;
             for (Animal a : animals) {
                 if (a.getUuid().equals(animal.getUuid())) {
@@ -218,7 +249,11 @@ public class ServiceBean {
             Ref modelRef = typeRef.ancestor("model");
             Ref familiesRef = modelRef.append("selectItems.families");
             familiesRef.setValue(families);
-            familiesRef.ancestor("model").append("filter.family").setValue(null);
+            if (modelRef.append("filter.family").isValid()) {
+                modelRef.append("filter.family").setValue(null);
+            } else {
+                modelRef.append("animal.family").setValue(null);
+            }
         }
     }
 

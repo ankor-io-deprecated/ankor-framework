@@ -15,7 +15,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextInputControl;
-import javafx.scene.text.Text;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -30,8 +29,6 @@ import static at.irian.ankorman.sample1.fxclient.App.refFactory;
 public class AnimalDetailTabController implements Initializable {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalSearchTabController.class);
 
-    @FXML
-    protected Text message;
     @FXML
     protected javafx.scene.control.Tab tab;
     @FXML
@@ -70,13 +67,6 @@ public class AnimalDetailTabController implements Initializable {
                         .toInput(family)
                         .withSelectItems(selItemsRef.append("families"))
                         .createWithin(bindingContext);
-
-                name.textProperty().addListener(new ChangeListener<String>() {
-                    @Override
-                    public void changed(ObservableValue<? extends String> observableValue, String s, String s2) {
-                        message.setText("");
-                    }
-                });
             }
         });
     }
@@ -90,7 +80,6 @@ public class AnimalDetailTabController implements Initializable {
     protected void save(@SuppressWarnings("UnusedParameters") ActionEvent event) {
         facade().saveAnimal(getTabRef(), new ActionCompleteCallback() {
             public void onComplete() {
-                message.setText("Saved!");
             }
         });
     }

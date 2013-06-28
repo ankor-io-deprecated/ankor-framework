@@ -105,10 +105,10 @@ public class RefValueChanger {
             Object watchedPropNewValue;
             if (watchedProperty.isValid()) {
                 watchedPropNewValue = watchedProperty.getValue();
+                return isDifferent(watchedPropOldValue, watchedPropNewValue);
             } else {
-                watchedPropNewValue = null;
+                return false;
             }
-            return isDifferent(watchedPropOldValue, watchedPropNewValue);
         }
 
         return false;
