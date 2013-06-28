@@ -37,6 +37,10 @@ public class SocketMessageLoop<S> extends AbstractMessageLoop<S> {
             writer.println(msg);
         } catch (IOException e) {
             throw new RuntimeException("Error sending message to " + socket);
+        } finally {
+            try {
+                socket.close();
+            } catch (IOException ignored) {}
         }
     }
 
