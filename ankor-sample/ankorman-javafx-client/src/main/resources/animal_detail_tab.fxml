@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.lang.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
@@ -17,5 +18,8 @@
       <ComboBox fx:id="family" prefWidth="209.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
       <Button onAction="#save" text="Save" GridPane.columnIndex="1" GridPane.rowIndex="3" />
     </GridPane>
+    <padding>
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+    </padding>
   </VBox>
 </Tab>
