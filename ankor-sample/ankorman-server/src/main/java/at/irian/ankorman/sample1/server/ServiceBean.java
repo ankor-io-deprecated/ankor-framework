@@ -16,6 +16,7 @@ import java.util.List;
 */
 @SuppressWarnings("UnusedDeclaration")
 public class ServiceBean {
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ServiceBean.class);
 
     public ModelRoot init() {
         ModelRoot model = new ModelRoot();
@@ -75,6 +76,12 @@ public class ServiceBean {
             Data<Animal> data = new Data<Animal>(new Paginator(first, maxResults));
 
             data.getRows().addAll(animals.subList(first, last));
+
+            try {
+                Thread.sleep(2000L);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
 
             return data;
         }
@@ -141,12 +148,14 @@ public class ServiceBean {
     }
 
     private void reloadAnimals(Ref filterRef) {
+        LOG.info("RELOADING animals ...");
         Ref modelRef = filterRef.ancestor("model");
         AnimalSearchModel model = modelRef.getValue();
         model.getAnimals().getPaginator().reset();
         Data<Animal> animals = searchAnimals(model.getFilter(),
                                              model.getAnimals().getPaginator());
         modelRef.append("animals").setValue(animals);
+        LOG.info("... finished RELOADING");
     }
 
     private AnimalSelectItems getAnimalSelectItems() {

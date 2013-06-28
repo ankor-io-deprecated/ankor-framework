@@ -12,7 +12,8 @@ public class UnsynchronizedEventDelay implements EventDelay {
     private final DelayedModelEventListener listener;
     private final ScheduledExecutorService executorService;
     private final long delayMilliseconds;
-    private long lastEventTimestamp = 0L;
+
+    private volatile Runnable latestRunnable;
 
     public UnsynchronizedEventDelay(ScheduledExecutorService executorService,
                                     DelayedModelEventListener listener,
@@ -24,17 +25,16 @@ public class UnsynchronizedEventDelay implements EventDelay {
 
     @Override
     public void processDelayed(final ModelEvent event) {
-        lastEventTimestamp = System.currentTimeMillis();
-        Runnable runnable = new Runnable() {
-            @SuppressWarnings("StatementWithEmptyBody")
+        latestRunnable = new Runnable() {
             @Override
             public void run() {
-                if (lastEventTimestamp + delayMilliseconds <= System.currentTimeMillis()) {
+                if (latestRunnable == this) {
                     //noinspection unchecked
                     listener.processImmediately(event);
                 }
             }
         };
-        executorService.schedule(runnable, delayMilliseconds, TimeUnit.MILLISECONDS);
+        executorService.schedule(latestRunnable, delayMilliseconds, TimeUnit.MILLISECONDS);
     }
+
 }
