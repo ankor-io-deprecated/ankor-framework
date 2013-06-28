@@ -131,18 +131,27 @@ public class ServiceBean {
             @Override
             public void processChange(Ref filterRef, Ref changedProperty) {
                 reloadAnimals(filterRef);
+                filterRef.root().append("serverStatus").setValue("");
             }
-        }, 200L);
-
-        tabRef.append("model.animals.paginator.first").addPropChangeListener(new ChangeListener() {
+        }, 100L);
+        tabRef.append("model.filter").addTreeChangeListener(new ChangeListener() {
             @Override
-            public void processChange(Ref firstProperty, Ref changedProperty) {
-                Ref modelRef = firstProperty.ancestor("model");
+            public void processChange(Ref filterRef, Ref changedProperty) {
+                filterRef.root().append("serverStatus").setValue("loading data ...");
+            }
+        });
+
+        tabRef.append("model.animals.paginator").addTreeChangeListener(new ChangeListener() {
+            @Override
+            public void processChange(Ref paginatorRef, Ref changedProperty) {
+                paginatorRef.root().append("serverStatus").setValue("loading data ...");
+                Ref modelRef = paginatorRef.ancestor("model");
                 AnimalSearchModel model = modelRef.getValue();
                 Data<Animal> animals = searchAnimals(model.getFilter(),
-                                                     model.getAnimals().getPaginator());
-                Ref animalsRef = firstProperty.ancestor("animals");
+                        model.getAnimals().getPaginator());
+                Ref animalsRef = paginatorRef.ancestor("animals");
                 animalsRef.setValue(animals);
+                paginatorRef.root().append("serverStatus").setValue("");
             }
         });
     }

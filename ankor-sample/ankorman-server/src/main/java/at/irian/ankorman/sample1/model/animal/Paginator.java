@@ -23,32 +23,20 @@ public class Paginator {
         return first;
     }
 
-    public void setFirst(int first) {
-        this.first = first;
-    }
-
     public int getMaxResults() {
         return maxResults;
-    }
-
-    public void setMaxResults(int maxResults) {
-        this.maxResults = maxResults;
     }
 
     public int getCount() {
         return count;
     }
 
-    public void setCount(int count) {
-        this.count = count;
+    public Paginator previous() {
+        return new Paginator(first - maxResults, maxResults);
     }
 
-    public void previous() {
-        first = first - maxResults;
-    }
-
-    public void next() {
-        first = first + maxResults;
+    public Paginator next() {
+        return new Paginator(first + maxResults, maxResults);
     }
 
     public void reset() {

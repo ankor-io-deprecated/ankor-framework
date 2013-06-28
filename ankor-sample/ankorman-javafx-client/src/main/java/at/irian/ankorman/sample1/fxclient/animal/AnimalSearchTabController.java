@@ -102,8 +102,8 @@ public class AnimalSearchTabController implements Initializable {
                 onButtonClick(previous)
                         .callAction(new ClickAction<Paginator>() {
                             @Override
-                            public void onClick(Paginator paginator) {
-                                paginator.previous();
+                            public Paginator onClick(Paginator paginator) {
+                                return paginator.previous();
                             }
                         })
                         .withParam(paginatorRef).create();
@@ -111,8 +111,8 @@ public class AnimalSearchTabController implements Initializable {
                 onButtonClick(next)
                         .callAction(new ClickAction<Paginator>() {
                             @Override
-                            public void onClick(Paginator paginator) {
-                                paginator.next();
+                            public Paginator onClick(Paginator paginator) {
+                                return paginator.next();
                             }
                         })
                         .withParam(paginatorRef).create();
@@ -120,8 +120,9 @@ public class AnimalSearchTabController implements Initializable {
                 onButtonClick(save)
                         .callAction(new ClickAction() {
                             @Override
-                            public void onClick(Object value) {
+                            public Object onClick(Object value) {
                                 facade().saveAnimals(getTabRef(), ActionCompleteCallback.empty);
+                                return null;
                             }
                         });
 

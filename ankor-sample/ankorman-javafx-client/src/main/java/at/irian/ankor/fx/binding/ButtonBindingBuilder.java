@@ -43,10 +43,10 @@ public class ButtonBindingBuilder {
             public void handle(ActionEvent actionEvent) {
                 if (clickAction != null) {
                     //noinspection unchecked
-                    clickAction.onClick(valueRef != null ? valueRef.getValue() : null);
-                }
-                if (valueRef != null) {
-                    valueRef.setValue(valueRef.getValue());
+                    Object o = clickAction.onClick(valueRef != null ? valueRef.getValue() : null);
+                    if (valueRef != null) {
+                        valueRef.setValue(o);
+                    }
                 }
             }
         });
