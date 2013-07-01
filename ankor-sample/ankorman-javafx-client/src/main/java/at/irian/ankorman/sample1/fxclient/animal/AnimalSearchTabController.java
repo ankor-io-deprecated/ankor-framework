@@ -124,7 +124,7 @@ public class AnimalSearchTabController implements Initializable {
                                 facade().saveAnimals(getTabRef(), ActionCompleteCallback.empty);
                                 return null;
                             }
-                        });
+                        }).create();
 
             }
         });
@@ -146,7 +146,7 @@ public class AnimalSearchTabController implements Initializable {
                     @Override
                     public void handle(TableColumn.CellEditEvent<Animal, String> t) {
                         int rowNum = t.getTablePosition().getRow();
-                        getTabRef().append("model").append(String.format("animals[%d].name", rowNum)).setValue(t.getNewValue());
+                        getTabRef().append(String.format("model.animals.rows[%d].name", rowNum)).setValue(t.getNewValue());
                     }
                 });
 

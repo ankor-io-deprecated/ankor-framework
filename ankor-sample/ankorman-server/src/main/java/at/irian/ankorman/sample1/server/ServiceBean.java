@@ -138,7 +138,7 @@ public class ServiceBean {
             int i = 0;
             for (Animal a : animals) {
                 if (a.getUuid().equals(animal.getUuid())) {
-                    animals.set(i, animal);
+                    animals.set(i, new Animal(animal));
                     return;
                 }
                 i++;
