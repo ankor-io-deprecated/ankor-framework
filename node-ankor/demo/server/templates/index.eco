@@ -15,6 +15,10 @@
                 transport: new PollingTransport("/ankor"),
                 contextId: "<%= @ankorContextId %>"
             });
+            ankorSystem.action("init");
+            ankorSystem.onChange("/userName", function(value) {
+                console.log("Change on /userName", value)
+            });
         });
     </script>
 </body>

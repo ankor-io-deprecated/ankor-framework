@@ -1,15 +1,16 @@
 define([
     "dojo/_base/declare",
     "dojo/_base/lang",
-    "dojo/json",
-    "dojo/request"
-], function(declare, lang, json, request) {
+    "dojo/request",
+    "../message/JsonMapper"
+], function(declare, lang, request, JsonMapper) {
     var POLLINGINTERVAL = 1000;
 
     return declare(null, {
         //PUBLIC API
         constructor: function(url) {
             this.url = url;
+            this.mapper = new JsonMapper();
         },
         connect: function(contextId) {
             this.contextId = contextId;
@@ -30,7 +31,7 @@ define([
             if (this._messages.length > 0) {
                 timeout = 0;
             }
-            if (!this._requestTimer) {
+            if (!this._requestTimer && !this._inFlight) {
                 this._requestTimer = setTimeout(lang.hitch(this, "_doRequest"), timeout);
             }
         },
@@ -50,7 +51,7 @@ define([
                 handleAs: "json",
                 data: {
                     contextId: this.contextId,
-                    messages: json.stringify(messages)
+                    messages: this.mapper.encodeMessages(messages)
                 }
             }).then(lang.hitch(this, function(data) {
                 this._inFlight = false;
@@ -61,7 +62,7 @@ define([
                 this._inFlight = false;
                 this._scheduleRequest();
 
-                //Todo: Error Handling
+                //Todo: Error Handling (e.g. reschedule failed messages)
                 console.log("Error", error);
             }));
         }

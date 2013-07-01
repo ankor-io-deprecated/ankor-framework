@@ -10,9 +10,7 @@ exports.AnkorService = class AnkorService extends ContextDepending
 
     init: ->
         @ankor = new Ankor({
-            transport: new Ankor.transports.PollingMiddlewareTransport({
-                contextResolver: bind(@resolveContext, @)
-            })
+            transport: new Ankor.transports.PollingMiddlewareTransport()
         })
 
         @ankor.defineEnum("AnimalType", [
@@ -60,5 +58,13 @@ exports.AnkorService = class AnkorService extends ContextDepending
             tabs: @ankor.MAP(@ankor.TYPE("AnimalTab"))
         })
 
-    resolveContext: (req, cb) ->
-        cb(null, "in progress")
+        @ankor.onAction("init", bind(@onInit, @))
+        @ankor.onChange("/userName", bind(@onUsernameChange), @)
+
+    onInit: (action, context, cb) ->
+        context.model.set("userName", "Hello, World!")
+        cb()
+
+    onUsernameChange: (path, context, oldValue, newValue, cb) ->
+        console.log("onUsernameChange", context.model.get("userName"), oldValue, newValue)
+        cb()
