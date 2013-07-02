@@ -31,7 +31,7 @@ public class ArrayListEventListeners implements EventListeners {
 
     @Override
     public void remove(ModelEventListener listener) {
-        listeners.add(listener);
+        listeners.remove(listener);
     }
 
     @Override
