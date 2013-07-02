@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author Manfred Geiler
@@ -12,7 +13,7 @@ public class ArrayListEventListeners implements EventListeners {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(UnsynchronizedListenersHolder.class);
 
     private final EventListeners parentListeners;
-    private List<ModelEventListener> listeners;
+    private final List<ModelEventListener> listeners;
 
     public ArrayListEventListeners() {
         this(null);
@@ -20,21 +21,17 @@ public class ArrayListEventListeners implements EventListeners {
 
     public ArrayListEventListeners(EventListeners parentListeners) {
         this.parentListeners = parentListeners;
-        this.listeners = Collections.emptyList();
+        this.listeners = new CopyOnWriteArrayList<ModelEventListener>();
     }
 
     @Override
     public void add(ModelEventListener listener) {
-        ArrayList<ModelEventListener> newListeners = new ArrayList<ModelEventListener>(listeners);
-        newListeners.add(listener);
-        listeners = newListeners;
+        listeners.add(listener);
     }
 
     @Override
     public void remove(ModelEventListener listener) {
-        ArrayList<ModelEventListener> newListeners = new ArrayList<ModelEventListener>(listeners);
-        newListeners.remove(listener);
-        listeners = newListeners;
+        listeners.add(listener);
     }
 
     @Override
