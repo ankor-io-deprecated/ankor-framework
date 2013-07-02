@@ -8,27 +8,32 @@ define([
 
     return declare(null, {
         //PUBLIC API
-        constructor: function(url) {
-            this.url = url;
+        constructor: function(config) {
+            this.ankorSystem = null;
             this.mapper = new JsonMapper();
-        },
-        connect: function(contextId) {
-            this.contextId = contextId;
             
-            this._messages = [];
+            this.url = "/ankor";
+            if (config && config.url) {
+                this.url = config.url;
+            }
+
+            this._outgoingMessages = [];
             this._inFlight = false;
             this._requestTimer = null;
+        },
+        connect: function(ankorSystem) {
+            this.ankorSystem = ankorSystem;
             this._doRequest();
         },
         sendMessage: function(message) {
-            this._messages.push(message);
+            this._outgoingMessages.push(message);
             this._scheduleRequest();
         },
 
         //INTERNAL API
         _scheduleRequest: function() {
             var timeout = POLLINGINTERVAL;
-            if (this._messages.length > 0) {
+            if (this._outgoingMessages.length > 0) {
                 timeout = 0;
             }
             if (!this._requestTimer && !this._inFlight) {
@@ -43,21 +48,22 @@ define([
         },
         _doRequest: function() {
             this._clearScheduledRequest();
-            var messages = this._messages;
-            this._messages = [];
+            var messages = this._outgoingMessages;
+            this._outgoingMessages = [];
             this._inFlight = true;
 
             request.post(this.url, {
                 handleAs: "json",
                 data: {
-                    contextId: this.contextId,
+                    contextId: this.ankorSystem.contextId,
                     messages: this.mapper.encodeMessages(messages)
                 }
             }).then(lang.hitch(this, function(data) {
                 this._inFlight = false;
                 this._scheduleRequest();
 
-                console.log("Success", data);
+                messages = this.mapper.decodeMessages(data.messages);
+                this.ankorSystem.processMessages(messages);
             }), lang.hitch(this, function(error) {
                 this._inFlight = false;
                 this._scheduleRequest();

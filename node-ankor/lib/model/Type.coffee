@@ -39,11 +39,6 @@ exports.BooleanType = class BooleanType extends Type
     validateValue: (value) ->
         return isNull(value) or isBoolean(value)
 
-exports.DateType = class DateType extends Type
-    constructor: ->
-    validateValue: (value) ->
-        return isNull(value) or isDate(value)
-
 exports.ModelType = class ModelType extends Type
     __builtin__: false,
 

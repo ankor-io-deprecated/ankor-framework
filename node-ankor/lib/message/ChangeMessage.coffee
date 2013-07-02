@@ -2,8 +2,8 @@
 
 exports.ChangeMessage = class ChangeMessage extends Message
     type: "change"
-    constructor: (id, path, value) ->
+    constructor: (id, ref, value) ->
         super
-        @path = path
+        @ref = ref
         @value = value
         

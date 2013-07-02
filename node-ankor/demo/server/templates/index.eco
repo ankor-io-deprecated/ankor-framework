@@ -7,17 +7,17 @@
 <body>
     <script>
         require([
-            "ankor/Ankor",
+            "ankor/AnkorSystem",
             "ankor/transport/PollingTransport",
             "dojo/domReady!"
-        ], function(Ankor, PollingTransport) {
-            var ankorSystem = new Ankor({
-                transport: new PollingTransport("/ankor"),
+        ], function(AnkorSystem, PollingTransport) {
+            var ankorSystem = window.ankorSystem = new AnkorSystem({
+                transport: new PollingTransport(),
                 contextId: "<%= @ankorContextId %>"
             });
             ankorSystem.action("init");
-            ankorSystem.onChange("/userName", function(value) {
-                console.log("Change on /userName", value)
+            ankorSystem.onChange("/*", function(ref, oldValue, newValue) {
+                console.log("Change on", ref.getPath(), oldValue, newValue);
             });
         });
     </script>

@@ -10,7 +10,7 @@ exports.AppRouter = class AppRouter extends ContextDepending
         app.get("/", bind(@index, @))
 
     index: (req, res, next) ->
-        @ankorService.ankor.instantiateContext((err, context) ->
+        @ankorService.ankorSystem.createContext((err, context) ->
             if err
                 return next(err)
 

@@ -4,7 +4,7 @@ EcoTemplates = require("./helper/EcoTemplates")
 {AnkorMan} = require("./AnkorMan")
 
 ankorMan = new AnkorMan()
-ankor = ankorMan.contextManager.registry["ankorService"].ankor
+ankorSystem = ankorMan.contextManager.registry["ankorService"].ankorSystem
 
 app = express()
 app.engine("eco", EcoTemplates)
@@ -25,7 +25,7 @@ app.use(express.session({
     secret: "0c4b4b78-df35-11e2-ab63-577e3325d7fc"
 }))
 
-app.use(ankor.transport.middleware())
+app.use(ankorSystem.transport.middleware())
 app.use(app.router)
 
 server = http.createServer(app)

@@ -36,8 +36,14 @@ exports.Map = class Map
         @_data[key] = value
         if not hadBefore
             @_count++
+
+    apply: (key, value) ->
+        pass
     
     remove: (key) ->
         assert(@has(key), "remove didn't find key '#{key}'")
         delete @_data[key]
         @_count--
+
+    applyRemove: (key) ->
+        pass

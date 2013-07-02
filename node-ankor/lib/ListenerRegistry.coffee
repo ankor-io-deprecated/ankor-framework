@@ -1,4 +1,5 @@
 async = require("async")
+{ModelRef} = require("./model/ModelRef")
 
 exports.ListenerRegistry = class ListenerRegistry
     constructor: ->
@@ -43,30 +44,26 @@ exports.ListenerRegistry = class ListenerRegistry
                 qErr = err
         )
 
-    registerChangeListener: (path, listener) ->
+    registerChangeListener: (ref, listener) ->
         listenerId = @listenerId++
+        path = ref.getPath()
         if path not of @changeListeners
             @changeListeners[path] = {}
         @changeListeners[path][listenerId] = listener
         return {
-            path: path,
+            ref: ref,
             listenerId: listenerId,
             remove: =>
                 delete @changeListeners[path][listenerId]
         }
 
-    unregisterActionListener: (path, listenerId) ->
-        delete @changeListeners[path][listenerId]
-
-    triggerChangeEvent: (context, path, oldValue, newValue, cb) ->
+    triggerChangeEvent: (context, ref, oldValue, newValue, cb) ->
         listeners = []
         for listenerPath, registeredListeners of @changeListeners
-            if path.indexOf(listenerPath) == 0
+            listenerRef = new ModelRef(listenerPath)
+            if listenerRef.matches(ref)
                 for listenerId, listener of registeredListeners
-                    listeners.push({
-                        path: listenerPath,
-                        fn: listener
-                    })
+                    listeners.push(listener)
         if listeners.length == 0
             if cb
                 cb()
@@ -74,12 +71,7 @@ exports.ListenerRegistry = class ListenerRegistry
 
         qErr = null
         q = async.queue((listener, cb) =>
-            subPath = listener.path.substr(path.length)
-            subPath = subPath.split("/")
-            subPath = (subLevel for subLevel in subPath when subLevel != "")
-            #Todo: subpath event resolution...
-            console.log("SubPath:", subPath)
-            listener.fn(listener.path, context, oldValue, newValue, cb)
+            listener(ref, context, oldValue, newValue, cb)
         , 1)
         q.drain = ->
             if cb

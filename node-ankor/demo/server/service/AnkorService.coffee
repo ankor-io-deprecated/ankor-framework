@@ -1,70 +1,74 @@
 {bind} = require("underscore")
-Ankor = require("../../../lib/Ankor")
+ankor = require("../../../lib/ankor")
 {ContextDepending} = require("../base/ContextDepending")
 
 exports.AnkorService = class AnkorService extends ContextDepending
     constructor: ->
         super()
 
-        @ankor = null
+        @ankorSystem = null
 
     init: ->
-        @ankor = new Ankor({
-            transport: new Ankor.transports.PollingMiddlewareTransport()
+        @ankorSystem = new ankor.AnkorSystem({
+            transport: new ankor.transports.PollingMiddlewareTransport()
         })
 
-        @ankor.defineEnum("AnimalType", [
+        @ankorSystem.defineEnum("AnimalType", [
             "Fish",
             "Bird",
             "Mammal"
         ])
-        @ankor.defineEnum("AnimalFamily", [
+        @ankorSystem.defineEnum("AnimalFamily", [
             "Esocidae",
             "Accipitridae",
             "Balaenopteridae",
             "Felidae",
             "Salmonidae"
         ])
-        @ankor.defineModel("Animal", {
-            uuid: @ankor.STRING,
-            name: @ankor.STRING,
-            type: @ankor.TYPE("AnimalType"),
-            family: @ankor.TYPE("AnimalFamily")
+        @ankorSystem.defineModel("Animal", {
+            uuid: @ankorSystem.STRING,
+            name: @ankorSystem.STRING,
+            type: @ankorSystem.TYPE("AnimalType"),
+            family: @ankorSystem.TYPE("AnimalFamily")
         })
-        @ankor.defineModel("AnimalSelectItems", {
-            types: @ankor.LIST(@ankor.TYPE("AnimalType")),
-            families: @ankor.LIST(@ankor.TYPE("AnimalFamily"))
+        ###@ankorSystem.defineModel("AnimalSelectItems", {
+            types: @ankorSystem.LIST(@ankorSystem.TYPE("AnimalType")),
+            families: @ankorSystem.LIST(@ankorSystem.TYPE("AnimalFamily"))
         })
-        @ankor.defineModel("AnimalSearchFilter", {
-            name: @ankor.STRING,
-            type: @ankor.TYPE("AnimalType"),
-            family: @ankor.TYPE("AnimalFamily")
+        @ankorSystem.defineModel("AnimalSearchFilter", {
+            name: @ankorSystem.STRING,
+            type: @ankorSystem.TYPE("AnimalType"),
+            family: @ankorSystem.TYPE("AnimalFamily")
         })
-        @ankor.defineModel("AnimalTab", {
-            id: @ankor.STRING
+        @ankorSystem.defineModel("AnimalTab", {
+            id: @ankorSystem.STRING
         })
-        @ankor.extendModel("AnimalTab", "AnimalDetailTab", {
-            animal: @ankor.TYPE("Animal"),
-            selectItems: @ankor.TYPE("AnimalSelectItems")
+        @ankorSystem.extendModel("AnimalTab", "AnimalDetailTab", {
+            animal: @ankorSystem.TYPE("Animal"),
+            selectItems: @ankorSystem.TYPE("AnimalSelectItems")
         })
-        @ankor.extendModel("AnimalTab", "AnimalSearchTab", {
-            filter: @ankor.TYPE("AnimalSearchFilter"),
-            selectItems: @ankor.TYPE("AnimalSelectItems"),
-            animals: @ankor.LIST(@ankor.TYPE("Animal"))
-        })
-        @ankor.defineRoot({
-            userName: @ankor.STRING,
-            serverStatus: @ankor.STRING,
-            tabs: @ankor.MAP(@ankor.TYPE("AnimalTab"))
+        @ankorSystem.extendModel("AnimalTab", "AnimalSearchTab", {
+            filter: @ankorSystem.TYPE("AnimalSearchFilter"),
+            selectItems: @ankorSystem.TYPE("AnimalSelectItems"),
+            animals: @ankorSystem.LIST(@ankorSystem.TYPE("Animal"))
+        })###
+        @ankorSystem.defineRoot({
+            userName: @ankorSystem.STRING,
+            serverStatus: @ankorSystem.STRING,
+            #tabs: @ankorSystem.MAP(@ankorSystem.TYPE("AnimalTab"))
+            animal: @ankorSystem.TYPE("Animal")
         })
 
-        @ankor.onAction("init", bind(@onInit, @))
-        @ankor.onChange("/userName", bind(@onUsernameChange), @)
+        @ankorSystem.onAction("init", bind(@onInit, @))
+        @ankorSystem.onChange("/*", bind(@onChange), @)
 
     onInit: (action, context, cb) ->
         context.model.set("userName", "Hello, World!")
+        animal = context.createModelObject("Animal")
+        context.model.set("animal", animal)
+        animal.set("name", "test")
         cb()
 
-    onUsernameChange: (path, context, oldValue, newValue, cb) ->
-        console.log("onUsernameChange", context.model.get("userName"), oldValue, newValue)
+    onChange: (ref, context, oldValue, newValue, cb) ->
+        console.log("Change on", ref.getPath(), oldValue, newValue)
         cb()

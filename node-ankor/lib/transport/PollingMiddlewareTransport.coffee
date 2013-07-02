@@ -80,6 +80,7 @@ exports.PollingMiddlewareTransport = class PollingMiddlewareTransport
 
             ], (err) =>
                 if err
+                    res.statusCode = 500
                     res.end(JSON.stringify({
                         contextId: contextId,
                         error: true,
