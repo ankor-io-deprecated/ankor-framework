@@ -4,34 +4,27 @@ import at.irian.ankor.fx.app.ActionCompleteCallback;
 import at.irian.ankor.fx.binding.BindingContext;
 import at.irian.ankor.fx.binding.ClickAction;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankorman.sample1.fxclient.BaseTabController;
 import at.irian.ankorman.sample1.model.animal.Animal;
 import at.irian.ankorman.sample1.model.animal.AnimalFamily;
 import at.irian.ankorman.sample1.model.animal.AnimalType;
 import at.irian.ankorman.sample1.model.animal.Paginator;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
 import static at.irian.ankor.fx.binding.ButtonBindingBuilder.onButtonClick;
 import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
 import static at.irian.ankorman.sample1.fxclient.App.facade;
-import static at.irian.ankorman.sample1.fxclient.App.refFactory;
 
 /**
  * @author Thomas Spiegl
  */
-public class AnimalSearchTabController implements Initializable {
+public class AnimalSearchTabController extends BaseTabController {
 
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalSearchTabController.class);
-    @FXML
-    protected javafx.scene.control.Tab tab;
 
     @FXML
     protected TextInputControl name;
@@ -58,23 +51,15 @@ public class AnimalSearchTabController implements Initializable {
     @FXML
     protected Button save;
 
-    private final String tabId;
-
     private BindingContext bindingContext = new BindingContext();
 
     public AnimalSearchTabController(String tabId) {
-        this.tabId = tabId;
+        super(tabId);
     }
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+    public void initialize() {
         final Ref tabRef = getTabRef();
-        tab.setOnClosed(new EventHandler<Event>() {
-            @Override
-            public void handle(Event event) {
-                tabRef.setValue(null);
-            }
-        });
         Ref filterRef = tabRef.append("model.filter");
         Ref selItemsRef = tabRef.append("model.selectItems");
         Ref rowsRef = tabRef.append("model.animals.rows");
@@ -130,11 +115,6 @@ public class AnimalSearchTabController implements Initializable {
                         return null;
                     }
                 }).create();
-    }
-
-    private Ref getTabRef() {
-        Ref rootRef = refFactory().rootRef();
-        return rootRef.append(String.format("tabs.%s", tabId));
     }
 
     @SuppressWarnings("unchecked")

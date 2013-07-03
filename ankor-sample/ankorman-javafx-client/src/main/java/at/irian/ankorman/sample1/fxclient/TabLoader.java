@@ -45,9 +45,8 @@ public class TabLoader {
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    final Tab tab;
                     try {
-                        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource(fxmlResource));
+                        final FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource(fxmlResource));
                         loader.setControllerFactory(new Callback<Class<?>, Object>() {
                             @Override
                             public Object call(Class<?> aClass) {
@@ -64,8 +63,8 @@ public class TabLoader {
                                 }
                             }
                         });
-                        tab = (Tab) loader.load();
-                        tabPane.getTabs().add(tab);
+                        Tab tab = (Tab) loader.load();
+                        tabPane.getTabs().add((Tab) loader.load());
                         tabPane.getSelectionModel().select(tab);
                     } catch (IOException e) {
                         throw new IllegalStateException("cannot load animal_search_tab.fxml", e);

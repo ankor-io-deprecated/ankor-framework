@@ -3,32 +3,24 @@ package at.irian.ankorman.sample1.fxclient.animal;
 import at.irian.ankor.fx.app.ActionCompleteCallback;
 import at.irian.ankor.fx.binding.BindingContext;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankorman.sample1.fxclient.BaseTabController;
 import at.irian.ankorman.sample1.model.animal.AnimalFamily;
 import at.irian.ankorman.sample1.model.animal.AnimalType;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.text.Text;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
 import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
 import static at.irian.ankorman.sample1.fxclient.App.facade;
-import static at.irian.ankorman.sample1.fxclient.App.refFactory;
 
 /**
  * @author Thomas Spiegl
  */
-public class AnimalDetailTabController implements Initializable {
+public class AnimalDetailTabController extends BaseTabController {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalSearchTabController.class);
 
-    @FXML
-    protected javafx.scene.control.Tab tab;
     @FXML
     protected TextInputControl name;
     @FXML
@@ -38,21 +30,13 @@ public class AnimalDetailTabController implements Initializable {
     @FXML
     protected ComboBox<AnimalFamily> family;
 
-    private final String tabId;
-
     private BindingContext bindingContext = new BindingContext();
 
     public AnimalDetailTabController(String tabId) {
-        this.tabId = tabId;
+        super(tabId);
     }
 
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        tab.setOnClosed(new EventHandler<Event>() {
-            @Override
-            public void handle(Event event) {
-                getTabRef().setValue(null);
-            }
-        });
+    public void initialize() {
         Ref modelRef = getTabRef().append("model");
         Ref animalRef = modelRef.append("animal");
         Ref selItemsRef = modelRef.append("selectItems");
@@ -75,11 +59,6 @@ public class AnimalDetailTabController implements Initializable {
                 .toInput(family)
                 .withSelectItems(selItemsRef.append("families"))
                 .createWithin(bindingContext);
-    }
-
-    private Ref getTabRef() {
-        Ref rootRef = refFactory().rootRef();
-        return rootRef.append(String.format("tabs.%s", tabId));
     }
 
     @FXML
