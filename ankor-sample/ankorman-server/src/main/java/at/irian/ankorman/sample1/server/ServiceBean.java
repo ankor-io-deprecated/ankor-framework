@@ -192,7 +192,7 @@ public class ServiceBean {
         }
     }
 
-    private static int MAX_LEN = 15;
+    private static final int MAX_LEN = 15;
 
     private static String tabName(String name, String value) {
         if (ObjectUtils.isEmpty(value)) {
@@ -201,7 +201,7 @@ public class ServiceBean {
             if (value.length() > MAX_LEN) {
                 value = value.substring(0, MAX_LEN);
             }
-            return String.format("%s(%s)", name, value);
+            return String.format("%s (%s)", name, value);
         }
     }
 
