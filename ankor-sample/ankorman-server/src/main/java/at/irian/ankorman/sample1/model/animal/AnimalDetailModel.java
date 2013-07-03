@@ -16,6 +16,8 @@ public class AnimalDetailModel {
 
     private String nameStatus;
 
+    private boolean editable;
+
     @JsonTypeInfo(use = JsonTypeInfo.Id.NONE, defaultImpl = AnimalSelectItems.class)
     private AnimalSelectItems selectItems;
 
@@ -26,6 +28,7 @@ public class AnimalDetailModel {
     public AnimalDetailModel(Animal animal, AnimalSelectItems selectItems) {
         this.selectItems = selectItems;
         this.animal = animal;
+        this.editable = true;
     }
 
     public Animal getAnimal() {
@@ -48,15 +51,23 @@ public class AnimalDetailModel {
         return saved;
     }
 
-    public void setSaved(boolean saved) {
-        this.saved = saved;
-    }
-
     public String getNameStatus() {
         return nameStatus;
     }
 
     public void setNameStatus(String nameStatus) {
         this.nameStatus = nameStatus;
+    }
+
+    public void setSaved(boolean saved) {
+        this.saved = saved;
+    }
+
+    public boolean isEditable() {
+        return editable;
+    }
+
+    public void setEditable(boolean editable) {
+        this.editable = editable;
     }
 }

@@ -2,10 +2,10 @@ package at.irian.ankor.fx.binding;
 
 import at.irian.ankor.ref.Ref;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableView;
@@ -32,6 +32,8 @@ public class ValueBindingsBuilder {
     private ComboBox comboBox;
 
     private TableView tableView;
+
+    private Ref editableRef;
 
     public static ValueBindingsBuilder bindValue(Ref value) {
         return new ValueBindingsBuilder().forValue(value);
@@ -72,6 +74,11 @@ public class ValueBindingsBuilder {
         return this;
     }
 
+    public ValueBindingsBuilder withEditable(Ref editableRef) {
+        this.editableRef = editableRef;
+        return this;
+    }
+
     public void createWithin(BindingContext bindingContext) {
         if (text != null) {
             bind(valueRef, text, bindingContext);
@@ -84,6 +91,9 @@ public class ValueBindingsBuilder {
             bind(valueRef, itemsRef, comboBox);
         } else if (inputControl != null) {
             bind(valueRef, inputControl, bindingContext);
+            if (editableRef != null) {
+                bindEditable(editableRef, inputControl, bindingContext);
+            }
         } else if (tableView != null) {
             bind(valueRef, tableView);
         } else {
@@ -124,15 +134,25 @@ public class ValueBindingsBuilder {
         new RefPropertyBinding(valueRef, createProperty(control.textProperty(), context));
     }
 
+    private static void bindEditable(Ref valueRef, TextInputControl control, BindingContext context) {
+        new RefPropertyBinding(valueRef, createBooleanProperty(control.editableProperty(), context));
+    }
+
     private static void bind(Ref valueRef, TableView tableView) {
         new RefPropertyBinding(valueRef, tableView.itemsProperty());
     }
 
-    private static SimpleStringProperty createProperty(StringProperty stringProperty, BindingContext context) {
+    private static SimpleStringProperty createProperty(StringProperty property, BindingContext context) {
         SimpleStringProperty prop = new SimpleStringProperty();
-        Bindings.bindBidirectional(prop, stringProperty);
+        Bindings.bindBidirectional(prop, property);
         context.add(prop);
         return prop;
     }
 
+    private static SimpleBooleanProperty createBooleanProperty(BooleanProperty property, BindingContext context) {
+        SimpleBooleanProperty prop = new SimpleBooleanProperty();
+        Bindings.bindBidirectional(prop, property);
+        context.add(prop);
+        return prop;
+    }
 }

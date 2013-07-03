@@ -29,30 +29,13 @@ public class ServiceFacade {
                 .execute();
     }
 
-    public void createAnimalSearchTab(String tabId, ActionCompleteCallback cb) {
+    public void openTab(String tabId, TabType tabType, ActionCompleteCallback cb) {
         Ref tabsRef = refFactory.ref("root.tabs");
-        appService.remoteMethod("service.createAnimalSearchTab(contextRef, tabId)")
+        appService.remoteMethod("service.openTab(contextRef, tabId, modelType)")
                 .inContext(tabsRef)
                 .setParam("tabId", tabId)
-                //.withResultIn(tabsRef.append(tabId))
-                .onComplete(cb)
-                .execute();
-    }
-
-    public void createAnimalDetailTab(String tabId, ActionCompleteCallback cb) {
-        Ref tabsRef = refFactory.ref("root.tabs");
-        appService.remoteMethod("service.createAnimalDetailTab(contextRef, tabId)")
-                .inContext(tabsRef)
-                .setParam("tabId", tabId)
-                //.withResultIn(tabsRef.append(tabId))
-                .onComplete(cb)
-                .execute();
-    }
-
-    public void searchAnimals(Ref tabRef, ActionCompleteCallback cb) {
-        appService.remoteMethod("service.searchAnimals(context.filter, context.animals.paginator)")
-                .inContext(tabRef.append("model"))
-                .withResultIn("context.animals")
+                .setParam("modelType", tabType.getModelType())
+                        //.withResultIn(tabsRef.append(tabId))
                 .onComplete(cb)
                 .execute();
     }

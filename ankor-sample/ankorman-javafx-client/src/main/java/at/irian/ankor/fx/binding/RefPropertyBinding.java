@@ -48,6 +48,8 @@ public class RefPropertyBinding implements ChangeListener, javafx.beans.value.Ch
         Object remoteValue = valueRef.getValue();
         if (remoteValue instanceof String) {
             property.setValue(remoteValue);
+        } else if (remoteValue instanceof Boolean) {
+            property.setValue(remoteValue);
         } else if (remoteValue instanceof Enum) {
             property.setValue(((Enum) remoteValue).name());
         } else if (remoteValue instanceof List) {

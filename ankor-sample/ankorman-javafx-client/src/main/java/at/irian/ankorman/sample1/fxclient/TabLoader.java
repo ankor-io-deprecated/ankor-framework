@@ -1,8 +1,6 @@
 package at.irian.ankorman.sample1.fxclient;
 
 import at.irian.ankor.fx.app.ActionCompleteCallback;
-import at.irian.ankorman.sample1.fxclient.animal.AnimalDetailTabController;
-import at.irian.ankorman.sample1.fxclient.animal.AnimalSearchTabController;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Tab;
@@ -27,15 +25,9 @@ public class TabLoader {
         this.tabPane = tabPane;
     }
 
-    public void loadTab(Class tabType, String fxmlResource) {
+    public void loadTab(TabType tabType) {
         final String tabId = TabIds.next();
-        if (tabType.equals(AnimalSearchTabController.class)) {
-            facade().createAnimalSearchTab(tabId, new ActionCompleteCallbackImpl(tabId, fxmlResource));
-        } else if (tabType.equals(AnimalDetailTabController.class)) {
-            facade().createAnimalDetailTab(tabId, new ActionCompleteCallbackImpl(tabId, fxmlResource));
-        } else {
-            throw new IllegalArgumentException("Tab not implemented " + tabType.getName());
-        }
+        facade().openTab(tabId, tabType, new ActionCompleteCallbackImpl(tabId, tabType.getFxmlResource()));
     }
 
     private class ActionCompleteCallbackImpl implements ActionCompleteCallback {

@@ -62,6 +62,7 @@ public class AnimalDetailTabController implements Initializable {
                 .createWithin(bindingContext);
         bindValue(animalRef.append("name"))
                 .toInput(name)
+                .withEditable(modelRef.append("editable"))
                 .createWithin(bindingContext);
         bindValue(modelRef.append("nameStatus"))
                 .toText(nameStatus)

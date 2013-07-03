@@ -42,6 +42,7 @@ public class ServiceBean {
             try {
                 animalRepository.saveAnimal(model.getAnimal());
                 modelRef.append("saved").setValue(true);
+                modelRef.append("editable").setValue(false);
                 status = "Animal successfully saved";
             } catch (Exception e) {
                 status = "Error: " + e.getMessage();
@@ -59,7 +60,17 @@ public class ServiceBean {
         }
     }
 
-    public void createAnimalSearchTab(final Ref tabsRef, final String tabId) {
+    public void openTab(final Ref tabsRef, final String tabId, final Class modelType) {
+        if (modelType.equals(AnimalSearchModel.class)) {
+            createAnimalSearchTab(tabsRef, tabId);
+        } else if (modelType.equals(AnimalDetailModel.class)) {
+            createAnimalDetailTab(tabsRef, tabId);
+        } else {
+            throw new IllegalArgumentException("Model Type not implemented " + modelType);
+        }
+    }
+
+    private void createAnimalSearchTab(final Ref tabsRef, final String tabId) {
         AnimalSearchModel model = new AnimalSearchModel(getAnimalSelectItems());
 
         Tab<AnimalSearchModel> tab = new Tab<AnimalSearchModel>(tabId);
@@ -107,7 +118,7 @@ public class ServiceBean {
         });
     }
 
-    public void createAnimalDetailTab(final Ref tabsRef, String tabId) {
+    private void createAnimalDetailTab(final Ref tabsRef, String tabId) {
 
         AnimalDetailModel model = new AnimalDetailModel(new Animal(), getAnimalSelectItems());
 
@@ -135,11 +146,6 @@ public class ServiceBean {
                 }
             }
         });
-    }
-
-    public void createDefaultTabs(final Ref tabsRef, String tabId) {
-        createAnimalDetailTab(tabsRef, "D1");
-        createAnimalSearchTab(tabsRef, "D2");
     }
 
     private AnimalSelectItems getAnimalSelectItems() {

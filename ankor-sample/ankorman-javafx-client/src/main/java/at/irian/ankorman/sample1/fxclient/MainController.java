@@ -3,8 +3,6 @@ package at.irian.ankorman.sample1.fxclient;
 import at.irian.ankor.fx.app.ActionCompleteCallback;
 import at.irian.ankor.fx.binding.BindingContext;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankorman.sample1.fxclient.animal.AnimalDetailTabController;
-import at.irian.ankorman.sample1.fxclient.animal.AnimalSearchTabController;
 import at.irian.ankorman.sample1.model.ModelRoot;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -54,11 +52,11 @@ public class MainController implements Initializable {
         });
     }
 
-    public void openAnimalSearchTab(ActionEvent actionEvent) {
-        tabLoader.loadTab(AnimalSearchTabController.class, "animal_search_tab.fxml");
+    public void openAnimalSearchTab(@SuppressWarnings("UnusedParameters") ActionEvent actionEvent) {
+        tabLoader.loadTab(TabType.animalSearchTab);
     }
 
-    public void openAnimalDetailTab(ActionEvent actionEvent) {
-        tabLoader.loadTab(AnimalDetailTabController.class, "animal_detail_tab.fxml");
+    public void openAnimalDetailTab(@SuppressWarnings("UnusedParameters") ActionEvent actionEvent) {
+        tabLoader.loadTab(TabType.animalDetailTab);
     }
 }
