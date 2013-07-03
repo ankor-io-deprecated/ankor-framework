@@ -2,6 +2,7 @@ package at.irian.ankorman.sample1.server;
 
 import at.irian.ankor.ref.ChangeListener;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.util.ObjectUtils;
 import at.irian.ankorman.sample1.model.ModelRoot;
 import at.irian.ankorman.sample1.model.Tab;
 import at.irian.ankorman.sample1.model.animal.*;
@@ -75,7 +76,7 @@ public class ServiceBean {
 
         Tab<AnimalSearchModel> tab = new Tab<AnimalSearchModel>(tabId);
         tab.setModel(model);
-        tab.setName("Animal Search (" + tabId + ")");
+        tab.setName(tabName("Animal Search", null));
 
         Ref tabRef = tabsRef.append(tabId);
         tabRef.setValue(tab);
@@ -100,8 +101,11 @@ public class ServiceBean {
             @Override
             public void processChange(Ref filterRef, Ref changedProperty) {
                 filterRef.root().append("serverStatus").setValue("loading data ...");
+                String name = filterRef.append("name").getValue();
+                filterRef.ancestor("model").parent().append("name").setValue(tabName("Animal Search", name));
             }
         });
+
 
         tabRef.append("model.animals.paginator").addTreeChangeListener(new ChangeListener() {
             @Override
@@ -124,7 +128,7 @@ public class ServiceBean {
 
         Tab<AnimalDetailModel> tab = new Tab<AnimalDetailModel>(tabId);
         tab.setModel(model);
-        tab.setName("New Animal (" + tabId + ")");
+        tab.setName(tabName("New Animal", null));
 
         Ref tabRef = tabsRef.append(tabId);
         tabRef.setValue(tab);
@@ -136,7 +140,7 @@ public class ServiceBean {
             public void processChange(Ref nameRef, Ref changedProperty) {
                 Ref nameStatusRef = nameRef.ancestor("model").append("nameStatus");
                 String name = nameRef.getValue();
-                nameRef.ancestor("model").parent().append("name").setValue("New Animal (" + name + ")");
+                nameRef.ancestor("model").parent().append("name").setValue(tabName("New Animal", name));
                 if (animalRepository.isAnimalNameAlreadyExists(name)) {
                     nameStatusRef.setValue("name already exists");
                 } else if (name.length() > 10) {
@@ -185,6 +189,19 @@ public class ServiceBean {
             } else {
                 modelRef.append("animal.family").setValue(null);
             }
+        }
+    }
+
+    private static int MAX_LEN = 15;
+
+    private static String tabName(String name, String value) {
+        if (ObjectUtils.isEmpty(value)) {
+            return name;
+        } else {
+            if (value.length() > MAX_LEN) {
+                value = value.substring(0, MAX_LEN);
+            }
+            return String.format("%s(%s)", name, value);
         }
     }
 
