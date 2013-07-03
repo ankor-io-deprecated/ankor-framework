@@ -16,6 +16,8 @@ import java.util.ResourceBundle;
 import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
 import static at.irian.ankorman.sample1.fxclient.App.facade;
 import static at.irian.ankorman.sample1.fxclient.App.refFactory;
+import static at.irian.ankorman.sample1.fxclient.TabType.animalDetailTab;
+import static at.irian.ankorman.sample1.fxclient.TabType.animalSearchTab;
 
 /**
  * @author Thomas Spiegl
@@ -32,8 +34,6 @@ public class MainController implements Initializable {
 
     private BindingContext bindingContext = new BindingContext();
 
-    private TabLoader tabLoader;
-
     public void initialize(URL url, ResourceBundle resourceBundle) {
         facade().initApplication(new ActionCompleteCallback() {
 
@@ -47,16 +47,15 @@ public class MainController implements Initializable {
                         .toText(serverStatus)
                         .createWithin(bindingContext);
 
-                tabLoader = new TabLoader(tabPane);
             }
         });
     }
 
     public void openAnimalSearchTab(@SuppressWarnings("UnusedParameters") ActionEvent actionEvent) {
-        tabLoader.loadTab(TabType.animalSearchTab);
+        new TabLoader(animalSearchTab).loadTabTo(tabPane);
     }
 
     public void openAnimalDetailTab(@SuppressWarnings("UnusedParameters") ActionEvent actionEvent) {
-        tabLoader.loadTab(TabType.animalDetailTab);
+        new TabLoader(animalDetailTab).loadTabTo(tabPane);
     }
 }

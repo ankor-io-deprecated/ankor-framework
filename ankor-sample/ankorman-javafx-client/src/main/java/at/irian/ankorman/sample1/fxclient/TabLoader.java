@@ -19,26 +19,37 @@ public class TabLoader {
 
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TabLoader.class);
 
-    private final TabPane tabPane;
+    private final String tabId;
+    private final TabType tabType;
 
-    public TabLoader(TabPane tabPane) {
-        this.tabPane = tabPane;
+    public TabLoader(TabType tabType) {
+        this.tabId = TabIds.next();
+        this.tabType = tabType;
+        if (tabType == null) {
+            throw new IllegalStateException("tabType is null");
+        }
     }
 
-    public void loadTab(TabType tabType) {
-        final String tabId = TabIds.next();
-        facade().openTab(tabId, tabType, new ActionCompleteCallbackImpl(tabId, tabType.getFxmlResource()));
+    public void loadTabTo(TabPane tabPane) {
+        if (tabType == null) {
+            throw new IllegalStateException("tabType is null");
+        }
+        if (tabPane == null) {
+            throw new IllegalStateException("tabPane is null");
+        }
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource(tabType.getFxmlResource()));
+        loader.setControllerFactory(new TabControllerFactory());
+        facade().openTab(tabId, tabType, new ActionCompleteCallbackImpl(loader, tabPane));
     }
 
     private class ActionCompleteCallbackImpl implements ActionCompleteCallback {
 
-        private final String tabId;
-        private final String fxmlResource;
+        private final FXMLLoader loader;
+        private final TabPane tabPane;
 
-
-        ActionCompleteCallbackImpl(String tabId, String fxmlResource) {
-            this.tabId = tabId;
-            this.fxmlResource = fxmlResource;
+        private ActionCompleteCallbackImpl(FXMLLoader loader, TabPane tabPane) {
+            this.loader = loader;
+            this.tabPane = tabPane;
         }
 
         public void onComplete() {
@@ -46,32 +57,35 @@ public class TabLoader {
                 @Override
                 public void run() {
                     try {
-                        final FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource(fxmlResource));
-                        loader.setControllerFactory(new Callback<Class<?>, Object>() {
-                            @Override
-                            public Object call(Class<?> aClass) {
-                                try {
-                                    return aClass.getConstructor(String.class).newInstance(tabId);
-                                } catch (NoSuchMethodException e) {
-                                    throw new IllegalStateException("Cannot load tab for " + aClass.getName() + ": Constructor(String tabId) not found");
-                                } catch (InvocationTargetException e) {
-                                    throw new IllegalStateException("InvocationTargetException for " + aClass.getName());
-                                } catch (InstantiationException e) {
-                                    throw new IllegalStateException("InstantiationException for " + aClass.getName());
-                                } catch (IllegalAccessException e) {
-                                    throw new IllegalStateException("IllegalAccessException for " + aClass.getName());
-                                }
-                            }
-                        });
                         Tab tab = (Tab) loader.load();
-                        tabPane.getTabs().add((Tab) loader.load());
+                        tabPane.getTabs().add(tab);
                         tabPane.getSelectionModel().select(tab);
                     } catch (IOException e) {
                         throw new IllegalStateException("cannot load animal_search_tab.fxml", e);
                     }
                 }
+
             });
         }
-    };
+    }
+
+    private class TabControllerFactory implements Callback<Class<?>, Object> {
+
+        @Override
+        public Object call(Class<?> aClass) {
+            try {
+                return aClass.getConstructor(String.class).newInstance(tabId);
+            } catch (NoSuchMethodException e) {
+                throw new IllegalStateException("Cannot load tab for " + aClass.getName() + ": Constructor(String tabId) not found");
+            } catch (InvocationTargetException e) {
+                throw new IllegalStateException("InvocationTargetException for " + aClass.getName());
+            } catch (InstantiationException e) {
+                throw new IllegalStateException("InstantiationException for " + aClass.getName());
+            } catch (IllegalAccessException e) {
+                throw new IllegalStateException("IllegalAccessException for " + aClass.getName());
+            }
+        }
+    }
+
 
 }
