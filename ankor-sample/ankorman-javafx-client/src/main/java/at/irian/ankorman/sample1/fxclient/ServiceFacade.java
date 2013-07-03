@@ -29,14 +29,13 @@ public class ServiceFacade {
                 .execute();
     }
 
-    public void openTab(String tabId, TabType tabType, ActionCompleteCallback cb) {
+    public void openTab(String tabId, TabType tabType) {
         Ref tabsRef = refFactory.ref("root.tabs");
         appService.remoteMethod("service.openTab(contextRef, tabId, modelType)")
                 .inContext(tabsRef)
                 .setParam("tabId", tabId)
                 .setParam("modelType", tabType.getModelType())
                         //.withResultIn(tabsRef.append(tabId))
-                .onComplete(cb)
                 .execute();
     }
 

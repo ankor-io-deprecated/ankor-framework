@@ -1,6 +1,7 @@
 package at.irian.ankorman.sample1.fxclient;
 
-import at.irian.ankor.fx.app.ActionCompleteCallback;
+import at.irian.ankor.ref.ChangeListener;
+import at.irian.ankor.ref.Ref;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Tab;
@@ -11,6 +12,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 import static at.irian.ankorman.sample1.fxclient.App.facade;
+import static at.irian.ankorman.sample1.fxclient.App.refFactory;
 
 /**
  * @author Thomas Spiegl
@@ -21,71 +23,69 @@ public class TabLoader {
 
     private final String tabId;
     private final TabType tabType;
+    private final Ref tabsRef;
 
     public TabLoader(TabType tabType) {
+        if (tabType == null) {
+            throw new IllegalStateException("tabType is null");
+        }
         this.tabId = TabIds.next();
         this.tabType = tabType;
-        if (tabType == null) {
-            throw new IllegalStateException("tabType is null");
-        }
+        this.tabsRef = refFactory().rootRef().append("tabs");
     }
 
-    public void loadTabTo(TabPane tabPane) {
-        if (tabType == null) {
-            throw new IllegalStateException("tabType is null");
-        }
+    public void loadTabTo(final TabPane tabPane) {
         if (tabPane == null) {
             throw new IllegalStateException("tabPane is null");
         }
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource(tabType.getFxmlResource()));
-        loader.setControllerFactory(new TabControllerFactory());
-        facade().openTab(tabId, tabType, new ActionCompleteCallbackImpl(loader, tabPane));
-    }
 
-    private class ActionCompleteCallbackImpl implements ActionCompleteCallback {
-
-        private final FXMLLoader loader;
-        private final TabPane tabPane;
-
-        private ActionCompleteCallbackImpl(FXMLLoader loader, TabPane tabPane) {
-            this.loader = loader;
-            this.tabPane = tabPane;
-        }
-
-        public void onComplete() {
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Tab tab = (Tab) loader.load();
-                        tabPane.getTabs().add(tab);
-                        tabPane.getSelectionModel().select(tab);
-                    } catch (IOException e) {
-                        throw new IllegalStateException("cannot load animal_search_tab.fxml", e);
-                    }
-                }
-
-            });
-        }
-    }
-
-    private class TabControllerFactory implements Callback<Class<?>, Object> {
-
-        @Override
-        public Object call(Class<?> aClass) {
-            try {
-                return aClass.getConstructor(String.class).newInstance(tabId);
-            } catch (NoSuchMethodException e) {
-                throw new IllegalStateException("Cannot load tab for " + aClass.getName() + ": Constructor(String tabId) not found");
-            } catch (InvocationTargetException e) {
-                throw new IllegalStateException("InvocationTargetException for " + aClass.getName());
-            } catch (InstantiationException e) {
-                throw new IllegalStateException("InstantiationException for " + aClass.getName());
-            } catch (IllegalAccessException e) {
-                throw new IllegalStateException("IllegalAccessException for " + aClass.getName());
+        // register changeListener
+        tabsRef.append(tabId).addPropChangeListener(new ChangeListener() {
+            @Override
+            public void processChange(Ref watchedProperty, Ref changedProperty) {
+                showTab(tabPane);
+                // TODO remove changeListener
             }
-        }
+        });
+
+        // load tab
+        facade().openTab(tabId, tabType);
+
     }
 
+    private void showTab(final TabPane tabPane) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Tab tab = (Tab) loader().load();
+                    tabPane.getTabs().add(tab);
+                    tabPane.getSelectionModel().select(tab);
+                } catch (IOException e) {
+                    throw new IllegalStateException("cannot load animal_search_tab.fxml", e);
+                }
+            }
+        });
+    }
 
+    private FXMLLoader loader() {
+        final FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource(tabType.getFxmlResource()));
+        loader.setControllerFactory(new Callback<Class<?>, Object>() {
+            @Override
+            public Object call(Class<?> aClass) {
+                try {
+                    return aClass.getConstructor(String.class).newInstance(tabId);
+                } catch (NoSuchMethodException e) {
+                    throw new IllegalStateException("Cannot load tab for " + aClass.getName() + ": Constructor(String tabId) not found");
+                } catch (InvocationTargetException e) {
+                    throw new IllegalStateException("InvocationTargetException for " + aClass.getName());
+                } catch (InstantiationException e) {
+                    throw new IllegalStateException("InstantiationException for " + aClass.getName());
+                } catch (IllegalAccessException e) {
+                    throw new IllegalStateException("IllegalAccessException for " + aClass.getName());
+                }
+            }
+        });
+        return loader;
+    }
 }
