@@ -1,7 +1,6 @@
 package at.irian.ankorman.sample1.fxclient.animal;
 
 import at.irian.ankor.fx.app.ActionCompleteCallback;
-import at.irian.ankor.fx.binding.BindingContext;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorman.sample1.fxclient.BaseTabController;
 import at.irian.ankorman.sample1.model.animal.AnimalFamily;
@@ -57,6 +56,8 @@ public class AnimalDetailTabController extends BaseTabController {
                 .toInput(family)
                 .withSelectItems(selItemsRef.append("families"))
                 .createWithin(bindingContext);
+
+        name.requestFocus();
     }
 
     @FXML

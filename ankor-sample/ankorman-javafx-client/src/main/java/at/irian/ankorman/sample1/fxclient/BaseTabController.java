@@ -2,6 +2,7 @@ package at.irian.ankorman.sample1.fxclient;
 
 import at.irian.ankor.fx.binding.BindingContext;
 import at.irian.ankor.ref.Ref;
+import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -43,7 +44,13 @@ public abstract class BaseTabController implements Initializable {
                 // getTabRef().setValue(null); TODO exceptions
             }
         });
-        initialize();
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                initialize();
+            }
+        });
+
     }
 
     protected abstract void initialize();

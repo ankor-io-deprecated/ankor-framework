@@ -112,6 +112,8 @@ public class AnimalSearchTabController extends BaseTabController {
                         return null;
                     }
                 }).create();
+
+        name.requestFocus();
     }
 
     @SuppressWarnings("unchecked")
