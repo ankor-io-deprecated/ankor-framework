@@ -1,5 +1,6 @@
 package at.irian.ankorman.sample1.fxclient;
 
+import at.irian.ankor.fx.binding.BindingContext;
 import at.irian.ankor.ref.Ref;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -21,8 +22,11 @@ public abstract class BaseTabController implements Initializable {
 
     private final String tabId;
 
+    protected BindingContext bindingContext;
+
     protected BaseTabController(String tabId) {
         this.tabId = tabId;
+        this.bindingContext = new BindingContext();
     }
 
     public Ref getTabRef() {
@@ -35,7 +39,8 @@ public abstract class BaseTabController implements Initializable {
         tab.setOnClosed(new EventHandler<Event>() {
             @Override
             public void handle(Event event) {
-                getTabRef().setValue(null);
+                bindingContext.unbind();
+                // getTabRef().setValue(null); TODO exceptions
             }
         });
         initialize();

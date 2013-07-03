@@ -152,6 +152,7 @@ public class ValueBindingsBuilder {
     private static SimpleBooleanProperty createBooleanProperty(BooleanProperty property, BindingContext context) {
         SimpleBooleanProperty prop = new SimpleBooleanProperty();
         Bindings.bindBidirectional(prop, property);
+        prop.unbind();
         context.add(prop);
         return prop;
     }

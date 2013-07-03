@@ -30,8 +30,6 @@ public class AnimalDetailTabController extends BaseTabController {
     @FXML
     protected ComboBox<AnimalFamily> family;
 
-    private BindingContext bindingContext = new BindingContext();
-
     public AnimalDetailTabController(String tabId) {
         super(tabId);
     }

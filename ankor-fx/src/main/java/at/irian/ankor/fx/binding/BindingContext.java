@@ -22,4 +22,12 @@ public class BindingContext {
     void add(Property property) {
         properties.add(property);
     }
+
+    public void unbind() {
+        for (Property property : properties) {
+            if (property.isBound()) {
+                property.unbind();
+            }
+        }
+    }
 }

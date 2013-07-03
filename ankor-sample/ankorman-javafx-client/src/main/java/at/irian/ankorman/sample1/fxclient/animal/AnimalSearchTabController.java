@@ -1,7 +1,6 @@
 package at.irian.ankorman.sample1.fxclient.animal;
 
 import at.irian.ankor.fx.app.ActionCompleteCallback;
-import at.irian.ankor.fx.binding.BindingContext;
 import at.irian.ankor.fx.binding.ClickAction;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorman.sample1.fxclient.BaseTabController;
@@ -50,8 +49,6 @@ public class AnimalSearchTabController extends BaseTabController {
 
     @FXML
     protected Button save;
-
-    private BindingContext bindingContext = new BindingContext();
 
     public AnimalSearchTabController(String tabId) {
         super(tabId);
