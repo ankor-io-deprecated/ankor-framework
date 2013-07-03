@@ -43,7 +43,7 @@ public class SimpleLocalAppServiceBuilder {
     }
 
     public AppService create() {
-        // create
+        // createRefContext
         SimpleAnkorSystem serverSystem = SimpleAnkorSystem.create("server", modelType, beanResolver)
                                                           .withRemoteMethodActionListenerEnabled();
         SimpleAnkorSystem clientSystem = SimpleAnkorSystem.create("client", modelType);
@@ -66,7 +66,7 @@ public class SimpleLocalAppServiceBuilder {
         final long started = System.currentTimeMillis();
         new Thread(new Runnable() {
             public void run() {
-                RefFactory refFactory = system.getRefContextFactory().create().refFactory();
+                RefFactory refFactory = system.getRefContextFactory().createRefContext().refFactory();
                 boolean interrupted = false;
                 while (!interrupted) {
                     try {

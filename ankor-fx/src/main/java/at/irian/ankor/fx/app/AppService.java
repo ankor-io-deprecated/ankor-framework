@@ -20,7 +20,7 @@ public class AppService {
 
     public AppService(AnkorSystem system) {
 
-        refFactory = system.getRefContextFactory().create().refFactory();
+        refFactory = system.getRefContextFactory().createRefContext().refFactory();
 
         system.getGlobalEventListeners().add(new ActionEvent.Listener(null) {
 
@@ -34,16 +34,6 @@ public class AppService {
                 }
             }
         });
-    }
-
-    @Deprecated
-    public synchronized void executeAction(Ref contextRef, String actionMethod, String resultPath, ActionCompleteCallback cb) {
-        Action completeAction = new SimpleAction("cb");
-        currentCallback = cb;
-        contextRef.fireAction(RemoteMethodAction
-                                      .create(actionMethod)
-                                      .withResultIn(resultPath)
-                                      .onComplete(completeAction));
     }
 
 
@@ -81,11 +71,6 @@ public class AppService {
 
         public RMAExecution setParam(String name, Object value) {
             rma = rma.setParam(name, value);
-            return this;
-        }
-
-        public RMAExecution withActionContextAutoRefresh() {
-            rma = rma.withActionContextAutoRefresh();
             return this;
         }
 

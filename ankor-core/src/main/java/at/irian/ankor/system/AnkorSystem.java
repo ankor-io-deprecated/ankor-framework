@@ -151,7 +151,7 @@ public class AnkorSystem {
     }
 
     public RefContext createInitialRefContext() {
-        return refContextFactory.create();
+        return refContextFactory.createRefContext();
     }
 
     private RefContext createRefContextFor(Message message) {

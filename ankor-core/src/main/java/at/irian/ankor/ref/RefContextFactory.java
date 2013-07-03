@@ -5,6 +5,6 @@ package at.irian.ankor.ref;
  */
 public interface RefContextFactory {
 
-    RefContext create();
+    RefContext createRefContext();
 
 }

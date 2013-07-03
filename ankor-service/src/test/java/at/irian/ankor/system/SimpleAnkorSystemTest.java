@@ -21,7 +21,7 @@ public class SimpleAnkorSystemTest {
         system = SimpleAnkorSystem.create("Test System", TestModel.class);
         system.start();
         messageFactory = system.getMessageFactory();
-        refContext = system.getRefContextFactory().create();
+        refContext = system.getRefContextFactory().createRefContext();
         refFactory = refContext.refFactory();
     }
     
@@ -97,11 +97,11 @@ public class SimpleAnkorSystemTest {
 //                if (actionEvent.name().equals("loadUser")) {
 //                    String userName = "Max Muster";
 //                    source.setValue(userName);
-//                    source.fire(SimpleAction.create("success"));
+//                    source.fire(SimpleAction.createRefContext("success"));
 //                }
 //            }
 //        });
-//        server.receiveAction("root.userName", SimpleAction.create("loadUser"));
+//        server.receiveAction("root.userName", SimpleAction.createRefContext("loadUser"));
 //
 //        Assert.assertEquals("Max Muster", model.getUserName());
 //    }

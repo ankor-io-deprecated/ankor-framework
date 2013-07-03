@@ -15,6 +15,7 @@ import java.util.Iterator;
 /**
 * @author Manfred Geiler
 */
+@Deprecated
 public class ModelContextELResolver extends ELResolver {
 
     private final ExpressionFactory expressionFactory;

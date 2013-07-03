@@ -48,7 +48,7 @@ public class SocketAppServiceBuilder {
     }
 
     public AppService create() {
-        // create
+        // createRefContext
 
         Thread serverThread = new Thread(new Runnable() {
             @Override
@@ -76,7 +76,7 @@ public class SocketAppServiceBuilder {
         final long started = System.currentTimeMillis();
         new Thread(new Runnable() {
             public void run() {
-                RefFactory refFactory = system.getRefContextFactory().create().refFactory();
+                RefFactory refFactory = system.getRefContextFactory().createRefContext().refFactory();
                 boolean interrupted = false;
                 while (!interrupted) {
                     try {

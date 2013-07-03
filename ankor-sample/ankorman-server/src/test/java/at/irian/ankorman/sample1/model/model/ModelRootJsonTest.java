@@ -29,7 +29,7 @@ public class ModelRootJsonTest {
     public void setUp() throws Exception {
         SimpleAnkorSystem system = SimpleAnkorSystem.create("test", ModelRoot.class);
         messageFactory = system.getMessageFactory();
-        rf = system.getRefContextFactory().create().refFactory();
+        rf = system.getRefContextFactory().createRefContext().refFactory();
         mapper = new JsonMessageMapper();
     }
 

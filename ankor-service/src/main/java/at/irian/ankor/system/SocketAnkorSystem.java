@@ -1,7 +1,5 @@
 package at.irian.ankor.system;
 
-import at.irian.ankor.el.BeanResolverELResolver;
-import at.irian.ankor.el.StandardELContext;
 import at.irian.ankor.event.ArrayListEventListeners;
 import at.irian.ankor.event.EventDelaySupport;
 import at.irian.ankor.event.EventListeners;
@@ -11,7 +9,7 @@ import at.irian.ankor.messaging.MessageLoop;
 import at.irian.ankor.messaging.SocketMessageLoop;
 import at.irian.ankor.messaging.json.JsonMessageMapper;
 import at.irian.ankor.ref.RefContextFactory;
-import at.irian.ankor.ref.el.SimpleELRefContextFactory;
+import at.irian.ankor.ref.el.SingletonModelELRefContextFactory;
 import at.irian.ankor.rmi.ELRemoteMethodActionEventListener;
 import at.irian.ankor.rmi.RemoteMethodActionEventListener;
 import com.typesafe.config.Config;
@@ -27,8 +25,7 @@ public class SocketAnkorSystem extends AnkorSystem {
 
     protected SocketAnkorSystem(MessageFactory messageFactory,
                                 MessageLoop<String> messageLoop,
-                                EventListeners globalEventListeners,
-                                RefContextFactory refContextFactory,
+                                RefContextFactory refContextFactory, EventListeners globalEventListeners,
                                 String name,
                                 RemoteMethodActionEventListener remoteMethodActionEventListener) {
         super(name, messageFactory, messageLoop.getMessageBus(), globalEventListeners,
@@ -47,37 +44,26 @@ public class SocketAnkorSystem extends AnkorSystem {
 
         EventListeners globalEventListeners = new ArrayListEventListeners();
 
-        StandardELContext elContext = new StandardELContext();
-        if (beanResolver != null) {
-            elContext = elContext.withAdditional(new BeanResolverELResolver(beanResolver));
-        }
-
         Config config = ConfigFactory.load();
 
         EventDelaySupport eventDelaySupport = new EventDelaySupport(systemName);
 
-        SimpleELRefContextFactory refContextFactory = new SimpleELRefContextFactory(config,
-                                                                                    modelType,
-                                                                                    elContext,
-                                                                                    globalEventListeners,
-                                                                                    messageLoop.getMessageBus(),
-                                                                                    eventDelaySupport);
+        RefContextFactory refContextFactory = SingletonModelELRefContextFactory.getInstance(config,
+                                                                                            modelType,
+                                                                                            globalEventListeners,
+                                                                                            messageLoop.getMessageBus(),
+                                                                                            beanResolver,
+                                                                                            eventDelaySupport);
 
-        return new SocketAnkorSystem(messageFactory, messageLoop, globalEventListeners,
-                                     refContextFactory,
-                                     systemName, null
-        );
-    }
-
-    public static SocketAnkorSystem create(String name, Class<?> modelType) {
-        return create(name, modelType, null, null);
+        return new SocketAnkorSystem(messageFactory, messageLoop, refContextFactory, globalEventListeners,
+                                     systemName, null);
     }
 
     public SocketAnkorSystem withRemoteMethodActionListenerEnabled() {
         return new SocketAnkorSystem(getMessageFactory(),
                                      messageLoop,
-                                     getGlobalEventListeners(),
-                                     getRefContextFactory(), getSystemName(),
+                                     getRefContextFactory(), getGlobalEventListeners(),
+                                     getSystemName(),
                                      new ELRemoteMethodActionEventListener());
     }
 

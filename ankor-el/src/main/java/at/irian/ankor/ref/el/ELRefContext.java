@@ -1,6 +1,7 @@
 package at.irian.ankor.ref.el;
 
 import at.irian.ankor.context.ModelHolder;
+import at.irian.ankor.el.ELSupport;
 import at.irian.ankor.el.ModelContextELResolver;
 import at.irian.ankor.el.StandardELContext;
 import at.irian.ankor.event.EventDelaySupport;
@@ -30,10 +31,28 @@ public class ELRefContext implements RefContext, RefContextImplementor {
     private final String modelRootVarName;
     private final String modelContextPath;
     private final EventListeners globalEventListeners;
-    private final ELRefFactory refFactory;
     private final ModelHolder modelHolder;
     private final MessageSender messageSender;
     private final EventDelaySupport eventDelaySupport;
+
+    ELRefContext(ELSupport elSupport,
+                 Config config,
+                 EventListeners globalEventListeners,
+                 String modelContextPath,
+                 ModelHolder modelHolder,
+                 MessageSender messageSender,
+                 EventDelaySupport eventDelaySupport) {
+        this.expressionFactory = elSupport.getExpressionFactory();
+        this.elContext = elSupport.getELContextFor(refFactory());
+        this.config = config;
+        this.modelHolder = modelHolder;
+        this.messageSender = messageSender;
+        this.eventDelaySupport = eventDelaySupport;
+        this.modelRootVarName = config.getString("ankor.variable-names.modelRoot");
+        this.modelContextPath = modelContextPath;
+        this.globalEventListeners = globalEventListeners;
+
+    }
 
     ELRefContext(ExpressionFactory expressionFactory,
                  StandardELContext elContext,
@@ -52,7 +71,6 @@ public class ELRefContext implements RefContext, RefContextImplementor {
         this.modelRootVarName = config.getString("ankor.variable-names.modelRoot");
         this.modelContextPath = modelContextPath;
         this.globalEventListeners = globalEventListeners;
-        this.refFactory = new ELRefFactory(this);
     }
 
     @Override
@@ -62,13 +80,13 @@ public class ELRefContext implements RefContext, RefContextImplementor {
 
     @Override
     public ELRefContext withMessageSender(MessageSender newMessageSender) {
-        return new ELRefContext(expressionFactory, elContext, config, globalEventListeners, modelContextPath, modelHolder, newMessageSender,
-                                eventDelaySupport);
+        return new ELRefContext(expressionFactory, elContext, config, globalEventListeners,
+                                modelContextPath, modelHolder, newMessageSender, eventDelaySupport);
     }
 
     @Override
     public RefFactory refFactory() {
-        return refFactory;
+        return new ELRefFactory(this);
     }
 
     ExpressionFactory getExpressionFactory() {
@@ -162,7 +180,7 @@ public class ELRefContext implements RefContext, RefContextImplementor {
         return withAdditionalELResolver(new ModelContextELResolver(expressionFactory,
                                                                    config,
                                                                    modelContextPath,
-                                                                   refFactory));
+                                                                   refFactory()));
     }
 
     public ELRefContext withAdditionalELResolver(ELResolver elResolver) {

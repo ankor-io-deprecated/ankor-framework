@@ -1,7 +1,5 @@
 package at.irian.ankor.system;
 
-import at.irian.ankor.el.BeanResolverELResolver;
-import at.irian.ankor.el.StandardELContext;
 import at.irian.ankor.event.ArrayListEventListeners;
 import at.irian.ankor.event.EventDelaySupport;
 import at.irian.ankor.event.EventListeners;
@@ -10,7 +8,7 @@ import at.irian.ankor.messaging.MessageFactory;
 import at.irian.ankor.messaging.PipeMessageLoop;
 import at.irian.ankor.messaging.json.JsonMessageMapper;
 import at.irian.ankor.ref.RefContextFactory;
-import at.irian.ankor.ref.el.SimpleELRefContextFactory;
+import at.irian.ankor.ref.el.SingletonModelELRefContextFactory;
 import at.irian.ankor.rmi.ELRemoteMethodActionEventListener;
 import at.irian.ankor.rmi.RemoteMethodActionEventListener;
 import com.typesafe.config.Config;
@@ -46,21 +44,16 @@ public class SimpleAnkorSystem extends AnkorSystem {
 
         EventListeners globalEventListeners = new ArrayListEventListeners();
 
-        StandardELContext elContext = new StandardELContext();
-        if (beanResolver != null) {
-            elContext = elContext.withAdditional(new BeanResolverELResolver(beanResolver));
-        }
-
         Config config = ConfigFactory.load();
 
         EventDelaySupport eventDelaySupport = new EventDelaySupport(systemName);
 
-        SimpleELRefContextFactory refContextFactory = new SimpleELRefContextFactory(config,
-                                                                                    modelType,
-                                                                                    elContext,
-                                                                                    globalEventListeners,
-                                                                                    messageLoop.getMessageBus(),
-                                                                                    eventDelaySupport);
+        RefContextFactory refContextFactory = SingletonModelELRefContextFactory.getInstance(config,
+                                                                                            modelType,
+                                                                                            globalEventListeners,
+                                                                                            messageLoop.getMessageBus(),
+                                                                                            beanResolver,
+                                                                                            eventDelaySupport);
 
         return new SimpleAnkorSystem(messageFactory, messageLoop, refContextFactory, globalEventListeners,
                                      systemName, null);
