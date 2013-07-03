@@ -50,7 +50,7 @@
         <Menu mnemonicParsing="false" text="Animal">
           <items>
             <MenuItem mnemonicParsing="false" onAction="#openAnimalSearchTab" text="Animal Search" />
-            <MenuItem mnemonicParsing="false" onAction="#openAnimalDetailTab" text="Animal Detail" />
+            <MenuItem mnemonicParsing="false" onAction="#openAnimalDetailTab" text="New Animal" />
           </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Help">

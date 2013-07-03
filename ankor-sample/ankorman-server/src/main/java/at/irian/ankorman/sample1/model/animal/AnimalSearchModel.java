@@ -13,7 +13,6 @@ public class AnimalSearchModel {
     @JsonTypeInfo(use = JsonTypeInfo.Id.NONE, defaultImpl = Animal.class)
     private Data<Animal> animals;
 
-
     @SuppressWarnings("UnusedDeclaration")
     protected AnimalSearchModel() {
     }

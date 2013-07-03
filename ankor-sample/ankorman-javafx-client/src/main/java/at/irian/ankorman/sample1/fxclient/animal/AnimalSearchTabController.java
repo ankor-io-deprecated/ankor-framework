@@ -4,7 +4,6 @@ import at.irian.ankor.fx.app.ActionCompleteCallback;
 import at.irian.ankor.fx.binding.BindingContext;
 import at.irian.ankor.fx.binding.ClickAction;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankorman.sample1.fxclient.TabIds;
 import at.irian.ankorman.sample1.model.animal.Animal;
 import at.irian.ankorman.sample1.model.animal.AnimalFamily;
 import at.irian.ankorman.sample1.model.animal.AnimalType;
@@ -59,76 +58,78 @@ public class AnimalSearchTabController implements Initializable {
     @FXML
     protected Button save;
 
-    private String tabId = TabIds.next();
+    private final String tabId;
 
     private BindingContext bindingContext = new BindingContext();
 
+    public AnimalSearchTabController(String tabId) {
+        this.tabId = tabId;
+    }
+
+    @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        tab.setText(String.format("Animal Search (%s)", tabId));
+        final Ref tabRef = getTabRef();
         tab.setOnClosed(new EventHandler<Event>() {
             @Override
             public void handle(Event event) {
-                getTabRef().setValue(null);
+                tabRef.setValue(null);
             }
         });
-        facade().createAnimalSearchTab(tabId, new ActionCompleteCallback() {
+        Ref filterRef = tabRef.append("model.filter");
+        Ref selItemsRef = tabRef.append("model.selectItems");
+        Ref rowsRef = tabRef.append("model.animals.rows");
+        Ref paginatorRef = tabRef.append("model.animals.paginator");
 
-            public void onComplete() {
-                Ref filterRef = getTabRef().append("model.filter");
-                Ref selItemsRef = getTabRef().append("model.selectItems");
-                Ref rowsRef = getTabRef().append("model.animals.rows");
-                Ref paginatorRef = getTabRef().append("model.animals.paginator");
+        bindTableColumns();
 
-                bindTableColumns();
+        bindValue(tabRef.append("name"))
+                .toTabText(tab)
+                .createWithin(bindingContext);
 
-                bindValue(filterRef.append("name"))
-                        .toInput(name)
-                        .createWithin(bindingContext);
+        bindValue(filterRef.append("name"))
+                .toInput(name)
+                .createWithin(bindingContext);
 
-                bindValue(filterRef.append("type"))
-                        .toInput(type)
-                        .withSelectItems(selItemsRef.append("types"))
-                        .createWithin(bindingContext);
+        bindValue(filterRef.append("type"))
+                .toInput(type)
+                .withSelectItems(selItemsRef.append("types"))
+                .createWithin(bindingContext);
 
-                bindValue(filterRef.append("family"))
-                        .toInput(family)
-                        .withSelectItems(selItemsRef.append("families"))
-                        .createWithin(bindingContext);
+        bindValue(filterRef.append("family"))
+                .toInput(family)
+                .withSelectItems(selItemsRef.append("families"))
+                .createWithin(bindingContext);
 
-                bindValue(rowsRef)
-                        .toTable(animalTable)
-                        .createWithin(bindingContext);
+        bindValue(rowsRef)
+                .toTable(animalTable)
+                .createWithin(bindingContext);
 
-                onButtonClick(previous)
-                        .callAction(new ClickAction<Paginator>() {
-                            @Override
-                            public Paginator onClick(Paginator paginator) {
-                                return paginator.previous();
-                            }
-                        })
-                        .withParam(paginatorRef).create();
+        onButtonClick(previous)
+                .callAction(new ClickAction<Paginator>() {
+                    @Override
+                    public Paginator onClick(Paginator paginator) {
+                        return paginator.previous();
+                    }
+                })
+                .withParam(paginatorRef).create();
 
-                onButtonClick(next)
-                        .callAction(new ClickAction<Paginator>() {
-                            @Override
-                            public Paginator onClick(Paginator paginator) {
-                                return paginator.next();
-                            }
-                        })
-                        .withParam(paginatorRef).create();
+        onButtonClick(next)
+                .callAction(new ClickAction<Paginator>() {
+                    @Override
+                    public Paginator onClick(Paginator paginator) {
+                        return paginator.next();
+                    }
+                })
+                .withParam(paginatorRef).create();
 
-                onButtonClick(save)
-                        .callAction(new ClickAction() {
-                            @Override
-                            public Object onClick(Object value) {
-                                facade().saveAnimals(getTabRef(), ActionCompleteCallback.empty);
-                                return null;
-                            }
-                        }).create();
-
-            }
-        });
-
+        onButtonClick(save)
+                .callAction(new ClickAction() {
+                    @Override
+                    public Object onClick(Object value) {
+                        facade().saveAnimals(tabRef, ActionCompleteCallback.empty);
+                        return null;
+                    }
+                }).create();
     }
 
     private Ref getTabRef() {

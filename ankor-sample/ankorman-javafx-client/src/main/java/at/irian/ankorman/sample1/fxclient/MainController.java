@@ -3,16 +3,15 @@ package at.irian.ankorman.sample1.fxclient;
 import at.irian.ankor.fx.app.ActionCompleteCallback;
 import at.irian.ankor.fx.binding.BindingContext;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankorman.sample1.fxclient.animal.AnimalDetailTabController;
+import at.irian.ankorman.sample1.fxclient.animal.AnimalSearchTabController;
 import at.irian.ankorman.sample1.model.ModelRoot;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.text.Text;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -35,6 +34,8 @@ public class MainController implements Initializable {
 
     private BindingContext bindingContext = new BindingContext();
 
+    private TabLoader tabLoader;
+
     public void initialize(URL url, ResourceBundle resourceBundle) {
         facade().initApplication(new ActionCompleteCallback() {
 
@@ -48,29 +49,16 @@ public class MainController implements Initializable {
                         .toText(serverStatus)
                         .createWithin(bindingContext);
 
+                tabLoader = new TabLoader(tabPane);
             }
         });
     }
 
     public void openAnimalSearchTab(ActionEvent actionEvent) {
-        Tab tab;
-        try {
-            tab = FXMLLoader.load(getClass().getClassLoader().getResource("animal_search_tab.fxml"));
-        } catch (IOException e) {
-            throw new IllegalStateException("cannot load animal_search_tab.fxml", e);
-        }
-        tabPane.getTabs().add(tab);
-        tabPane.getSelectionModel().select(tab);
+        tabLoader.loadTab(AnimalSearchTabController.class, "animal_search_tab.fxml");
     }
 
     public void openAnimalDetailTab(ActionEvent actionEvent) {
-        Tab tab;
-        try {
-            tab = FXMLLoader.load(getClass().getClassLoader().getResource("animal_detail_tab.fxml"));
-        } catch (IOException e) {
-            throw new IllegalStateException("cannot load animal_detail_tab.fxml", e);
-        }
-        tabPane.getTabs().add(tab);
-        tabPane.getSelectionModel().select(tab);
+        tabLoader.loadTab(AnimalDetailTabController.class, "animal_detail_tab.fxml");
     }
 }

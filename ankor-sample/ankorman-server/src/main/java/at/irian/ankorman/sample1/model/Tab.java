@@ -8,6 +8,8 @@ public class Tab<T> {
 
     private String id;
 
+    private String name;
+
     private T model;
 
     /**
@@ -30,5 +32,13 @@ public class Tab<T> {
 
     public void setModel(T model) {
         this.model = model;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

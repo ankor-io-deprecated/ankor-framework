@@ -3,7 +3,6 @@ package at.irian.ankorman.sample1.fxclient.animal;
 import at.irian.ankor.fx.app.ActionCompleteCallback;
 import at.irian.ankor.fx.binding.BindingContext;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankorman.sample1.fxclient.TabIds;
 import at.irian.ankorman.sample1.model.animal.AnimalFamily;
 import at.irian.ankorman.sample1.model.animal.AnimalType;
 import javafx.event.ActionEvent;
@@ -39,41 +38,42 @@ public class AnimalDetailTabController implements Initializable {
     @FXML
     protected ComboBox<AnimalFamily> family;
 
-    private String tabId = TabIds.next();
+    private final String tabId;
 
     private BindingContext bindingContext = new BindingContext();
 
+    public AnimalDetailTabController(String tabId) {
+        this.tabId = tabId;
+    }
+
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        tab.setText(String.format("Animal Detail (%s)", tabId));
         tab.setOnClosed(new EventHandler<Event>() {
             @Override
             public void handle(Event event) {
                 getTabRef().setValue(null);
             }
         });
-        facade().createAnimalDetailTab(tabId, new ActionCompleteCallback() {
+        Ref modelRef = getTabRef().append("model");
+        Ref animalRef = modelRef.append("animal");
+        Ref selItemsRef = modelRef.append("selectItems");
 
-            public void onComplete() {
-                Ref modelRef = getTabRef().append("model");
-                Ref animalRef = modelRef.append("animal");
-                Ref selItemsRef = modelRef.append("selectItems");
-
-                bindValue(animalRef.append("name"))
-                        .toInput(name)
-                        .createWithin(bindingContext);
-                bindValue(modelRef.append("nameStatus"))
-                        .toText(nameStatus)
-                        .createWithin(bindingContext);
-                bindValue(animalRef.append("type"))
-                        .toInput(type)
-                        .withSelectItems(selItemsRef.append("types"))
-                        .createWithin(bindingContext);
-                bindValue(animalRef.append("family"))
-                        .toInput(family)
-                        .withSelectItems(selItemsRef.append("families"))
-                        .createWithin(bindingContext);
-            }
-        });
+        bindValue(getTabRef().append("name"))
+                .toTabText(tab)
+                .createWithin(bindingContext);
+        bindValue(animalRef.append("name"))
+                .toInput(name)
+                .createWithin(bindingContext);
+        bindValue(modelRef.append("nameStatus"))
+                .toText(nameStatus)
+                .createWithin(bindingContext);
+        bindValue(animalRef.append("type"))
+                .toInput(type)
+                .withSelectItems(selItemsRef.append("types"))
+                .createWithin(bindingContext);
+        bindValue(animalRef.append("family"))
+                .toInput(family)
+                .withSelectItems(selItemsRef.append("families"))
+                .createWithin(bindingContext);
     }
 
     private Ref getTabRef() {
