@@ -12,8 +12,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
-* @author Thomas Spiegl
-*/
+ * @author Thomas Spiegl
+ */
 @SuppressWarnings("UnusedDeclaration")
 public class ServiceBean {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ServiceBean.class);
@@ -55,10 +55,20 @@ public class ServiceBean {
         modelRef.root().append("serverStatus").setValue(status);
     }
 
-    public void saveAnimals(List<Animal> animals) {
-        for (Animal animal : animals) {
-            animalRepository.saveAnimal(animal);
+    public void saveAnimals(Ref modelRef, List<Animal> animals) {
+        String status;
+        try {
+            for (Animal animal : animals) {
+                animalRepository.saveAnimal(animal);
+            }
+            status = "Animals successfully saved";
+        } catch (Exception e) {
+            status = "Error: " + e.getMessage();
+            if (!(e instanceof IllegalArgumentException || e instanceof IllegalStateException)) {
+                LOG.error("Error saving animals ", e);
+            }
         }
+        modelRef.root().append("serverStatus").setValue(status);
     }
 
     public void openTab(final Ref tabsRef, final String tabId, final Class modelType) {
