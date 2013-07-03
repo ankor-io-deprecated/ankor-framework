@@ -14,6 +14,8 @@ class AnimalRepository {
 
     private List<Animal> animals;
 
+    public static int MAX_NAME_LEN = 10;
+
     AnimalRepository() {
         animals = new ArrayList<Animal>();
         animals.add(new Animal("Trout", AnimalType.Fish, AnimalFamily.Salmonidae));
@@ -93,9 +95,12 @@ class AnimalRepository {
         if (animal.getFamily() == null) {
             throw new IllegalArgumentException("Animal family is empty");
         }
+        if (animal.getName().length() > MAX_NAME_LEN) {
+            throw new IllegalArgumentException("Animal name is too long");
+        }
         for (Animal a : animals) {
             if (!a.getUuid().equals(animal.getUuid()) && a.getName().equals(animal.getName())) {
-                throw new IllegalStateException("Animal with name " + animal.getName() + " already exists");
+                throw new IllegalStateException("Animal with name '" + animal.getName() + "' already exists");
             }
         }
         int i = 0;

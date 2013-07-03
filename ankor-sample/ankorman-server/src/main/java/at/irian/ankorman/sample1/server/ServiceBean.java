@@ -143,7 +143,7 @@ public class ServiceBean {
                 nameRef.ancestor("model").parent().append("name").setValue(tabName("New Animal", name));
                 if (animalRepository.isAnimalNameAlreadyExists(name)) {
                     nameStatusRef.setValue("name already exists");
-                } else if (name.length() > 10) {
+                } else if (name.length() > AnimalRepository.MAX_NAME_LEN) {
                     nameStatusRef.setValue("name is too long");
                 } else {
                     nameStatusRef.setValue("");
