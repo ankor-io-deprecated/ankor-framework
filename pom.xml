@@ -10,9 +10,10 @@
 
     <modules>
         <module>ankor-core</module>
+        <module>ankor-annotation</module>
         <module>ankor-el</module>
         <module>ankor-json</module>
-        <module>ankor-netty</module>
+        <!--<module>ankor-netty</module>-->
         <module>ankor-service</module>
         <module>ankor-servlet</module>
         <module>ankor-fx</module>

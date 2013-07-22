@@ -1,5 +1,7 @@
 package at.irian.ankorman.sample1.server;
 
+import at.irian.ankor.annotation.AnkorAction;
+import at.irian.ankor.annotation.AnkorParam;
 import at.irian.ankor.ref.ChangeListener;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.util.ObjectUtils;
@@ -34,7 +36,8 @@ public class ServiceBean {
         return animalRepository.searchAnimals(filter, paginator.getFirst(), paginator.getMaxResults());
     }
 
-    public void saveAnimal(Ref modelRef) {
+    @AnkorAction(name = "save", refType = AnimalDetailModel.class)
+    public void saveAnimal(@AnkorParam("modelRef") Ref modelRef) {
         AnimalDetailModel model = modelRef.getValue();
         String status;
         if (model.isSaved()) {
@@ -124,7 +127,7 @@ public class ServiceBean {
                 Ref modelRef = paginatorRef.ancestor("model");
                 AnimalSearchModel model = modelRef.getValue();
                 Data<Animal> animals = searchAnimals(model.getFilter(),
-                        model.getAnimals().getPaginator());
+                                                     model.getAnimals().getPaginator());
                 Ref animalsRef = paginatorRef.ancestor("animals");
                 animalsRef.setValue(animals);
                 paginatorRef.root().append("serverStatus").setValue("");

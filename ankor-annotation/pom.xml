@@ -8,9 +8,9 @@
         <version>0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>ankor-service</artifactId>
+    <artifactId>ankor-annotation</artifactId>
     <packaging>jar</packaging>
-    <name>Ankor - Service</name>
+    <name>Ankor - Annotation Support</name>
 
     <dependencies>
 
@@ -22,24 +22,9 @@
         </dependency>
 
         <dependency>
-            <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-el</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-json</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-annotation</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
+            <groupId>net.sf.scannotation</groupId>
+            <artifactId>scannotation</artifactId>
+            <version>1.0.2</version>
         </dependency>
 
     </dependencies>
