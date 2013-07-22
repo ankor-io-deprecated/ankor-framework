@@ -1,7 +1,7 @@
 package at.irian.ankorman.sample1.server;
 
 import at.irian.ankor.annotation.AnkorAction;
-import at.irian.ankor.annotation.AnkorParam;
+import at.irian.ankor.annotation.AnkorActionPropertyRef;
 import at.irian.ankor.ref.ChangeListener;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.util.ObjectUtils;
@@ -37,7 +37,7 @@ public class ServiceBean {
     }
 
     @AnkorAction(name = "save", refType = AnimalDetailModel.class)
-    public void saveAnimal(@AnkorParam("modelRef") Ref modelRef) {
+    public void saveAnimal(@AnkorActionPropertyRef Ref modelRef) {
         AnimalDetailModel model = modelRef.getValue();
         String status;
         if (model.isSaved()) {

@@ -1,5 +1,6 @@
 package at.irian.ankorman.sample1.fxclient;
 
+import at.irian.ankor.action.SimpleAction;
 import at.irian.ankor.fx.app.ActionCompleteCallback;
 import at.irian.ankor.fx.app.AppService;
 import at.irian.ankor.ref.Ref;
@@ -36,13 +37,6 @@ public class ServiceFacade {
                 .setParam("tabId", tabId)
                 .setParam("modelType", tabType.getModelType())
                         //.withResultIn(tabsRef.append(tabId))
-                .execute();
-    }
-
-    public void saveAnimal(Ref tabRef, ActionCompleteCallback cb) {
-        appService.remoteMethod("service.saveAnimal(contextRef)")
-                .inContext(tabRef.append("model"))
-                .onComplete(cb)
                 .execute();
     }
 

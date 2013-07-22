@@ -36,7 +36,6 @@ public class AppService {
         });
     }
 
-
     public RMAExecution remoteMethod(String method) {
         return new RMAExecution(method);
     }

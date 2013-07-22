@@ -29,6 +29,11 @@ public class SocketAppServiceBuilder {
             public Object resolveByName(String beanName) {
                 return beans.get(beanName);
             }
+
+            @Override
+            public String[] getBeanDefinitionNames() {
+                return beans.keySet().toArray(new String[beans.keySet().size()]);
+            }
         };
     }
 
@@ -53,8 +58,8 @@ public class SocketAppServiceBuilder {
         Thread serverThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                AnkorSystem serverSystem = SocketAnkorSystem.create("server", modelType, beanResolver, HOST, clientPort, serverPort)
-                        .withRemoteMethodActionListenerEnabled();
+                AnkorSystem serverSystem = SocketAnkorSystem
+                        .create("server", modelType, beanResolver, HOST, clientPort, serverPort, true);
                 serverSystem.start();
                 if (serverStatusMessage) {
                     startServerStatusThread(serverSystem);
@@ -63,7 +68,7 @@ public class SocketAppServiceBuilder {
         });
         serverThread.setDaemon(true);
 
-        SocketAnkorSystem clientSystem = SocketAnkorSystem.create("client", modelType, null, HOST, serverPort, clientPort);
+        SocketAnkorSystem clientSystem = SocketAnkorSystem.create("client", modelType, null, HOST, serverPort, clientPort, false);
 
         // start
         serverThread.start();

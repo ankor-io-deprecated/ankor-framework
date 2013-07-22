@@ -84,6 +84,11 @@ public class SimpleAnkorSystem extends AnkorSystem {
                     return null;
                 }
             }
+
+            @Override
+            public String[] getBeanDefinitionNames() {
+                return new String[] {singletonBeanName};
+            }
         });
     }
 

@@ -24,6 +24,11 @@ public class SimpleLocalAppServiceBuilder {
             public Object resolveByName(String beanName) {
                 return beans.get(beanName);
             }
+
+            @Override
+            public String[] getBeanDefinitionNames() {
+                return beans.keySet().toArray(new String[beans.keySet().size()]);
+            }
         };
     }
 

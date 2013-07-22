@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface AnkorParam {
+public @interface AnkorActionPropertyRef {
     /**
      * name/path of the param.
      */

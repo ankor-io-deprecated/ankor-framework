@@ -5,4 +5,6 @@ package at.irian.ankor.system;
  */
 public interface BeanResolver {
     Object resolveByName(String beanName);
+
+    String[] getBeanDefinitionNames();
 }

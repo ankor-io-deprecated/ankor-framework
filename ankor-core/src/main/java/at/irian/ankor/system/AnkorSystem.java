@@ -8,7 +8,6 @@ import at.irian.ankor.messaging.*;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefContextFactory;
-import at.irian.ankor.rmi.RemoteMethodActionEventListener;
 
 /**
  * @author Manfred Geiler
@@ -21,7 +20,7 @@ public class AnkorSystem {
     private final MessageBus messageBus;
     private final EventListeners globalEventListeners;
     private final RefContextFactory refContextFactory;
-    private final RemoteMethodActionEventListener remoteMethodActionEventListener;
+    private final ActionEvent.Listener remoteMethodActionEventListener;
     private ChangeEventListener changeEventListener;
     private ActionEvent.Listener actionEventListener;
     private MessageListener messageListener;
@@ -31,7 +30,7 @@ public class AnkorSystem {
                           MessageBus messageBus,
                           EventListeners globalEventListeners,
                           RefContextFactory refContextFactory,
-                          RemoteMethodActionEventListener remoteMethodActionEventListener) {
+                          ActionEvent.Listener remoteMethodActionEventListener) {
         this.systemName = systemName;
         this.messageFactory = messageFactory;
         this.messageBus = messageBus;

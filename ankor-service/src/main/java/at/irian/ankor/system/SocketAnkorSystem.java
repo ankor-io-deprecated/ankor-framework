@@ -1,5 +1,6 @@
 package at.irian.ankor.system;
 
+import at.irian.ankor.action.ActionEvent;
 import at.irian.ankor.event.ArrayListEventListeners;
 import at.irian.ankor.event.EventDelaySupport;
 import at.irian.ankor.event.EventListeners;
@@ -11,7 +12,6 @@ import at.irian.ankor.messaging.json.JsonMessageMapper;
 import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.ref.el.SingletonModelELRefContextFactory;
 import at.irian.ankor.rmi.ELRemoteMethodActionEventListener;
-import at.irian.ankor.rmi.RemoteMethodActionEventListener;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
@@ -27,7 +27,7 @@ public class SocketAnkorSystem extends AnkorSystem {
                                 MessageLoop<String> messageLoop,
                                 RefContextFactory refContextFactory, EventListeners globalEventListeners,
                                 String name,
-                                RemoteMethodActionEventListener remoteMethodActionEventListener) {
+                                ActionEvent.Listener remoteMethodActionEventListener) {
         super(name, messageFactory, messageLoop.getMessageBus(), globalEventListeners,
               refContextFactory,
               remoteMethodActionEventListener);
@@ -36,7 +36,8 @@ public class SocketAnkorSystem extends AnkorSystem {
 
 
     public static SocketAnkorSystem create(String systemName, Class<?> modelType, BeanResolver beanResolver,
-                                           String remoteHost, int remotePort, int localPort) {
+                                           String remoteHost, int remotePort, int localPort,
+                                           boolean enableRemoteActionListener) {
         MessageFactory messageFactory = new MessageFactory();
 
         MessageLoop<String> messageLoop = new SocketMessageLoop<String>(systemName, new JsonMessageMapper(),
@@ -54,32 +55,13 @@ public class SocketAnkorSystem extends AnkorSystem {
                                                                                             messageLoop.getMessageBus(),
                                                                                             beanResolver,
                                                                                             eventDelaySupport);
+        ActionEvent.Listener remoteListener = null;
+        if (enableRemoteActionListener) {
+            remoteListener = new RemoteActionListenerSplitter(beanResolver);
+        }
 
         return new SocketAnkorSystem(messageFactory, messageLoop, refContextFactory, globalEventListeners,
-                                     systemName, null);
-    }
-
-    public SocketAnkorSystem withRemoteMethodActionListenerEnabled() {
-        return new SocketAnkorSystem(getMessageFactory(),
-                                     messageLoop,
-                                     getRefContextFactory(), getGlobalEventListeners(),
-                                     getSystemName(),
-                                     new ELRemoteMethodActionEventListener());
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public static SocketAnkorSystem create(String name, Class<?> modelType,
-                                     final String singletonBeanName, final Object singletonBean) {
-        return create(name, modelType, new BeanResolver() {
-            @Override
-            public Object resolveByName(String beanName) {
-                if (beanName.equals(singletonBeanName)) {
-                    return singletonBean;
-                } else {
-                    return null;
-                }
-            }
-        }, null, 0, 0);
+                                     systemName, remoteListener);
     }
 
     @Override

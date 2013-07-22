@@ -1,6 +1,6 @@
 package at.irian.ankorman.sample1.fxclient.animal;
 
-import at.irian.ankor.fx.app.ActionCompleteCallback;
+import at.irian.ankor.action.SimpleAction;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorman.sample1.fxclient.BaseTabController;
 import at.irian.ankorman.sample1.model.animal.AnimalFamily;
@@ -12,7 +12,6 @@ import javafx.scene.control.TextInputControl;
 import javafx.scene.text.Text;
 
 import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
-import static at.irian.ankorman.sample1.fxclient.App.facade;
 
 /**
  * @author Thomas Spiegl
@@ -62,10 +61,7 @@ public class AnimalDetailTabController extends BaseTabController {
 
     @FXML
     protected void save(@SuppressWarnings("UnusedParameters") ActionEvent event) {
-        facade().saveAnimal(getTabRef(), new ActionCompleteCallback() {
-            public void onComplete() {
-            }
-        });
+        getTabRef().append("model").fireAction(new SimpleAction("save"));
     }
 
 }

@@ -34,6 +34,11 @@ public class ELRemoteMethodActionEventListener extends RemoteMethodActionEventLi
                 public Object resolveByName(String beanName) {
                     return params.get(beanName);
                 }
+
+                @Override
+                public String[] getBeanDefinitionNames() {
+                    return params.keySet().toArray(new String[params.keySet().size()]);
+                }
             }));
         }
 
