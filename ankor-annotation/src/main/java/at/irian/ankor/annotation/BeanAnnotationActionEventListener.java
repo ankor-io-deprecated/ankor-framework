@@ -63,7 +63,14 @@ public class BeanAnnotationActionEventListener extends ActionEvent.Listener {
                     for (Annotation methodAnnotation : method.getDeclaredAnnotations()) {
                         if (methodAnnotation instanceof AnkorAction) {
                             AnkorAction action = (AnkorAction) methodAnnotation;
-                            mappings.put(new ActionSource(action.name(), action.refType().getName()), new ActionTarget(beanName, method));
+                            String actionPropertyType;
+                            if (!action.refType().getName().equals(AnkorAction.class.getName()) &&
+                                    !ObjectUtils.isEmpty(action.refType().getName())) {
+                                actionPropertyType = action.refType().getName();
+                            } else {
+                                actionPropertyType = null;
+                            }
+                            mappings.put(new ActionSource(action.name(), actionPropertyType), new ActionTarget(beanName, method));
                         }
                     }
                 }
@@ -71,7 +78,12 @@ public class BeanAnnotationActionEventListener extends ActionEvent.Listener {
         }
 
         public ActionTarget findTargetFor(String actionName, String actionPropertyType) {
-            return mappings.get(new ActionSource(actionName, actionPropertyType));
+            ActionTarget actionTarget = mappings.get(new ActionSource(actionName, actionPropertyType));
+            if (actionTarget == null) {
+                // try to find action without actionPropertyType
+                actionTarget = mappings.get(new ActionSource(actionName, null));
+            }
+            return actionTarget;
         }
     }
 

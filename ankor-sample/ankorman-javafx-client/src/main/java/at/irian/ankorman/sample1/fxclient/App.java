@@ -19,7 +19,6 @@ public class App extends javafx.application.Application {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(App.class);
 
     private static AppService appService;
-    private static ServiceFacade serviceFacade;
 
     public static void main(String[] args) {
         launch(args);
@@ -32,7 +31,6 @@ public class App extends javafx.application.Application {
 
         //createSimpleAppService(serviceBean);
         createSocketAppService(serviceBean);
-        serviceFacade = new ServiceFacade(appService);
 
         primaryStage.setTitle("Ankor FX Sample");
         Pane myPane = FXMLLoader.load(getClass().getClassLoader().getResource("main.fxml"));
@@ -58,10 +56,6 @@ public class App extends javafx.application.Application {
                 //.withServerStatusMessage(true);
                 .withServerStatusMessage(false);
         appService = appServiceBuilder.create();
-    }
-
-    public static ServiceFacade facade() {
-        return serviceFacade;
     }
 
     public static RefFactory refFactory() {

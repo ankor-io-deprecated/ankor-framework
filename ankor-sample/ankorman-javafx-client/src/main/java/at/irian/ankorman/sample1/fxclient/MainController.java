@@ -1,7 +1,8 @@
 package at.irian.ankorman.sample1.fxclient;
 
-import at.irian.ankor.fx.app.ActionCompleteCallback;
+import at.irian.ankor.action.SimpleAction;
 import at.irian.ankor.fx.binding.BindingContext;
+import at.irian.ankor.ref.ChangeListener;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorman.sample1.model.ModelRoot;
 import javafx.event.ActionEvent;
@@ -14,7 +15,6 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
-import static at.irian.ankorman.sample1.fxclient.App.facade;
 import static at.irian.ankorman.sample1.fxclient.App.refFactory;
 import static at.irian.ankorman.sample1.fxclient.TabType.animalDetailTab;
 import static at.irian.ankorman.sample1.fxclient.TabType.animalSearchTab;
@@ -35,9 +35,10 @@ public class MainController implements Initializable {
     private BindingContext bindingContext = new BindingContext();
 
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        facade().initApplication(new ActionCompleteCallback() {
-
-            public void onComplete() {
+        Ref rootRef = refFactory().rootRef();
+        rootRef.addPropChangeListener(new ChangeListener() {
+            @Override
+            public void processChange(Ref watchedProperty, Ref changedProperty) {
                 Ref rootRef = refFactory().rootRef();
                 ModelRoot modelRoot = rootRef.getValue();
 
@@ -46,9 +47,11 @@ public class MainController implements Initializable {
                 bindValue(rootRef.append("serverStatus"))
                         .toText(serverStatus)
                         .createWithin(bindingContext);
-
+                // TODO unregister this PropChangeListener
             }
         });
+        rootRef.fireAction(new SimpleAction("init"));
+
     }
 
     public void openAnimalSearchTab(@SuppressWarnings("UnusedParameters") ActionEvent actionEvent) {

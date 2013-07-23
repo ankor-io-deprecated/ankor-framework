@@ -28,10 +28,11 @@ public class ServiceBean {
         animalRepository = new AnimalRepository();
     }
 
-    public ModelRoot init() {
-        ModelRoot model = new ModelRoot();
-        model.setUserName("John Doe");
-        return model;
+    @AnkorAction(name = "init")
+    public void init(@AnkorActionPropertyRef Ref rootRef) {
+        ModelRoot modelRoot = new ModelRoot();
+        modelRoot.setUserName("John Doe");
+        rootRef.setValue(modelRoot);
     }
 
     @AnkorAction(name = "save", refType = AnimalDetailModel.class)

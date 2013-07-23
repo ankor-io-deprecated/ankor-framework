@@ -19,7 +19,7 @@ public @interface AnkorAction {
     /**
      * Required java type of the action property.
      */
-    Class<?> refType() default Object.class;
+    Class<?> refType() default AnkorAction.class;
 
     /**
      * Required path of the action property.
