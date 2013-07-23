@@ -2,6 +2,8 @@ package at.irian.ankor.system;
 
 import at.irian.ankor.action.ActionEvent;
 import at.irian.ankor.annotation.BeanAnnotationActionEventListener;
+import at.irian.ankor.annotation.BeanAnnotationChangeEventListener;
+import at.irian.ankor.change.ChangeEventListener;
 import at.irian.ankor.event.ArrayListEventListeners;
 import at.irian.ankor.event.EventDelaySupport;
 import at.irian.ankor.event.EventListeners;
@@ -25,19 +27,21 @@ public class SocketAnkorSystem extends AnkorSystem {
 
     protected SocketAnkorSystem(MessageFactory messageFactory,
                                 MessageLoop<String> messageLoop,
-                                RefContextFactory refContextFactory, EventListeners globalEventListeners,
+                                RefContextFactory refContextFactory,
+                                EventListeners globalEventListeners,
                                 String name,
-                                ActionEvent.Listener remoteMethodActionEventListener) {
+                                ActionEvent.Listener remoteMethodActionEventListener,
+                                ChangeEventListener annotationChangeEventListener) {
         super(name, messageFactory, messageLoop.getMessageBus(), globalEventListeners,
               refContextFactory,
-              remoteMethodActionEventListener);
+              remoteMethodActionEventListener, annotationChangeEventListener);
         this.messageLoop = messageLoop;
     }
 
 
     public static SocketAnkorSystem create(String systemName, Class<?> modelType, BeanResolver beanResolver,
                                            String remoteHost, int remotePort, int localPort,
-                                           boolean enableRemoteActionListener) {
+                                           boolean enableAnnotationListeners) {
         MessageFactory messageFactory = new MessageFactory();
 
         MessageLoop<String> messageLoop = new SocketMessageLoop<String>(systemName, new JsonMessageMapper(),
@@ -55,13 +59,15 @@ public class SocketAnkorSystem extends AnkorSystem {
                                                                                             messageLoop.getMessageBus(),
                                                                                             beanResolver,
                                                                                             eventDelaySupport);
-        ActionEvent.Listener remoteListener = null;
-        if (enableRemoteActionListener) {
-            remoteListener = new BeanAnnotationActionEventListener(beanResolver);
+        ActionEvent.Listener annotationActionEventListener = null;
+        ChangeEventListener annotationChangeEventListener = null;
+        if (enableAnnotationListeners) {
+            annotationActionEventListener = new BeanAnnotationActionEventListener(beanResolver);
+            annotationChangeEventListener = new BeanAnnotationChangeEventListener(beanResolver, refContextFactory.createRefContext().pathSyntax());
         }
 
         return new SocketAnkorSystem(messageFactory, messageLoop, refContextFactory, globalEventListeners,
-                                     systemName, remoteListener);
+                                     systemName, annotationActionEventListener, annotationChangeEventListener);
     }
 
     @Override

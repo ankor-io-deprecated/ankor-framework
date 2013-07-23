@@ -20,7 +20,8 @@ public class AnkorSystem {
     private final MessageBus messageBus;
     private final EventListeners globalEventListeners;
     private final RefContextFactory refContextFactory;
-    private final ActionEvent.Listener remoteMethodActionEventListener;
+    private final ActionEvent.Listener annotationActionEventListener;
+    private final ChangeEventListener annotationChangeEventListener;
     private ChangeEventListener changeEventListener;
     private ActionEvent.Listener actionEventListener;
     private MessageListener messageListener;
@@ -30,13 +31,15 @@ public class AnkorSystem {
                           MessageBus messageBus,
                           EventListeners globalEventListeners,
                           RefContextFactory refContextFactory,
-                          ActionEvent.Listener remoteMethodActionEventListener) {
+                          ActionEvent.Listener annotationActionEventListener,
+                          ChangeEventListener annotationChangeEventListener) {
         this.systemName = systemName;
         this.messageFactory = messageFactory;
         this.messageBus = messageBus;
         this.globalEventListeners = globalEventListeners;
         this.refContextFactory = refContextFactory;
-        this.remoteMethodActionEventListener = remoteMethodActionEventListener;
+        this.annotationActionEventListener = annotationActionEventListener;
+        this.annotationChangeEventListener = annotationChangeEventListener;
     }
 
     public String getSystemName() {
@@ -144,8 +147,12 @@ public class AnkorSystem {
         globalEventListeners.add(changeEventListener);
         messageBus.registerMessageListener(messageListener);
 
-        if (remoteMethodActionEventListener != null) {
-            globalEventListeners.add(remoteMethodActionEventListener);
+        if (annotationActionEventListener != null) {
+            globalEventListeners.add(annotationActionEventListener);
+        }
+
+        if (annotationChangeEventListener != null) {
+            globalEventListeners.add(annotationChangeEventListener);
         }
     }
 
@@ -183,8 +190,12 @@ public class AnkorSystem {
             actionEventListener = null;
         }
 
-        if (remoteMethodActionEventListener != null) {
-            globalEventListeners.remove(remoteMethodActionEventListener);
+        if (annotationActionEventListener != null) {
+            globalEventListeners.remove(annotationActionEventListener);
+        }
+
+        if (annotationChangeEventListener != null) {
+            globalEventListeners.remove(annotationChangeEventListener);
         }
     }
 

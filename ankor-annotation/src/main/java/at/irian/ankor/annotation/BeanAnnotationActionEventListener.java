@@ -52,10 +52,14 @@ public class BeanAnnotationActionEventListener extends ActionEvent.Listener {
 
     static class ActionMapper {
 
-        private final Map<ActionSource, ActionTarget> mappings;
+        private final Map<ActionFilter, ActionTarget> mappings;
 
         public ActionMapper(BeanResolver beanResolver) {
-            mappings = new HashMap<ActionSource, ActionTarget>();
+            mappings = new HashMap<ActionFilter, ActionTarget>();
+            scanBeans(beanResolver);
+        }
+
+        private void scanBeans(BeanResolver beanResolver) {
             for (String beanName : beanResolver.getBeanDefinitionNames()) {
                 Object bean = beanResolver.resolveByName(beanName);
                 Class<?> beanType = bean.getClass();
@@ -70,7 +74,8 @@ public class BeanAnnotationActionEventListener extends ActionEvent.Listener {
                             } else {
                                 actionPropertyType = null;
                             }
-                            mappings.put(new ActionSource(action.name(), actionPropertyType), new ActionTarget(beanName, method));
+                            // todo: support multiple equal action filters
+                            mappings.put(new ActionFilter(action.name(), actionPropertyType), new ActionTarget(beanName, method));
                         }
                     }
                 }
@@ -78,10 +83,10 @@ public class BeanAnnotationActionEventListener extends ActionEvent.Listener {
         }
 
         public ActionTarget findTargetFor(String actionName, String actionPropertyType) {
-            ActionTarget actionTarget = mappings.get(new ActionSource(actionName, actionPropertyType));
+            ActionTarget actionTarget = mappings.get(new ActionFilter(actionName, actionPropertyType));
             if (actionTarget == null) {
                 // try to find action without actionPropertyType
-                actionTarget = mappings.get(new ActionSource(actionName, null));
+                actionTarget = mappings.get(new ActionFilter(actionName, null));
             }
             return actionTarget;
         }
@@ -189,12 +194,12 @@ public class BeanAnnotationActionEventListener extends ActionEvent.Listener {
         }
     }
 
-    static class ActionSource {
+    static class ActionFilter {
 
         private final String actionName;
         private final String actionPropertyType;
 
-        public ActionSource(String actionName, String actionPropertyType) {
+        public ActionFilter(String actionName, String actionPropertyType) {
             this.actionName = actionName;
             this.actionPropertyType = actionPropertyType;
         }
@@ -204,7 +209,7 @@ public class BeanAnnotationActionEventListener extends ActionEvent.Listener {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
 
-            ActionSource that = (ActionSource) o;
+            ActionFilter that = (ActionFilter) o;
 
             if (actionName != null ? !actionName.equals(that.actionName) : that.actionName != null) return false;
             //noinspection RedundantIfStatement

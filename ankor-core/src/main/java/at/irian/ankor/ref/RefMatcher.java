@@ -2,6 +2,10 @@ package at.irian.ankor.ref;
 
 import at.irian.ankor.path.PathSyntax;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * @author Manfred Geiler
  */
@@ -21,7 +25,7 @@ public class RefMatcher {
     }
 
     @SuppressWarnings("SimplifiableIfStatement")
-    public boolean matches(Ref ref) {
+    public Result match(Ref ref) {
         String propertyPattern;
         String parentPattern;
         if (pattern.endsWith(">")) {
@@ -40,44 +44,48 @@ public class RefMatcher {
         }
 
         if (!matchRefWithSinglePropertyPattern(ref, propertyPattern)) {
-            return false;
+            return NO_MATCH;
         }
 
-        Ref parentRef = ref.parent();
+        Ref parentRef = null;
+        if (!ref.isRoot()) {
+            parentRef = ref.parent();
+        }
         if (parentRef != null) {
 
             if (parentPattern != null) {
 
                 RefMatcher parentMatcher = this.withPattern(parentPattern);
-                if (parentMatcher.matches(parentRef)) {
-                    return true;
+                Result matchResult = parentMatcher.match(parentRef);
+                if (matchResult.isMatch()) {
+                    if (isWatchedProperty(propertyPattern)) {
+                        ArrayList<Ref> refs = new ArrayList<Ref>(matchResult.getWatchedRefs());
+                        refs.add(ref);
+                        return new Result(true, refs);
+                    } else {
+                        return matchResult;
+                    }
                 }
 
             }
 
             if (isMultiWildcard(propertyPattern)) {
-                return matches(parentRef);
+                return match(parentRef);
             }
 
         } else {
 
             if (parentPattern == null) {
-                return true;
+                if (isWatchedProperty(propertyPattern)) {
+                    return new Result(true, Collections.singletonList(ref));
+                } else {
+                    return new Result(true, Collections.<Ref>emptyList());
+                }
             }
 
         }
 
-        return false;
-    }
-
-
-    @SuppressWarnings("SimplifiableIfStatement")
-    private boolean matchRootProperty(Ref rootRef) {
-        if (pathSyntax.isHasParent(pattern)) {
-            return false;
-        } else {
-            return matchRefWithSinglePropertyPattern(rootRef, pattern);
-        }
+        return NO_MATCH;
     }
 
 
@@ -85,16 +93,22 @@ public class RefMatcher {
         if (isWildcard(propertyPattern)) {
             return true;
         } else if (isTypeCondition(propertyPattern)) {
-            String type = getType(propertyPattern);
+            String type = propertyPattern.substring(1, propertyPattern.length() - 1);
             Object refValue = ref.getValue();
             if (refValue == null) {
                 return false;
             }
             Class<?> refType = refValue.getClass();
             return type.equals(refType.getSimpleName()) || type.equals(refType.getName());
+        } else if (isWatchedProperty(propertyPattern)) {
+            return getPropertyNameFor(ref).equals(propertyPattern.substring(1, propertyPattern.length() - 1));
         } else {
-            return ref.propertyName().equals(propertyPattern);
+            return getPropertyNameFor(ref).equals(propertyPattern);
         }
+    }
+
+    private String getPropertyNameFor(Ref ref) {
+        return ref.isRoot() ? ref.path() : ref.propertyName();
     }
 
     private boolean isWildcard(String pattern) {
@@ -109,8 +123,29 @@ public class RefMatcher {
         return pattern.startsWith("<") && pattern.endsWith(">");
     }
 
-    private String getType(String propertyPattern) {
-        return propertyPattern.substring(1, propertyPattern.length() - 1);
+    private boolean isWatchedProperty(String pattern) {
+        return pattern.startsWith("(") && pattern.endsWith(")");
+    }
+
+
+    private static Result NO_MATCH = new Result(false, Collections.<Ref>emptyList());
+
+    public static class Result {
+        private final boolean match;
+        private final List<Ref> watchedRefs;
+
+        public Result(boolean match, List<Ref> watchedRefs) {
+            this.match = match;
+            this.watchedRefs = watchedRefs;
+        }
+
+        public boolean isMatch() {
+            return match;
+        }
+
+        public List<Ref> getWatchedRefs() {
+            return watchedRefs;
+        }
     }
 
 }

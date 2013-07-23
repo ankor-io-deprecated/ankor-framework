@@ -10,10 +10,10 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface TreeChangeListener {
+public @interface Change {
     /**
-     * name of the param.
+     * One or more patterns
      */
-    Class value() default TreeChangeListener.class;
+    String[] pattern();
 
 }

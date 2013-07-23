@@ -6,6 +6,8 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.List;
+
 import static at.irian.ankor.ref.el.MockELRef.createRef;
 import static at.irian.ankor.ref.el.MockELRef.createRootRef;
 
@@ -63,164 +65,169 @@ public class RefMatcherTest {
         return new RefMatcher(pathSyntax, pattern);
     }
 
+    private boolean matches(RefMatcher matcher, Ref ref) {
+        RefMatcher.Result result = matcher.match(ref);
+        return result.isMatch();
+    }
+    
     @Test
     public void test_1() throws Exception {
         RefMatcher m = createMatcher("root1");
 
-        Assert.assertTrue (m.matches(r1));
-        Assert.assertFalse(m.matches(r2));
-        Assert.assertFalse(m.matches(r11));
-        Assert.assertFalse(m.matches(r12));
-        Assert.assertFalse(m.matches(r21));
-        Assert.assertFalse(m.matches(r22));
-        Assert.assertFalse(m.matches(r111));
-        Assert.assertFalse(m.matches(r112));
-        Assert.assertFalse(m.matches(r121));
-        Assert.assertFalse(m.matches(r122));
-        Assert.assertFalse(m.matches(r211));
-        Assert.assertFalse(m.matches(r212));
-        Assert.assertFalse(m.matches(r221));
-        Assert.assertFalse(m.matches(r222));
+        Assert.assertTrue (matches(m, r1));
+        Assert.assertFalse(matches(m, r2));
+        Assert.assertFalse(matches(m, r11));
+        Assert.assertFalse(matches(m, r12));
+        Assert.assertFalse(matches(m, r21));
+        Assert.assertFalse(matches(m, r22));
+        Assert.assertFalse(matches(m, r111));
+        Assert.assertFalse(matches(m, r112));
+        Assert.assertFalse(matches(m, r121));
+        Assert.assertFalse(matches(m, r122));
+        Assert.assertFalse(matches(m, r211));
+        Assert.assertFalse(matches(m, r212));
+        Assert.assertFalse(matches(m, r221));
+        Assert.assertFalse(matches(m, r222));
     }
 
     @Test
     public void test_2() throws Exception {
         RefMatcher m = createMatcher("root1.test1");
 
-        Assert.assertFalse(m.matches(r1));
-        Assert.assertFalse(m.matches(r2));
-        Assert.assertTrue(m.matches(r11));
-        Assert.assertFalse(m.matches(r12));
-        Assert.assertFalse(m.matches(r21));
-        Assert.assertFalse(m.matches(r22));
-        Assert.assertFalse(m.matches(r111));
-        Assert.assertFalse(m.matches(r112));
-        Assert.assertFalse(m.matches(r121));
-        Assert.assertFalse(m.matches(r122));
-        Assert.assertFalse(m.matches(r211));
-        Assert.assertFalse(m.matches(r212));
-        Assert.assertFalse(m.matches(r221));
-        Assert.assertFalse(m.matches(r222));
+        Assert.assertFalse(matches(m, r1));
+        Assert.assertFalse(matches(m, r2));
+        Assert.assertTrue(matches(m, r11));
+        Assert.assertFalse(matches(m, r12));
+        Assert.assertFalse(matches(m, r21));
+        Assert.assertFalse(matches(m, r22));
+        Assert.assertFalse(matches(m, r111));
+        Assert.assertFalse(matches(m, r112));
+        Assert.assertFalse(matches(m, r121));
+        Assert.assertFalse(matches(m, r122));
+        Assert.assertFalse(matches(m, r211));
+        Assert.assertFalse(matches(m, r212));
+        Assert.assertFalse(matches(m, r221));
+        Assert.assertFalse(matches(m, r222));
     }
 
     @Test
     public void test_3() throws Exception {
         RefMatcher m = createMatcher("root1.test1.sub1");
 
-        Assert.assertFalse(m.matches(r1));
-        Assert.assertFalse(m.matches(r2));
-        Assert.assertFalse(m.matches(r11));
-        Assert.assertFalse(m.matches(r12));
-        Assert.assertFalse(m.matches(r21));
-        Assert.assertFalse(m.matches(r22));
-        Assert.assertTrue(m.matches(r111));
-        Assert.assertFalse(m.matches(r112));
-        Assert.assertFalse(m.matches(r121));
-        Assert.assertFalse(m.matches(r122));
-        Assert.assertFalse(m.matches(r211));
-        Assert.assertFalse(m.matches(r212));
-        Assert.assertFalse(m.matches(r221));
-        Assert.assertFalse(m.matches(r222));
+        Assert.assertFalse(matches(m, r1));
+        Assert.assertFalse(matches(m, r2));
+        Assert.assertFalse(matches(m, r11));
+        Assert.assertFalse(matches(m, r12));
+        Assert.assertFalse(matches(m, r21));
+        Assert.assertFalse(matches(m, r22));
+        Assert.assertTrue(matches(m, r111));
+        Assert.assertFalse(matches(m, r112));
+        Assert.assertFalse(matches(m, r121));
+        Assert.assertFalse(matches(m, r122));
+        Assert.assertFalse(matches(m, r211));
+        Assert.assertFalse(matches(m, r212));
+        Assert.assertFalse(matches(m, r221));
+        Assert.assertFalse(matches(m, r222));
     }
 
     @Test
     public void test_wc1() throws Exception {
         RefMatcher m = createMatcher("root1.test1.*");
 
-        Assert.assertFalse(m.matches(r1));
-        Assert.assertFalse(m.matches(r2));
-        Assert.assertFalse(m.matches(r11));
-        Assert.assertFalse(m.matches(r12));
-        Assert.assertFalse(m.matches(r21));
-        Assert.assertFalse(m.matches(r22));
-        Assert.assertTrue (m.matches(r111));
-        Assert.assertTrue (m.matches(r112));
-        Assert.assertFalse(m.matches(r121));
-        Assert.assertFalse(m.matches(r122));
-        Assert.assertFalse(m.matches(r211));
-        Assert.assertFalse(m.matches(r212));
-        Assert.assertFalse(m.matches(r221));
-        Assert.assertFalse(m.matches(r222));
+        Assert.assertFalse(matches(m, r1));
+        Assert.assertFalse(matches(m, r2));
+        Assert.assertFalse(matches(m, r11));
+        Assert.assertFalse(matches(m, r12));
+        Assert.assertFalse(matches(m, r21));
+        Assert.assertFalse(matches(m, r22));
+        Assert.assertTrue (matches(m, r111));
+        Assert.assertTrue (matches(m, r112));
+        Assert.assertFalse(matches(m, r121));
+        Assert.assertFalse(matches(m, r122));
+        Assert.assertFalse(matches(m, r211));
+        Assert.assertFalse(matches(m, r212));
+        Assert.assertFalse(matches(m, r221));
+        Assert.assertFalse(matches(m, r222));
     }
 
     @Test
     public void test_wc2() throws Exception {
         RefMatcher m = createMatcher("root1.*.sub1");
 
-        Assert.assertFalse(m.matches(r1));
-        Assert.assertFalse(m.matches(r2));
-        Assert.assertFalse(m.matches(r11));
-        Assert.assertFalse(m.matches(r12));
-        Assert.assertFalse(m.matches(r21));
-        Assert.assertFalse(m.matches(r22));
-        Assert.assertTrue (m.matches(r111));
-        Assert.assertFalse(m.matches(r112));
-        Assert.assertTrue (m.matches(r121));
-        Assert.assertFalse(m.matches(r122));
-        Assert.assertFalse(m.matches(r211));
-        Assert.assertFalse(m.matches(r212));
-        Assert.assertFalse(m.matches(r221));
-        Assert.assertFalse(m.matches(r222));
+        Assert.assertFalse(matches(m, r1));
+        Assert.assertFalse(matches(m, r2));
+        Assert.assertFalse(matches(m, r11));
+        Assert.assertFalse(matches(m, r12));
+        Assert.assertFalse(matches(m, r21));
+        Assert.assertFalse(matches(m, r22));
+        Assert.assertTrue (matches(m, r111));
+        Assert.assertFalse(matches(m, r112));
+        Assert.assertTrue (matches(m, r121));
+        Assert.assertFalse(matches(m, r122));
+        Assert.assertFalse(matches(m, r211));
+        Assert.assertFalse(matches(m, r212));
+        Assert.assertFalse(matches(m, r221));
+        Assert.assertFalse(matches(m, r222));
     }
 
     @Test
     public void test_wc3() throws Exception {
         RefMatcher m = createMatcher("*.test1.sub1");
 
-        Assert.assertFalse(m.matches(r1));
-        Assert.assertFalse(m.matches(r2));
-        Assert.assertFalse(m.matches(r11));
-        Assert.assertFalse(m.matches(r12));
-        Assert.assertFalse(m.matches(r21));
-        Assert.assertFalse(m.matches(r22));
-        Assert.assertTrue (m.matches(r111));
-        Assert.assertFalse(m.matches(r112));
-        Assert.assertFalse(m.matches(r121));
-        Assert.assertFalse(m.matches(r122));
-        Assert.assertTrue (m.matches(r211));
-        Assert.assertFalse(m.matches(r212));
-        Assert.assertFalse(m.matches(r221));
-        Assert.assertFalse(m.matches(r222));
+        Assert.assertFalse(matches(m, r1));
+        Assert.assertFalse(matches(m, r2));
+        Assert.assertFalse(matches(m, r11));
+        Assert.assertFalse(matches(m, r12));
+        Assert.assertFalse(matches(m, r21));
+        Assert.assertFalse(matches(m, r22));
+        Assert.assertTrue (matches(m, r111));
+        Assert.assertFalse(matches(m, r112));
+        Assert.assertFalse(matches(m, r121));
+        Assert.assertFalse(matches(m, r122));
+        Assert.assertTrue (matches(m, r211));
+        Assert.assertFalse(matches(m, r212));
+        Assert.assertFalse(matches(m, r221));
+        Assert.assertFalse(matches(m, r222));
     }
 
     @Test
     public void test_wc4() throws Exception {
         RefMatcher m = createMatcher("*.test1.*");
 
-        Assert.assertFalse(m.matches(r1));
-        Assert.assertFalse(m.matches(r2));
-        Assert.assertFalse(m.matches(r11));
-        Assert.assertFalse(m.matches(r12));
-        Assert.assertFalse(m.matches(r21));
-        Assert.assertFalse(m.matches(r22));
-        Assert.assertTrue (m.matches(r111));
-        Assert.assertTrue (m.matches(r112));
-        Assert.assertFalse(m.matches(r121));
-        Assert.assertFalse(m.matches(r122));
-        Assert.assertTrue (m.matches(r211));
-        Assert.assertTrue (m.matches(r212));
-        Assert.assertFalse(m.matches(r221));
-        Assert.assertFalse(m.matches(r222));
+        Assert.assertFalse(matches(m, r1));
+        Assert.assertFalse(matches(m, r2));
+        Assert.assertFalse(matches(m, r11));
+        Assert.assertFalse(matches(m, r12));
+        Assert.assertFalse(matches(m, r21));
+        Assert.assertFalse(matches(m, r22));
+        Assert.assertTrue (matches(m, r111));
+        Assert.assertTrue (matches(m, r112));
+        Assert.assertFalse(matches(m, r121));
+        Assert.assertFalse(matches(m, r122));
+        Assert.assertTrue (matches(m, r211));
+        Assert.assertTrue (matches(m, r212));
+        Assert.assertFalse(matches(m, r221));
+        Assert.assertFalse(matches(m, r222));
     }
 
     @Test
     public void test_wc5() throws Exception {
         RefMatcher m = createMatcher("*.*.*");
 
-        Assert.assertFalse(m.matches(r1));
-        Assert.assertFalse(m.matches(r2));
-        Assert.assertFalse(m.matches(r11));
-        Assert.assertFalse(m.matches(r12));
-        Assert.assertFalse(m.matches(r21));
-        Assert.assertFalse(m.matches(r22));
-        Assert.assertTrue (m.matches(r111));
-        Assert.assertTrue (m.matches(r112));
-        Assert.assertTrue(m.matches(r121));
-        Assert.assertTrue(m.matches(r122));
-        Assert.assertTrue (m.matches(r211));
-        Assert.assertTrue (m.matches(r212));
-        Assert.assertTrue(m.matches(r221));
-        Assert.assertTrue(m.matches(r222));
+        Assert.assertFalse(matches(m, r1));
+        Assert.assertFalse(matches(m, r2));
+        Assert.assertFalse(matches(m, r11));
+        Assert.assertFalse(matches(m, r12));
+        Assert.assertFalse(matches(m, r21));
+        Assert.assertFalse(matches(m, r22));
+        Assert.assertTrue (matches(m, r111));
+        Assert.assertTrue (matches(m, r112));
+        Assert.assertTrue(matches(m, r121));
+        Assert.assertTrue(matches(m, r122));
+        Assert.assertTrue (matches(m, r211));
+        Assert.assertTrue (matches(m, r212));
+        Assert.assertTrue(matches(m, r221));
+        Assert.assertTrue(matches(m, r222));
     }
 
 
@@ -229,140 +236,140 @@ public class RefMatcherTest {
     public void test_mwc1() throws Exception {
         RefMatcher m = createMatcher("root1.test1.**");
 
-        Assert.assertFalse(m.matches(r1));
-        Assert.assertFalse(m.matches(r2));
-        Assert.assertFalse(m.matches(r11));
-        Assert.assertFalse(m.matches(r12));
-        Assert.assertFalse(m.matches(r21));
-        Assert.assertFalse(m.matches(r22));
-        Assert.assertTrue (m.matches(r111));
-        Assert.assertTrue (m.matches(r112));
-        Assert.assertFalse(m.matches(r121));
-        Assert.assertFalse(m.matches(r122));
-        Assert.assertFalse(m.matches(r211));
-        Assert.assertFalse(m.matches(r212));
-        Assert.assertFalse(m.matches(r221));
-        Assert.assertFalse(m.matches(r222));
+        Assert.assertFalse(matches(m, r1));
+        Assert.assertFalse(matches(m, r2));
+        Assert.assertFalse(matches(m, r11));
+        Assert.assertFalse(matches(m, r12));
+        Assert.assertFalse(matches(m, r21));
+        Assert.assertFalse(matches(m, r22));
+        Assert.assertTrue (matches(m, r111));
+        Assert.assertTrue (matches(m, r112));
+        Assert.assertFalse(matches(m, r121));
+        Assert.assertFalse(matches(m, r122));
+        Assert.assertFalse(matches(m, r211));
+        Assert.assertFalse(matches(m, r212));
+        Assert.assertFalse(matches(m, r221));
+        Assert.assertFalse(matches(m, r222));
     }
 
     @Test
     public void test_mwc2() throws Exception {
         RefMatcher m = createMatcher("root1.**.sub1");
 
-        Assert.assertFalse(m.matches(r1));
-        Assert.assertFalse(m.matches(r2));
-        Assert.assertFalse(m.matches(r11));
-        Assert.assertFalse(m.matches(r12));
-        Assert.assertFalse(m.matches(r21));
-        Assert.assertFalse(m.matches(r22));
-        Assert.assertTrue (m.matches(r111));
-        Assert.assertFalse(m.matches(r112));
-        Assert.assertTrue (m.matches(r121));
-        Assert.assertFalse(m.matches(r122));
-        Assert.assertFalse(m.matches(r211));
-        Assert.assertFalse(m.matches(r212));
-        Assert.assertFalse(m.matches(r221));
-        Assert.assertFalse(m.matches(r222));
+        Assert.assertFalse(matches(m, r1));
+        Assert.assertFalse(matches(m, r2));
+        Assert.assertFalse(matches(m, r11));
+        Assert.assertFalse(matches(m, r12));
+        Assert.assertFalse(matches(m, r21));
+        Assert.assertFalse(matches(m, r22));
+        Assert.assertTrue (matches(m, r111));
+        Assert.assertFalse(matches(m, r112));
+        Assert.assertTrue (matches(m, r121));
+        Assert.assertFalse(matches(m, r122));
+        Assert.assertFalse(matches(m, r211));
+        Assert.assertFalse(matches(m, r212));
+        Assert.assertFalse(matches(m, r221));
+        Assert.assertFalse(matches(m, r222));
     }
 
     @Test
     public void test_mwc3() throws Exception {
         RefMatcher m = createMatcher("**.test1.sub1");
 
-        Assert.assertFalse(m.matches(r1));
-        Assert.assertFalse(m.matches(r2));
-        Assert.assertFalse(m.matches(r11));
-        Assert.assertFalse(m.matches(r12));
-        Assert.assertFalse(m.matches(r21));
-        Assert.assertFalse(m.matches(r22));
-        Assert.assertTrue (m.matches(r111));
-        Assert.assertFalse(m.matches(r112));
-        Assert.assertFalse(m.matches(r121));
-        Assert.assertFalse(m.matches(r122));
-        Assert.assertTrue (m.matches(r211));
-        Assert.assertFalse(m.matches(r212));
-        Assert.assertFalse(m.matches(r221));
-        Assert.assertFalse(m.matches(r222));
+        Assert.assertFalse(matches(m, r1));
+        Assert.assertFalse(matches(m, r2));
+        Assert.assertFalse(matches(m, r11));
+        Assert.assertFalse(matches(m, r12));
+        Assert.assertFalse(matches(m, r21));
+        Assert.assertFalse(matches(m, r22));
+        Assert.assertTrue (matches(m, r111));
+        Assert.assertFalse(matches(m, r112));
+        Assert.assertFalse(matches(m, r121));
+        Assert.assertFalse(matches(m, r122));
+        Assert.assertTrue (matches(m, r211));
+        Assert.assertFalse(matches(m, r212));
+        Assert.assertFalse(matches(m, r221));
+        Assert.assertFalse(matches(m, r222));
     }
 
     @Test
     public void test_mwc4() throws Exception {
         RefMatcher m = createMatcher("**.test1.**");
 
-        Assert.assertFalse(m.matches(r1));
-        Assert.assertFalse(m.matches(r2));
-        Assert.assertFalse(m.matches(r11));
-        Assert.assertFalse(m.matches(r12));
-        Assert.assertFalse(m.matches(r21));
-        Assert.assertFalse(m.matches(r22));
-        Assert.assertTrue (m.matches(r111));
-        Assert.assertTrue (m.matches(r112));
-        Assert.assertFalse(m.matches(r121));
-        Assert.assertFalse(m.matches(r122));
-        Assert.assertTrue (m.matches(r211));
-        Assert.assertTrue (m.matches(r212));
-        Assert.assertFalse(m.matches(r221));
-        Assert.assertFalse(m.matches(r222));
+        Assert.assertFalse(matches(m, r1));
+        Assert.assertFalse(matches(m, r2));
+        Assert.assertFalse(matches(m, r11));
+        Assert.assertFalse(matches(m, r12));
+        Assert.assertFalse(matches(m, r21));
+        Assert.assertFalse(matches(m, r22));
+        Assert.assertTrue (matches(m, r111));
+        Assert.assertTrue (matches(m, r112));
+        Assert.assertFalse(matches(m, r121));
+        Assert.assertFalse(matches(m, r122));
+        Assert.assertTrue (matches(m, r211));
+        Assert.assertTrue (matches(m, r212));
+        Assert.assertFalse(matches(m, r221));
+        Assert.assertFalse(matches(m, r222));
     }
 
     @Test
     public void test_mwc5() throws Exception {
         RefMatcher m = createMatcher("**.**.**");
 
-        Assert.assertFalse(m.matches(r1));
-        Assert.assertFalse(m.matches(r2));
-        Assert.assertFalse(m.matches(r11));
-        Assert.assertFalse(m.matches(r12));
-        Assert.assertFalse(m.matches(r21));
-        Assert.assertFalse(m.matches(r22));
-        Assert.assertTrue (m.matches(r111));
-        Assert.assertTrue (m.matches(r112));
-        Assert.assertTrue(m.matches(r121));
-        Assert.assertTrue(m.matches(r122));
-        Assert.assertTrue (m.matches(r211));
-        Assert.assertTrue (m.matches(r212));
-        Assert.assertTrue(m.matches(r221));
-        Assert.assertTrue(m.matches(r222));
+        Assert.assertFalse(matches(m, r1));
+        Assert.assertFalse(matches(m, r2));
+        Assert.assertFalse(matches(m, r11));
+        Assert.assertFalse(matches(m, r12));
+        Assert.assertFalse(matches(m, r21));
+        Assert.assertFalse(matches(m, r22));
+        Assert.assertTrue (matches(m, r111));
+        Assert.assertTrue (matches(m, r112));
+        Assert.assertTrue(matches(m, r121));
+        Assert.assertTrue(matches(m, r122));
+        Assert.assertTrue (matches(m, r211));
+        Assert.assertTrue (matches(m, r212));
+        Assert.assertTrue(matches(m, r221));
+        Assert.assertTrue(matches(m, r222));
     }
 
     @Test
     public void test_mwc6() throws Exception {
         RefMatcher m = createMatcher("**.**");
 
-        Assert.assertFalse(m.matches(r1));
-        Assert.assertFalse(m.matches(r2));
-        Assert.assertTrue(m.matches(r11));
-        Assert.assertTrue(m.matches(r12));
-        Assert.assertTrue(m.matches(r21));
-        Assert.assertTrue(m.matches(r22));
-        Assert.assertTrue (m.matches(r111));
-        Assert.assertTrue (m.matches(r112));
-        Assert.assertTrue (m.matches(r121));
-        Assert.assertTrue (m.matches(r122));
-        Assert.assertTrue (m.matches(r211));
-        Assert.assertTrue (m.matches(r212));
-        Assert.assertTrue (m.matches(r221));
-        Assert.assertTrue (m.matches(r222));
+        Assert.assertFalse(matches(m, r1));
+        Assert.assertFalse(matches(m, r2));
+        Assert.assertTrue(matches(m, r11));
+        Assert.assertTrue(matches(m, r12));
+        Assert.assertTrue(matches(m, r21));
+        Assert.assertTrue(matches(m, r22));
+        Assert.assertTrue (matches(m, r111));
+        Assert.assertTrue (matches(m, r112));
+        Assert.assertTrue (matches(m, r121));
+        Assert.assertTrue (matches(m, r122));
+        Assert.assertTrue (matches(m, r211));
+        Assert.assertTrue (matches(m, r212));
+        Assert.assertTrue (matches(m, r221));
+        Assert.assertTrue (matches(m, r222));
     }
 
     @Test
     public void test_mwc7() throws Exception {
         RefMatcher m = createMatcher("**");
 
-        Assert.assertTrue(m.matches(r1));
-        Assert.assertTrue(m.matches(r2));
-        Assert.assertTrue(m.matches(r11));
-        Assert.assertTrue(m.matches(r12));
-        Assert.assertTrue(m.matches(r21));
-        Assert.assertTrue(m.matches(r22));
-        Assert.assertTrue (m.matches(r111));
-        Assert.assertTrue (m.matches(r112));
-        Assert.assertTrue (m.matches(r121));
-        Assert.assertTrue (m.matches(r122));
-        Assert.assertTrue (m.matches(r211));
-        Assert.assertTrue (m.matches(r212));
-        Assert.assertTrue (m.matches(r221));
-        Assert.assertTrue (m.matches(r222));
+        Assert.assertTrue(matches(m, r1));
+        Assert.assertTrue(matches(m, r2));
+        Assert.assertTrue(matches(m, r11));
+        Assert.assertTrue(matches(m, r12));
+        Assert.assertTrue(matches(m, r21));
+        Assert.assertTrue(matches(m, r22));
+        Assert.assertTrue (matches(m, r111));
+        Assert.assertTrue (matches(m, r112));
+        Assert.assertTrue (matches(m, r121));
+        Assert.assertTrue (matches(m, r122));
+        Assert.assertTrue (matches(m, r211));
+        Assert.assertTrue (matches(m, r212));
+        Assert.assertTrue (matches(m, r221));
+        Assert.assertTrue (matches(m, r222));
     }
 
 
@@ -370,140 +377,191 @@ public class RefMatcherTest {
     public void test_t1() throws Exception {
         RefMatcher m = createMatcher("root1.test1.<Integer>");
 
-        Assert.assertFalse(m.matches(r1));
-        Assert.assertFalse(m.matches(r2));
-        Assert.assertFalse(m.matches(r11));
-        Assert.assertFalse(m.matches(r12));
-        Assert.assertFalse(m.matches(r21));
-        Assert.assertFalse(m.matches(r22));
-        Assert.assertTrue (m.matches(r111));
-        Assert.assertTrue (m.matches(r112));
-        Assert.assertFalse(m.matches(r121));
-        Assert.assertFalse(m.matches(r122));
-        Assert.assertFalse(m.matches(r211));
-        Assert.assertFalse(m.matches(r212));
-        Assert.assertFalse(m.matches(r221));
-        Assert.assertFalse(m.matches(r222));
+        Assert.assertFalse(matches(m, r1));
+        Assert.assertFalse(matches(m, r2));
+        Assert.assertFalse(matches(m, r11));
+        Assert.assertFalse(matches(m, r12));
+        Assert.assertFalse(matches(m, r21));
+        Assert.assertFalse(matches(m, r22));
+        Assert.assertTrue (matches(m, r111));
+        Assert.assertTrue (matches(m, r112));
+        Assert.assertFalse(matches(m, r121));
+        Assert.assertFalse(matches(m, r122));
+        Assert.assertFalse(matches(m, r211));
+        Assert.assertFalse(matches(m, r212));
+        Assert.assertFalse(matches(m, r221));
+        Assert.assertFalse(matches(m, r222));
     }
 
     @Test
     public void test_tfq1() throws Exception {
         RefMatcher m = createMatcher("root1.test1.<java.lang.Integer>");
 
-        Assert.assertFalse(m.matches(r1));
-        Assert.assertFalse(m.matches(r2));
-        Assert.assertFalse(m.matches(r11));
-        Assert.assertFalse(m.matches(r12));
-        Assert.assertFalse(m.matches(r21));
-        Assert.assertFalse(m.matches(r22));
-        Assert.assertTrue (m.matches(r111));
-        Assert.assertTrue (m.matches(r112));
-        Assert.assertFalse(m.matches(r121));
-        Assert.assertFalse(m.matches(r122));
-        Assert.assertFalse(m.matches(r211));
-        Assert.assertFalse(m.matches(r212));
-        Assert.assertFalse(m.matches(r221));
-        Assert.assertFalse(m.matches(r222));
+        Assert.assertFalse(matches(m, r1));
+        Assert.assertFalse(matches(m, r2));
+        Assert.assertFalse(matches(m, r11));
+        Assert.assertFalse(matches(m, r12));
+        Assert.assertFalse(matches(m, r21));
+        Assert.assertFalse(matches(m, r22));
+        Assert.assertTrue (matches(m, r111));
+        Assert.assertTrue (matches(m, r112));
+        Assert.assertFalse(matches(m, r121));
+        Assert.assertFalse(matches(m, r122));
+        Assert.assertFalse(matches(m, r211));
+        Assert.assertFalse(matches(m, r212));
+        Assert.assertFalse(matches(m, r221));
+        Assert.assertFalse(matches(m, r222));
     }
 
     @Test
     public void test_t2() throws Exception {
         RefMatcher m = createMatcher("root1.test1.<String>");
 
-        Assert.assertFalse(m.matches(r1));
-        Assert.assertFalse(m.matches(r2));
-        Assert.assertFalse(m.matches(r11));
-        Assert.assertFalse(m.matches(r12));
-        Assert.assertFalse(m.matches(r21));
-        Assert.assertFalse(m.matches(r22));
-        Assert.assertFalse(m.matches(r111));
-        Assert.assertFalse(m.matches(r112));
-        Assert.assertFalse(m.matches(r121));
-        Assert.assertFalse(m.matches(r122));
-        Assert.assertFalse(m.matches(r211));
-        Assert.assertFalse(m.matches(r212));
-        Assert.assertFalse(m.matches(r221));
-        Assert.assertFalse(m.matches(r222));
+        Assert.assertFalse(matches(m, r1));
+        Assert.assertFalse(matches(m, r2));
+        Assert.assertFalse(matches(m, r11));
+        Assert.assertFalse(matches(m, r12));
+        Assert.assertFalse(matches(m, r21));
+        Assert.assertFalse(matches(m, r22));
+        Assert.assertFalse(matches(m, r111));
+        Assert.assertFalse(matches(m, r112));
+        Assert.assertFalse(matches(m, r121));
+        Assert.assertFalse(matches(m, r122));
+        Assert.assertFalse(matches(m, r211));
+        Assert.assertFalse(matches(m, r212));
+        Assert.assertFalse(matches(m, r221));
+        Assert.assertFalse(matches(m, r222));
     }
 
     @Test
     public void test_t3() throws Exception {
         RefMatcher m = createMatcher("root1.<String>.*");
 
-        Assert.assertFalse(m.matches(r1));
-        Assert.assertFalse(m.matches(r2));
-        Assert.assertFalse(m.matches(r11));
-        Assert.assertFalse(m.matches(r12));
-        Assert.assertFalse(m.matches(r21));
-        Assert.assertFalse(m.matches(r22));
-        Assert.assertTrue(m.matches(r111));
-        Assert.assertTrue(m.matches(r112));
-        Assert.assertTrue(m.matches(r121));
-        Assert.assertTrue(m.matches(r122));
-        Assert.assertFalse(m.matches(r211));
-        Assert.assertFalse(m.matches(r212));
-        Assert.assertFalse(m.matches(r221));
-        Assert.assertFalse(m.matches(r222));
+        Assert.assertFalse(matches(m, r1));
+        Assert.assertFalse(matches(m, r2));
+        Assert.assertFalse(matches(m, r11));
+        Assert.assertFalse(matches(m, r12));
+        Assert.assertFalse(matches(m, r21));
+        Assert.assertFalse(matches(m, r22));
+        Assert.assertTrue(matches(m, r111));
+        Assert.assertTrue(matches(m, r112));
+        Assert.assertTrue(matches(m, r121));
+        Assert.assertTrue(matches(m, r122));
+        Assert.assertFalse(matches(m, r211));
+        Assert.assertFalse(matches(m, r212));
+        Assert.assertFalse(matches(m, r221));
+        Assert.assertFalse(matches(m, r222));
     }
 
     @Test
     public void test_t4() throws Exception {
         RefMatcher m = createMatcher("**.<String>.sub1");
 
-        Assert.assertFalse(m.matches(r1));
-        Assert.assertFalse(m.matches(r2));
-        Assert.assertFalse(m.matches(r11));
-        Assert.assertFalse(m.matches(r12));
-        Assert.assertFalse(m.matches(r21));
-        Assert.assertFalse(m.matches(r22));
-        Assert.assertTrue (m.matches(r111));
-        Assert.assertFalse(m.matches(r112));
-        Assert.assertTrue (m.matches(r121));
-        Assert.assertFalse(m.matches(r122));
-        Assert.assertTrue(m.matches(r211));
-        Assert.assertFalse(m.matches(r212));
-        Assert.assertTrue(m.matches(r221));
-        Assert.assertFalse(m.matches(r222));
+        Assert.assertFalse(matches(m, r1));
+        Assert.assertFalse(matches(m, r2));
+        Assert.assertFalse(matches(m, r11));
+        Assert.assertFalse(matches(m, r12));
+        Assert.assertFalse(matches(m, r21));
+        Assert.assertFalse(matches(m, r22));
+        Assert.assertTrue(matches(m, r111));
+        Assert.assertFalse(matches(m, r112));
+        Assert.assertTrue(matches(m, r121));
+        Assert.assertFalse(matches(m, r122));
+        Assert.assertTrue(matches(m, r211));
+        Assert.assertFalse(matches(m, r212));
+        Assert.assertTrue(matches(m, r221));
+        Assert.assertFalse(matches(m, r222));
     }
 
     @Test
     public void test_t5() throws Exception {
         RefMatcher m = createMatcher("<RefMatcherTest>.**");
 
-        Assert.assertFalse(m.matches(r1));
-        Assert.assertFalse(m.matches(r2));
-        Assert.assertTrue (m.matches(r11));
-        Assert.assertTrue (m.matches(r12));
-        Assert.assertTrue (m.matches(r21));
-        Assert.assertTrue (m.matches(r22));
-        Assert.assertTrue (m.matches(r111));
-        Assert.assertTrue (m.matches(r112));
-        Assert.assertTrue (m.matches(r121));
-        Assert.assertTrue (m.matches(r122));
-        Assert.assertTrue (m.matches(r211));
-        Assert.assertTrue (m.matches(r212));
-        Assert.assertTrue (m.matches(r221));
-        Assert.assertTrue (m.matches(r222));
+        Assert.assertFalse(matches(m, r1));
+        Assert.assertFalse(matches(m, r2));
+        Assert.assertTrue(matches(m, r11));
+        Assert.assertTrue(matches(m, r12));
+        Assert.assertTrue(matches(m, r21));
+        Assert.assertTrue(matches(m, r22));
+        Assert.assertTrue (matches(m, r111));
+        Assert.assertTrue(matches(m, r112));
+        Assert.assertTrue (matches(m, r121));
+        Assert.assertTrue(matches(m, r122));
+        Assert.assertTrue(matches(m, r211));
+        Assert.assertTrue(matches(m, r212));
+        Assert.assertTrue(matches(m, r221));
+        Assert.assertTrue(matches(m, r222));
     }
 
     @Test
     public void test_t6() throws Exception {
         RefMatcher m = createMatcher("<at.irian.ankor.ref.RefMatcherTest>.**");
 
-        Assert.assertFalse(m.matches(r1));
-        Assert.assertFalse(m.matches(r2));
-        Assert.assertTrue (m.matches(r11));
-        Assert.assertTrue (m.matches(r12));
-        Assert.assertTrue (m.matches(r21));
-        Assert.assertTrue (m.matches(r22));
-        Assert.assertTrue (m.matches(r111));
-        Assert.assertTrue (m.matches(r112));
-        Assert.assertTrue (m.matches(r121));
-        Assert.assertTrue (m.matches(r122));
-        Assert.assertTrue (m.matches(r211));
-        Assert.assertTrue (m.matches(r212));
-        Assert.assertTrue (m.matches(r221));
-        Assert.assertTrue (m.matches(r222));
+        Assert.assertFalse(matches(m, r1));
+        Assert.assertFalse(matches(m, r2));
+        Assert.assertTrue(matches(m, r11));
+        Assert.assertTrue(matches(m, r12));
+        Assert.assertTrue(matches(m, r21));
+        Assert.assertTrue(matches(m, r22));
+        Assert.assertTrue (matches(m, r111));
+        Assert.assertTrue(matches(m, r112));
+        Assert.assertTrue (matches(m, r121));
+        Assert.assertTrue(matches(m, r122));
+        Assert.assertTrue (matches(m, r211));
+        Assert.assertTrue(matches(m, r212));
+        Assert.assertTrue (matches(m, r221));
+        Assert.assertTrue(matches(m, r222));
     }
+
+    @Test
+    public void test_w1() throws Exception {
+        RefMatcher m = createMatcher("**.<String>.(sub1)");
+
+        Assert.assertFalse(matches(m, r1));
+        Assert.assertFalse(matches(m, r2));
+        Assert.assertFalse(matches(m, r11));
+        Assert.assertFalse(matches(m, r12));
+        Assert.assertFalse(matches(m, r21));
+        Assert.assertFalse(matches(m, r22));
+        Assert.assertTrue (matches(m, r111));
+        Assert.assertFalse(matches(m, r112));
+        Assert.assertTrue (matches(m, r121));
+        Assert.assertFalse(matches(m, r122));
+        Assert.assertTrue (matches(m, r211));
+        Assert.assertFalse(matches(m, r212));
+        Assert.assertTrue (matches(m, r221));
+        Assert.assertFalse(matches(m, r222));
+
+        List<Ref> watchedRefs = m.match(r111).getWatchedRefs();
+        Assert.assertTrue(watchedRefs.size() == 1);
+        Assert.assertTrue(watchedRefs.get(0).equals(r111));
+    }
+
+    @Test
+    public void test_w3() throws Exception {
+        RefMatcher m = createMatcher("(root1).(test1).(sub1)");
+
+        Assert.assertFalse(matches(m, r1));
+        Assert.assertFalse(matches(m, r2));
+        Assert.assertFalse(matches(m, r11));
+        Assert.assertFalse(matches(m, r12));
+        Assert.assertFalse(matches(m, r21));
+        Assert.assertFalse(matches(m, r22));
+        Assert.assertTrue (matches(m, r111));
+        Assert.assertFalse(matches(m, r112));
+        Assert.assertFalse(matches(m, r121));
+        Assert.assertFalse(matches(m, r122));
+        Assert.assertFalse(matches(m, r211));
+        Assert.assertFalse(matches(m, r212));
+        Assert.assertFalse(matches(m, r221));
+        Assert.assertFalse(matches(m, r222));
+
+        List<Ref> watchedRefs = m.match(r111).getWatchedRefs();
+        Assert.assertTrue(watchedRefs.size() == 3);
+        Assert.assertTrue(watchedRefs.get(0).equals(r1));
+        Assert.assertTrue(watchedRefs.get(1).equals(r11));
+        Assert.assertTrue(watchedRefs.get(2).equals(r111));
+    }
+
 
 }

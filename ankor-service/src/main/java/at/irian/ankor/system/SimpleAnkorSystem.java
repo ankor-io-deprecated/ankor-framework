@@ -2,6 +2,8 @@ package at.irian.ankor.system;
 
 import at.irian.ankor.action.ActionEvent;
 import at.irian.ankor.annotation.BeanAnnotationActionEventListener;
+import at.irian.ankor.annotation.BeanAnnotationChangeEventListener;
+import at.irian.ankor.change.ChangeEventListener;
 import at.irian.ankor.event.ArrayListEventListeners;
 import at.irian.ankor.event.EventDelaySupport;
 import at.irian.ankor.event.EventListeners;
@@ -30,14 +32,15 @@ public class SimpleAnkorSystem extends AnkorSystem {
                                 RefContextFactory refContextFactory,
                                 EventListeners globalEventListeners,
                                 String name,
-                                ActionEvent.Listener remoteMethodActionEventListener) {
+                                ActionEvent.Listener annotationActionEventListener,
+                                ChangeEventListener annotationChangeEventListener) {
         super(name, messageFactory, messageLoop.getMessageBus(), globalEventListeners, refContextFactory,
-              remoteMethodActionEventListener);
+              annotationActionEventListener, annotationChangeEventListener);
         this.messageLoop = messageLoop;
     }
 
 
-    public static SimpleAnkorSystem create(String systemName, Class<?> modelType, BeanResolver beanResolver, boolean enableRemoteActionListener) {
+    public static SimpleAnkorSystem create(String systemName, Class<?> modelType, BeanResolver beanResolver, boolean enableAnnotationListeners) {
         MessageFactory messageFactory = new MessageFactory();
 
         PipeMessageLoop<String> messageLoop = new PipeMessageLoop<String>(systemName, new JsonMessageMapper());
@@ -55,13 +58,15 @@ public class SimpleAnkorSystem extends AnkorSystem {
                                                                                             beanResolver,
                                                                                             eventDelaySupport);
 
-        ActionEvent.Listener remoteListener = null;
-        if (enableRemoteActionListener) {
-            remoteListener = new BeanAnnotationActionEventListener(beanResolver);
+        ActionEvent.Listener annotationActionEventListener = null;
+        ChangeEventListener annotationChangeEventListener = null;
+        if (enableAnnotationListeners) {
+            annotationActionEventListener = new BeanAnnotationActionEventListener(beanResolver);
+            annotationChangeEventListener = new BeanAnnotationChangeEventListener(beanResolver, refContextFactory.createRefContext().pathSyntax());
         }
 
         return new SimpleAnkorSystem(messageFactory, messageLoop, refContextFactory, globalEventListeners,
-                                     systemName, remoteListener);
+                                     systemName, annotationActionEventListener, annotationChangeEventListener);
     }
 
     public static SimpleAnkorSystem create(String name, Class<?> modelType, boolean enableRemoteActionListener) {
