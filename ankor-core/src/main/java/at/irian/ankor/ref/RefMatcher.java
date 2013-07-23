@@ -22,10 +22,6 @@ public class RefMatcher {
 
     @SuppressWarnings("SimplifiableIfStatement")
     public boolean matches(Ref ref) {
-        if (ref.isRoot()) {
-            return matchRootProperty(ref);
-        }
-
         String propertyPattern;
         String parentPattern;
         if (pattern.endsWith(">")) {
@@ -48,18 +44,27 @@ public class RefMatcher {
         }
 
         Ref parentRef = ref.parent();
+        if (parentRef != null) {
 
-        if (parentPattern != null) {
+            if (parentPattern != null) {
 
-            RefMatcher parentMatcher = this.withPattern(parentPattern);
-            if (parentMatcher.matches(parentRef)) {
+                RefMatcher parentMatcher = this.withPattern(parentPattern);
+                if (parentMatcher.matches(parentRef)) {
+                    return true;
+                }
+
+            }
+
+            if (isMultiWildcard(propertyPattern)) {
+                return matches(parentRef);
+            }
+
+        } else {
+
+            if (parentPattern == null) {
                 return true;
             }
 
-        }
-
-        if (isMultiWildcard(propertyPattern)) {
-            return matches(parentRef);
         }
 
         return false;
