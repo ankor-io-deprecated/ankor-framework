@@ -8,7 +8,7 @@ import at.irian.ankorman.sample1.model.animal.AnimalSearchModel;
  */
 public enum TabType {
 
-    animalSearchTab(AnimalSearchModel.class, "animal_search_tab.fxml"),
+    animalSearchTab(AnimalSearchModel.class, "animal_search_tab.fxml"), // TODO action name instead of Model class
     animalDetailTab(AnimalDetailModel.class, "animal_detail_tab.fxml"),
 
     ;

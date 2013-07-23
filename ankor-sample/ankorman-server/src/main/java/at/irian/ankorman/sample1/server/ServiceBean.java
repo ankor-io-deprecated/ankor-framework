@@ -1,9 +1,6 @@
 package at.irian.ankorman.sample1.server;
 
-import at.irian.ankor.annotation.AnkorAction;
-import at.irian.ankor.annotation.AnkorActionParam;
-import at.irian.ankor.annotation.AnkorActionPropertyRef;
-import at.irian.ankor.ref.ChangeListener;
+import at.irian.ankor.annotation.*;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.util.ObjectUtils;
 import at.irian.ankorman.sample1.model.ModelRoot;
@@ -28,15 +25,15 @@ public class ServiceBean {
         animalRepository = new AnimalRepository();
     }
 
-    @AnkorAction(name = "init")
-    public void init(@AnkorActionPropertyRef Ref rootRef) {
+    @Action(name = "init")
+    public void init(@ActionPropertyRef Ref rootRef) {
         ModelRoot modelRoot = new ModelRoot();
         modelRoot.setUserName("John Doe");
         rootRef.setValue(modelRoot);
     }
 
-    @AnkorAction(name = "save", refType = AnimalDetailModel.class)
-    public void saveAnimal(@AnkorActionPropertyRef Ref modelRef) {
+    @Action(name = "save", refType = AnimalDetailModel.class)
+    public void saveAnimal(@ActionPropertyRef Ref modelRef) {
         AnimalDetailModel model = modelRef.getValue();
         String status;
         if (model.isSaved()) {
@@ -57,8 +54,8 @@ public class ServiceBean {
         modelRef.root().append("serverStatus").setValue(status);
     }
 
-    @AnkorAction(name = "save", refType = AnimalSearchModel.class)
-    public void saveAnimals(@AnkorActionPropertyRef Ref modelRef) {
+    @Action(name = "save", refType = AnimalSearchModel.class)
+    public void saveAnimals(@ActionPropertyRef Ref modelRef) {
         AnimalSearchModel model = modelRef.getValue();
 
         String status;
@@ -76,10 +73,11 @@ public class ServiceBean {
         modelRef.root().append("serverStatus").setValue(status);
     }
 
-    @AnkorAction(name = "openTab", refType = Tabs.class)
-    public void openTab(@AnkorActionPropertyRef final Ref tabsRef,
-                        @AnkorActionParam("tabId") final String tabId,
-                        @AnkorActionParam("modelType") final Class modelType) {
+    @Action(name = "openTab", refType = Tabs.class)
+    public void openTab(@ActionPropertyRef final Ref tabsRef,
+                        @Param("tabId") final String tabId,
+                        @Param("modelType") final Class modelType) {
+        // TODO see TabType todo
         if (modelType.equals(AnimalSearchModel.class)) {
             createAnimalSearchTab(tabsRef, tabId);
         } else if (modelType.equals(AnimalDetailModel.class)) {
@@ -87,6 +85,16 @@ public class ServiceBean {
         } else {
             throw new IllegalArgumentException("Model Type not implemented " + modelType);
         }
+    }
+
+    @RegexpChangeListener("**.<AnimalSearchModel>.filter.type")
+    public void animalTypeChanged(Ref typeRef, Ref changedProperty) {
+
+    }
+
+    @TreeChangeListener(value = AnimalSearchFilter.class)
+    public void animalFilterChanged(Ref filterRef, Ref changedProperty) {
+
     }
 
     private void createAnimalSearchTab(final Ref tabsRef, final String tabId) {
@@ -101,7 +109,7 @@ public class ServiceBean {
 
         tabRef.append("model.filter.type").addPropChangeListener(new AnimalTypeChangeListener());
 
-        tabRef.append("model.filter").addTreeChangeListener(new ChangeListener() {
+        tabRef.append("model.filter").addTreeChangeListener(new at.irian.ankor.ref.ChangeListener() {
             @Override
             public void processChange(Ref filterRef, Ref changedProperty) {
                 LOG.info("RELOADING animals ...");
@@ -115,7 +123,7 @@ public class ServiceBean {
                 filterRef.root().append("serverStatus").setValue("");
             }
         }, 100L);
-        tabRef.append("model.filter").addTreeChangeListener(new ChangeListener() {
+        tabRef.append("model.filter").addTreeChangeListener(new at.irian.ankor.ref.ChangeListener() {
             @Override
             public void processChange(Ref filterRef, Ref changedProperty) {
                 filterRef.root().append("serverStatus").setValue("loading data ...");
@@ -125,7 +133,7 @@ public class ServiceBean {
         });
 
 
-        tabRef.append("model.animals.paginator").addTreeChangeListener(new ChangeListener() {
+        tabRef.append("model.animals.paginator").addTreeChangeListener(new at.irian.ankor.ref.ChangeListener() {
             @Override
             public void processChange(Ref paginatorRef, Ref changedProperty) {
                 paginatorRef.root().append("serverStatus").setValue("loading data ...");
@@ -157,7 +165,7 @@ public class ServiceBean {
 
         tabRef.append("model.animal.type").addPropChangeListener(new AnimalTypeChangeListener());
 
-        tabRef.append("model.animal.name").addPropChangeListener(new ChangeListener() {
+        tabRef.append("model.animal.name").addPropChangeListener(new at.irian.ankor.ref.ChangeListener() {
             @Override
             public void processChange(Ref nameRef, Ref changedProperty) {
                 Ref nameStatusRef = nameRef.ancestor("model").append("nameStatus");
@@ -180,7 +188,7 @@ public class ServiceBean {
         return new AnimalSelectItems(types, new ArrayList<AnimalFamily>());
     }
 
-    public class AnimalTypeChangeListener implements ChangeListener {
+    public class AnimalTypeChangeListener implements at.irian.ankor.ref.ChangeListener {
         @Override
         public void processChange(Ref typeRef, Ref changedProperty) {
             AnimalType type = typeRef.getValue();

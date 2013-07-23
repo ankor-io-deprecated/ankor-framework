@@ -6,13 +6,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * @author Manfred Geiler
+ * @author Thomas Spiegl
  */
-@Target({ElementType.PARAMETER})
+@Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface AnkorActionPropertyRef {
+public @interface RegexpChangeListener {
     /**
-     * name/path of the param.
+     * name of the param.
      */
     String value() default "";
+
 }

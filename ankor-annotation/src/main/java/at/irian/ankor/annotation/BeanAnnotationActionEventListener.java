@@ -61,10 +61,10 @@ public class BeanAnnotationActionEventListener extends ActionEvent.Listener {
                 Class<?> beanType = bean.getClass();
                 for (Method method : beanType.getMethods()) {
                     for (Annotation methodAnnotation : method.getDeclaredAnnotations()) {
-                        if (methodAnnotation instanceof AnkorAction) {
-                            AnkorAction action = (AnkorAction) methodAnnotation;
+                        if (methodAnnotation instanceof Action) {
+                            Action action = (Action) methodAnnotation;
                             String actionPropertyType;
-                            if (!action.refType().getName().equals(AnkorAction.class.getName()) &&
+                            if (!action.refType().getName().equals(Action.class.getName()) &&
                                     !ObjectUtils.isEmpty(action.refType().getName())) {
                                 actionPropertyType = action.refType().getName();
                             } else {
@@ -104,23 +104,23 @@ public class BeanAnnotationActionEventListener extends ActionEvent.Listener {
                     for (int i = 0; i < params.size(); i++) {
                         Annotation annotation = params.get(i);
 
-                        if (annotation instanceof AnkorActionPropertyRef) {
+                        if (annotation instanceof ActionPropertyRef) {
                             Ref paramRef;
-                            if (ObjectUtils.isEmpty(((AnkorActionPropertyRef) annotation).value())) {
+                            if (ObjectUtils.isEmpty(((ActionPropertyRef) annotation).value())) {
                                 paramRef = event.getActionProperty();
                             } else {
-                                paramRef = event.getActionProperty().append(((AnkorActionPropertyRef) annotation).value());
+                                paramRef = event.getActionProperty().append(((ActionPropertyRef) annotation).value());
                             }
                             paramValues[i] = paramRef;
 
-                        } else if (annotation instanceof AnkorActionParam) {
-                            String paramName = ((AnkorActionParam) annotation).value();
+                        } else if (annotation instanceof Param) {
+                            String paramName = ((Param) annotation).value();
                             if (ObjectUtils.isEmpty(paramName)) {
                                 throw new IllegalStateException(String.format("AnkorActionParam has no value %s", this));
                             } else {
                                 if (event.getAction() instanceof SimpleParamAction) {
                                     paramValues[i] = ((SimpleParamAction) event.getAction()).getParams().get(paramName);
-                                    if (paramValues[i] == null && !((AnkorActionParam) annotation).optional()) {
+                                    if (paramValues[i] == null && !((Param) annotation).optional()) {
                                         throw new IllegalStateException(String.format("Parameter %s may not be null (optional=false) for method with @AnkorActionParam %s", paramName, this));
                                     }
                                 } else {
@@ -153,7 +153,7 @@ public class BeanAnnotationActionEventListener extends ActionEvent.Listener {
                 }
                 boolean found = false;
                 for (Annotation annotation : annotations) {
-                    if (annotation instanceof AnkorActionPropertyRef || annotation instanceof AnkorActionParam)  {
+                    if (annotation instanceof ActionPropertyRef || annotation instanceof Param)  {
                         found = true;
                         params.add(annotation);
                     }

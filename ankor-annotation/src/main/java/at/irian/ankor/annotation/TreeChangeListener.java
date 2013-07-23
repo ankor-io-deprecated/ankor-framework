@@ -8,13 +8,12 @@ import java.lang.annotation.Target;
 /**
  * @author Thomas Spiegl
  */
-@Target({ElementType.PARAMETER})
+@Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface AnkorActionParam {
+public @interface TreeChangeListener {
     /**
      * name of the param.
      */
-    String value() default "";
+    Class value() default TreeChangeListener.class;
 
-    boolean optional() default false;
 }

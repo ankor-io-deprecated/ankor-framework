@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface AnkorAction {
+public @interface Action {
     /**
      * Name of the action.
      */
@@ -19,11 +19,6 @@ public @interface AnkorAction {
     /**
      * Required java type of the action property.
      */
-    Class<?> refType() default AnkorAction.class;
-
-    /**
-     * Required path of the action property.
-     */
-    String refPath() default "";
+    Class<?> refType() default Action.class;
 
 }
