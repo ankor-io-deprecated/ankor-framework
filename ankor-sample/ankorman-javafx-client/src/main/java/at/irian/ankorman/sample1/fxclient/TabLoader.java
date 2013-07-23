@@ -50,9 +50,8 @@ public class TabLoader {
 
         // load tab
         tabsRef.fireAction(simpleAction()
-                .withName("openTab")
-                .withParam("tabId", tabId)
-                .withParam("modelType", tabType.getModelType()).create());
+                .withName(tabType.getActionName())
+                .withParam("tabId", tabId).create());
     }
 
     private void showTab(final TabPane tabPane) {

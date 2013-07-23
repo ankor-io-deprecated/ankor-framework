@@ -73,20 +73,6 @@ public class ServiceBean {
         modelRef.root().append("serverStatus").setValue(status);
     }
 
-    @Action(name = "openTab", refType = Tabs.class)
-    public void openTab(@ActionPropertyRef final Ref tabsRef,
-                        @Param("tabId") final String tabId,
-                        @Param("modelType") final Class modelType) {
-        // TODO see TabType todo
-        if (modelType.equals(AnimalSearchModel.class)) {
-            createAnimalSearchTab(tabsRef, tabId);
-        } else if (modelType.equals(AnimalDetailModel.class)) {
-            createAnimalDetailTab(tabsRef, tabId);
-        } else {
-            throw new IllegalArgumentException("Model Type not implemented " + modelType);
-        }
-    }
-
     @RegexpChangeListener("**.<AnimalSearchModel>.filter.type")
     public void animalTypeChanged(Ref typeRef, Ref changedProperty) {
 
@@ -97,7 +83,8 @@ public class ServiceBean {
 
     }
 
-    private void createAnimalSearchTab(final Ref tabsRef, final String tabId) {
+    @Action(name = "createAnimalSearchTab", refType = Tabs.class)
+    public void createAnimalSearchTab(@ActionPropertyRef final Ref tabsRef, @Param("tabId") final String tabId) {
         AnimalSearchModel model = new AnimalSearchModel(getAnimalSelectItems());
 
         Tab<AnimalSearchModel> tab = new Tab<AnimalSearchModel>(tabId);
@@ -148,11 +135,8 @@ public class ServiceBean {
         });
     }
 
-    private Data<Animal> searchAnimals(AnimalSearchFilter filter, Paginator paginator) {
-        return animalRepository.searchAnimals(filter, paginator.getFirst(), paginator.getMaxResults());
-    }
-
-    private void createAnimalDetailTab(final Ref tabsRef, String tabId) {
+    @Action(name = "createAnimalDetailTab", refType = Tabs.class)
+    public void createAnimalDetailTab(@ActionPropertyRef final Ref tabsRef, @Param("tabId") final String tabId) {
 
         AnimalDetailModel model = new AnimalDetailModel(new Animal(), getAnimalSelectItems());
 
@@ -180,6 +164,11 @@ public class ServiceBean {
                 }
             }
         });
+    }
+
+
+    private Data<Animal> searchAnimals(AnimalSearchFilter filter, Paginator paginator) {
+        return animalRepository.searchAnimals(filter, paginator.getFirst(), paginator.getMaxResults());
     }
 
     private AnimalSelectItems getAnimalSelectItems() {
