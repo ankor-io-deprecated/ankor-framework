@@ -1,5 +1,7 @@
 package at.irian.ankor.system;
 
+import at.irian.ankor.action.ActionEvent;
+import at.irian.ankor.annotation.BeanAnnotationActionEventListener;
 import at.irian.ankor.event.ArrayListEventListeners;
 import at.irian.ankor.event.EventDelaySupport;
 import at.irian.ankor.event.EventListeners;
@@ -9,8 +11,6 @@ import at.irian.ankor.messaging.PipeMessageLoop;
 import at.irian.ankor.messaging.json.JsonMessageMapper;
 import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.ref.el.SingletonModelELRefContextFactory;
-import at.irian.ankor.rmi.ELRemoteMethodActionEventListener;
-import at.irian.ankor.rmi.RemoteMethodActionEventListener;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
@@ -30,14 +30,14 @@ public class SimpleAnkorSystem extends AnkorSystem {
                                 RefContextFactory refContextFactory,
                                 EventListeners globalEventListeners,
                                 String name,
-                                RemoteMethodActionEventListener remoteMethodActionEventListener) {
+                                ActionEvent.Listener remoteMethodActionEventListener) {
         super(name, messageFactory, messageLoop.getMessageBus(), globalEventListeners, refContextFactory,
               remoteMethodActionEventListener);
         this.messageLoop = messageLoop;
     }
 
 
-    public static SimpleAnkorSystem create(String systemName, Class<?> modelType, BeanResolver beanResolver) {
+    public static SimpleAnkorSystem create(String systemName, Class<?> modelType, BeanResolver beanResolver, boolean enableRemoteActionListener) {
         MessageFactory messageFactory = new MessageFactory();
 
         PipeMessageLoop<String> messageLoop = new PipeMessageLoop<String>(systemName, new JsonMessageMapper());
@@ -55,27 +55,23 @@ public class SimpleAnkorSystem extends AnkorSystem {
                                                                                             beanResolver,
                                                                                             eventDelaySupport);
 
+        ActionEvent.Listener remoteListener = null;
+        if (enableRemoteActionListener) {
+            remoteListener = new BeanAnnotationActionEventListener(beanResolver);
+        }
+
         return new SimpleAnkorSystem(messageFactory, messageLoop, refContextFactory, globalEventListeners,
-                                     systemName, null);
+                                     systemName, remoteListener);
     }
 
-    public static SimpleAnkorSystem create(String name, Class<?> modelType) {
-        return create(name, modelType, null);
-    }
-
-    public SimpleAnkorSystem withRemoteMethodActionListenerEnabled() {
-        return new SimpleAnkorSystem(getMessageFactory(),
-                                     messageLoop,
-                                     getRefContextFactory(),
-                                     getGlobalEventListeners(),
-                                     getSystemName(),
-                                     new ELRemoteMethodActionEventListener());
+    public static SimpleAnkorSystem create(String name, Class<?> modelType, boolean enableRemoteActionListener) {
+        return create(name, modelType, null, enableRemoteActionListener);
     }
 
     @SuppressWarnings("UnusedDeclaration")
     public static SimpleAnkorSystem create(String name, Class<?> modelType,
-                                     final String singletonBeanName, final Object singletonBean) {
-        return create(name, modelType, new BeanResolver() {
+                                     final String singletonBeanName, final Object singletonBean, boolean enableRemoteActionListener) {
+        BeanResolver beanResolver = new BeanResolver() {
             @Override
             public Object resolveByName(String beanName) {
                 if (beanName.equals(singletonBeanName)) {
@@ -87,9 +83,10 @@ public class SimpleAnkorSystem extends AnkorSystem {
 
             @Override
             public String[] getBeanDefinitionNames() {
-                return new String[] {singletonBeanName};
+                return new String[]{singletonBeanName};
             }
-        });
+        };
+        return create(name, modelType, beanResolver, enableRemoteActionListener);
     }
 
     public void connectTo(SimpleAnkorSystem other) {

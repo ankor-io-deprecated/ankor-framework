@@ -18,7 +18,7 @@ public class SimpleAnkorSystemTest {
 
     @Before
     public void setup() {
-        system = SimpleAnkorSystem.create("Test System", TestModel.class);
+        system = SimpleAnkorSystem.create("Test System", TestModel.class, false);
         system.start();
         messageFactory = system.getMessageFactory();
         refContext = system.getRefContextFactory().createRefContext();

@@ -27,7 +27,7 @@ public class ModelRootJsonTest {
 
     @Before
     public void setUp() throws Exception {
-        SimpleAnkorSystem system = SimpleAnkorSystem.create("test", ModelRoot.class);
+        SimpleAnkorSystem system = SimpleAnkorSystem.create("test", ModelRoot.class, false);
         messageFactory = system.getMessageFactory();
         rf = system.getRefContextFactory().createRefContext().refFactory();
         mapper = new JsonMessageMapper();

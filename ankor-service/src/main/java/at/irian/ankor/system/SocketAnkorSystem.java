@@ -1,6 +1,7 @@
 package at.irian.ankor.system;
 
 import at.irian.ankor.action.ActionEvent;
+import at.irian.ankor.annotation.BeanAnnotationActionEventListener;
 import at.irian.ankor.event.ArrayListEventListeners;
 import at.irian.ankor.event.EventDelaySupport;
 import at.irian.ankor.event.EventListeners;
@@ -11,7 +12,6 @@ import at.irian.ankor.messaging.SocketMessageLoop;
 import at.irian.ankor.messaging.json.JsonMessageMapper;
 import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.ref.el.SingletonModelELRefContextFactory;
-import at.irian.ankor.rmi.ELRemoteMethodActionEventListener;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
@@ -57,7 +57,7 @@ public class SocketAnkorSystem extends AnkorSystem {
                                                                                             eventDelaySupport);
         ActionEvent.Listener remoteListener = null;
         if (enableRemoteActionListener) {
-            remoteListener = new RemoteActionListenerSplitter(beanResolver);
+            remoteListener = new BeanAnnotationActionEventListener(beanResolver);
         }
 
         return new SocketAnkorSystem(messageFactory, messageLoop, refContextFactory, globalEventListeners,

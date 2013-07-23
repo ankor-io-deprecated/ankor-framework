@@ -2,10 +2,10 @@ package at.irian.ankor.netty.protocol;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.SimpleAction;
+import at.irian.ankor.action.SimpleParamAction;
 import at.irian.ankor.messaging.ActionMessage;
 import at.irian.ankor.messaging.ChangeMessage;
 import at.irian.ankor.messaging.Message;
-import at.irian.ankor.rmi.RemoteMethodAction;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -104,8 +104,8 @@ public final class JsonUtils {
             {
                 Map.Entry<String, JsonNode> element=elementsIterator.next();
                 String name = element.getKey();
-                if (name.equals("methodExpression")) {
-                    detectedType = RemoteMethodAction.class;
+                if (name.equals("params")) { // TODO find a better way
+                    detectedType = SimpleParamAction.class;
                     break;
                 }
             }

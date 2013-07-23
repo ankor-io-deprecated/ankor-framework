@@ -7,7 +7,6 @@ import at.irian.ankor.messaging.ActionMessage;
 import at.irian.ankor.messaging.ChangeMessage;
 import at.irian.ankor.messaging.Message;
 import at.irian.ankor.messaging.MessageMapper;
-import at.irian.ankor.rmi.RemoteMethodAction;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -125,10 +124,6 @@ public class JsonMessageMapper implements MessageMapper<String> {
             {
                 Map.Entry<String, JsonNode> element=elementsIterator.next();
                 String name = element.getKey();
-                if (name.equals("methodExpression")) { // TODO find a better way
-                    detectedType = RemoteMethodAction.class;
-                    break;
-                }
                 if (name.equals("params")) { // TODO find a better way
                     detectedType = SimpleParamAction.class;
                     break;
