@@ -1,6 +1,6 @@
 package at.irian.ankorman.sample1.fxclient.animal;
 
-import at.irian.ankor.fx.app.ActionCompleteCallback;
+import at.irian.ankor.action.SimpleAction;
 import at.irian.ankor.fx.binding.ClickAction;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorman.sample1.fxclient.BaseTabController;
@@ -16,7 +16,6 @@ import javafx.scene.control.cell.TextFieldTableCell;
 
 import static at.irian.ankor.fx.binding.ButtonBindingBuilder.onButtonClick;
 import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
-import static at.irian.ankorman.sample1.fxclient.App.facade;
 
 /**
  * @author Thomas Spiegl
@@ -108,7 +107,7 @@ public class AnimalSearchTabController extends BaseTabController {
                 .callAction(new ClickAction() {
                     @Override
                     public Object onClick(Object value) {
-                        facade().saveAnimals(tabRef, ActionCompleteCallback.empty);
+                        tabRef.append("model").fireAction(new SimpleAction("save"));
                         return null;
                     }
                 }).create();

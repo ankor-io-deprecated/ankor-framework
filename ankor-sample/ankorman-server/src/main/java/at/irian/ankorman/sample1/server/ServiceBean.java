@@ -1,12 +1,14 @@
 package at.irian.ankorman.sample1.server;
 
 import at.irian.ankor.annotation.AnkorAction;
+import at.irian.ankor.annotation.AnkorActionParam;
 import at.irian.ankor.annotation.AnkorActionPropertyRef;
 import at.irian.ankor.ref.ChangeListener;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.util.ObjectUtils;
 import at.irian.ankorman.sample1.model.ModelRoot;
 import at.irian.ankorman.sample1.model.Tab;
+import at.irian.ankorman.sample1.model.Tabs;
 import at.irian.ankorman.sample1.model.animal.*;
 
 import java.util.ArrayList;
@@ -32,10 +34,6 @@ public class ServiceBean {
         return model;
     }
 
-    public Data<Animal> searchAnimals(AnimalSearchFilter filter, Paginator paginator) {
-        return animalRepository.searchAnimals(filter, paginator.getFirst(), paginator.getMaxResults());
-    }
-
     @AnkorAction(name = "save", refType = AnimalDetailModel.class)
     public void saveAnimal(@AnkorActionPropertyRef Ref modelRef) {
         AnimalDetailModel model = modelRef.getValue();
@@ -58,10 +56,13 @@ public class ServiceBean {
         modelRef.root().append("serverStatus").setValue(status);
     }
 
-    public void saveAnimals(Ref modelRef, List<Animal> animals) {
+    @AnkorAction(name = "save", refType = AnimalSearchModel.class)
+    public void saveAnimals(@AnkorActionPropertyRef Ref modelRef) {
+        AnimalSearchModel model = modelRef.getValue();
+
         String status;
         try {
-            for (Animal animal : animals) {
+            for (Animal animal : model.getAnimals().getRows()) {
                 animalRepository.saveAnimal(animal);
             }
             status = "Animals successfully saved";
@@ -74,7 +75,10 @@ public class ServiceBean {
         modelRef.root().append("serverStatus").setValue(status);
     }
 
-    public void openTab(final Ref tabsRef, final String tabId, final Class modelType) {
+    @AnkorAction(name = "openTab", refType = Tabs.class)
+    public void openTab(@AnkorActionPropertyRef final Ref tabsRef,
+                        @AnkorActionParam("tabId") final String tabId,
+                        @AnkorActionParam("modelType") final Class modelType) {
         if (modelType.equals(AnimalSearchModel.class)) {
             createAnimalSearchTab(tabsRef, tabId);
         } else if (modelType.equals(AnimalDetailModel.class)) {
@@ -133,6 +137,10 @@ public class ServiceBean {
                 paginatorRef.root().append("serverStatus").setValue("");
             }
         });
+    }
+
+    private Data<Animal> searchAnimals(AnimalSearchFilter filter, Paginator paginator) {
+        return animalRepository.searchAnimals(filter, paginator.getFirst(), paginator.getMaxResults());
     }
 
     private void createAnimalDetailTab(final Ref tabsRef, String tabId) {

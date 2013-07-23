@@ -11,7 +11,7 @@ import javafx.util.Callback;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
-import static at.irian.ankorman.sample1.fxclient.App.facade;
+import static at.irian.ankor.action.SimpleParamAction.simpleAction;
 import static at.irian.ankorman.sample1.fxclient.App.refFactory;
 
 /**
@@ -49,8 +49,10 @@ public class TabLoader {
         });
 
         // load tab
-        facade().openTab(tabId, tabType);
-
+        tabsRef.fireAction(simpleAction()
+                .withName("openTab")
+                .withParam("tabId", tabId)
+                .withParam("modelType", tabType.getModelType()).create());
     }
 
     private void showTab(final TabPane tabPane) {

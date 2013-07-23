@@ -21,12 +21,6 @@
             <scope>compile</scope>
         </dependency>
 
-        <dependency>
-            <groupId>net.sf.scannotation</groupId>
-            <artifactId>scannotation</artifactId>
-            <version>1.0.2</version>
-        </dependency>
-
     </dependencies>
 
 </project>

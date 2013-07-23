@@ -2,6 +2,7 @@ package at.irian.ankor.messaging.json;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.SimpleAction;
+import at.irian.ankor.action.SimpleParamAction;
 import at.irian.ankor.messaging.ActionMessage;
 import at.irian.ankor.messaging.ChangeMessage;
 import at.irian.ankor.messaging.Message;
@@ -124,8 +125,12 @@ public class JsonMessageMapper implements MessageMapper<String> {
             {
                 Map.Entry<String, JsonNode> element=elementsIterator.next();
                 String name = element.getKey();
-                if (name.equals("methodExpression")) {
+                if (name.equals("methodExpression")) { // TODO find a better way
                     detectedType = RemoteMethodAction.class;
+                    break;
+                }
+                if (name.equals("params")) { // TODO find a better way
+                    detectedType = SimpleParamAction.class;
                     break;
                 }
             }
