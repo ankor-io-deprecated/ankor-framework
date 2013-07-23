@@ -73,7 +73,7 @@ public class ServiceBean {
         modelRef.root().append("serverStatus").setValue(status);
     }
 
-    @RegexpChangeListener("**.<AnimalSearchModel>.filter.type")
+    @RegexChangeListener("**.<AnimalSearchModel>.filter.type")
     public void animalTypeChanged(Ref typeRef, Ref changedProperty) {
 
     }

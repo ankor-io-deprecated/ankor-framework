@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RegexpChangeListener {
+public @interface RegexChangeListener {
     /**
      * name of the param.
      */

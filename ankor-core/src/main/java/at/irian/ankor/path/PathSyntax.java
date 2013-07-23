@@ -20,4 +20,6 @@ public interface PathSyntax {
     boolean isDescendant(String descendant, String ancestor);
 
     String getPropertyName(String path);
+
+    boolean isHasParent(String path);
 }

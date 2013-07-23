@@ -32,7 +32,8 @@ public class ELPathSyntax implements PathSyntax {
         throw new IllegalArgumentException("Not a valid path: " + path);
     }
 
-    boolean isHasParent(String path) {
+    @Override
+    public boolean isHasParent(String path) {
         return path.indexOf('.') >= 0 || path.indexOf('[') >= 0;
     }
 
