@@ -8,7 +8,6 @@ import at.irian.ankor.action.Action;
 public class ActionMessage extends Message {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ActionMessage.class);
 
-    private String modelContextPath;
     private String actionPropertyPath;
     private Action action;
 
@@ -18,15 +17,10 @@ public class ActionMessage extends Message {
     @SuppressWarnings("UnusedDeclaration")
     protected ActionMessage() {}
 
-    protected ActionMessage(String messageId, String modelContextPath, String actionPropertyPath, Action action) {
+    protected ActionMessage(String messageId, String actionPropertyPath, Action action) {
         super(messageId);
-        this.modelContextPath = modelContextPath;
         this.actionPropertyPath = actionPropertyPath;
         this.action = action;
-    }
-
-    public String getModelContextPath() {
-        return modelContextPath;
     }
 
     public String getActionPropertyPath() {
@@ -55,19 +49,13 @@ public class ActionMessage extends Message {
         if (!action.equals(that.action)) {
             return false;
         }
-        if (modelContextPath != null
-            ? !modelContextPath.equals(that.modelContextPath)
-            : that.modelContextPath != null) {
-            return false;
-        }
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = modelContextPath != null ? modelContextPath.hashCode() : 0;
-        result = 31 * result + actionPropertyPath.hashCode();
+        int result = actionPropertyPath.hashCode();
         result = 31 * result + action.hashCode();
         return result;
     }
@@ -75,7 +63,7 @@ public class ActionMessage extends Message {
     @Override
     public String toString() {
         return "ActionMessage{" +
-               "modelContextPath='" + modelContextPath + '\'' +
+               "messageId='" + getMessageId() + '\'' +
                ", actionPropertyPath='" + actionPropertyPath + '\'' +
                ", action=" + action +
                '}';

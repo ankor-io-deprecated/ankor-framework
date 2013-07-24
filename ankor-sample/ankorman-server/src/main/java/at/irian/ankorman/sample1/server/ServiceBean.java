@@ -169,13 +169,14 @@ public class ServiceBean {
     @ActionListener(name = "createAnimalDetailTab", refType = Tabs.class)
     public void createAnimalDetailTab(@ActionSourceRef final Ref tabsRef, @Param("tabId") final String tabId) {
 
-        AnimalDetailModel model = new AnimalDetailModel(new Animal(), getAnimalSelectItems());
+        Ref tabRef = tabsRef.append(tabId);
+
+        AnimalDetailModel model = new AnimalDetailModel(tabRef.append("name"), tabRef.append("model"), animalRepository, new Animal(), getAnimalSelectItems());
 
         Tab<AnimalDetailModel> tab = new Tab<AnimalDetailModel>(tabId);
         tab.setModel(model);
         tab.setName(tabName("New Animal", null));
 
-        Ref tabRef = tabsRef.append(tabId);
         tabRef.setValue(tab);
     }
 
@@ -183,16 +184,11 @@ public class ServiceBean {
     public void animalNameChanged(Ref nameRef) {
         LOG.info("animalNameChanged");
 
-        Ref nameStatusRef = nameRef.ancestor("model").append("nameStatus");
-        String name = nameRef.getValue();
-        nameRef.ancestor("model").parent().append("name").setValue(tabName("New Animal", name));
-        if (animalRepository.isAnimalNameAlreadyExists(name)) {
-            nameStatusRef.setValue("name already exists");
-        } else if (name.length() > AnimalRepository.MAX_NAME_LEN) {
-            nameStatusRef.setValue("name is too long");
-        } else {
-            nameStatusRef.setValue("");
-        }
+        Ref modelRef = nameRef.ancestor("model");
+        AnimalDetailModel model = modelRef.getValue();
+
+        model.onNameChanged();
+
     }
 
 

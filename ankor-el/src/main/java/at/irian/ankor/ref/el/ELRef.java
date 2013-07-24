@@ -2,7 +2,6 @@ package at.irian.ankor.ref.el;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionEvent;
-import at.irian.ankor.change.RefValueChanger;
 import at.irian.ankor.el.ELUtils;
 import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.path.PathSyntax;
@@ -14,42 +13,37 @@ import at.irian.ankor.ref.impl.AbstractRef;
 import javax.el.PropertyNotFoundException;
 import javax.el.ValueExpression;
 
-import static at.irian.ankor.change.RefValueChanger.SetValueCallback;
-
 /**
  * @author Manfred Geiler
  */
-class ELRef extends AbstractRef {
+public class ELRef extends AbstractRef {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ELRef.class);
 
     private final ValueExpression ve;
     private final ELRefContext refContext;
 
-    ELRef(ValueExpression ve, ELRefContext refContext) {
+    protected ELRef(ValueExpression ve, ELRefContext refContext) {
         this.ve = ve;
         this.refContext = refContext;
     }
 
-    @SuppressWarnings("SimplifiableIfStatement")
-    @Override
-    public void setValue(final Object newValue) {
-        new RefValueChanger(this).setValueTo(newValue, new SetValueCallback() {
-            @Override
-            public void doSetValue() {
-                ve.setValue(refContext.getElContext(), newValue);
-            }
-        });
+    protected void internalSetValue(Object newValue) {
+        ve.setValue(refContext.getElContext(), newValue);
     }
 
     @SuppressWarnings("unchecked")
-    @Override
-    public <T> T getValue() {
+    protected <T> T internalGetValue() {
         try {
             return (T)ve.getValue(refContext.getElContext());
         } catch (Exception e) {
             LOG.warn("unable to get value of " + this, e);
             return null;
         }
+    }
+
+    @Override
+    protected Class<?> getType() {
+        return ve.getType(refContext.getElContext());
     }
 
     @Override

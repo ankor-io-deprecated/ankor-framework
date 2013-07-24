@@ -43,7 +43,8 @@ public class SimpleAnkorSystem extends AnkorSystem {
     public static SimpleAnkorSystem create(String systemName, Class<?> modelType, BeanResolver beanResolver, boolean enableAnnotationListeners) {
         MessageFactory messageFactory = new MessageFactory();
 
-        PipeMessageLoop<String> messageLoop = new PipeMessageLoop<String>(systemName, new JsonMessageMapper());
+        JsonMessageMapper jsonMessageMapper = new JsonMessageMapper();
+        PipeMessageLoop<String> messageLoop = new PipeMessageLoop<String>(systemName, jsonMessageMapper);
 
         EventListeners globalEventListeners = new ArrayListEventListeners();
 
@@ -57,6 +58,7 @@ public class SimpleAnkorSystem extends AnkorSystem {
                                                                                             messageLoop.getMessageBus(),
                                                                                             beanResolver,
                                                                                             eventDelaySupport);
+        //jsonMessageMapper.init(refContextFactory.);
 
         ActionEvent.Listener annotationActionEventListener = null;
         ChangeEventListener annotationChangeEventListener = null;

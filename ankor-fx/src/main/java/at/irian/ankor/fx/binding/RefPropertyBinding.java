@@ -79,10 +79,6 @@ public class RefPropertyBinding implements ChangeListener, javafx.beans.value.Ch
     @SuppressWarnings("TypeParameterExplicitlyExtendsObject")
     @Override
     public void changed(ObservableValue<? extends Object> observableValue, Object oldValue, Object newValue)  {
-        setRefValue(newValue);
-    }
-
-    private void setRefValue(Object newValue) {
         try {
             if (!nullSafeEquals(valueRef.getValue(), newValue)) {
                 valueRef.setValue(newValue);

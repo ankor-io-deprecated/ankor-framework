@@ -9,12 +9,6 @@ import at.irian.ankor.path.PathSyntax;
  */
 public interface RefContext {
 
-    @Deprecated
-    String getModelContextPath();
-
-    @Deprecated
-    RefContext withModelContextPath(String modelContextPath);
-
     PathSyntax pathSyntax();
 
     RefFactory refFactory();

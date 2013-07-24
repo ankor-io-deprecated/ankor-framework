@@ -83,11 +83,8 @@ public class AnkorSystem {
             @Override
             public void process(ActionEvent event) {
                 Ref actionProperty = event.getActionProperty();
-                String modelContextPath = actionProperty.context().getModelContextPath();
                 String actionPropertyPath = actionProperty.path();
-                Message message = messageFactory.createActionMessage(modelContextPath,
-                                                                     actionPropertyPath,
-                                                                     event.getAction());
+                Message message = messageFactory.createActionMessage(actionPropertyPath, event.getAction());
                 actionProperty.context().messageSender().sendMessage(message);
             }
         };
@@ -98,12 +95,9 @@ public class AnkorSystem {
                 Ref changedProperty = event.getChangedProperty();
                 Object newValue = changedProperty.getValue();
                 RefContext refContext = changedProperty.context();
-                String modelContextPath = refContext.getModelContextPath();
                 String changedPropertyPath = changedProperty.path();
-
-                Message message = messageFactory.createChangeMessage(modelContextPath, changedPropertyPath, newValue);
+                Message message = messageFactory.createChangeMessage(changedPropertyPath, newValue);
                 refContext.messageSender().sendMessage(message);
-
                 if (newValue == null) {
                     refContext.eventListeners().cleanup();
                 }
@@ -115,15 +109,6 @@ public class AnkorSystem {
             public void onActionMessage(ActionMessage message) {
                 RefContext initialRefContext = createRefContextFor(message);
                 Ref actionProperty = initialRefContext.refFactory().ref(message.getActionPropertyPath());
-                if (message.getModelContextPath() != null) {
-                    // if there is an explicit context in the message we use that, ...
-                    actionProperty = actionProperty.withContext(actionProperty.context()
-                                                                              .withModelContextPath(message.getModelContextPath()));
-                } else {
-                    // ... else we use the action source ref as the context of this action
-                    actionProperty = actionProperty.withContext(actionProperty.context()
-                                                                              .withModelContextPath(message.getActionPropertyPath()));
-                }
                 actionProperty.fireAction(message.getAction());
                 initialRefContext.messageSender().flush();
             }
@@ -132,10 +117,6 @@ public class AnkorSystem {
             public void onChangeMessage(ChangeMessage message) {
                 RefContext initialRefContext = createRefContextFor(message);
                 Ref changedProperty = initialRefContext.refFactory().ref(message.getChange().getChangedProperty());
-                if (message.getModelContextPath() != null) {
-                    changedProperty = changedProperty.withContext(changedProperty.context()
-                                                                                 .withModelContextPath(message.getModelContextPath()));
-                }
                 if (changedProperty.isRoot() || changedProperty.isValid()) {
                     changedProperty.setValue(message.getChange().getNewValue());
                 }

@@ -38,7 +38,7 @@ public class ELRefContextFactory implements RefContextFactory {
 
     @Override
     public RefContext createRefContext() {
-        return new ELRefContext(elSupport, config, globalEventListeners, null,
+        return new ELRefContext(elSupport, config, globalEventListeners,
                                 modelHolder, messageSender, eventDelaySupport);
     }
 }

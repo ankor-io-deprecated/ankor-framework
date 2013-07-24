@@ -49,13 +49,13 @@ public class ModelRootJsonTest {
         data.setRows(animals);
         model.setAnimals(data);
 
-        String json = mapper.serialize(messageFactory.createChangeMessage(rf.rootRef().path(), rf.ref("root").path(), root));
+        String json = mapper.serialize(messageFactory.createChangeMessage(rf.ref("root").path(), root));
         LOG.info(json);
 
         Message message = mapper.deserialize(json);
         LOG.info(message.toString());
 
-        json = mapper.serialize(messageFactory.createChangeMessage(rf.rootRef().path(), rf.ref("root.tabs.A1.model.animals").path(), animals));
+        json = mapper.serialize(messageFactory.createChangeMessage(rf.ref("root.tabs.A1.model.animals").path(), animals));
         LOG.info(json);
     }
 }

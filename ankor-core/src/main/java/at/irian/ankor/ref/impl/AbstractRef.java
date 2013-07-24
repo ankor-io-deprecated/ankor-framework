@@ -8,12 +8,73 @@ import at.irian.ankor.change.DelayedChangeEventListener;
 import at.irian.ankor.ref.ActionListener;
 import at.irian.ankor.ref.ChangeListener;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.ref.Wrapper;
+
+import java.lang.reflect.Constructor;
 
 /**
  * @author Manfred Geiler
  */
 public abstract class AbstractRef implements Ref {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AbstractRef.class);
+
+    @SuppressWarnings("SimplifiableIfStatement")
+    @Override
+    public void setValue(final Object newValue) {
+
+        final Object newUnwrappedValue;
+        if (newValue != null && newValue instanceof Wrapper) {
+            newUnwrappedValue = ((Wrapper)newValue).getWrappedValue();
+        } else {
+            newUnwrappedValue = newValue;
+        }
+
+        new RefValueChanger(this).setValueTo(newValue, new RefValueChanger.SetValueCallback() {
+            @Override
+            public void doSetValue() {
+                Class<?> type = getType();
+                if (Wrapper.class.isAssignableFrom(type)) {
+                    Wrapper wrapper;
+                    Object oldValue = internalGetValue();
+                    if (oldValue != null) {
+                        wrapper = (Wrapper) oldValue;
+                    } else {
+                        try {
+                            //noinspection unchecked
+                            Constructor<Wrapper> defaultConstructor = ((Class<Wrapper>) type).getDeclaredConstructor();
+                            if (!defaultConstructor.isAccessible()) {
+                                defaultConstructor.setAccessible(true);
+                            }
+                            wrapper = defaultConstructor.newInstance();
+                        } catch (Exception e) {
+                            throw new IllegalStateException("Unable to instantiate wrapper of type " + type, e);
+                        }
+                        internalSetValue(wrapper);
+                    }
+                    //noinspection unchecked
+                    wrapper.putWrappedValue(newUnwrappedValue);
+                } else {
+                    internalSetValue(newUnwrappedValue);
+                }
+            }
+        });
+    }
+
+    protected abstract void internalSetValue(Object newUnwrappedValue);
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T getValue() {
+        T val = internalGetValue();
+        if (val != null && val instanceof Wrapper) {
+            return (T)((Wrapper)val).getWrappedValue();
+        }
+        return val;
+    }
+
+    protected abstract <T> T internalGetValue();
+
+    protected abstract Class<?> getType();
 
     @Override
     public abstract RefContextImplementor context();

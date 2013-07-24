@@ -63,7 +63,7 @@ public class BeanAnnotationChangeEventListener extends ChangeEventListener {
                     } catch (Exception e) {
                         throw new RuntimeException(String.format("Error invoking change listener method %s on bean %s",
                                                                  method,
-                                                                 bean));
+                                                                 bean), e);
                     }
                 }
 

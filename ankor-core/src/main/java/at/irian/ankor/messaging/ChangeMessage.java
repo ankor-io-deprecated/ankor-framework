@@ -6,7 +6,6 @@ package at.irian.ankor.messaging;
 public class ChangeMessage extends Message {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ChangeMessage.class);
 
-    private String modelContextPath;
     private Change change;
 
     /**
@@ -15,14 +14,9 @@ public class ChangeMessage extends Message {
     @SuppressWarnings("UnusedDeclaration")
     protected ChangeMessage() {}
 
-    protected ChangeMessage(String messageId, String modelContextPath, String changedPropertyPath, Object newValue) {
+    protected ChangeMessage(String messageId, String changedPropertyPath, Object newValue) {
         super(messageId);
-        this.modelContextPath = modelContextPath;
         this.change = new Change(changedPropertyPath, newValue);
-    }
-
-    public String getModelContextPath() {
-        return modelContextPath;
     }
 
     public Change getChange() {
@@ -102,27 +96,19 @@ public class ChangeMessage extends Message {
         if (!change.equals(that.change)) {
             return false;
         }
-        if (modelContextPath != null
-            ? !modelContextPath.equals(that.modelContextPath)
-            : that.modelContextPath != null) {
-            return false;
-        }
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = modelContextPath != null ? modelContextPath.hashCode() : 0;
-        result = 31 * result + change.hashCode();
-        return result;
+        return change.hashCode();
     }
 
     @Override
     public String toString() {
         return "ChangeMessage{" +
                "messageId='" + getMessageId() + '\'' +
-               ", modelContextPath=" + modelContextPath +
                ", change=" + change +
                "}";
     }

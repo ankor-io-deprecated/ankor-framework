@@ -1,10 +1,9 @@
-package at.irian.ankor.change;
+package at.irian.ankor.ref.impl;
 
+import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.event.PropertyWatcher;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.ref.impl.AbstractRef;
-import at.irian.ankor.ref.impl.RefContextImplementor;
 import at.irian.ankor.util.ObjectUtils;
 
 import java.util.IdentityHashMap;
@@ -16,7 +15,7 @@ import java.util.Map;
 public class RefValueChanger {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RefValueChanger.class);
 
-    private final Ref changedProperty;
+    private final AbstractRef changedProperty;
     private final RefContextImplementor context;
     private final ChangeEvent changeEvent;
 

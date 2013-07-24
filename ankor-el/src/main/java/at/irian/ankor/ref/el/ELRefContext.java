@@ -2,7 +2,6 @@ package at.irian.ankor.ref.el;
 
 import at.irian.ankor.context.ModelHolder;
 import at.irian.ankor.el.ELSupport;
-import at.irian.ankor.el.ModelContextELResolver;
 import at.irian.ankor.el.StandardELContext;
 import at.irian.ankor.event.EventDelaySupport;
 import at.irian.ankor.event.EventListeners;
@@ -29,7 +28,6 @@ public class ELRefContext implements RefContext, RefContextImplementor {
     private final StandardELContext elContext;
     private final Config config;
     private final String modelRootVarName;
-    private final String modelContextPath;
     private final EventListeners globalEventListeners;
     private final ModelHolder modelHolder;
     private final MessageSender messageSender;
@@ -38,7 +36,6 @@ public class ELRefContext implements RefContext, RefContextImplementor {
     ELRefContext(ELSupport elSupport,
                  Config config,
                  EventListeners globalEventListeners,
-                 String modelContextPath,
                  ModelHolder modelHolder,
                  MessageSender messageSender,
                  EventDelaySupport eventDelaySupport) {
@@ -49,7 +46,6 @@ public class ELRefContext implements RefContext, RefContextImplementor {
         this.messageSender = messageSender;
         this.eventDelaySupport = eventDelaySupport;
         this.modelRootVarName = config.getString("ankor.variable-names.modelRoot");
-        this.modelContextPath = modelContextPath;
         this.globalEventListeners = globalEventListeners;
 
     }
@@ -58,7 +54,6 @@ public class ELRefContext implements RefContext, RefContextImplementor {
                  StandardELContext elContext,
                  Config config,
                  EventListeners globalEventListeners,
-                 String modelContextPath,
                  ModelHolder modelHolder,
                  MessageSender messageSender,
                  EventDelaySupport eventDelaySupport) {
@@ -69,7 +64,6 @@ public class ELRefContext implements RefContext, RefContextImplementor {
         this.messageSender = messageSender;
         this.eventDelaySupport = eventDelaySupport;
         this.modelRootVarName = config.getString("ankor.variable-names.modelRoot");
-        this.modelContextPath = modelContextPath;
         this.globalEventListeners = globalEventListeners;
     }
 
@@ -81,7 +75,7 @@ public class ELRefContext implements RefContext, RefContextImplementor {
     @Override
     public ELRefContext withMessageSender(MessageSender newMessageSender) {
         return new ELRefContext(expressionFactory, elContext, config, globalEventListeners,
-                                modelContextPath, modelHolder, newMessageSender, eventDelaySupport);
+                                modelHolder, newMessageSender, eventDelaySupport);
     }
 
     @Override
@@ -167,26 +161,14 @@ public class ELRefContext implements RefContext, RefContextImplementor {
         return ELPathSyntax.getInstance();
     }
 
-    @Override
-    public String getModelContextPath() {
-        return modelContextPath;
-    }
-
     public EventDelaySupport eventDelaySupport() {
         return eventDelaySupport;
-    }
-
-    public ELRefContext withModelContextPath(String modelContextPath) {
-        return withAdditionalELResolver(new ModelContextELResolver(expressionFactory,
-                                                                   config,
-                                                                   modelContextPath,
-                                                                   refFactory()));
     }
 
     public ELRefContext withAdditionalELResolver(ELResolver elResolver) {
         return new ELRefContext(expressionFactory,
                                 elContext.withAdditional(elResolver),
-                                config, globalEventListeners, modelContextPath, modelHolder, messageSender,
+                                config, globalEventListeners, modelHolder, messageSender,
                                 eventDelaySupport);
     }
 
