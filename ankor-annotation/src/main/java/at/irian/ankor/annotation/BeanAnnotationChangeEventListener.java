@@ -36,9 +36,9 @@ public class BeanAnnotationChangeEventListener extends ChangeEventListener {
             Class<?> beanType = bean.getClass();
             for (Method method : beanType.getMethods()) {
                 for (Annotation methodAnnotation : method.getDeclaredAnnotations()) {
-                    if (methodAnnotation instanceof Change) {
-                        Change changeAnnot = (Change) methodAnnotation;
-                        result.add(new ChangeTarget(beanName, method, changeAnnot.pattern()));
+                    if (methodAnnotation instanceof ChangeListener) {
+                        ChangeListener changeListenerAnnot = (ChangeListener) methodAnnotation;
+                        result.add(new ChangeTarget(beanName, method, changeListenerAnnot.pattern()));
                     }
                 }
             }

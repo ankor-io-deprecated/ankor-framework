@@ -1,6 +1,5 @@
 package at.irian.ankor.fx.app;
 
-import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.system.BeanResolver;
 import at.irian.ankor.system.SimpleAnkorSystem;
 
@@ -16,7 +15,6 @@ public class SimpleLocalAppServiceBuilder {
     private final BeanResolver beanResolver;
     private Class<?> modelType = Object.class;
     private Map<String, Object> beans = new HashMap<String, Object>();
-    private boolean serverStatusMessage;
 
     public SimpleLocalAppServiceBuilder() {
         beanResolver = new BeanResolver() {
@@ -42,11 +40,6 @@ public class SimpleLocalAppServiceBuilder {
         return this;
     }
 
-    public SimpleLocalAppServiceBuilder withServerStatusMessage(boolean value) {
-        serverStatusMessage = value;
-        return this;
-    }
-
     public AppService create() {
         // createRefContext
         SimpleAnkorSystem serverSystem = SimpleAnkorSystem.create("server", modelType, beanResolver, true);
@@ -59,35 +52,7 @@ public class SimpleLocalAppServiceBuilder {
         serverSystem.start();
         clientSystem.start();
 
-        if (serverStatusMessage) {
-            startServerStatusThread(serverSystem);
-        }
-
         return new AppService(clientSystem);
     }
 
-    public void startServerStatusThread(final SimpleAnkorSystem system) {
-        final long started = System.currentTimeMillis();
-        new Thread(new Runnable() {
-            public void run() {
-                RefFactory refFactory = system.getRefContextFactory().createRefContext().refFactory();
-                boolean interrupted = false;
-                while (!interrupted) {
-                    try {
-                        Thread.sleep(1000 * 30);
-
-                        long upSinceSeconds = (System.currentTimeMillis() - started) / 1000;
-                        String serverStatus = String.format("server up time %ds", upSinceSeconds);
-
-                        refFactory.rootRef().append("serverStatus").setValue(serverStatus);
-
-                    } catch (InterruptedException e) {
-                        interrupted = true;
-                    }
-
-                }
-                Thread.currentThread().interrupt();
-            }
-        }).start();
-    }
 }

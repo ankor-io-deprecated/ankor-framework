@@ -8,17 +8,11 @@ import java.lang.annotation.Target;
 /**
  * @author Manfred Geiler
  */
-@Target({ElementType.METHOD})
+@Target({ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Action {
+public @interface ActionSourceRef {
     /**
-     * Name of the action.
+     * name/path of the param.
      */
-    String name() default "";
-
-    /**
-     * Required java type of the action property.
-     */
-    Class<?> refType() default Action.class;
-
+    String value() default "";
 }

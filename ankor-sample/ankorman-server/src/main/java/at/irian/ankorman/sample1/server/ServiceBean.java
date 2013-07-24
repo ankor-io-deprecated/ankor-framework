@@ -1,8 +1,8 @@
 package at.irian.ankorman.sample1.server;
 
-import at.irian.ankor.annotation.Action;
-import at.irian.ankor.annotation.ActionPropertyRef;
-import at.irian.ankor.annotation.Change;
+import at.irian.ankor.annotation.ActionListener;
+import at.irian.ankor.annotation.ActionSourceRef;
+import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.annotation.Param;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.util.ObjectUtils;
@@ -28,15 +28,15 @@ public class ServiceBean {
         animalRepository = new AnimalRepository();
     }
 
-    @Action(name = "init")
-    public void init(@ActionPropertyRef Ref rootRef) {
+    @ActionListener(name = "init")
+    public void init(@ActionSourceRef Ref rootRef) {
         ModelRoot modelRoot = new ModelRoot();
         modelRoot.setUserName("John Doe");
         rootRef.setValue(modelRoot);
     }
 
-    @Action(name = "save", refType = AnimalDetailModel.class)
-    public void saveAnimal(@ActionPropertyRef Ref modelRef) {
+    @ActionListener(name = "save", refType = AnimalDetailModel.class)
+    public void saveAnimal(@ActionSourceRef Ref modelRef) {
         AnimalDetailModel model = modelRef.getValue();
         String status;
         if (model.isSaved()) {
@@ -57,8 +57,8 @@ public class ServiceBean {
         modelRef.root().append("serverStatus").setValue(status);
     }
 
-    @Action(name = "save", refType = AnimalSearchModel.class)
-    public void saveAnimals(@ActionPropertyRef Ref modelRef) {
+    @ActionListener(name = "save", refType = AnimalSearchModel.class)
+    public void saveAnimals(@ActionSourceRef Ref modelRef) {
         AnimalSearchModel model = modelRef.getValue();
 
         String status;
@@ -76,8 +76,8 @@ public class ServiceBean {
         modelRef.root().append("serverStatus").setValue(status);
     }
 
-    @Action(name = "createAnimalSearchTab", refType = Tabs.class)
-    public void createAnimalSearchTab(@ActionPropertyRef final Ref tabsRef, @Param("tabId") final String tabId) {
+    @ActionListener(name = "createAnimalSearchTab", refType = Tabs.class)
+    public void createAnimalSearchTab(@ActionSourceRef final Ref tabsRef, @Param("tabId") final String tabId) {
         AnimalSearchModel model = new AnimalSearchModel(getAnimalSelectItems());
 
         Tab<AnimalSearchModel> tab = new Tab<AnimalSearchModel>(tabId);
@@ -104,7 +104,7 @@ public class ServiceBean {
 
     }
 
-    @Change(pattern = {"**.<AnimalSearchModel>.filter.(type)",
+    @ChangeListener(pattern = {"**.<AnimalSearchModel>.filter.(type)",
                        "**.<AnimalDetailModel>.animal.(type)"})
     public void animalTypeChanged(Ref typeRef) {
         LOG.info("animalTypeChanged");
@@ -137,19 +137,20 @@ public class ServiceBean {
         } else {
             modelRef.append("animal.family").setValue(null);
         }
-
     }
 
-    @Change(pattern = "**.<AnimalSearchModel>.(filter).**")
+    @ChangeListener(pattern = "**.<AnimalSearchModel>.(filter).**")
     public void animalFilterChanged(Ref filterRef) {
         LOG.info("animalFilterChanged");
 
         filterRef.root().append("serverStatus").setValue("loading data ...");
+
         String name = filterRef.append("name").getValue();
+
         filterRef.ancestor("model").parent().append("name").setValue(tabName("Animal Search", name));
     }
 
-    @Change(pattern = "**.<AnimalSearchModel>.animals.(paginator)")
+    @ChangeListener(pattern = "**.<AnimalSearchModel>.animals.(paginator)")
     public void paginatorChanged(Ref paginatorRef) {
         LOG.info("paginatorChanged");
 
@@ -157,7 +158,7 @@ public class ServiceBean {
         Ref modelRef = paginatorRef.ancestor("model");
         AnimalSearchModel model = modelRef.getValue();
         Data<Animal> animals = searchAnimals(model.getFilter(),
-                                             model.getAnimals().getPaginator());
+                model.getAnimals().getPaginator());
         Ref animalsRef = paginatorRef.ancestor("animals");
         animalsRef.setValue(animals);
         paginatorRef.root().append("serverStatus").setValue("");
@@ -165,8 +166,8 @@ public class ServiceBean {
 
 
 
-    @Action(name = "createAnimalDetailTab", refType = Tabs.class)
-    public void createAnimalDetailTab(@ActionPropertyRef final Ref tabsRef, @Param("tabId") final String tabId) {
+    @ActionListener(name = "createAnimalDetailTab", refType = Tabs.class)
+    public void createAnimalDetailTab(@ActionSourceRef final Ref tabsRef, @Param("tabId") final String tabId) {
 
         AnimalDetailModel model = new AnimalDetailModel(new Animal(), getAnimalSelectItems());
 
@@ -178,7 +179,7 @@ public class ServiceBean {
         tabRef.setValue(tab);
     }
 
-    @Change(pattern = "**.<AnimalDetailModel>.animal.(name)")
+    @ChangeListener(pattern = "**.<AnimalDetailModel>.animal.(name)")
     public void animalNameChanged(Ref nameRef) {
         LOG.info("animalNameChanged");
 

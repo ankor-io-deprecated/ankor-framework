@@ -10,7 +10,6 @@ public class AppService {
 
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AppService.class);
 
-    private ActionCompleteCallback currentCallback = null;
     private RefFactory refFactory;
 
     public AppService(AnkorSystem system) {

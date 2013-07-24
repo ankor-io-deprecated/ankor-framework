@@ -44,17 +44,14 @@ public class App extends javafx.application.Application {
     private void createSimpleAppService(ServiceBean serviceBean) {
         SimpleLocalAppServiceBuilder appServiceBuilder = new SimpleLocalAppServiceBuilder()
                 .withModelType(ModelRoot.class)
-                .withBean("service", serviceBean)
-                .withServerStatusMessage(true);
+                .withBean("service", serviceBean);
         appService = appServiceBuilder.create();
     }
 
     private void createSocketAppService(ServiceBean serviceBean) {
         SocketAppServiceBuilder appServiceBuilder = new SocketAppServiceBuilder()
                 .withModelType(ModelRoot.class)
-                .withBean("service", serviceBean)
-                //.withServerStatusMessage(true);
-                .withServerStatusMessage(false);
+                .withBean("service", serviceBean);
         appService = appServiceBuilder.create();
     }
 

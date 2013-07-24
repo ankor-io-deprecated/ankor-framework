@@ -1,6 +1,5 @@
 package at.irian.ankor.fx.app;
 
-import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.system.AnkorSystem;
 import at.irian.ankor.system.BeanResolver;
 import at.irian.ankor.system.SocketAnkorSystem;
@@ -21,7 +20,6 @@ public class SocketAppServiceBuilder {
     private final BeanResolver beanResolver;
     private Class<?> modelType = Object.class;
     private Map<String, Object> beans = new HashMap<String, Object>();
-    private boolean serverStatusMessage;
 
     public SocketAppServiceBuilder() {
         beanResolver = new BeanResolver() {
@@ -47,11 +45,6 @@ public class SocketAppServiceBuilder {
         return this;
     }
 
-    public SocketAppServiceBuilder withServerStatusMessage(boolean value) {
-        serverStatusMessage = value;
-        return this;
-    }
-
     public AppService create() {
         // createRefContext
 
@@ -61,9 +54,6 @@ public class SocketAppServiceBuilder {
                 AnkorSystem serverSystem = SocketAnkorSystem
                         .create("server", modelType, beanResolver, HOST, clientPort, serverPort, true);
                 serverSystem.start();
-                if (serverStatusMessage) {
-                    startServerStatusThread(serverSystem);
-                }
             }
         });
         serverThread.setDaemon(true);
@@ -77,28 +67,4 @@ public class SocketAppServiceBuilder {
         return new AppService(clientSystem);
     }
 
-    public static void startServerStatusThread(final AnkorSystem system) {
-        final long started = System.currentTimeMillis();
-        new Thread(new Runnable() {
-            public void run() {
-                RefFactory refFactory = system.getRefContextFactory().createRefContext().refFactory();
-                boolean interrupted = false;
-                while (!interrupted) {
-                    try {
-                        Thread.sleep(1000 * 30);
-
-                        long upSinceSeconds = (System.currentTimeMillis() - started) / 1000;
-                        String serverStatus = String.format("server up time %ds", upSinceSeconds);
-
-                        refFactory.rootRef().append("serverStatus").setValue(serverStatus);
-
-                    } catch (InterruptedException e) {
-                        interrupted = true;
-                    }
-
-                }
-                Thread.currentThread().interrupt();
-            }
-        }).start();
-    }
 }

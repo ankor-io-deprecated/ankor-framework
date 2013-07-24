@@ -10,7 +10,7 @@ import java.util.List;
 /**
 * @author Thomas Spiegl
 */
-class AnimalRepository {
+public class AnimalRepository {
 
     private List<Animal> animals;
 
@@ -27,6 +27,29 @@ class AnimalRepository {
         for (int i = 0; i < 20; i++) {
             animals.add(new Animal("Bird " + i, AnimalType.Bird, AnimalFamily.Accipitridae));
         }
+    }
+
+    public List<AnimalFamily> getAnimalFamilies(AnimalType type) {
+        List<AnimalFamily> families;
+        if (type != null) {
+            families = new ArrayList<AnimalFamily>();
+            switch (type) {
+                case Bird:
+                    families.add(AnimalFamily.Accipitridae);
+                    break;
+                case Fish:
+                    families.add(AnimalFamily.Esocidae);
+                    families.add(AnimalFamily.Salmonidae);
+                    break;
+                case Mammal:
+                    families.add(AnimalFamily.Balaenopteridae);
+                    families.add(AnimalFamily.Felidae);
+                    break;
+            }
+        } else {
+            families = new ArrayList<AnimalFamily>(0);
+        }
+        return families;
     }
 
     public Data<Animal> searchAnimals(AnimalSearchFilter filter, int first, int maxResults) {

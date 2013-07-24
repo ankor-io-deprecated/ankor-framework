@@ -65,17 +65,17 @@ public class BeanAnnotationActionEventListener extends ActionEvent.Listener {
                 Class<?> beanType = bean.getClass();
                 for (Method method : beanType.getMethods()) {
                     for (Annotation methodAnnotation : method.getDeclaredAnnotations()) {
-                        if (methodAnnotation instanceof Action) {
-                            Action action = (Action) methodAnnotation;
+                        if (methodAnnotation instanceof ActionListener) {
+                            ActionListener actionListener = (ActionListener) methodAnnotation;
                             String actionPropertyType;
-                            if (!action.refType().getName().equals(Action.class.getName()) &&
-                                    !ObjectUtils.isEmpty(action.refType().getName())) {
-                                actionPropertyType = action.refType().getName();
+                            if (!actionListener.refType().getName().equals(ActionListener.class.getName()) &&
+                                    !ObjectUtils.isEmpty(actionListener.refType().getName())) {
+                                actionPropertyType = actionListener.refType().getName();
                             } else {
                                 actionPropertyType = null;
                             }
                             // todo: support multiple equal action filters
-                            mappings.put(new ActionFilter(action.name(), actionPropertyType), new ActionTarget(beanName, method));
+                            mappings.put(new ActionFilter(actionListener.name(), actionPropertyType), new ActionTarget(beanName, method));
                         }
                     }
                 }
@@ -109,12 +109,12 @@ public class BeanAnnotationActionEventListener extends ActionEvent.Listener {
                     for (int i = 0; i < params.size(); i++) {
                         Annotation annotation = params.get(i);
 
-                        if (annotation instanceof ActionPropertyRef) {
+                        if (annotation instanceof ActionSourceRef) {
                             Ref paramRef;
-                            if (ObjectUtils.isEmpty(((ActionPropertyRef) annotation).value())) {
+                            if (ObjectUtils.isEmpty(((ActionSourceRef) annotation).value())) {
                                 paramRef = event.getActionProperty();
                             } else {
-                                paramRef = event.getActionProperty().append(((ActionPropertyRef) annotation).value());
+                                paramRef = event.getActionProperty().append(((ActionSourceRef) annotation).value());
                             }
                             paramValues[i] = paramRef;
 
@@ -158,7 +158,7 @@ public class BeanAnnotationActionEventListener extends ActionEvent.Listener {
                 }
                 boolean found = false;
                 for (Annotation annotation : annotations) {
-                    if (annotation instanceof ActionPropertyRef || annotation instanceof Param)  {
+                    if (annotation instanceof ActionSourceRef || annotation instanceof Param)  {
                         found = true;
                         params.add(annotation);
                     }
