@@ -7,7 +7,7 @@ import at.irian.ankorman.sample1.server.AnimalRepository;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-import static at.irian.ankor.model.ModelProperty.createReferencedProperty;
+import static at.irian.ankor.model.ModelHelper.init;
 
 /**
  * @author Thomas Spiegl
@@ -26,12 +26,12 @@ public class AnimalDetailModel {
 
     private Animal animal;
 
-    private ModelProperty<String> nameStatus;
-
     private boolean editable;
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NONE, defaultImpl = AnimalSelectItems.class)
     private AnimalSelectItems selectItems;
+
+    private ModelProperty<String> nameStatus;
 
     /**
      * client side constructor
@@ -52,7 +52,7 @@ public class AnimalDetailModel {
         this.selectItems = selectItems;
         this.animal = animal;
         this.editable = true;
-        this.nameStatus = createReferencedProperty(myRef.append("nameStatus"));
+        init(this, myRef);
     }
 
     public Animal getAnimal() {

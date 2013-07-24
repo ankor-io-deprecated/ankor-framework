@@ -17,6 +17,10 @@ public class ModelProperty<T> implements Wrapper<T> {
         this(null, null);
     }
 
+    ModelProperty(Ref ref) {
+        this(ref, null);
+    }
+
     ModelProperty(Ref ref, T initialValue) {
         this.ref = ref;
         this.value = initialValue;

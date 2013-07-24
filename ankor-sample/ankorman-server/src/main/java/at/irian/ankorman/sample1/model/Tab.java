@@ -3,6 +3,8 @@ package at.irian.ankorman.sample1.model;
 import at.irian.ankor.model.ModelProperty;
 import at.irian.ankor.ref.Ref;
 
+import static at.irian.ankor.model.ModelHelper.init;
+
 /**
  * @author Thomas Spiegl
  */
@@ -11,9 +13,9 @@ public class Tab<T> {
 
     private String id;
 
-    private ModelProperty<String> name;
-
     private T model;
+
+    private ModelProperty<String> name;
 
     /**
      * for deserialization only
@@ -23,7 +25,8 @@ public class Tab<T> {
 
     public Tab(String id, Ref tabRef, String initialTabName) {
         this.id = id;
-        this.name = ModelProperty.createReferencedProperty(tabRef.append("name"), initialTabName);
+        init(this, tabRef);
+        name.putWrappedValue(initialTabName);
     }
 
     public String getId() {

@@ -34,25 +34,51 @@ public abstract class AbstractRef implements Ref {
             public void doSetValue() {
                 Class<?> type = getType();
                 if (Wrapper.class.isAssignableFrom(type)) {
-                    Wrapper wrapper;
-                    Object oldValue = internalGetValue();
-                    if (oldValue != null) {
-                        wrapper = (Wrapper) oldValue;
+
+                    if (newValue != null  && newValue instanceof Wrapper) {
+                        internalSetValue(newValue);
                     } else {
-                        try {
-                            //noinspection unchecked
-                            Constructor<Wrapper> defaultConstructor = ((Class<Wrapper>) type).getDeclaredConstructor();
-                            if (!defaultConstructor.isAccessible()) {
-                                defaultConstructor.setAccessible(true);
+
+                        Wrapper wrapper;
+                        Object oldValue = internalGetValue();
+                        if (oldValue != null) {
+                            wrapper = (Wrapper) oldValue;
+                        } else {
+
+
+                            try {
+                                //noinspection unchecked
+                                Constructor<Wrapper> refConstructor = ((Class<Wrapper>) type).getDeclaredConstructor(Ref.class);
+                                if (!refConstructor.isAccessible()) {
+                                    refConstructor.setAccessible(true);
+                                }
+                                try {
+                                    wrapper = refConstructor.newInstance(AbstractRef.this);
+                                } catch (Exception e) {
+                                    throw new RuntimeException("Error invoking ref based constructor for type " + type, e);
+                                }
+                            } catch (NoSuchMethodException e) {
+                                try {
+                                    //noinspection unchecked
+                                    Constructor<Wrapper> defaultConstructor = ((Class<Wrapper>) type).getDeclaredConstructor();
+                                    if (!defaultConstructor.isAccessible()) {
+                                        defaultConstructor.setAccessible(true);
+                                    }
+                                    try {
+                                        wrapper = defaultConstructor.newInstance();
+                                    } catch (Exception e1) {
+                                        throw new RuntimeException("Error invoking default constructor for type " + type, e1);
+                                    }
+                                } catch (NoSuchMethodException e1) {
+                                    throw new IllegalStateException(type + " does not have a ref based or default constructor", e);
+                                }
                             }
-                            wrapper = defaultConstructor.newInstance();
-                        } catch (Exception e) {
-                            throw new IllegalStateException("Unable to instantiate wrapper of type " + type, e);
+                            internalSetValue(wrapper);
                         }
-                        internalSetValue(wrapper);
+                        //noinspection unchecked
+                        wrapper.putWrappedValue(newUnwrappedValue);
                     }
-                    //noinspection unchecked
-                    wrapper.putWrappedValue(newUnwrappedValue);
+
                 } else {
                     internalSetValue(newUnwrappedValue);
                 }
