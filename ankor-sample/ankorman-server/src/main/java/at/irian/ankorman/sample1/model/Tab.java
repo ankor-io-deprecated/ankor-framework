@@ -1,5 +1,8 @@
 package at.irian.ankorman.sample1.model;
 
+import at.irian.ankor.model.ModelProperty;
+import at.irian.ankor.ref.Ref;
+
 /**
  * @author Thomas Spiegl
  */
@@ -8,7 +11,7 @@ public class Tab<T> {
 
     private String id;
 
-    private String name;
+    private ModelProperty<String> name;
 
     private T model;
 
@@ -18,8 +21,9 @@ public class Tab<T> {
     @SuppressWarnings("UnusedDeclaration")
     Tab() {}
 
-    public Tab(String id) {
+    public Tab(String id, Ref tabRef, String initialTabName) {
         this.id = id;
+        this.name = ModelProperty.createReferencedProperty(tabRef.append("name"), initialTabName);
     }
 
     public String getId() {
@@ -34,11 +38,11 @@ public class Tab<T> {
         this.model = model;
     }
 
-    public String getName() {
+    public ModelProperty<String> getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(ModelProperty<String> name) {
         this.name = name;
     }
 }

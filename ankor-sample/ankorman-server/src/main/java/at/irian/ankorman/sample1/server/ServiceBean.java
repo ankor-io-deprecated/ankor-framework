@@ -80,11 +80,11 @@ public class ServiceBean {
     public void createAnimalSearchTab(@ActionSourceRef final Ref tabsRef, @Param("tabId") final String tabId) {
         AnimalSearchModel model = new AnimalSearchModel(getAnimalSelectItems());
 
-        Tab<AnimalSearchModel> tab = new Tab<AnimalSearchModel>(tabId);
-        tab.setModel(model);
-        tab.setName(tabName("Animal Search", null));
-
         Ref tabRef = tabsRef.append(tabId);
+
+        Tab<AnimalSearchModel> tab = new Tab<AnimalSearchModel>(tabId, tabRef, "Animal Search");
+        tab.setModel(model);
+
         tabRef.setValue(tab);
 
         tabRef.append("model.filter").addTreeChangeListener(new at.irian.ankor.ref.ChangeListener() {
@@ -171,11 +171,15 @@ public class ServiceBean {
 
         Ref tabRef = tabsRef.append(tabId);
 
-        AnimalDetailModel model = new AnimalDetailModel(tabRef.append("name"), tabRef.append("model"), animalRepository, new Animal(), getAnimalSelectItems());
+        Tab<AnimalDetailModel> tab = new Tab<AnimalDetailModel>(tabId, tabRef, "New Animal");
 
-        Tab<AnimalDetailModel> tab = new Tab<AnimalDetailModel>(tabId);
+        AnimalDetailModel model = new AnimalDetailModel(animalRepository,
+                                                        new Animal(),
+                                                        getAnimalSelectItems(),
+                                                        tabRef.append("model"),
+                                                        tab.getName());
+
         tab.setModel(model);
-        tab.setName(tabName("New Animal", null));
 
         tabRef.setValue(tab);
     }

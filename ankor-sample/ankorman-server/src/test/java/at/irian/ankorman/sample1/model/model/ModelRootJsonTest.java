@@ -38,7 +38,7 @@ public class ModelRootJsonTest {
         ModelRoot root = new ModelRoot();
         root.setUserName("Max Muster");
 
-        Tab<AnimalSearchModel> tab = new Tab<AnimalSearchModel>("A1");
+        Tab<AnimalSearchModel> tab = new Tab<AnimalSearchModel>("A1", rf.ref("root.tabs").append("A1"), "Test");
         root.getTabs().put("A1", tab);
 
         AnimalSearchModel model = new AnimalSearchModel(new AnimalSelectItems(new ArrayList<AnimalType>(), new ArrayList<AnimalFamily>()));

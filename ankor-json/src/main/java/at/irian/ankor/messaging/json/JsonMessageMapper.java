@@ -11,10 +11,7 @@ import at.irian.ankor.model.ModelProperty;
 import at.irian.ankor.ref.Ref;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -169,7 +166,7 @@ public class JsonMessageMapper implements MessageMapper<String> {
         @Override
         public ModelProperty deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
             ObjectMapper mapper = (ObjectMapper) jp.getCodec();
-            ObjectNode tree = mapper.readTree(jp);
+            TreeNode tree = mapper.readTree(jp);
             Object value = mapper.treeToValue(tree, Object.class);
             //noinspection unchecked
             return createUnreferencedProperty(value);

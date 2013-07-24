@@ -15,15 +15,11 @@ import static at.irian.ankor.model.ModelProperty.createReferencedProperty;
 public class AnimalDetailModel {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalDetailModel.class);
 
-    @SuppressWarnings("FieldCanBeLocal")
     @JsonIgnore
-    private Ref myRef;
+    private final ModelProperty<String> tabName;
 
     @JsonIgnore
-    private Ref tabNameRef;
-
-    @JsonIgnore
-    private AnimalRepository animalRepository;
+    private final AnimalRepository animalRepository;
 
     @JsonIgnore
     private boolean saved = false;
@@ -37,13 +33,21 @@ public class AnimalDetailModel {
     @JsonTypeInfo(use = JsonTypeInfo.Id.NONE, defaultImpl = AnimalSelectItems.class)
     private AnimalSelectItems selectItems;
 
-    @SuppressWarnings("UnusedDeclaration")
+    /**
+     * client side constructor
+     */
     protected AnimalDetailModel() {
+        this.tabName = null;
+        this.animalRepository = null;
     }
 
-    public AnimalDetailModel(Ref tabNameRef, Ref myRef, AnimalRepository animalRepository, Animal animal, AnimalSelectItems selectItems) {
-        this.tabNameRef = tabNameRef;
-        this.myRef = myRef;
+    /**
+     * server side constructor
+     */
+    public AnimalDetailModel(AnimalRepository animalRepository,
+                             Animal animal, AnimalSelectItems selectItems,
+                             Ref myRef, ModelProperty<String> tabName) {
+        this.tabName = tabName;
         this.animalRepository = animalRepository;
         this.selectItems = selectItems;
         this.animal = animal;
@@ -95,7 +99,7 @@ public class AnimalDetailModel {
     public void onNameChanged() {
         String name = animal.getName();
 
-        tabNameRef.setValue(tabName("New Animal", name));
+        tabName.set(tabName("New Animal", name));
 
         if (animalRepository.isAnimalNameAlreadyExists(name)) {
             nameStatus.set("name already exists");
