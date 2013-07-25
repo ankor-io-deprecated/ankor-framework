@@ -7,7 +7,7 @@ import at.irian.ankor.messaging.ActionMessage;
 import at.irian.ankor.messaging.ChangeMessage;
 import at.irian.ankor.messaging.Message;
 import at.irian.ankor.messaging.MessageMapper;
-import at.irian.ankor.model.ModelProperty;
+import at.irian.ankor.model.ViewModelProperty;
 import at.irian.ankor.ref.Ref;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 
-import static at.irian.ankor.model.ModelProperty.createUnreferencedProperty;
+import static at.irian.ankor.model.ViewModelProperty.createUnreferencedProperty;
 
 /**
  * @author Manfred Geiler
@@ -42,8 +42,8 @@ public class JsonMessageMapper implements MessageMapper<String> {
                                  new Version(1, 0, 0, null, null, null));
         module.addDeserializer(Message.class, new MessageDeserializer());
         module.addDeserializer(Action.class, new ActionDeserializer());
-        module.addSerializer(ModelProperty.class, new ModelPropertySerializer());
-        module.addDeserializer(ModelProperty.class, new ModelPropertyDeserializer());
+        module.addSerializer(ViewModelProperty.class, new ModelPropertySerializer());
+        module.addDeserializer(ViewModelProperty.class, new ModelPropertyDeserializer());
 
         mapper = new ObjectMapper();
         mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
@@ -139,16 +139,16 @@ public class JsonMessageMapper implements MessageMapper<String> {
         }
     }
 
-    class ModelPropertySerializer extends StdSerializer<ModelProperty> {
+    class ModelPropertySerializer extends StdSerializer<ViewModelProperty> {
 
         ModelPropertySerializer() {
-            super(ModelProperty.class);
+            super(ViewModelProperty.class);
         }
 
         @Override
-        public void serialize(ModelProperty modelProperty, JsonGenerator jgen, SerializerProvider provider)
+        public void serialize(ViewModelProperty viewModelProperty, JsonGenerator jgen, SerializerProvider provider)
                 throws IOException {
-            Object value = modelProperty.get();
+            Object value = viewModelProperty.get();
             if (value != null) {
                 jgen.writeObject(value);
             } else {
@@ -157,14 +157,14 @@ public class JsonMessageMapper implements MessageMapper<String> {
         }
     }
 
-    class ModelPropertyDeserializer extends StdDeserializer<ModelProperty> {
+    class ModelPropertyDeserializer extends StdDeserializer<ViewModelProperty> {
 
         ModelPropertyDeserializer() {
             super(Ref.class);
         }
 
         @Override
-        public ModelProperty deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
+        public ViewModelProperty deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
             ObjectMapper mapper = (ObjectMapper) jp.getCodec();
             TreeNode tree = mapper.readTree(jp);
             Object value = mapper.treeToValue(tree, Object.class);

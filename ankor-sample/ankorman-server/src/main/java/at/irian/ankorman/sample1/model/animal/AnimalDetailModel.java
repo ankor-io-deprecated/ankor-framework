@@ -1,22 +1,21 @@
 package at.irian.ankorman.sample1.model.animal;
 
-import at.irian.ankor.model.ModelProperty;
+import at.irian.ankor.model.ViewModelBase;
+import at.irian.ankor.model.ViewModelProperty;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.util.ObjectUtils;
 import at.irian.ankorman.sample1.server.AnimalRepository;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-import static at.irian.ankor.model.ModelInitializer.initializerFor;
-
 /**
  * @author Thomas Spiegl
  */
-public class AnimalDetailModel {
+public class AnimalDetailModel extends ViewModelBase {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalDetailModel.class);
 
     @JsonIgnore
-    private final ModelProperty<String> tabName;
+    private final ViewModelProperty<String> tabName;
 
     @JsonIgnore
     private final AnimalRepository animalRepository;
@@ -31,12 +30,13 @@ public class AnimalDetailModel {
     @JsonTypeInfo(use = JsonTypeInfo.Id.NONE, defaultImpl = AnimalSelectItems.class)
     private AnimalSelectItems selectItems;
 
-    private ModelProperty<String> nameStatus;
+    private ViewModelProperty<String> nameStatus;
 
     /**
      * client side constructor
      */
     protected AnimalDetailModel() {
+        super(null);
         this.tabName = null;
         this.animalRepository = null;
     }
@@ -46,13 +46,13 @@ public class AnimalDetailModel {
      */
     public AnimalDetailModel(AnimalRepository animalRepository,
                              Animal animal, AnimalSelectItems selectItems,
-                             Ref myRef, ModelProperty<String> tabName) {
+                             Ref myRef, ViewModelProperty<String> tabName) {
+        super(myRef);
         this.tabName = tabName;
         this.animalRepository = animalRepository;
         this.selectItems = selectItems;
         this.animal = animal;
         this.editable = true;
-        initializerFor(this, myRef).initAll();
     }
 
     public Animal getAnimal() {
@@ -75,11 +75,11 @@ public class AnimalDetailModel {
         return saved;
     }
 
-    public ModelProperty<String> getNameStatus() {
+    public ViewModelProperty<String> getNameStatus() {
         return nameStatus;
     }
 
-    public void setNameStatus(ModelProperty<String> nameStatus) {
+    public void setNameStatus(ViewModelProperty<String> nameStatus) {
         this.nameStatus = nameStatus;
     }
 

@@ -4,32 +4,30 @@ import at.irian.ankor.ref.Ref;
 
 import java.lang.reflect.Field;
 
-import static at.irian.ankor.model.ModelProperty.createReferencedProperty;
-
 /**
 * @author Manfred Geiler
 */
-public class ModelInitializer {
+public class ViewModelInitializer {
 
     private final Object modelObject;
     private final Ref modelRef;
 
-    public ModelInitializer(Object modelObject, Ref modelRef) {
+    public ViewModelInitializer(Object modelObject, Ref modelRef) {
         this.modelObject = modelObject;
         this.modelRef = modelRef;
     }
 
-    public static ModelInitializer initializerFor(Object modelObject, Ref modelRef) {
-        return new ModelInitializer(modelObject, modelRef);
+    public static ViewModelInitializer initializerFor(Object viewModelObject, Ref viewModelRef) {
+        return new ViewModelInitializer(viewModelObject, viewModelRef);
     }
 
-    public <T> ModelInitializer initAll() {
+    public ViewModelInitializer initAll() {
         for (Field field : modelObject.getClass().getDeclaredFields()) {
-            if (ModelProperty.class.isAssignableFrom(field.getType())) {
+            if (ViewModelProperty.class.isAssignableFrom(field.getType())) {
                 assureAccessible(field);
                 Object currentValue = getValue(field);
                 if (currentValue == null) {
-                    ModelProperty<Object> mp = createReferencedProperty(modelRef.append(field.getName()));
+                    ViewModelProperty mp = new ViewModelProperty(modelRef, field.getName());
                     setValue(field, mp);
                 }
             }
@@ -37,14 +35,14 @@ public class ModelInitializer {
         return this;
     }
 
-    public <T> ModelInitializer withInitialValue(String fieldName, T initialValue) {
+    public <T> ViewModelInitializer withInitialValue(String fieldName, T initialValue) {
         Field field = getFieldByName(fieldName);
         assureAccessible(field);
-        ModelProperty<T> mp = getValue(field);
+        ViewModelProperty<T> mp = getValue(field);
         if (mp != null) {
             mp.putWrappedValue(initialValue);
         } else {
-            mp = createReferencedProperty(modelRef, initialValue);
+            mp = new ViewModelProperty<T>(modelRef, fieldName, initialValue);
             setValue(field, mp);
         }
         return this;

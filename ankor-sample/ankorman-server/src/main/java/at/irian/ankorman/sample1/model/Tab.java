@@ -1,33 +1,33 @@
 package at.irian.ankorman.sample1.model;
 
-import at.irian.ankor.model.ModelProperty;
+import at.irian.ankor.model.ViewModelBase;
+import at.irian.ankor.model.ViewModelProperty;
 import at.irian.ankor.ref.Ref;
-
-import static at.irian.ankor.model.ModelInitializer.initializerFor;
 
 /**
  * @author Thomas Spiegl
  */
-public class Tab<T> {
+public class Tab<T> extends ViewModelBase {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(Tab.class);
 
     private String id;
 
     private T model;
 
-    private ModelProperty<String> name;
+    private ViewModelProperty<String> name;
 
     /**
      * for deserialization only
      */
     @SuppressWarnings("UnusedDeclaration")
-    Tab() {}
+    Tab() {
+        super(null);
+    }
 
     public Tab(String id, Ref tabRef, String initialTabName) {
+        super(tabRef);
         this.id = id;
-        initializerFor(this, tabRef)
-                .initAll()
-                .withInitialValue("name", initialTabName);
+        this.name = new ViewModelProperty<String>(tabRef, "name", initialTabName);
     }
 
     public String getId() {
@@ -42,11 +42,11 @@ public class Tab<T> {
         this.model = model;
     }
 
-    public ModelProperty<String> getName() {
+    public ViewModelProperty<String> getName() {
         return name;
     }
 
-    public void setName(ModelProperty<String> name) {
+    public void setName(ViewModelProperty<String> name) {
         this.name = name;
     }
 }
