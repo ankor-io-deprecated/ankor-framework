@@ -132,6 +132,12 @@ public class AnimalDetailModel extends AnnotationAwareViewModelBase {
         }
     }
 
+    @ChangeListener(pattern = "**.<AnimalDetailModel>.animal.type")
+    public void animalTypeChanged() {
+        Ref familyRef = thisRef().append("animal.family");
+        Ref familiesRef = thisRef().append("selectItems.families");
+        new AnimalTypeChangeHandler().handleChange(familyRef, familiesRef, animal.getType());
+    }
 
     @ActionListener
     public void save() {

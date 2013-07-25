@@ -2,11 +2,13 @@ package at.irian.ankor.annotation;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.SimpleAction;
+import at.irian.ankor.action.SimpleParamAction;
 import at.irian.ankor.model.ViewModelBase;
 import at.irian.ankor.path.PathSyntax;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefMatcher;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 /**
@@ -37,7 +39,17 @@ public abstract class AnnotationAwareViewModelBase extends ViewModelBase {
                 if (actionName == null || actionName.isEmpty()) {
                     actionName = method.getName();
                 }
-                thisRef().addPropActionListener(new MyActionListener(actionName, method));
+                String[] paramNames = new String[method.getParameterTypes().length];
+                int idx = 0;
+                for (int i = 0; i < method.getParameterAnnotations().length; i++) {
+                    Annotation[] paramAnnotations = method.getParameterAnnotations()[i];
+                    for (Annotation paramAnnotation : paramAnnotations) {
+                        if (paramAnnotation instanceof Param) {
+                            paramNames[i] = ((Param) paramAnnotation).value();
+                        }
+                    }
+                }
+                thisRef().addPropActionListener(new MyActionListener(actionName, method, paramNames));
             }
         }
     }
@@ -76,8 +88,10 @@ public abstract class AnnotationAwareViewModelBase extends ViewModelBase {
     private class MyActionListener implements at.irian.ankor.ref.ActionListener {
         private final String actionName;
         private final Method method;
+        private final String[] paramNames;
 
-        public MyActionListener(String actionName, Method method) {
+        public MyActionListener(String actionName, Method method, String[] paramNames) {
+            this.paramNames = paramNames;
             this.actionName = actionName;
             this.method = method;
         }
@@ -87,7 +101,11 @@ public abstract class AnnotationAwareViewModelBase extends ViewModelBase {
             if (action instanceof SimpleAction) {
                 if (((SimpleAction)action).getName().equals(actionName)) {
                     try {
-                        method.invoke(AnnotationAwareViewModelBase.this);
+                        Object[] paramValues = new Object[paramNames.length];
+                        for (int i = 0; i < paramNames.length; i++) {
+                            paramValues[i] = ((SimpleParamAction) action).getParams().get(paramNames[i]);
+                        }
+                        method.invoke(AnnotationAwareViewModelBase.this, paramValues);
                     } catch (Exception e) {
                         throw new RuntimeException(String.format("Error invoking action listener method %s on view model object %s",
                                                                  method,

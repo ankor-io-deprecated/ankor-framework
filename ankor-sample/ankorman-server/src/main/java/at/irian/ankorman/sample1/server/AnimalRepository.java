@@ -16,7 +16,7 @@ public class AnimalRepository {
 
     public static int MAX_NAME_LEN = 10;
 
-    AnimalRepository() {
+    public AnimalRepository() {
         animals = new ArrayList<Animal>();
         animals.add(new Animal("Trout", AnimalType.Fish, AnimalFamily.Salmonidae));
         animals.add(new Animal("Salmon", AnimalType.Fish, AnimalFamily.Salmonidae));

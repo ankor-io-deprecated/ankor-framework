@@ -8,6 +8,7 @@ import at.irian.ankor.system.SimpleAnkorSystem;
 import at.irian.ankorman.sample1.model.ModelRoot;
 import at.irian.ankorman.sample1.model.Tab;
 import at.irian.ankorman.sample1.model.animal.*;
+import at.irian.ankorman.sample1.server.AnimalRepository;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -35,13 +36,13 @@ public class ModelRootJsonTest {
 
     @Test
     public void test() throws Exception {
-        ModelRoot root = new ModelRoot(rf.rootRef());
+        ModelRoot root = new ModelRoot(rf.rootRef(), new AnimalRepository());
         root.setUserName("Max Muster");
 
         Tab<AnimalSearchModel> tab = new Tab<AnimalSearchModel>("A1", rf.ref("root.tabs").append("A1"), "Test");
         root.getTabs().put("A1", tab);
 
-        AnimalSearchModel model = new AnimalSearchModel(new AnimalSelectItems(new ArrayList<AnimalType>(), new ArrayList<AnimalFamily>()));
+        AnimalSearchModel model = new AnimalSearchModel(rf.ref("root.tabs.A1"), new AnimalRepository(), new AnimalSelectItems(new ArrayList<AnimalType>(), new ArrayList<AnimalFamily>()));
         tab.setModel(model);
         List<Animal> animals = Arrays.asList(new Animal("fish", AnimalType.Fish, AnimalFamily.Accipitridae),
                                              new Animal("bird", AnimalType.Bird, AnimalFamily.Balaenopteridae));
