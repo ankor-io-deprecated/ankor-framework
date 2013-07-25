@@ -4,10 +4,6 @@ import at.irian.ankor.action.SimpleAction;
 import at.irian.ankor.fx.binding.ClickAction;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorman.sample1.fxclient.BaseTabController;
-import at.irian.ankorman.sample1.model.animal.Animal;
-import at.irian.ankorman.sample1.model.animal.AnimalFamily;
-import at.irian.ankorman.sample1.model.animal.AnimalType;
-import at.irian.ankorman.sample1.model.animal.Paginator;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -27,19 +23,19 @@ public class AnimalSearchTabController extends BaseTabController {
     @FXML
     protected TextInputControl name;
     @FXML
-    protected ComboBox<AnimalType> type;
+    protected ComboBox<Enum> type;
     @FXML
 
-    protected ComboBox<AnimalFamily> family;
+    protected ComboBox<Enum> family;
 
     @FXML
-    protected TableView<Animal> animalTable;
+    protected TableView<Object> animalTable;
     @FXML
-    protected TableColumn<Animal, String> animalName;
+    protected TableColumn<Object, String> animalName;
     @FXML
-    protected TableColumn<Animal, String> animalType;
+    protected TableColumn<Object, String> animalType;
     @FXML
-    protected TableColumn<Animal, String> animalFamily;
+    protected TableColumn<Object, String> animalFamily;
 
     @FXML
     protected Button previous;
@@ -86,19 +82,19 @@ public class AnimalSearchTabController extends BaseTabController {
                 .createWithin(bindingContext);
 
         onButtonClick(previous)
-                .callAction(new ClickAction<Paginator>() {
+                .callAction(new ClickAction<Ref>() {
                     @Override
-                    public Paginator onClick(Paginator paginator) {
-                        return paginator.previous();
+                    public void onClick(Ref paginator) {
+                        paginator.fireAction(new SimpleAction("previous"));
                     }
                 })
                 .withParam(paginatorRef).create();
 
         onButtonClick(next)
-                .callAction(new ClickAction<Paginator>() {
+                .callAction(new ClickAction<Ref>() {
                     @Override
-                    public Paginator onClick(Paginator paginator) {
-                        return paginator.next();
+                    public void onClick(Ref paginator) {
+                        paginator.fireAction(new SimpleAction("next"));
                     }
                 })
                 .withParam(paginatorRef).create();
@@ -106,9 +102,8 @@ public class AnimalSearchTabController extends BaseTabController {
         onButtonClick(save)
                 .callAction(new ClickAction() {
                     @Override
-                    public Object onClick(Object value) {
+                    public void onClick(Object value) {
                         tabRef.append("model").fireAction(new SimpleAction("save"));
-                        return null;
                     }
                 }).create();
 
@@ -118,19 +113,19 @@ public class AnimalSearchTabController extends BaseTabController {
     @SuppressWarnings("unchecked")
     private void bindTableColumns() {
 
-        animalName.setCellValueFactory(new PropertyValueFactory<Animal, String>("name"));
-        animalName.setCellFactory(TextFieldTableCell.<Animal>forTableColumn());
+        animalName.setCellValueFactory(new PropertyValueFactory<Object, String>("name"));
+        animalName.setCellFactory(TextFieldTableCell.<Object>forTableColumn());
         animalName.setOnEditCommit(
-                new EventHandler<TableColumn.CellEditEvent<Animal, String>>() {
+                new EventHandler<TableColumn.CellEditEvent<Object, String>>() {
                     @Override
-                    public void handle(TableColumn.CellEditEvent<Animal, String> t) {
+                    public void handle(TableColumn.CellEditEvent<Object, String> t) {
                         int rowNum = t.getTablePosition().getRow();
                         getTabRef().append(String.format("model.animals.rows[%d].name", rowNum)).setValue(t.getNewValue());
                     }
                 });
 
-        animalType.setCellValueFactory(new PropertyValueFactory<Animal, String>("type"));
-        animalFamily.setCellValueFactory(new PropertyValueFactory<Animal, String>("family"));
+        animalType.setCellValueFactory(new PropertyValueFactory<Object, String>("type"));
+        animalFamily.setCellValueFactory(new PropertyValueFactory<Object, String>("family"));
     }
 
 }

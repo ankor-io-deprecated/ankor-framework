@@ -2,7 +2,6 @@ package at.irian.ankorman.sample1.fxclient;
 
 import at.irian.ankor.fx.binding.BindingContext;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankorman.sample1.model.Tab;
 import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.event.EventHandler;

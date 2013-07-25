@@ -4,7 +4,6 @@ import at.irian.ankor.action.SimpleAction;
 import at.irian.ankor.fx.binding.BindingContext;
 import at.irian.ankor.ref.ChangeListener;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankorman.sample1.model.ModelRoot;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -40,14 +39,12 @@ public class MainController implements Initializable {
             @Override
             public void processChange(Ref watchedProperty, Ref changedProperty) {
                 Ref rootRef = refFactory().rootRef();
-                ModelRoot modelRoot = rootRef.getValue();
 
-                userName.setText(modelRoot.getUserName());
+                userName.setText((String) rootRef.append("userName").getValue());
 
                 bindValue(rootRef.append("serverStatus"))
                         .toText(serverStatus)
                         .createWithin(bindingContext);
-                // TODO unregister this PropChangeListener
             }
         });
         rootRef.fireAction(new SimpleAction("init"));

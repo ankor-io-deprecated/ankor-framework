@@ -1,8 +1,5 @@
 package at.irian.ankorman.sample1.fxclient;
 
-import at.irian.ankorman.sample1.model.animal.AnimalDetailModel;
-import at.irian.ankorman.sample1.model.animal.AnimalSearchModel;
-
 /**
  * @author Thomas Spiegl
  */

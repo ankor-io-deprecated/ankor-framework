@@ -29,8 +29,7 @@
             <groupId>at.irian.ankorman</groupId>
             <artifactId>ankorman-server</artifactId>
             <version>${project.version}</version>
-            <scope>system</scope>
-            <systemPath>${javafx.runtime.lib.jar}</systemPath>
+            <scope>runtime</scope>
         </dependency>
 
         <dependency>

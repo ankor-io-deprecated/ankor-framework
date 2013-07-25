@@ -4,8 +4,6 @@ import at.irian.ankor.fx.app.AppService;
 import at.irian.ankor.fx.app.SimpleLocalAppServiceBuilder;
 import at.irian.ankor.fx.app.SocketAppServiceBuilder;
 import at.irian.ankor.ref.RefFactory;
-import at.irian.ankorman.sample1.model.ModelRoot;
-import at.irian.ankorman.sample1.server.ServiceBean;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
@@ -27,7 +25,7 @@ public class App extends javafx.application.Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        ServiceBean serviceBean = new ServiceBean();
+        Object serviceBean = Class.forName("at.irian.ankorman.sample1.server.ServiceBean").newInstance();
 
         //createSimpleAppService(serviceBean);
         createSocketAppService(serviceBean);
@@ -41,16 +39,16 @@ public class App extends javafx.application.Application {
         primaryStage.show();
     }
 
-    private void createSimpleAppService(ServiceBean serviceBean) {
+    private void createSimpleAppService(Object serviceBean) throws ClassNotFoundException {
         SimpleLocalAppServiceBuilder appServiceBuilder = new SimpleLocalAppServiceBuilder()
-                .withModelType(ModelRoot.class)
+                .withModelType(Class.forName("at.irian.ankorman.sample1.model.ModelRoot"))
                 .withBean("service", serviceBean);
         appService = appServiceBuilder.create();
     }
 
-    private void createSocketAppService(ServiceBean serviceBean) {
+    private void createSocketAppService(Object serviceBean) throws ClassNotFoundException {
         SocketAppServiceBuilder appServiceBuilder = new SocketAppServiceBuilder()
-                .withModelType(ModelRoot.class)
+                .withModelType(Class.forName("at.irian.ankorman.sample1.model.ModelRoot"))
                 .withBean("service", serviceBean);
         appService = appServiceBuilder.create();
     }

@@ -3,8 +3,6 @@ package at.irian.ankorman.sample1.fxclient.animal;
 import at.irian.ankor.action.SimpleAction;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorman.sample1.fxclient.BaseTabController;
-import at.irian.ankorman.sample1.model.animal.AnimalFamily;
-import at.irian.ankorman.sample1.model.animal.AnimalType;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -24,9 +22,9 @@ public class AnimalDetailTabController extends BaseTabController {
     @FXML
     protected Text nameStatus;
     @FXML
-    protected ComboBox<AnimalType> type;
+    protected ComboBox<Enum> type;
     @FXML
-    protected ComboBox<AnimalFamily> family;
+    protected ComboBox<Enum> family;
 
     public AnimalDetailTabController(String tabId) {
         super(tabId);
