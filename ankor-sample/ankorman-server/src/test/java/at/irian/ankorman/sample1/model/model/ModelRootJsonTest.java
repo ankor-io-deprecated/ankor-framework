@@ -2,7 +2,7 @@ package at.irian.ankorman.sample1.model.model;
 
 import at.irian.ankor.messaging.Message;
 import at.irian.ankor.messaging.MessageFactory;
-import at.irian.ankor.messaging.json.JsonMessageMapper;
+import at.irian.ankor.messaging.json.JsonViewModelMessageMapper;
 import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.system.SimpleAnkorSystem;
 import at.irian.ankorman.sample1.model.ModelRoot;
@@ -22,7 +22,7 @@ import java.util.List;
 public class ModelRootJsonTest {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelRootJsonTest.class);
 
-    private JsonMessageMapper mapper;
+    private JsonViewModelMessageMapper mapper;
     private MessageFactory messageFactory;
     private RefFactory rf;
 
@@ -31,7 +31,7 @@ public class ModelRootJsonTest {
         SimpleAnkorSystem system = SimpleAnkorSystem.create("test", ModelRoot.class, false);
         messageFactory = system.getMessageFactory();
         rf = system.getRefContextFactory().createRefContext().refFactory();
-        mapper = new JsonMessageMapper();
+        mapper = new JsonViewModelMessageMapper();
     }
 
     @Test

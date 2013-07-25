@@ -1,5 +1,6 @@
 package at.irian.ankor.fx.app;
 
+import at.irian.ankor.messaging.json.JsonViewModelMessageMapper;
 import at.irian.ankor.system.BeanResolver;
 import at.irian.ankor.system.SimpleAnkorSystem;
 
@@ -42,7 +43,8 @@ public class SimpleLocalAppServiceBuilder {
 
     public AppService create() {
         // createRefContext
-        SimpleAnkorSystem serverSystem = SimpleAnkorSystem.create("server", modelType, beanResolver, true);
+        SimpleAnkorSystem serverSystem = SimpleAnkorSystem.create("server", modelType, beanResolver, true,
+                                                                  new JsonViewModelMessageMapper());
         SimpleAnkorSystem clientSystem = SimpleAnkorSystem.create("client", modelType, false);
 
         // connect

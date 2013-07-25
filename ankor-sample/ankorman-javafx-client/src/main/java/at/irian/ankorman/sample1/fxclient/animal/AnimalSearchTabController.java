@@ -7,8 +7,10 @@ import at.irian.ankorman.sample1.fxclient.BaseTabController;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.MapValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+
+import java.util.Map;
 
 import static at.irian.ankor.fx.binding.ButtonBindingBuilder.onButtonClick;
 import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
@@ -29,13 +31,13 @@ public class AnimalSearchTabController extends BaseTabController {
     protected ComboBox<Enum> family;
 
     @FXML
-    protected TableView<Object> animalTable;
+    protected TableView<Map> animalTable;
     @FXML
-    protected TableColumn<Object, String> animalName;
+    protected TableColumn<Map, String> animalName;
     @FXML
-    protected TableColumn<Object, String> animalType;
+    protected TableColumn<Map, String> animalType;
     @FXML
-    protected TableColumn<Object, String> animalFamily;
+    protected TableColumn<Map, String> animalFamily;
 
     @FXML
     protected Button previous;
@@ -113,19 +115,19 @@ public class AnimalSearchTabController extends BaseTabController {
     @SuppressWarnings("unchecked")
     private void bindTableColumns() {
 
-        animalName.setCellValueFactory(new PropertyValueFactory<Object, String>("name"));
-        animalName.setCellFactory(TextFieldTableCell.<Object>forTableColumn());
+        animalName.setCellValueFactory(new MapValueFactory<String>("name"));
+        animalName.setCellFactory(TextFieldTableCell.<Map>forTableColumn());
         animalName.setOnEditCommit(
-                new EventHandler<TableColumn.CellEditEvent<Object, String>>() {
+                new EventHandler<TableColumn.CellEditEvent<Map, String>>() {
                     @Override
-                    public void handle(TableColumn.CellEditEvent<Object, String> t) {
+                    public void handle(TableColumn.CellEditEvent<Map, String> t) {
                         int rowNum = t.getTablePosition().getRow();
                         getTabRef().append(String.format("model.animals.rows[%d].name", rowNum)).setValue(t.getNewValue());
                     }
                 });
 
-        animalType.setCellValueFactory(new PropertyValueFactory<Object, String>("type"));
-        animalFamily.setCellValueFactory(new PropertyValueFactory<Object, String>("family"));
+        animalType.setCellValueFactory(new MapValueFactory<String>("type"));
+        animalFamily.setCellValueFactory(new MapValueFactory<String>("family"));
     }
 
 }

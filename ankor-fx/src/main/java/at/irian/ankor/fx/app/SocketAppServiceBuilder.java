@@ -1,5 +1,7 @@
 package at.irian.ankor.fx.app;
 
+import at.irian.ankor.messaging.json.JsonViewDataMessageMapper;
+import at.irian.ankor.messaging.json.JsonViewModelMessageMapper;
 import at.irian.ankor.system.AnkorSystem;
 import at.irian.ankor.system.BeanResolver;
 import at.irian.ankor.system.SocketAnkorSystem;
@@ -52,13 +54,16 @@ public class SocketAppServiceBuilder {
             @Override
             public void run() {
                 AnkorSystem serverSystem = SocketAnkorSystem
-                        .create("server", modelType, beanResolver, HOST, clientPort, serverPort, true);
+                        .create("server", modelType, beanResolver, HOST, clientPort, serverPort, true,
+                                new JsonViewModelMessageMapper());
                 serverSystem.start();
             }
         });
         serverThread.setDaemon(true);
 
-        SocketAnkorSystem clientSystem = SocketAnkorSystem.create("client", modelType, null, HOST, serverPort, clientPort, false);
+        SocketAnkorSystem clientSystem = SocketAnkorSystem
+                .create("client", Map.class, null, HOST, serverPort, clientPort, false,
+                        new JsonViewDataMessageMapper());
 
         // start
         serverThread.start();

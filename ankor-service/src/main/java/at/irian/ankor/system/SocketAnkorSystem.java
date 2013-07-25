@@ -7,11 +7,7 @@ import at.irian.ankor.change.ChangeEventListener;
 import at.irian.ankor.event.ArrayListEventListeners;
 import at.irian.ankor.event.EventDelaySupport;
 import at.irian.ankor.event.EventListeners;
-import at.irian.ankor.messaging.LoopbackMessageBus;
-import at.irian.ankor.messaging.MessageFactory;
-import at.irian.ankor.messaging.MessageLoop;
-import at.irian.ankor.messaging.SocketMessageLoop;
-import at.irian.ankor.messaging.json.JsonMessageMapper;
+import at.irian.ankor.messaging.*;
 import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.ref.el.SingletonModelELRefContextFactory;
 import com.typesafe.config.Config;
@@ -41,10 +37,10 @@ public class SocketAnkorSystem extends AnkorSystem {
 
     public static SocketAnkorSystem create(String systemName, Class<?> modelType, BeanResolver beanResolver,
                                            String remoteHost, int remotePort, int localPort,
-                                           boolean enableAnnotationListeners) {
+                                           boolean enableAnnotationListeners, MessageMapper<String> messageMapper) {
         MessageFactory messageFactory = new MessageFactory();
 
-        MessageLoop<String> messageLoop = new SocketMessageLoop<String>(systemName, new JsonMessageMapper(),
+        MessageLoop<String> messageLoop = new SocketMessageLoop<String>(systemName, messageMapper,
                 remoteHost, remotePort, localPort);
 
         EventListeners globalEventListeners = new ArrayListEventListeners();

@@ -6,7 +6,6 @@ import at.irian.ankor.util.ObjectUtils;
  * @author Thomas Spiegl
  */
 public class TabNameCreator {
-
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TabNameCreator.class);
 
     private static final int MAX_LEN = 15;

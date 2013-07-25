@@ -5,10 +5,8 @@ import at.irian.ankor.annotation.AnnotationAwareViewModelBase;
 import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.model.ViewModelProperty;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.util.ObjectUtils;
 import at.irian.ankorman.sample1.server.AnimalRepository;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
  * @author Thomas Spiegl
@@ -34,7 +32,7 @@ public class AnimalDetailModel extends AnnotationAwareViewModelBase {
 
     private ViewModelProperty<String> nameStatus;
 
-    @JsonTypeInfo(use = JsonTypeInfo.Id.NONE, defaultImpl = AnimalSelectItems.class)
+    //@JsonTypeInfo(use = JsonTypeInfo.Id.NONE, defaultImpl = AnimalSelectItems.class)
     private AnimalSelectItems selectItems;
 
 

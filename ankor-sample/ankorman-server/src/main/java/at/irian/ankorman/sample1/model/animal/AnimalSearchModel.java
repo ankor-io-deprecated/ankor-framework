@@ -7,7 +7,6 @@ import at.irian.ankor.model.ViewModelProperty;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorman.sample1.server.AnimalRepository;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
 * @author Thomas Spiegl
@@ -22,9 +21,9 @@ public class AnimalSearchModel extends AnnotationAwareViewModelBase {
     private final AnimalRepository animalRepository;
 
     private AnimalSearchFilter filter;
-    @JsonTypeInfo(use = JsonTypeInfo.Id.NONE, defaultImpl = AnimalSelectItems.class)
+    //@JsonTypeInfo(use = JsonTypeInfo.Id.NONE, defaultImpl = AnimalSelectItems.class)
     private AnimalSelectItems selectItems;
-    @JsonTypeInfo(use = JsonTypeInfo.Id.NONE, defaultImpl = Animal.class)
+    //@JsonTypeInfo(use = JsonTypeInfo.Id.NONE, defaultImpl = Animal.class)
     private Data<Animal> animals;
 
     @SuppressWarnings("UnusedDeclaration")
@@ -71,7 +70,12 @@ public class AnimalSearchModel extends AnnotationAwareViewModelBase {
         Paginator paginator = getAnimals().getPaginator();
         paginator.reset();
         Data<Animal> animals = animalRepository.searchAnimals(filter, paginator.getFirst(), paginator.getMaxResults());
+
         thisRef().append("animals").setValue(animals);
+
+//        thisRef().append("animals.paginator").setValue(animals.getPaginator());
+//        thisRef().append("animals.rows").setValue(animals.getRows());
+
         LOG.info("... finished RELOADING");
         thisRef().root().append("serverStatus").setValue("");
     }
@@ -79,7 +83,7 @@ public class AnimalSearchModel extends AnnotationAwareViewModelBase {
     @ChangeListener(pattern = "**.<AnimalSearchModel>.filter.name")
     public void onNameChanged() {
         String name = filter.getName();
-        tabName.set(new TabNameCreator().createName("New Animal", name));
+        tabName.set(new TabNameCreator().createName("Animal Search", name));
     }
 
     @ChangeListener(pattern = "**.<AnimalSearchModel>.filter.type")

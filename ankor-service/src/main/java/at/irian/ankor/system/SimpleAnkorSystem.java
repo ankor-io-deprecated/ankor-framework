@@ -9,8 +9,9 @@ import at.irian.ankor.event.EventDelaySupport;
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.messaging.LoopbackMessageBus;
 import at.irian.ankor.messaging.MessageFactory;
+import at.irian.ankor.messaging.MessageMapper;
 import at.irian.ankor.messaging.PipeMessageLoop;
-import at.irian.ankor.messaging.json.JsonMessageMapper;
+import at.irian.ankor.messaging.json.JsonViewModelMessageMapper;
 import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.ref.el.SingletonModelELRefContextFactory;
 import com.typesafe.config.Config;
@@ -40,11 +41,14 @@ public class SimpleAnkorSystem extends AnkorSystem {
     }
 
 
-    public static SimpleAnkorSystem create(String systemName, Class<?> modelType, BeanResolver beanResolver, boolean enableAnnotationListeners) {
+    public static SimpleAnkorSystem create(String systemName,
+                                           Class<?> modelType,
+                                           BeanResolver beanResolver,
+                                           boolean enableAnnotationListeners,
+                                           MessageMapper<String> messageMapper) {
         MessageFactory messageFactory = new MessageFactory();
 
-        JsonMessageMapper jsonMessageMapper = new JsonMessageMapper();
-        PipeMessageLoop<String> messageLoop = new PipeMessageLoop<String>(systemName, jsonMessageMapper);
+        PipeMessageLoop<String> messageLoop = new PipeMessageLoop<String>(systemName, messageMapper);
 
         EventListeners globalEventListeners = new ArrayListEventListeners();
 
@@ -72,7 +76,7 @@ public class SimpleAnkorSystem extends AnkorSystem {
     }
 
     public static SimpleAnkorSystem create(String name, Class<?> modelType, boolean enableRemoteActionListener) {
-        return create(name, modelType, null, enableRemoteActionListener);
+        return create(name, modelType, null, enableRemoteActionListener, new JsonViewModelMessageMapper());
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -93,7 +97,7 @@ public class SimpleAnkorSystem extends AnkorSystem {
                 return new String[]{singletonBeanName};
             }
         };
-        return create(name, modelType, beanResolver, enableRemoteActionListener);
+        return create(name, modelType, beanResolver, enableRemoteActionListener, new JsonViewModelMessageMapper());
     }
 
     public void connectTo(SimpleAnkorSystem other) {
