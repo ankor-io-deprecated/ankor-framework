@@ -35,27 +35,27 @@ public class ServiceBean {
         rootRef.setValue(modelRoot);
     }
 
-    @ActionListener(name = "save", refType = AnimalDetailModel.class)
-    public void saveAnimal(@ActionSourceRef Ref modelRef) {
-        AnimalDetailModel model = modelRef.getValue();
-        String status;
-        if (model.isSaved()) {
-            status = "Error: Animal already saved";
-        } else {
-            try {
-                animalRepository.saveAnimal(model.getAnimal());
-                modelRef.append("saved").setValue(true);
-                modelRef.append("editable").setValue(false);
-                status = "Animal successfully saved";
-            } catch (Exception e) {
-                status = "Error: " + e.getMessage();
-                if (!(e instanceof IllegalArgumentException || e instanceof IllegalStateException)) {
-                    LOG.error("Error saving animal " + model.getAnimal().getUuid(), e);
-                }
-            }
-        }
-        modelRef.root().append("serverStatus").setValue(status);
-    }
+//    @ActionListener(name = "save", refType = AnimalDetailModel.class)
+//    public void saveAnimal(@ActionSourceRef Ref modelRef) {
+//        AnimalDetailModel model = modelRef.getValue();
+//        String status;
+//        if (model.isSaved()) {
+//            status = "Error: Animal already saved";
+//        } else {
+//            try {
+//                animalRepository.saveAnimal(model.getAnimal());
+//                modelRef.append("saved").setValue(true);
+//                modelRef.append("editable").setValue(false);
+//                status = "Animal successfully saved";
+//            } catch (Exception e) {
+//                status = "Error: " + e.getMessage();
+//                if (!(e instanceof IllegalArgumentException || e instanceof IllegalStateException)) {
+//                    LOG.error("Error saving animal " + model.getAnimal().getUuid(), e);
+//                }
+//            }
+//        }
+//        modelRef.root().append("serverStatus").setValue(status);
+//    }
 
     @ActionListener(name = "save", refType = AnimalSearchModel.class)
     public void saveAnimals(@ActionSourceRef Ref modelRef) {
@@ -170,6 +170,7 @@ public class ServiceBean {
     public void createAnimalDetailTab(@ActionSourceRef final Ref tabsRef, @Param("tabId") final String tabId) {
 
         Ref tabRef = tabsRef.append(tabId);
+        ModelRoot root = tabsRef.root().getValue();
 
         Tab<AnimalDetailModel> tab = new Tab<AnimalDetailModel>(tabId, tabRef, "New Animal");
 
@@ -177,7 +178,8 @@ public class ServiceBean {
                                                         new Animal(),
                                                         getAnimalSelectItems(),
                                                         tabRef.append("model"),
-                                                        tab.getName());
+                                                        tab.getName(),
+                                                        root.getServerStatus());
 
         tab.setModel(model);
 

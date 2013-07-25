@@ -1,5 +1,6 @@
 package at.irian.ankorman.sample1.model.animal;
 
+import at.irian.ankor.annotation.ActionListener;
 import at.irian.ankor.annotation.AnnotationAwareViewModelBase;
 import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.model.ViewModelProperty;
@@ -13,10 +14,13 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  * @author Thomas Spiegl
  */
 public class AnimalDetailModel extends AnnotationAwareViewModelBase {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalDetailModel.class);
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalDetailModel.class);
 
     @JsonIgnore
     private final ViewModelProperty<String> tabName;
+
+    @JsonIgnore
+    private final ViewModelProperty<String> serverStatus;
 
     @JsonIgnore
     private final AnimalRepository animalRepository;
@@ -26,12 +30,13 @@ public class AnimalDetailModel extends AnnotationAwareViewModelBase {
 
     private Animal animal;
 
-    private boolean editable;
+    private ViewModelProperty<Boolean> editable;
+
+    private ViewModelProperty<String> nameStatus;
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NONE, defaultImpl = AnimalSelectItems.class)
     private AnimalSelectItems selectItems;
 
-    private ViewModelProperty<String> nameStatus;
 
     /**
      * client side constructor
@@ -40,6 +45,7 @@ public class AnimalDetailModel extends AnnotationAwareViewModelBase {
         super(null);
         this.tabName = null;
         this.animalRepository = null;
+        this.serverStatus = null;
     }
 
     /**
@@ -47,13 +53,16 @@ public class AnimalDetailModel extends AnnotationAwareViewModelBase {
      */
     public AnimalDetailModel(AnimalRepository animalRepository,
                              Animal animal, AnimalSelectItems selectItems,
-                             Ref myRef, ViewModelProperty<String> tabName) {
+                             Ref myRef, ViewModelProperty<String> tabName, ViewModelProperty<String> serverStatus) {
         super(myRef);
         this.tabName = tabName;
         this.animalRepository = animalRepository;
         this.selectItems = selectItems;
         this.animal = animal;
-        this.editable = true;
+        this.serverStatus = serverStatus;
+
+        this.editable.set(true);
+        this.nameStatus.set("ok");
     }
 
     public Animal getAnimal() {
@@ -88,11 +97,11 @@ public class AnimalDetailModel extends AnnotationAwareViewModelBase {
         this.saved = saved;
     }
 
-    public boolean isEditable() {
+    public ViewModelProperty<Boolean> getEditable() {
         return editable;
     }
 
-    public void setEditable(boolean editable) {
+    public void setEditable(ViewModelProperty<Boolean> editable) {
         this.editable = editable;
     }
 
@@ -121,6 +130,31 @@ public class AnimalDetailModel extends AnnotationAwareViewModelBase {
             }
             return String.format("%s (%s)", name, value);
         }
+    }
+
+
+    @ActionListener
+    public void save() {
+
+        LOG.info("save action");
+
+        String status;
+        if (isSaved()) {
+            status = "Error: Animal already saved";
+        } else {
+            try {
+                animalRepository.saveAnimal(animal);
+                saved = true;
+                editable.set(false);
+                status = "Animal successfully saved";
+            } catch (Exception e) {
+                status = "Error: " + e.getMessage();
+                if (!(e instanceof IllegalArgumentException || e instanceof IllegalStateException)) {
+                    LOG.error("Error saving animal " + animal.getUuid(), e);
+                }
+            }
+        }
+        serverStatus.set(status);
     }
 
 }

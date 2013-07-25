@@ -1,6 +1,7 @@
 package at.irian.ankorman.sample1.model;
 
 import at.irian.ankor.model.ViewModelBase;
+import at.irian.ankor.model.ViewModelProperty;
 import at.irian.ankor.ref.Ref;
 
 /**
@@ -10,7 +11,7 @@ public class ModelRoot extends ViewModelBase {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TestModel.class);
 
     private String userName;
-    private String serverStatus;
+    private ViewModelProperty<String> serverStatus;
     private Tabs tabs;
 
     protected ModelRoot() {
@@ -19,7 +20,8 @@ public class ModelRoot extends ViewModelBase {
 
     public ModelRoot(Ref viewModelRef) {
         super(viewModelRef);
-        tabs = new Tabs(viewModelRef.append("tabs"));
+        this.tabs = new Tabs(viewModelRef.append("tabs"));
+        this.serverStatus.set("");
     }
 
     public String getUserName() {
@@ -34,11 +36,11 @@ public class ModelRoot extends ViewModelBase {
         return tabs;
     }
 
-    public String getServerStatus() {
+    public ViewModelProperty<String> getServerStatus() {
         return serverStatus;
     }
 
-    public void setServerStatus(String serverStatus) {
+    public void setServerStatus(ViewModelProperty<String> serverStatus) {
         this.serverStatus = serverStatus;
     }
 }

@@ -25,10 +25,14 @@ public class ViewModelInitializer {
         for (Field field : modelObject.getClass().getDeclaredFields()) {
             if (ViewModelProperty.class.isAssignableFrom(field.getType())) {
                 assureAccessible(field);
-                Object currentValue = getValue(field);
+                ViewModelProperty currentValue = getValue(field);
                 if (currentValue == null) {
                     ViewModelProperty mp = new ViewModelProperty(modelRef, field.getName());
                     setValue(field, mp);
+                } else {
+                    if (currentValue.getRef() == null) {
+                        currentValue.setRef(modelRef.append(field.getName()));
+                    }
                 }
             }
         }

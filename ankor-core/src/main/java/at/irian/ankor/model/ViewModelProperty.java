@@ -10,7 +10,7 @@ import at.irian.ankor.ref.Wrapper;
 public class ViewModelProperty<T> implements Wrapper<T> {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ViewModelProperty.class);
 
-    private final Ref ref;
+    private Ref ref;
     private T value;
 
     ViewModelProperty() {
@@ -46,12 +46,18 @@ public class ViewModelProperty<T> implements Wrapper<T> {
     public void set(T newValue) {
         if (this.ref == null) {
             //throw new IllegalStateException("no ref");
-            LOG.warn("setting non-referencing object {}", this);
+            LOG.warn("setting non-referencing object " + this, new IllegalStateException());
             putWrappedValue(newValue);
-        } else {
+        } else if (this.ref.isValid()) {
             // set value by indirection over ankor ref system
             this.ref.setValue(newValue);
+        } else {
+            putWrappedValue(newValue);
         }
+    }
+
+    public void init(T newValue) {
+        putWrappedValue(newValue);
     }
 
     public T get() {
@@ -60,6 +66,10 @@ public class ViewModelProperty<T> implements Wrapper<T> {
 
     public Ref getRef() {
         return ref;
+    }
+
+    void setRef(Ref ref) {
+        this.ref = ref;
     }
 
     @Override

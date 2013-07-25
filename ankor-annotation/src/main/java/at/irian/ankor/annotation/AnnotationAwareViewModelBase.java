@@ -1,5 +1,7 @@
 package at.irian.ankor.annotation;
 
+import at.irian.ankor.action.Action;
+import at.irian.ankor.action.SimpleAction;
 import at.irian.ankor.model.ViewModelBase;
 import at.irian.ankor.path.PathSyntax;
 import at.irian.ankor.ref.Ref;
@@ -29,6 +31,14 @@ public abstract class AnnotationAwareViewModelBase extends ViewModelBase {
             if (changeListenerAnnotation != null) {
                 thisRef().addChangeListener(new MyChangeListener(changeListenerAnnotation.pattern(), method));
             }
+            ActionListener actionListenerAnnotation = method.getAnnotation(ActionListener.class);
+            if (actionListenerAnnotation != null) {
+                String actionName = actionListenerAnnotation.name();
+                if (actionName == null || actionName.isEmpty()) {
+                    actionName = method.getName();
+                }
+                thisRef().addPropActionListener(new MyActionListener(actionName, method));
+            }
         }
     }
 
@@ -55,11 +65,36 @@ public abstract class AnnotationAwareViewModelBase extends ViewModelBase {
                     } catch (Exception e) {
                         throw new RuntimeException(String.format("Error invoking change listener method %s on view model object %s",
                                                                  method,
-                                                                 this), e);
+                                                                 AnnotationAwareViewModelBase.this), e);
                     }
                 }
             }
         }
     }
 
+
+    private class MyActionListener implements at.irian.ankor.ref.ActionListener {
+        private final String actionName;
+        private final Method method;
+
+        public MyActionListener(String actionName, Method method) {
+            this.actionName = actionName;
+            this.method = method;
+        }
+
+        @Override
+        public void processAction(Ref sourceProperty, Action action) {
+            if (action instanceof SimpleAction) {
+                if (((SimpleAction)action).getName().equals(actionName)) {
+                    try {
+                        method.invoke(AnnotationAwareViewModelBase.this);
+                    } catch (Exception e) {
+                        throw new RuntimeException(String.format("Error invoking action listener method %s on view model object %s",
+                                                                 method,
+                                                                 AnnotationAwareViewModelBase.this), e);
+                    }
+                }
+            }
+        }
+    }
 }
