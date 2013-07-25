@@ -1,7 +1,12 @@
 package at.irian.ankorman.sample1.server;
 
 import at.irian.ankor.util.ObjectUtils;
-import at.irian.ankorman.sample1.model.animal.*;
+import at.irian.ankorman.sample1.domain.animal.Animal;
+import at.irian.ankorman.sample1.domain.animal.AnimalFamily;
+import at.irian.ankorman.sample1.domain.animal.AnimalType;
+import at.irian.ankorman.sample1.viewmodel.animal.AnimalSearchFilter;
+import at.irian.ankorman.sample1.viewmodel.animal.Data;
+import at.irian.ankorman.sample1.viewmodel.animal.Paginator;
 
 import java.util.ArrayList;
 import java.util.Iterator;

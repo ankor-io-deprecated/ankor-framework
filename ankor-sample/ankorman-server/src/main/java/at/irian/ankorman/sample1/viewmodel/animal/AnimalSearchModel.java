@@ -1,11 +1,13 @@
-package at.irian.ankorman.sample1.model.animal;
+package at.irian.ankorman.sample1.viewmodel.animal;
 
 import at.irian.ankor.annotation.ActionListener;
 import at.irian.ankor.annotation.AnnotationAwareViewModelBase;
 import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.model.ViewModelProperty;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankorman.sample1.domain.animal.Animal;
 import at.irian.ankorman.sample1.server.AnimalRepository;
+import at.irian.ankorman.sample1.viewmodel.TabNameCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
@@ -21,19 +23,14 @@ public class AnimalSearchModel extends AnnotationAwareViewModelBase {
     private final AnimalRepository animalRepository;
 
     private AnimalSearchFilter filter;
-    //@JsonTypeInfo(use = JsonTypeInfo.Id.NONE, defaultImpl = AnimalSelectItems.class)
+
     private AnimalSelectItems selectItems;
-    //@JsonTypeInfo(use = JsonTypeInfo.Id.NONE, defaultImpl = Animal.class)
+
     private Data<Animal> animals;
 
-    @SuppressWarnings("UnusedDeclaration")
-    protected AnimalSearchModel() {
-        super(null);
-        this.tabName = null;
-        this.animalRepository = null;
-    }
-
-    public AnimalSearchModel(Ref viewModelRef, AnimalRepository animalRepository, AnimalSelectItems selectItems, ViewModelProperty<String> tabName) {
+    public AnimalSearchModel(Ref viewModelRef,
+                             AnimalRepository animalRepository, AnimalSelectItems selectItems,
+                             ViewModelProperty<String> tabName) {
         super(viewModelRef);
         this.animalRepository = animalRepository;
         this.tabName = tabName;
@@ -45,7 +42,6 @@ public class AnimalSearchModel extends AnnotationAwareViewModelBase {
     public AnimalSearchFilter getFilter() {
         return filter;
     }
-
 
     public AnimalSelectItems getSelectItems() {
         return selectItems;
@@ -72,9 +68,6 @@ public class AnimalSearchModel extends AnnotationAwareViewModelBase {
         Data<Animal> animals = animalRepository.searchAnimals(filter, paginator.getFirst(), paginator.getMaxResults());
 
         thisRef().append("animals").setValue(animals);
-
-//        thisRef().append("animals.paginator").setValue(animals.getPaginator());
-//        thisRef().append("animals.rows").setValue(animals.getRows());
 
         LOG.info("... finished RELOADING");
         thisRef().root().append("serverStatus").setValue("");

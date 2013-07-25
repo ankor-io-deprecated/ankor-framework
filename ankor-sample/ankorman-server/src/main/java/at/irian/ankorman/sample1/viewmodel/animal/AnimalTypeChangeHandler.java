@@ -1,6 +1,8 @@
-package at.irian.ankorman.sample1.model.animal;
+package at.irian.ankorman.sample1.viewmodel.animal;
 
 import at.irian.ankor.ref.Ref;
+import at.irian.ankorman.sample1.domain.animal.AnimalFamily;
+import at.irian.ankorman.sample1.domain.animal.AnimalType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +10,7 @@ import java.util.List;
 /**
 * @author Thomas Spiegl
 */
-public class AnimalTypeChangeHandler {
+class AnimalTypeChangeHandler {
 
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalTypeChangeHandler.class);
 

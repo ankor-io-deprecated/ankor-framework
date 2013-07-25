@@ -1,4 +1,4 @@
-package at.irian.ankorman.sample1.model.animal;
+package at.irian.ankorman.sample1.viewmodel.animal;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,16 +7,11 @@ import java.util.List;
  * @author Thomas Spiegl
  */
 public class Data<T> {
-
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(Data.class);
 
     private Paginator paginator;
 
-    //@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@javaType")
     private List<T> rows;
-
-    protected Data() {
-    }
 
     public Data(Paginator paginator) {
         this.paginator = paginator;

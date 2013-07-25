@@ -1,14 +1,18 @@
-package at.irian.ankorman.sample1.model.model;
+package at.irian.ankorman.sample1.viewmodel;
 
 import at.irian.ankor.messaging.Message;
 import at.irian.ankor.messaging.MessageFactory;
 import at.irian.ankor.messaging.json.JsonViewModelMessageMapper;
 import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.system.SimpleAnkorSystem;
-import at.irian.ankorman.sample1.model.ModelRoot;
-import at.irian.ankorman.sample1.model.Tab;
-import at.irian.ankorman.sample1.model.animal.*;
+import at.irian.ankorman.sample1.domain.animal.Animal;
+import at.irian.ankorman.sample1.domain.animal.AnimalFamily;
+import at.irian.ankorman.sample1.domain.animal.AnimalType;
 import at.irian.ankorman.sample1.server.AnimalRepository;
+import at.irian.ankorman.sample1.viewmodel.animal.AnimalSearchModel;
+import at.irian.ankorman.sample1.viewmodel.animal.AnimalSelectItems;
+import at.irian.ankorman.sample1.viewmodel.animal.Data;
+import at.irian.ankorman.sample1.viewmodel.animal.Paginator;
 import org.junit.Before;
 import org.junit.Test;
 

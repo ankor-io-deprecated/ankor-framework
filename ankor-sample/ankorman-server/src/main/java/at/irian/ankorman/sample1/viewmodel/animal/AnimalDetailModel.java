@@ -1,106 +1,51 @@
-package at.irian.ankorman.sample1.model.animal;
+package at.irian.ankorman.sample1.viewmodel.animal;
 
 import at.irian.ankor.annotation.ActionListener;
 import at.irian.ankor.annotation.AnnotationAwareViewModelBase;
 import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.model.ViewModelProperty;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankorman.sample1.domain.animal.Animal;
 import at.irian.ankorman.sample1.server.AnimalRepository;
+import at.irian.ankorman.sample1.viewmodel.TabNameCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * @author Thomas Spiegl
  */
+@SuppressWarnings("UnusedDeclaration")
 public class AnimalDetailModel extends AnnotationAwareViewModelBase {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalDetailModel.class);
 
     @JsonIgnore
+    private final AnimalRepository animalRepository;
+    @JsonIgnore
     private final ViewModelProperty<String> tabName;
-
     @JsonIgnore
     private final ViewModelProperty<String> serverStatus;
-
-    @JsonIgnore
-    private final AnimalRepository animalRepository;
-
     @JsonIgnore
     private boolean saved = false;
 
     private Animal animal;
 
+    private AnimalSelectItems selectItems;
+
     private ViewModelProperty<Boolean> editable;
 
     private ViewModelProperty<String> nameStatus;
 
-    //@JsonTypeInfo(use = JsonTypeInfo.Id.NONE, defaultImpl = AnimalSelectItems.class)
-    private AnimalSelectItems selectItems;
-
-
-    /**
-     * client side constructor
-     */
-    protected AnimalDetailModel() {
-        super(null);
-        this.tabName = null;
-        this.animalRepository = null;
-        this.serverStatus = null;
-    }
-
-    /**
-     * server side constructor
-     */
-    public AnimalDetailModel(AnimalRepository animalRepository,
-                             Animal animal, AnimalSelectItems selectItems,
-                             Ref myRef, ViewModelProperty<String> tabName, ViewModelProperty<String> serverStatus) {
+    public AnimalDetailModel(Ref myRef,
+                             Animal animal, AnimalSelectItems selectItems, AnimalRepository animalRepository,
+                             ViewModelProperty<String> tabName, ViewModelProperty<String> serverStatus) {
         super(myRef);
-        this.tabName = tabName;
-        this.animalRepository = animalRepository;
-        this.selectItems = selectItems;
         this.animal = animal;
+        this.selectItems = selectItems;
+        this.animalRepository = animalRepository;
+        this.tabName = tabName;
         this.serverStatus = serverStatus;
 
         this.editable.set(true);
         this.nameStatus.set("ok");
-    }
-
-    public Animal getAnimal() {
-        return animal;
-    }
-
-    public void setAnimal(Animal animal) {
-        this.animal = animal;
-    }
-
-    public AnimalSelectItems getSelectItems() {
-        return selectItems;
-    }
-
-    public void setSelectItems(AnimalSelectItems selectItems) {
-        this.selectItems = selectItems;
-    }
-
-    public boolean isSaved() {
-        return saved;
-    }
-
-    public ViewModelProperty<String> getNameStatus() {
-        return nameStatus;
-    }
-
-    public void setNameStatus(ViewModelProperty<String> nameStatus) {
-        this.nameStatus = nameStatus;
-    }
-
-    public void setSaved(boolean saved) {
-        this.saved = saved;
-    }
-
-    public ViewModelProperty<Boolean> getEditable() {
-        return editable;
-    }
-
-    public void setEditable(ViewModelProperty<Boolean> editable) {
-        this.editable = editable;
     }
 
     @ChangeListener(pattern = "**.<AnimalDetailModel>.animal.name")
@@ -131,7 +76,7 @@ public class AnimalDetailModel extends AnnotationAwareViewModelBase {
         LOG.info("save action");
 
         String status;
-        if (isSaved()) {
+        if (saved) {
             status = "Error: Animal already saved";
         } else {
             try {
@@ -149,4 +94,19 @@ public class AnimalDetailModel extends AnnotationAwareViewModelBase {
         serverStatus.set(status);
     }
 
+    public AnimalSelectItems getSelectItems() {
+        return selectItems;
+    }
+
+    public Animal getAnimal() {
+        return animal;
+    }
+
+    public ViewModelProperty<Boolean> getEditable() {
+        return editable;
+    }
+
+    public ViewModelProperty<String> getNameStatus() {
+        return nameStatus;
+    }
 }

@@ -1,4 +1,4 @@
-package at.irian.ankorman.sample1.model.animal;
+package at.irian.ankorman.sample1.viewmodel;
 
 import at.irian.ankor.util.ObjectUtils;
 

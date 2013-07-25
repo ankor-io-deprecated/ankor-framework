@@ -1,6 +1,5 @@
-package at.irian.ankorman.sample1.model;
+package at.irian.ankor.annotation;
 
-import at.irian.ankor.annotation.AnnotationAwareViewModelBase;
 import at.irian.ankor.ref.Ref;
 
 import java.util.Collection;
@@ -11,13 +10,13 @@ import java.util.Set;
  * @author Thomas Spiegl
  */
 @SuppressWarnings("NullableProblems")
-public abstract class MapViewModelBase<K, V> extends AnnotationAwareViewModelBase implements Map<K, V> {
+public abstract class AnnotationAwareMapViewModelBase<K, V> extends AnnotationAwareViewModelBase implements Map<K, V> {
 
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(MapViewModel.class);
 
     protected Map<K, V> map;
 
-    protected MapViewModelBase(Ref viewModelRef, Map<K, V> map) {
+    protected AnnotationAwareMapViewModelBase(Ref viewModelRef, Map<K, V> map) {
         super(viewModelRef);
         this.map = map;
     }

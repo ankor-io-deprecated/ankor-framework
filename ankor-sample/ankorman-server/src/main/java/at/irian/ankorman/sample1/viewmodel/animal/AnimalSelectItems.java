@@ -1,4 +1,7 @@
-package at.irian.ankorman.sample1.model.animal;
+package at.irian.ankorman.sample1.viewmodel.animal;
+
+import at.irian.ankorman.sample1.domain.animal.AnimalFamily;
+import at.irian.ankorman.sample1.domain.animal.AnimalType;
 
 import java.util.List;
 
@@ -11,10 +14,6 @@ public class AnimalSelectItems {
 
     private List<AnimalType> types;
     private List<AnimalFamily> families;
-
-    @SuppressWarnings("UnusedDeclaration")
-    protected AnimalSelectItems() {
-    }
 
     public AnimalSelectItems(List<AnimalType> types, List<AnimalFamily> families) {
         this.types = types;

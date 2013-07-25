@@ -1,4 +1,4 @@
-package at.irian.ankorman.sample1.model.animal;
+package at.irian.ankorman.sample1.viewmodel.animal;
 
 /**
  * @author Thomas Spiegl
@@ -10,9 +10,6 @@ public class Paginator {
     private int first;
     private int maxResults;
     private int count;
-
-    protected Paginator() {
-    }
 
     public Paginator(int first, int maxResults) {
         this.first = first;

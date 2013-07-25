@@ -3,7 +3,7 @@ package at.irian.ankorman.sample1.server;
 import at.irian.ankor.annotation.ActionListener;
 import at.irian.ankor.annotation.ActionSourceRef;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankorman.sample1.model.ModelRoot;
+import at.irian.ankorman.sample1.viewmodel.ModelRoot;
 
 /**
  * @author Thomas Spiegl

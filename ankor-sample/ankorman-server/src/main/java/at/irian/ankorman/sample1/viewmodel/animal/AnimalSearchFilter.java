@@ -1,8 +1,12 @@
-package at.irian.ankorman.sample1.model.animal;
+package at.irian.ankorman.sample1.viewmodel.animal;
+
+import at.irian.ankorman.sample1.domain.animal.AnimalFamily;
+import at.irian.ankorman.sample1.domain.animal.AnimalType;
 
 /**
 * @author Thomas Spiegl
 */
+@SuppressWarnings("UnusedDeclaration")
 public class AnimalSearchFilter {
 
     private String name;

@@ -1,10 +1,16 @@
-package at.irian.ankorman.sample1.model;
+package at.irian.ankorman.sample1.viewmodel;
 
 import at.irian.ankor.annotation.ActionListener;
+import at.irian.ankor.annotation.AnnotationAwareMapViewModelBase;
 import at.irian.ankor.annotation.Param;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankorman.sample1.model.animal.*;
+import at.irian.ankorman.sample1.domain.animal.Animal;
+import at.irian.ankorman.sample1.domain.animal.AnimalFamily;
+import at.irian.ankorman.sample1.domain.animal.AnimalType;
 import at.irian.ankorman.sample1.server.AnimalRepository;
+import at.irian.ankorman.sample1.viewmodel.animal.AnimalDetailModel;
+import at.irian.ankorman.sample1.viewmodel.animal.AnimalSearchModel;
+import at.irian.ankorman.sample1.viewmodel.animal.AnimalSelectItems;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,13 +20,9 @@ import java.util.List;
 /**
  * @author Thomas Spiegl
  */
-public class Tabs extends MapViewModelBase<String, Tab> {
+public class Tabs extends AnnotationAwareMapViewModelBase<String, Tab> {
 
     private AnimalRepository animalRepository;
-
-    protected Tabs() {
-        super(null, new HashMap<String, Tab>());
-    }
 
     protected Tabs(Ref viewModelRef, AnimalRepository animalRepository) {
         super(viewModelRef, new HashMap<String, Tab>());
@@ -57,12 +59,12 @@ public class Tabs extends MapViewModelBase<String, Tab> {
 
         Tab<AnimalDetailModel> tab = new Tab<AnimalDetailModel>(tabId, tabRef, "New Animal");
 
-        AnimalDetailModel model = new AnimalDetailModel(animalRepository,
-                new Animal(),
-                getAnimalSelectItems(),
-                tabRef.append("model"),
-                tab.getName(),
-                root.getServerStatus());
+        AnimalDetailModel model = new AnimalDetailModel(tabRef.append("model"),
+                                                        new Animal(),
+                                                        getAnimalSelectItems(),
+                                                        animalRepository,
+                                                        tab.getName(),
+                                                        root.getServerStatus());
 
         tab.setModel(model);
 

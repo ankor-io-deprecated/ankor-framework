@@ -1,6 +1,5 @@
-package at.irian.ankorman.sample1.model;
+package at.irian.ankorman.sample1.viewmodel;
 
-import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.model.ViewModelBase;
 import at.irian.ankor.model.ViewModelProperty;
 import at.irian.ankor.ref.Ref;
@@ -16,14 +15,6 @@ public class Tab<T> extends ViewModelBase {
     private T model;
 
     private ViewModelProperty<String> name;
-
-    /**
-     * for deserialization only
-     */
-    @SuppressWarnings("UnusedDeclaration")
-    Tab() {
-        super(null);
-    }
 
     public Tab(String id, Ref tabRef, String initialTabName) {
         super(tabRef);

@@ -1,4 +1,4 @@
-package at.irian.ankorman.sample1.model.animal;
+package at.irian.ankorman.sample1.domain.animal;
 
 /**
 * @author Thomas Spiegl

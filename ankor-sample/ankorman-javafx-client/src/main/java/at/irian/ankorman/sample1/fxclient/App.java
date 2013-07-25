@@ -41,14 +41,14 @@ public class App extends javafx.application.Application {
 
     private void createSimpleAppService(Object serviceBean) throws ClassNotFoundException {
         SimpleLocalAppServiceBuilder appServiceBuilder = new SimpleLocalAppServiceBuilder()
-                .withModelType(Class.forName("at.irian.ankorman.sample1.model.ModelRoot"))
+                .withModelType(Class.forName("at.irian.ankorman.sample1.viewmodel.ModelRoot"))
                 .withBean("service", serviceBean);
         appService = appServiceBuilder.create();
     }
 
     private void createSocketAppService(Object serviceBean) throws ClassNotFoundException {
         SocketAppServiceBuilder appServiceBuilder = new SocketAppServiceBuilder()
-                .withModelType(Class.forName("at.irian.ankorman.sample1.model.ModelRoot"))
+                .withModelType(Class.forName("at.irian.ankorman.sample1.viewmodel.ModelRoot"))
                 .withBean("service", serviceBean);
         appService = appServiceBuilder.create();
     }
