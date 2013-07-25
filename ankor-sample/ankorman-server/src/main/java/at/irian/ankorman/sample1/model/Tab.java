@@ -3,7 +3,7 @@ package at.irian.ankorman.sample1.model;
 import at.irian.ankor.model.ModelProperty;
 import at.irian.ankor.ref.Ref;
 
-import static at.irian.ankor.model.ModelHelper.initializer;
+import static at.irian.ankor.model.ModelInitializer.initializerFor;
 
 /**
  * @author Thomas Spiegl
@@ -25,7 +25,7 @@ public class Tab<T> {
 
     public Tab(String id, Ref tabRef, String initialTabName) {
         this.id = id;
-        initializer(this, tabRef)
+        initializerFor(this, tabRef)
                 .initAll()
                 .withInitialValue("name", initialTabName);
     }

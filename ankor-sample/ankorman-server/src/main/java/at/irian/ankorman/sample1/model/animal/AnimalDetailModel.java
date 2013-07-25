@@ -7,7 +7,7 @@ import at.irian.ankorman.sample1.server.AnimalRepository;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-import static at.irian.ankor.model.ModelHelper.initializer;
+import static at.irian.ankor.model.ModelInitializer.initializerFor;
 
 /**
  * @author Thomas Spiegl
@@ -52,7 +52,7 @@ public class AnimalDetailModel {
         this.selectItems = selectItems;
         this.animal = animal;
         this.editable = true;
-        initializer(this, myRef).initAll();
+        initializerFor(this, myRef).initAll();
     }
 
     public Animal getAnimal() {
