@@ -35,7 +35,7 @@ public class ModelRootJsonTest {
 
     @Test
     public void test() throws Exception {
-        ModelRoot root = new ModelRoot();
+        ModelRoot root = new ModelRoot(rf.rootRef());
         root.setUserName("Max Muster");
 
         Tab<AnimalSearchModel> tab = new Tab<AnimalSearchModel>("A1", rf.ref("root.tabs").append("A1"), "Test");

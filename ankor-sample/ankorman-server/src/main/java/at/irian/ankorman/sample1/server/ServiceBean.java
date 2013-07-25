@@ -30,7 +30,7 @@ public class ServiceBean {
 
     @ActionListener(name = "init")
     public void init(@ActionSourceRef Ref rootRef) {
-        ModelRoot modelRoot = new ModelRoot();
+        ModelRoot modelRoot = new ModelRoot(rootRef);
         modelRoot.setUserName("John Doe");
         rootRef.setValue(modelRoot);
     }

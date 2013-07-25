@@ -79,11 +79,18 @@ public class ArrayListEventListeners implements EventListeners {
 
     @Override
     public void cleanup() {
-        Iterator<ModelEventListener> it = this.iterator();
-        while (it.hasNext()) {
-            ModelEventListener listener = it.next();
+        List<ModelEventListener> removeList = null;
+        for (ModelEventListener listener : this.listeners) {
             if (listener.isDiscardable()) {
-                it.remove();
+                if (removeList == null) {
+                    removeList = new ArrayList<ModelEventListener>();
+                }
+                removeList.add(listener);
+            }
+        }
+        if (removeList != null) {
+            for (ModelEventListener modelEventListener : removeList) {
+                this.listeners.remove(modelEventListener);
             }
         }
     }

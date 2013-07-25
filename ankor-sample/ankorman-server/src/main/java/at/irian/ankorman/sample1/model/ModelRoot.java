@@ -1,17 +1,25 @@
 package at.irian.ankorman.sample1.model;
 
+import at.irian.ankor.model.ViewModelBase;
+import at.irian.ankor.ref.Ref;
+
 /**
  * @author Thomas Spiegl
  */
-public class ModelRoot {
+public class ModelRoot extends ViewModelBase {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TestModel.class);
 
     private String userName;
     private String serverStatus;
     private Tabs tabs;
 
-    public ModelRoot() {
-        tabs = new Tabs();
+    protected ModelRoot() {
+        super(null);
+    }
+
+    public ModelRoot(Ref viewModelRef) {
+        super(viewModelRef);
+        tabs = new Tabs(viewModelRef.append("tabs"));
     }
 
     public String getUserName() {

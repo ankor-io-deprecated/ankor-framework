@@ -1,5 +1,6 @@
 package at.irian.ankorman.sample1.model;
 
+import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.model.ViewModelBase;
 import at.irian.ankor.model.ViewModelProperty;
 import at.irian.ankor.ref.Ref;
@@ -48,5 +49,9 @@ public class Tab<T> extends ViewModelBase {
 
     public void setName(ViewModelProperty<String> name) {
         this.name = name;
+    }
+
+    public void close() {
+        thisRef().setValue(null);
     }
 }

@@ -1,5 +1,7 @@
 package at.irian.ankorman.sample1.fxclient;
 
+import at.irian.ankor.change.ChangeEvent;
+import at.irian.ankor.change.ChangeEventListener;
 import at.irian.ankor.ref.ChangeListener;
 import at.irian.ankor.ref.Ref;
 import javafx.application.Platform;
@@ -39,12 +41,15 @@ public class TabLoader {
             throw new IllegalStateException("tabPane is null");
         }
 
-        // register changeListener
-        tabsRef.append(tabId).addPropChangeListener(new ChangeListener() {
+        final Ref tabRef = tabsRef.append(tabId);
+
+        tabsRef.context().eventListeners().add(new ChangeEventListener(tabRef) {
             @Override
-            public void processChange(Ref watchedProperty, Ref changedProperty) {
-                showTab(tabPane);
-                // TODO remove changeListener
+            public void process(ChangeEvent event) {
+                if (event.getChangedProperty().equals(tabRef)) {
+                    tabsRef.context().eventListeners().remove(this);
+                    showTab(tabPane);
+                }
             }
         });
 
