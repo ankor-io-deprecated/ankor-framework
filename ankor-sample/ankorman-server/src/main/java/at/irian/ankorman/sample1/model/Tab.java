@@ -28,7 +28,7 @@ public class Tab<T> extends ViewModelBase {
     public Tab(String id, Ref tabRef, String initialTabName) {
         super(tabRef);
         this.id = id;
-        this.name = new ViewModelProperty<String>(tabRef, "name", initialTabName);
+        this.name.set(initialTabName);
     }
 
     public String getId() {

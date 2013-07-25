@@ -42,7 +42,8 @@ public class ModelRootJsonTest {
         Tab<AnimalSearchModel> tab = new Tab<AnimalSearchModel>("A1", rf.ref("root.tabs").append("A1"), "Test");
         root.getTabs().put("A1", tab);
 
-        AnimalSearchModel model = new AnimalSearchModel(rf.ref("root.tabs.A1"), new AnimalRepository(), new AnimalSelectItems(new ArrayList<AnimalType>(), new ArrayList<AnimalFamily>()));
+        AnimalSearchModel model = new AnimalSearchModel(rf.ref("root.tabs.A1"),
+                new AnimalRepository(), new AnimalSelectItems(new ArrayList<AnimalType>(), new ArrayList<AnimalFamily>()), tab.getName());
         tab.setModel(model);
         List<Animal> animals = Arrays.asList(new Animal("fish", AnimalType.Fish, AnimalFamily.Accipitridae),
                                              new Animal("bird", AnimalType.Bird, AnimalFamily.Balaenopteridae));

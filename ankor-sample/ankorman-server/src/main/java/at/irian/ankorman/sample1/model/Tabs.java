@@ -1,7 +1,6 @@
 package at.irian.ankorman.sample1.model;
 
 import at.irian.ankor.annotation.ActionListener;
-import at.irian.ankor.annotation.ActionSourceRef;
 import at.irian.ankor.annotation.Param;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorman.sample1.model.animal.*;
@@ -41,9 +40,9 @@ public class Tabs extends MapViewModelBase<String, Tab> {
     public void createAnimalSearchTab(@Param("tabId") final String tabId) {
         Ref tabRef = thisRef().append(tabId);
 
-        AnimalSearchModel model = new AnimalSearchModel(tabRef.append("model"), animalRepository, getAnimalSelectItems());
-
         Tab<AnimalSearchModel> tab = new Tab<AnimalSearchModel>(tabId, tabRef, "Animal Search");
+        AnimalSearchModel model = new AnimalSearchModel(tabRef.append("model"), animalRepository, getAnimalSelectItems(), tab.getName());
+
         tab.setModel(model);
 
         tabRef.setValue(tab);

@@ -3,6 +3,7 @@ package at.irian.ankorman.sample1.model.animal;
 import at.irian.ankor.annotation.ActionListener;
 import at.irian.ankor.annotation.AnnotationAwareViewModelBase;
 import at.irian.ankor.annotation.ChangeListener;
+import at.irian.ankor.model.ViewModelProperty;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorman.sample1.server.AnimalRepository;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -15,7 +16,10 @@ public class AnimalSearchModel extends AnnotationAwareViewModelBase {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalSearchModel.class);
 
     @JsonIgnore
-    private AnimalRepository animalRepository;
+    private final ViewModelProperty<String> tabName;
+
+    @JsonIgnore
+    private final AnimalRepository animalRepository;
 
     private AnimalSearchFilter filter;
     @JsonTypeInfo(use = JsonTypeInfo.Id.NONE, defaultImpl = AnimalSelectItems.class)
@@ -26,18 +30,17 @@ public class AnimalSearchModel extends AnnotationAwareViewModelBase {
     @SuppressWarnings("UnusedDeclaration")
     protected AnimalSearchModel() {
         super(null);
+        this.tabName = null;
+        this.animalRepository = null;
     }
 
-    public AnimalSearchModel(Ref viewModelRef, AnimalRepository animalRepository, AnimalSelectItems selectItems) {
+    public AnimalSearchModel(Ref viewModelRef, AnimalRepository animalRepository, AnimalSelectItems selectItems, ViewModelProperty<String> tabName) {
         super(viewModelRef);
         this.animalRepository = animalRepository;
+        this.tabName = tabName;
         this.filter = new AnimalSearchFilter();
         this.selectItems = selectItems;
         this.animals = new Data<Animal>(new Paginator(0, 5));
-    }
-
-    protected AnimalSearchModel(Ref viewModelRef) {
-        super(viewModelRef);
     }
 
     public AnimalSearchFilter getFilter() {
@@ -71,6 +74,12 @@ public class AnimalSearchModel extends AnnotationAwareViewModelBase {
         thisRef().append("animals").setValue(animals);
         LOG.info("... finished RELOADING");
         thisRef().root().append("serverStatus").setValue("");
+    }
+
+    @ChangeListener(pattern = "**.<AnimalSearchModel>.filter.name")
+    public void onNameChanged() {
+        String name = filter.getName();
+        tabName.set(new TabNameCreator().createName("New Animal", name));
     }
 
     @ChangeListener(pattern = "**.<AnimalSearchModel>.filter.type")
