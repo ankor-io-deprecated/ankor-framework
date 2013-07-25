@@ -1,8 +1,8 @@
 package at.irian.ankorman.sample1.viewmodel;
 
 import at.irian.ankor.annotation.ActionListener;
-import at.irian.ankor.annotation.AnnotationAwareMapViewModelBase;
 import at.irian.ankor.annotation.Param;
+import at.irian.ankor.model.ViewModelMapBase;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorman.sample1.domain.animal.Animal;
 import at.irian.ankorman.sample1.domain.animal.AnimalFamily;
@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * @author Thomas Spiegl
  */
-public class Tabs extends AnnotationAwareMapViewModelBase<String, Tab> {
+public class Tabs extends ViewModelMapBase<String, Tab> {
 
     private AnimalRepository animalRepository;
 

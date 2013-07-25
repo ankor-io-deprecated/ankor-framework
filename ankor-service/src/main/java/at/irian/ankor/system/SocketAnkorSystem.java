@@ -3,15 +3,21 @@ package at.irian.ankor.system;
 import at.irian.ankor.action.ActionEvent;
 import at.irian.ankor.annotation.BeanAnnotationActionEventListener;
 import at.irian.ankor.annotation.BeanAnnotationChangeEventListener;
+import at.irian.ankor.annotation.ViewModelAnnotationScanner;
 import at.irian.ankor.change.ChangeEventListener;
 import at.irian.ankor.event.ArrayListEventListeners;
 import at.irian.ankor.event.EventDelaySupport;
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.messaging.*;
+import at.irian.ankor.model.ViewModelPostProcessor;
+import at.irian.ankor.model.ViewModelPropertyFieldsInitializer;
 import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.ref.el.SingletonModelELRefContextFactory;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Manfred Geiler
@@ -49,12 +55,17 @@ public class SocketAnkorSystem extends AnkorSystem {
 
         EventDelaySupport eventDelaySupport = new EventDelaySupport(systemName);
 
+        List<ViewModelPostProcessor> viewModelPostProcessors = new ArrayList<ViewModelPostProcessor>();
+        viewModelPostProcessors.add(new ViewModelPropertyFieldsInitializer());
+        viewModelPostProcessors.add(new ViewModelAnnotationScanner());
+
         RefContextFactory refContextFactory = SingletonModelELRefContextFactory.getInstance(config,
                                                                                             modelType,
                                                                                             globalEventListeners,
                                                                                             messageLoop.getMessageBus(),
                                                                                             beanResolver,
-                                                                                            eventDelaySupport);
+                                                                                            eventDelaySupport,
+                                                                                            viewModelPostProcessors);
         ActionEvent.Listener annotationActionEventListener = null;
         ChangeEventListener annotationChangeEventListener = null;
         if (enableAnnotationListeners) {

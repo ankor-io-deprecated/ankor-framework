@@ -14,15 +14,17 @@ public abstract class ViewModelBase {
 
     protected ViewModelBase(Ref viewModelRef) {
         this.viewModelRef = viewModelRef;
-        initialize();
+        initialize(viewModelRef);
     }
 
     protected Ref thisRef() {
         return viewModelRef;
     }
 
-    private void initialize() {
-        new ViewModelInitializer(this, thisRef()).initAll();
+    private void initialize(Ref viewModelRef) {
+        for (ViewModelPostProcessor viewModelPostProcessor : viewModelRef.context().viewModelPostProcessors()) {
+            viewModelPostProcessor.postProcess(this, viewModelRef);
+        }
     }
 
 }

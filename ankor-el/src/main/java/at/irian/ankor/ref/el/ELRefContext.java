@@ -7,6 +7,7 @@ import at.irian.ankor.event.EventDelaySupport;
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.messaging.MessageSender;
+import at.irian.ankor.model.ViewModelPostProcessor;
 import at.irian.ankor.path.PathSyntax;
 import at.irian.ankor.path.el.ELPathSyntax;
 import at.irian.ankor.ref.RefContext;
@@ -17,6 +18,7 @@ import com.typesafe.config.Config;
 import javax.el.ELResolver;
 import javax.el.ExpressionFactory;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author Manfred Geiler
@@ -32,13 +34,16 @@ public class ELRefContext implements RefContext, RefContextImplementor {
     private final ModelHolder modelHolder;
     private final MessageSender messageSender;
     private final EventDelaySupport eventDelaySupport;
+    private final List<ViewModelPostProcessor> viewModelPostProcessors;
 
     ELRefContext(ELSupport elSupport,
                  Config config,
                  EventListeners globalEventListeners,
                  ModelHolder modelHolder,
                  MessageSender messageSender,
-                 EventDelaySupport eventDelaySupport) {
+                 EventDelaySupport eventDelaySupport,
+                 List<ViewModelPostProcessor> viewModelPostProcessors) {
+        this.viewModelPostProcessors = viewModelPostProcessors;
         this.expressionFactory = elSupport.getExpressionFactory();
         this.elContext = elSupport.getELContextFor(refFactory());
         this.config = config;
@@ -56,13 +61,15 @@ public class ELRefContext implements RefContext, RefContextImplementor {
                  EventListeners globalEventListeners,
                  ModelHolder modelHolder,
                  MessageSender messageSender,
-                 EventDelaySupport eventDelaySupport) {
+                 EventDelaySupport eventDelaySupport,
+                 List<ViewModelPostProcessor> viewModelPostProcessors) {
         this.expressionFactory = expressionFactory;
         this.elContext = elContext;
         this.config = config;
         this.modelHolder = modelHolder;
         this.messageSender = messageSender;
         this.eventDelaySupport = eventDelaySupport;
+        this.viewModelPostProcessors = viewModelPostProcessors;
         this.modelRootVarName = config.getString("ankor.variable-names.modelRoot");
         this.globalEventListeners = globalEventListeners;
     }
@@ -75,7 +82,7 @@ public class ELRefContext implements RefContext, RefContextImplementor {
     @Override
     public ELRefContext withMessageSender(MessageSender newMessageSender) {
         return new ELRefContext(expressionFactory, elContext, config, globalEventListeners,
-                                modelHolder, newMessageSender, eventDelaySupport);
+                                modelHolder, newMessageSender, eventDelaySupport, viewModelPostProcessors);
     }
 
     @Override
@@ -169,7 +176,11 @@ public class ELRefContext implements RefContext, RefContextImplementor {
         return new ELRefContext(expressionFactory,
                                 elContext.withAdditional(elResolver),
                                 config, globalEventListeners, modelHolder, messageSender,
-                                eventDelaySupport);
+                                eventDelaySupport, viewModelPostProcessors);
     }
 
+    @Override
+    public List<ViewModelPostProcessor> viewModelPostProcessors() {
+        return viewModelPostProcessors;
+    }
 }
