@@ -184,7 +184,7 @@ public class ServiceBean {
         tabRef.setValue(tab);
     }
 
-    @ChangeListener(pattern = "**.<AnimalDetailModel>.animal.(name)")
+    //@ChangeListener(pattern = "**.<AnimalDetailModel>.animal.(name)")
     public void animalNameChanged(Ref nameRef) {
         LOG.info("animalNameChanged");
 

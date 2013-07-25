@@ -1,6 +1,7 @@
 package at.irian.ankorman.sample1.model.animal;
 
-import at.irian.ankor.model.ViewModelBase;
+import at.irian.ankor.annotation.AnnotationAwareViewModelBase;
+import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.model.ViewModelProperty;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.util.ObjectUtils;
@@ -11,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 /**
  * @author Thomas Spiegl
  */
-public class AnimalDetailModel extends ViewModelBase {
+public class AnimalDetailModel extends AnnotationAwareViewModelBase {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalDetailModel.class);
 
     @JsonIgnore
@@ -95,7 +96,7 @@ public class AnimalDetailModel extends ViewModelBase {
         this.editable = editable;
     }
 
-    //@Change(subPathPattern = "animal.name")
+    @ChangeListener(pattern = "**.<AnimalDetailModel>.animal.name")
     public void onNameChanged() {
         String name = animal.getName();
 

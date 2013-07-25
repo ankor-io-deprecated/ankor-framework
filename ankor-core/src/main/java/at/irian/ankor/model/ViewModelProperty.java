@@ -58,6 +58,9 @@ public class ViewModelProperty<T> implements Wrapper<T> {
         return getWrappedValue();
     }
 
+    public Ref getRef() {
+        return ref;
+    }
 
     @Override
     public final T getWrappedValue() {
