@@ -90,4 +90,6 @@ public interface Ref {
     void addTreeChangeListener(ChangeListener listener);
 
     void addTreeChangeListener(ChangeListener listener, long delayMilliseconds);
+
+    void addChangeListener(ChangeListener listener);
 }

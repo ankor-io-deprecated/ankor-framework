@@ -27,7 +27,7 @@ public abstract class AnnotationAwareViewModelBase extends ViewModelBase {
         for (Method method : this.getClass().getDeclaredMethods()) {
             ChangeListener changeListenerAnnotation = method.getAnnotation(ChangeListener.class);
             if (changeListenerAnnotation != null) {
-                thisRef().addTreeChangeListener(new MyChangeListener(changeListenerAnnotation.pattern(), method));
+                thisRef().addChangeListener(new MyChangeListener(changeListenerAnnotation.pattern(), method));
             }
         }
     }
@@ -44,7 +44,7 @@ public abstract class AnnotationAwareViewModelBase extends ViewModelBase {
         }
 
         @Override
-        public void processChange(Ref watchedProperty, Ref changedProperty) {
+        public void processChange(Ref unusedWatchedProperty, Ref changedProperty) {
             PathSyntax pathSyntax = thisRef().context().pathSyntax();
             for (String pattern : patterns) {
                 RefMatcher matcher = new RefMatcher(pathSyntax, pattern);

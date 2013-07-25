@@ -155,6 +155,21 @@ public abstract class AbstractRef implements Ref {
         });
     }
 
+    @Override
+    public void addChangeListener(final ChangeListener listener) {
+        context().modelEventListeners().add(new ChangeEventListener(null) {
+            @Override
+            public void process(ChangeEvent event) {
+                listener.processChange(null, event.getChangedProperty());
+            }
+
+            @Override
+            public Ref getOwner() {
+                return AbstractRef.this;
+            }
+        });
+    }
+
 
 
     private void processPropChangeEvent(Ref changedProperty, Ref watchedProperty, ChangeListener listener) {

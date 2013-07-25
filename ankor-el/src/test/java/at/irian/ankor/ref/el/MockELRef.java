@@ -161,4 +161,9 @@ public class MockELRef implements Ref {
     public void addTreeChangeListener(ChangeListener listener, long delayMilliseconds) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public void addChangeListener(ChangeListener listener) {
+        throw new UnsupportedOperationException();
+    }
 }

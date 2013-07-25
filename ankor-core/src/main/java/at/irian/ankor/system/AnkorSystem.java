@@ -79,6 +79,7 @@ public class AnkorSystem {
             throw new IllegalStateException("already started?");
         }
 
+        // global action event listener for sending action events to remote partner
         actionEventListener = new ActionEvent.Listener(null) {
             @Override
             public void process(ActionEvent event) {
@@ -89,6 +90,7 @@ public class AnkorSystem {
             }
         };
 
+        // global change event listener for sending change events to remote partner
         changeEventListener = new ChangeEventListener(null) {
             @Override
             public void process(ChangeEvent event) {
@@ -98,6 +100,8 @@ public class AnkorSystem {
                 String changedPropertyPath = changedProperty.path();
                 Message message = messageFactory.createChangeMessage(changedPropertyPath, newValue);
                 refContext.messageSender().sendMessage(message);
+
+                // in addition to sending change events to remote, cleanup orphaned listeners
                 if (newValue == null) {
                     refContext.eventListeners().cleanup();
                 }

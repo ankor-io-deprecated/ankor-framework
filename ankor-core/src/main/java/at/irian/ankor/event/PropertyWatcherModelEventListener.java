@@ -5,7 +5,7 @@ import at.irian.ankor.ref.Ref;
 /**
  * @author Manfred Geiler
  */
-public abstract class PropertyWatcherModelEventListener implements ModelEventListener, PropertyWatcher {
+public abstract class PropertyWatcherModelEventListener implements ModelEventListener, PropertyWatcher, RefOwned {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(PropertyWatcherModelEventListener.class);
 
     private final Ref watchedProperty;
@@ -14,13 +14,20 @@ public abstract class PropertyWatcherModelEventListener implements ModelEventLis
         this.watchedProperty = watchedProperty;
     }
 
+    @Override
     public Ref getWatchedProperty() {
         return watchedProperty;
     }
 
     @Override
+    public Ref getOwner() {
+        return watchedProperty;
+    }
+
+    @Override
     public boolean isDiscardable() {
-        return watchedProperty != null && !watchedProperty.isValid();
+        Ref owner = getOwner();
+        return owner != null && !owner.isValid();
     }
 
 }
