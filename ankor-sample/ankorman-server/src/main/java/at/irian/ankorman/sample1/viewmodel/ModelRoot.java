@@ -1,5 +1,6 @@
 package at.irian.ankorman.sample1.viewmodel;
 
+import at.irian.ankor.annotation.ActionListener;
 import at.irian.ankor.model.ViewModelBase;
 import at.irian.ankor.model.ViewModelProperty;
 import at.irian.ankor.ref.Ref;
@@ -19,6 +20,11 @@ public class ModelRoot extends ViewModelBase {
         super(viewModelRef);
         this.tabs = new Tabs(viewModelRef.append("tabs"), animalRepository);
         this.serverStatus.set("");
+    }
+
+    @ActionListener
+    public void init() {
+        //todo ...   how to propagate the root change to the server?!
     }
 
     public String getUserName() {
