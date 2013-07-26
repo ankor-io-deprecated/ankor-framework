@@ -5,5 +5,16 @@
 {% block content %}
 
 Examples
+<pre class="prettyprint">
+class AnimalViewModel extends ViewModelBase {
+    private final AnimalRepository;
+    Animal animal;
+
+    @Action
+    public void save()
+        animalRepository.save(animal);
+    }
+}
+</pre>
 
 {% endblock %}
