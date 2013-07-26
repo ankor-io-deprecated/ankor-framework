@@ -17,8 +17,9 @@ public class ActionMessage extends Message {
     @SuppressWarnings("UnusedDeclaration")
     protected ActionMessage() {}
 
-    protected ActionMessage(String messageId, String actionPropertyPath, Action action) {
-        super(messageId);
+    protected ActionMessage(String sessionId, String messageId,
+                            String actionPropertyPath, Action action) {
+        super(sessionId, messageId);
         this.actionPropertyPath = actionPropertyPath;
         this.action = action;
     }

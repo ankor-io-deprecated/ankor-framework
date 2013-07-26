@@ -14,12 +14,12 @@ public class MessageFactory {
         this.messageUUIDGenerator = new MessageUUIDGenerator();
     }
 
-    public Message createActionMessage(String actionPropertyPath, Action action) {
-        return new ActionMessage(messageUUIDGenerator.createId(), actionPropertyPath, action);
+    public Message createActionMessage(String sessionId, String actionPropertyPath, Action action) {
+        return new ActionMessage(sessionId, messageUUIDGenerator.createId(), actionPropertyPath, action);
     }
 
-    public Message createChangeMessage(String changedPropertyPath, Object newValue) {
-        return new ChangeMessage(messageUUIDGenerator.createId(), changedPropertyPath, newValue);
+    public Message createChangeMessage(String sessionId, String changedPropertyPath, Object newValue) {
+        return new ChangeMessage(sessionId, messageUUIDGenerator.createId(), changedPropertyPath, newValue);
     }
 
 }

@@ -10,6 +10,7 @@ import java.util.Map;
 /**
  * @author Thomas Spiegl
  */
+@Deprecated
 public class SimpleLocalAppServiceBuilder {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SimpleAppServiceFactory.class);
 
@@ -54,7 +55,7 @@ public class SimpleLocalAppServiceBuilder {
         serverSystem.start();
         clientSystem.start();
 
-        return new AppService(clientSystem);
+        return null;  //todo new AppService(clientSystem);
     }
 
 }

@@ -1,5 +1,6 @@
 package at.irian.ankor.ref;
 
+import at.irian.ankor.context.ModelContext;
 import at.irian.ankor.path.PathSyntax;
 
 /**
@@ -9,6 +10,6 @@ public interface RefContextFactory {
 
     PathSyntax getPathSyntax();
 
-    RefContext createRefContext();
+    RefContext createRefContextFor(ModelContext modelContext);
 
 }

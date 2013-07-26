@@ -43,4 +43,12 @@ public class ActionEvent extends ModelEvent {
 
         public abstract void process(ActionEvent event);
     }
+
+    @Override
+    public String toString() {
+        return "ActionEvent{" +
+               "actionProperty=" + getActionProperty() +
+               "action=" + action +
+               '}';
+    }
 }

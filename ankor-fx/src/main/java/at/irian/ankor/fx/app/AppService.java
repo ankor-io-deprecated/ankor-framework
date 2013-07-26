@@ -1,7 +1,6 @@
 package at.irian.ankor.fx.app;
 
 import at.irian.ankor.ref.RefFactory;
-import at.irian.ankor.system.AnkorSystem;
 
 /**
  * @author Thomas Spiegl
@@ -12,8 +11,8 @@ public class AppService {
 
     private RefFactory refFactory;
 
-    public AppService(AnkorSystem system) {
-        refFactory = system.getRefContextFactory().createRefContext().refFactory();
+    public AppService(RefFactory refFactory) {
+        this.refFactory = refFactory;
     }
 
     public RefFactory getRefFactory() {

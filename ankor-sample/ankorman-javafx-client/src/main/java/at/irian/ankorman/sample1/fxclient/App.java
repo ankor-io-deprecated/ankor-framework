@@ -3,7 +3,9 @@ package at.irian.ankorman.sample1.fxclient;
 import at.irian.ankor.fx.app.AppService;
 import at.irian.ankor.fx.app.SimpleLocalAppServiceBuilder;
 import at.irian.ankor.fx.app.SocketAppServiceBuilder;
+import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefFactory;
+import at.irian.ankor.session.ModelRootFactory;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
@@ -47,8 +49,21 @@ public class App extends javafx.application.Application {
     }
 
     private void createSocketAppService(Object serviceBean) throws ClassNotFoundException {
+
         SocketAppServiceBuilder appServiceBuilder = new SocketAppServiceBuilder()
-                .withModelType(Class.forName("at.irian.ankorman.sample1.viewmodel.ModelRoot"))
+                .withModelRootFactory(new ModelRootFactory() {
+                    @Override
+                    public Object createModelRoot(Ref rootRef) {
+                        try {
+                            Class<?> modelRootType = Class.forName("at.irian.ankorman.sample1.viewmodel.ModelRoot");
+                            Class<?> repoType = Class.forName("at.irian.ankorman.sample1.server.AnimalRepository");
+                            Object repo = repoType.newInstance();
+                            return modelRootType.getConstructor(Ref.class, repoType).newInstance(rootRef, repo);
+                        } catch (Exception e) {
+                            throw new RuntimeException("Unable to create model root", e);
+                        }
+                    }
+                })
                 .withBean("service", serviceBean);
         appService = appServiceBuilder.create();
     }

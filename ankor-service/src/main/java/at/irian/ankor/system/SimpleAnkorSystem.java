@@ -1,7 +1,5 @@
 package at.irian.ankor.system;
 
-import at.irian.ankor.annotation.BeanAnnotationActionEventListener;
-import at.irian.ankor.annotation.BeanAnnotationChangeEventListener;
 import at.irian.ankor.annotation.ViewModelAnnotationScanner;
 import at.irian.ankor.event.ArrayListEventListeners;
 import at.irian.ankor.event.EventDelaySupport;
@@ -15,7 +13,7 @@ import at.irian.ankor.model.ViewModelPostProcessor;
 import at.irian.ankor.model.ViewModelPropertyFieldsInitializer;
 import at.irian.ankor.path.PathSyntax;
 import at.irian.ankor.ref.RefContextFactory;
-import at.irian.ankor.ref.el.SingletonModelELRefContextFactory;
+import at.irian.ankor.ref.el.ELRefContextFactory;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
@@ -27,6 +25,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * @author Manfred Geiler
  */
+@Deprecated
 public class SimpleAnkorSystem extends AnkorSystem {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SimpleAnkorSystem.class);
 
@@ -39,7 +38,8 @@ public class SimpleAnkorSystem extends AnkorSystem {
                                 EventListeners globalEventListeners,
                                 String name,
                                 BeanResolver beanResolver) {
-        super(name, messageFactory, messageLoop.getMessageBus(), globalEventListeners, refContextFactory);
+        super(name, messageFactory, messageLoop.getMessageBus(), refContextFactory,
+              null); //todo
         this.messageLoop = messageLoop;
         this.beanResolver = beanResolver;
     }
@@ -63,13 +63,10 @@ public class SimpleAnkorSystem extends AnkorSystem {
         viewModelPostProcessors.add(new ViewModelPropertyFieldsInitializer());
         viewModelPostProcessors.add(new ViewModelAnnotationScanner());
 
-        RefContextFactory refContextFactory = SingletonModelELRefContextFactory.getInstance(config,
-                                                                                            modelType,
-                                                                                            globalEventListeners,
-                                                                                            messageLoop.getMessageBus(),
-                                                                                            beanResolver,
-                                                                                            eventDelaySupport,
-                                                                                            viewModelPostProcessors);
+        ELRefContextFactory refContextFactory = new ELRefContextFactory(config,
+                                                                        beanResolver,
+                                                                        eventDelaySupport,
+                                                                        viewModelPostProcessors);
 
         return new SimpleAnkorSystem(messageFactory,
                                      messageLoop,
@@ -132,8 +129,8 @@ public class SimpleAnkorSystem extends AnkorSystem {
 
         if (beanResolver != null) {
             PathSyntax pathSyntax = getRefContextFactory().getPathSyntax();
-            getGlobalEventListeners().add(new BeanAnnotationActionEventListener(beanResolver));
-            getGlobalEventListeners().add(new BeanAnnotationChangeEventListener(beanResolver, pathSyntax));
+// todo            getGlobalEventListeners().add(new BeanAnnotationActionEventListener(beanResolver));
+//            getGlobalEventListeners().add(new BeanAnnotationChangeEventListener(beanResolver, pathSyntax));
             // todo  cleanup in stop()
         }
 

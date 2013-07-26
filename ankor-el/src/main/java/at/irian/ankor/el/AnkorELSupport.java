@@ -1,6 +1,6 @@
 package at.irian.ankor.el;
 
-import at.irian.ankor.context.ModelHolder;
+import at.irian.ankor.context.ModelContext;
 import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.system.BeanResolver;
 import com.typesafe.config.Config;
@@ -15,14 +15,14 @@ public class AnkorELSupport implements ELSupport {
 
     private final ExpressionFactory expressionFactory;
     private final Config config;
-    private final ModelHolder modelHolder;
+    private final ModelContext modelContext;
     private final BeanResolver beanResolver;
 
-    public AnkorELSupport(Config config, ModelHolder modelHolder, BeanResolver beanResolver) {
+    public AnkorELSupport(Config config, ModelContext modelContext, BeanResolver beanResolver) {
         this.beanResolver = beanResolver;
         this.expressionFactory = ExpressionFactory.newInstance();
         this.config = config;
-        this.modelHolder = modelHolder;
+        this.modelContext = modelContext;
     }
 
     public ExpressionFactory getExpressionFactory() {
@@ -35,8 +35,8 @@ public class AnkorELSupport implements ELSupport {
         if (beanResolver != null) {
             elContext = elContext.withAdditional(new BeanResolverELResolver(beanResolver));
         }
-        if (modelHolder != null) {
-            elContext = elContext.withAdditional(new ModelRootELResolver(config, modelHolder, refFactory));
+        if (modelContext != null) {
+            elContext = elContext.withAdditional(new ModelRootELResolver(config, modelContext, refFactory));
         }
         return elContext;
     }

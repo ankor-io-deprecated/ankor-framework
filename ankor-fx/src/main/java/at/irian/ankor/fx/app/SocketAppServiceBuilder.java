@@ -1,10 +1,15 @@
 package at.irian.ankor.fx.app;
 
+import at.irian.ankor.messaging.MessageMapper;
+import at.irian.ankor.messaging.SocketMessageLoop;
 import at.irian.ankor.messaging.json.JsonViewDataMessageMapper;
 import at.irian.ankor.messaging.json.JsonViewModelMessageMapper;
+import at.irian.ankor.ref.RefContext;
+import at.irian.ankor.ref.RefFactory;
+import at.irian.ankor.session.ModelRootFactory;
 import at.irian.ankor.system.AnkorSystem;
+import at.irian.ankor.system.AnkorSystemBuilder;
 import at.irian.ankor.system.BeanResolver;
-import at.irian.ankor.system.SocketAnkorSystem;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,8 +25,8 @@ public class SocketAppServiceBuilder {
     private static final int clientPort = 9090;
 
     private final BeanResolver beanResolver;
-    private Class<?> modelType = Object.class;
     private Map<String, Object> beans = new HashMap<String, Object>();
+    private ModelRootFactory modelRootFactory;
 
     public SocketAppServiceBuilder() {
         beanResolver = new BeanResolver() {
@@ -37,8 +42,8 @@ public class SocketAppServiceBuilder {
         };
     }
 
-    public SocketAppServiceBuilder withModelType(Class<?> modelType) {
-        this.modelType = modelType;
+    public SocketAppServiceBuilder withModelRootFactory(ModelRootFactory modelRootFactory) {
+        this.modelRootFactory = modelRootFactory;
         return this;
     }
 
@@ -53,23 +58,54 @@ public class SocketAppServiceBuilder {
         Thread serverThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                AnkorSystem serverSystem = SocketAnkorSystem
-                        .create("server", modelType, beanResolver, HOST, clientPort, serverPort,
-                                new JsonViewModelMessageMapper());
+
+                String serverName = "server";
+
+                MessageMapper<String> serverMessageMapper = new JsonViewModelMessageMapper();
+
+                SocketMessageLoop<String> serverMessageLoop = new SocketMessageLoop<String>(serverName,
+                                                                                            serverMessageMapper,
+                                                                                      HOST,
+                                                                                      clientPort,
+                                                                                      serverPort);
+                AnkorSystem serverSystem = new AnkorSystemBuilder()
+                        .withName(serverName)
+                        .withBeanResolver(beanResolver)
+                        .withModelRootFactory(modelRootFactory)
+                        .withMessageBus(serverMessageLoop.getMessageBus())
+                        .createServer();
+
                 serverSystem.start();
+                serverMessageLoop.start();
+
             }
         });
         serverThread.setDaemon(true);
 
-        SocketAnkorSystem clientSystem = SocketAnkorSystem
-                .create("client", Map.class, null, HOST, serverPort, clientPort,
-                        new JsonViewDataMessageMapper());
+
+        String clientName = "client";
+
+        MessageMapper<String> clientMessageMapper = new JsonViewDataMessageMapper();
+
+        SocketMessageLoop<String> clientMessageLoop = new SocketMessageLoop<String>(clientName,
+                                                                                    clientMessageMapper,
+                                                                              HOST,
+                                                                              serverPort,
+                                                                              clientPort);
+        AnkorSystem clientSystem = new AnkorSystemBuilder()
+                .withName(clientName)
+                .withMessageBus(clientMessageLoop.getMessageBus())
+                .createClient();
 
         // start
         serverThread.start();
         clientSystem.start();
 
-        return new AppService(clientSystem);
+        clientMessageLoop.start();
+
+        RefContext clientRefContext = clientSystem.getSessionManager().getOrCreateSession(null).getRefContext();
+        RefFactory clientRefFactory = clientRefContext.refFactory();
+        return new AppService(clientRefFactory);
     }
 
 }

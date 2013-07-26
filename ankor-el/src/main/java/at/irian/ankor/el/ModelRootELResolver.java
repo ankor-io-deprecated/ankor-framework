@@ -1,8 +1,9 @@
 package at.irian.ankor.el;
 
-import at.irian.ankor.context.ModelHolder;
+import at.irian.ankor.context.ModelContext;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefFactory;
+import at.irian.ankor.session.DefaultServerSession;
 import com.typesafe.config.Config;
 
 import javax.el.ELContext;
@@ -19,15 +20,15 @@ public class ModelRootELResolver extends ELResolver {
 
     private final String modelRootVarName;
     private final String modelRootRefVarName;
-    private final String modelHolderVarName;
-    private final ModelHolder modelHolder;
+    private final String modelContextVarName;
+    private final ModelContext modelContext;
     private final RefFactory refFactory;
 
-    public ModelRootELResolver(Config config, ModelHolder modelHolder, RefFactory refFactory) {
+    public ModelRootELResolver(Config config, ModelContext modelContext, RefFactory refFactory) {
         this.modelRootVarName    = config.getString("ankor.variable-names.modelRoot");
         this.modelRootRefVarName = config.getString("ankor.variable-names.modelRootRef");
-        this.modelHolderVarName  = config.getString("ankor.variable-names.modelHolder");
-        this.modelHolder = modelHolder;
+        this.modelContextVarName = config.getString("ankor.variable-names.modelContext");
+        this.modelContext = modelContext;
         this.refFactory = refFactory;
     }
 
@@ -35,13 +36,13 @@ public class ModelRootELResolver extends ELResolver {
     public Object getValue(ELContext context, Object base, Object property) {
         if (base == null && modelRootVarName.equals(property)) {
             context.setPropertyResolved(true);
-            return modelHolder.getModel();
+            return modelContext.getModelRoot();
         } else if (base == null && modelRootRefVarName.equals(property)) {
             context.setPropertyResolved(true);
             return refFactory.ref(modelRootVarName);
-        } else if (base == null && modelHolderVarName.equals(property)) {
+        } else if (base == null && modelContextVarName.equals(property)) {
             context.setPropertyResolved(true);
-            return modelHolder;
+            return modelContext;
         }
         return null;
     }
@@ -50,13 +51,14 @@ public class ModelRootELResolver extends ELResolver {
     public Class<?> getType(ELContext context, Object base, Object property) {
         if (base == null && modelRootVarName.equals(property)) {
             context.setPropertyResolved(true);
-            return modelHolder.getModelType();
+            Object modelRoot = modelContext.getModelRoot();
+            return modelRoot != null ? modelRoot.getClass() : Object.class;
         } else if (base == null && modelRootRefVarName.equals(property)) {
             context.setPropertyResolved(true);
             return Ref.class;
-        } else if (base == null && modelHolderVarName.equals(property)) {
+        } else if (base == null && modelContextVarName.equals(property)) {
             context.setPropertyResolved(true);
-            return ModelHolder.class;
+            return DefaultServerSession.class;
         }
         return null;
     }
@@ -64,11 +66,12 @@ public class ModelRootELResolver extends ELResolver {
     @Override
     public void setValue(ELContext context, Object base, Object property, Object value) {
         if (base == null && modelRootVarName.equals(property)) {
-            context.setPropertyResolved(true);
-            modelHolder.setModel(value);
+//            context.setPropertyResolved(true);
+//            session.setModelRoot(value);
+            throw new PropertyNotWritableException(property.toString());
         } else if (base == null && modelRootRefVarName.equals(property)) {
             throw new PropertyNotWritableException(property.toString());
-        } else if (base == null && modelHolderVarName.equals(property)) {
+        } else if (base == null && modelContextVarName.equals(property)) {
             throw new PropertyNotWritableException(property.toString());
         }
     }
@@ -79,7 +82,7 @@ public class ModelRootELResolver extends ELResolver {
             return false;
         } else if (base == null && modelRootRefVarName.equals(property)) {
             return true;
-        } else if (base == null && modelHolderVarName.equals(property)) {
+        } else if (base == null && modelContextVarName.equals(property)) {
             return true;
         }
         return false;
@@ -101,8 +104,8 @@ public class ModelRootELResolver extends ELResolver {
             fd2.setShortDescription("ref to the root of the current model");
 
             FeatureDescriptor fd3 = new FeatureDescriptor();
-            fd3.setName(modelHolderVarName);
-            fd3.setDisplayName(modelHolderVarName);
+            fd3.setName(modelContextVarName);
+            fd3.setDisplayName(modelContextVarName);
             fd3.setExpert(true);
             fd3.setShortDescription("ref to the current model holder");
 
@@ -113,6 +116,6 @@ public class ModelRootELResolver extends ELResolver {
 
     @Override
     public Class<?> getCommonPropertyType(ELContext context, Object base) {
-        return modelHolder.getModelType();
+        return Object.class;
     }
 }

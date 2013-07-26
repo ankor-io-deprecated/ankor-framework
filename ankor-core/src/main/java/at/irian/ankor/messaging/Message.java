@@ -1,13 +1,12 @@
 package at.irian.ankor.messaging;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-
 /**
  * @author Manfred Geiler
  */
 public abstract class Message {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(Message.class);
-    
+
+    private String sessionId;
     private String messageId;
 
     /**
@@ -15,8 +14,13 @@ public abstract class Message {
      */
     protected Message() {}
 
-    protected Message(String messageId) {
+    protected Message(String sessionId, String messageId) {
+        this.sessionId = sessionId;
         this.messageId = messageId;
+    }
+
+    public String getSessionId() {
+        return sessionId;
     }
 
     public String getMessageId() {

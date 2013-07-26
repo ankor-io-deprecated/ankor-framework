@@ -14,8 +14,9 @@ public class ChangeMessage extends Message {
     @SuppressWarnings("UnusedDeclaration")
     protected ChangeMessage() {}
 
-    protected ChangeMessage(String messageId, String changedPropertyPath, Object newValue) {
-        super(messageId);
+    protected ChangeMessage(String sessionId, String messageId,
+                            String changedPropertyPath, Object newValue) {
+        super(sessionId, messageId);
         this.change = new Change(changedPropertyPath, newValue);
     }
 
