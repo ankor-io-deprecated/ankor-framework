@@ -20,8 +20,6 @@ public class AnkorSystem {
     private final MessageBus messageBus;
     private final EventListeners globalEventListeners;
     private final RefContextFactory refContextFactory;
-    private final ActionEvent.Listener annotationActionEventListener;
-    private final ChangeEventListener annotationChangeEventListener;
     private ChangeEventListener changeEventListener;
     private ActionEvent.Listener actionEventListener;
     private MessageListener messageListener;
@@ -30,16 +28,12 @@ public class AnkorSystem {
                           MessageFactory messageFactory,
                           MessageBus messageBus,
                           EventListeners globalEventListeners,
-                          RefContextFactory refContextFactory,
-                          ActionEvent.Listener annotationActionEventListener,
-                          ChangeEventListener annotationChangeEventListener) {
+                          RefContextFactory refContextFactory) {
         this.systemName = systemName;
         this.messageFactory = messageFactory;
         this.messageBus = messageBus;
         this.globalEventListeners = globalEventListeners;
         this.refContextFactory = refContextFactory;
-        this.annotationActionEventListener = annotationActionEventListener;
-        this.annotationChangeEventListener = annotationChangeEventListener;
     }
 
     public String getSystemName() {
@@ -108,6 +102,9 @@ public class AnkorSystem {
             }
         };
 
+        globalEventListeners.add(actionEventListener);
+        globalEventListeners.add(changeEventListener);
+
         messageListener = new MessageListener() {
             @Override
             public void onActionMessage(ActionMessage message) {
@@ -128,17 +125,7 @@ public class AnkorSystem {
             }
         };
 
-        globalEventListeners.add(actionEventListener);
-        globalEventListeners.add(changeEventListener);
         messageBus.registerMessageListener(messageListener);
-
-        if (annotationActionEventListener != null) {
-            globalEventListeners.add(annotationActionEventListener);
-        }
-
-        if (annotationChangeEventListener != null) {
-            globalEventListeners.add(annotationChangeEventListener);
-        }
     }
 
     public RefContext createInitialRefContext() {
@@ -173,14 +160,6 @@ public class AnkorSystem {
         if (actionEventListener != null) {
             globalEventListeners.remove(actionEventListener);
             actionEventListener = null;
-        }
-
-        if (annotationActionEventListener != null) {
-            globalEventListeners.remove(annotationActionEventListener);
-        }
-
-        if (annotationChangeEventListener != null) {
-            globalEventListeners.remove(annotationChangeEventListener);
         }
     }
 

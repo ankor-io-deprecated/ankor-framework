@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Manfred Geiler
  */
+@Deprecated
 public class UnsynchronizedEventDelay implements EventDelay {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(UnsynchronizedEventDelay.class);
 

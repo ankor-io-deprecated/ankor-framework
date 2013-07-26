@@ -54,7 +54,7 @@ public class SocketAppServiceBuilder {
             @Override
             public void run() {
                 AnkorSystem serverSystem = SocketAnkorSystem
-                        .create("server", modelType, beanResolver, HOST, clientPort, serverPort, true,
+                        .create("server", modelType, beanResolver, HOST, clientPort, serverPort,
                                 new JsonViewModelMessageMapper());
                 serverSystem.start();
             }
@@ -62,7 +62,7 @@ public class SocketAppServiceBuilder {
         serverThread.setDaemon(true);
 
         SocketAnkorSystem clientSystem = SocketAnkorSystem
-                .create("client", Map.class, null, HOST, serverPort, clientPort, false,
+                .create("client", Map.class, null, HOST, serverPort, clientPort,
                         new JsonViewDataMessageMapper());
 
         // start

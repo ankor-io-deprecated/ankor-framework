@@ -1,8 +1,8 @@
 package at.irian.ankorman.sample1.viewmodel.animal;
 
 import at.irian.ankor.annotation.ActionListener;
-import at.irian.ankor.annotation.AnnotationAwareViewModelBase;
 import at.irian.ankor.annotation.ChangeListener;
+import at.irian.ankor.model.ViewModelBase;
 import at.irian.ankor.model.ViewModelProperty;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorman.sample1.domain.animal.Animal;
@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author Thomas Spiegl
  */
 @SuppressWarnings("UnusedDeclaration")
-public class AnimalDetailModel extends AnnotationAwareViewModelBase {
+public class AnimalDetailModel extends ViewModelBase {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalDetailModel.class);
 
     @JsonIgnore

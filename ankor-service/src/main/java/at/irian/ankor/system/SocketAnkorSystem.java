@@ -1,16 +1,15 @@
 package at.irian.ankor.system;
 
-import at.irian.ankor.action.ActionEvent;
 import at.irian.ankor.annotation.BeanAnnotationActionEventListener;
 import at.irian.ankor.annotation.BeanAnnotationChangeEventListener;
 import at.irian.ankor.annotation.ViewModelAnnotationScanner;
-import at.irian.ankor.change.ChangeEventListener;
 import at.irian.ankor.event.ArrayListEventListeners;
 import at.irian.ankor.event.EventDelaySupport;
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.messaging.*;
 import at.irian.ankor.model.ViewModelPostProcessor;
 import at.irian.ankor.model.ViewModelPropertyFieldsInitializer;
+import at.irian.ankor.path.PathSyntax;
 import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.ref.el.SingletonModelELRefContextFactory;
 import com.typesafe.config.Config;
@@ -26,24 +25,22 @@ public class SocketAnkorSystem extends AnkorSystem {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SocketAnkorSystem.class);
 
     private final MessageLoop<String> messageLoop;
+    private final BeanResolver beanResolver;
 
     protected SocketAnkorSystem(MessageFactory messageFactory,
                                 MessageLoop<String> messageLoop,
                                 RefContextFactory refContextFactory,
                                 EventListeners globalEventListeners,
-                                String name,
-                                ActionEvent.Listener remoteMethodActionEventListener,
-                                ChangeEventListener annotationChangeEventListener) {
-        super(name, messageFactory, messageLoop.getMessageBus(), globalEventListeners,
-              refContextFactory,
-              remoteMethodActionEventListener, annotationChangeEventListener);
+                                String name, BeanResolver beanResolver) {
+        super(name, messageFactory, messageLoop.getMessageBus(), globalEventListeners, refContextFactory);
         this.messageLoop = messageLoop;
+        this.beanResolver = beanResolver;
     }
 
 
     public static SocketAnkorSystem create(String systemName, Class<?> modelType, BeanResolver beanResolver,
                                            String remoteHost, int remotePort, int localPort,
-                                           boolean enableAnnotationListeners, MessageMapper<String> messageMapper) {
+                                           MessageMapper<String> messageMapper) {
         MessageFactory messageFactory = new MessageFactory();
 
         MessageLoop<String> messageLoop = new SocketMessageLoop<String>(systemName, messageMapper,
@@ -66,15 +63,8 @@ public class SocketAnkorSystem extends AnkorSystem {
                                                                                             beanResolver,
                                                                                             eventDelaySupport,
                                                                                             viewModelPostProcessors);
-        ActionEvent.Listener annotationActionEventListener = null;
-        ChangeEventListener annotationChangeEventListener = null;
-        if (enableAnnotationListeners) {
-            annotationActionEventListener = new BeanAnnotationActionEventListener(beanResolver);
-            annotationChangeEventListener = new BeanAnnotationChangeEventListener(beanResolver, refContextFactory.createRefContext().pathSyntax());
-        }
 
-        return new SocketAnkorSystem(messageFactory, messageLoop, refContextFactory, globalEventListeners,
-                                     systemName, annotationActionEventListener, annotationChangeEventListener);
+        return new SocketAnkorSystem(messageFactory, messageLoop, refContextFactory, globalEventListeners, systemName, beanResolver);
     }
 
     @Override
@@ -82,7 +72,16 @@ public class SocketAnkorSystem extends AnkorSystem {
         if (!messageLoop.isConnected()) {
             throw new IllegalStateException("message loop is not connected");
         }
+
         super.start();
+
+        if (beanResolver != null) {
+            PathSyntax pathSyntax = getRefContextFactory().getPathSyntax();
+            getGlobalEventListeners().add(new BeanAnnotationActionEventListener(beanResolver));
+            getGlobalEventListeners().add(new BeanAnnotationChangeEventListener(beanResolver, pathSyntax));
+            // todo  cleanup in stop()
+        }
+
         messageLoop.start();
     }
 

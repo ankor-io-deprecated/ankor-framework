@@ -43,7 +43,7 @@ public class SimpleLocalAppServiceBuilder {
 
     public AppService create() {
         // createRefContext
-        SimpleAnkorSystem serverSystem = SimpleAnkorSystem.create("server", modelType, beanResolver, true,
+        SimpleAnkorSystem serverSystem = SimpleAnkorSystem.create("server", modelType, beanResolver,
                                                                   new JsonViewModelMessageMapper());
         SimpleAnkorSystem clientSystem = SimpleAnkorSystem.create("client", modelType, false);
 

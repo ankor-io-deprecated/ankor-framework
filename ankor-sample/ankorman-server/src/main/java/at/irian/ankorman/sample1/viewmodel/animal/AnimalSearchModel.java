@@ -1,8 +1,8 @@
 package at.irian.ankorman.sample1.viewmodel.animal;
 
 import at.irian.ankor.annotation.ActionListener;
-import at.irian.ankor.annotation.AnnotationAwareViewModelBase;
 import at.irian.ankor.annotation.ChangeListener;
+import at.irian.ankor.model.ViewModelBase;
 import at.irian.ankor.model.ViewModelProperty;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorman.sample1.domain.animal.Animal;
@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 /**
 * @author Thomas Spiegl
 */
-public class AnimalSearchModel extends AnnotationAwareViewModelBase {
+public class AnimalSearchModel extends ViewModelBase {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalSearchModel.class);
 
     @JsonIgnore
@@ -59,7 +59,8 @@ public class AnimalSearchModel extends AnnotationAwareViewModelBase {
         this.animals = animals;
     }
 
-    @ChangeListener(pattern = {"**.<AnimalSearchModel>.filter.**", "**.<AnimalSearchModel>.animals.paginator.**"})
+    @ChangeListener(pattern = {"**.<AnimalSearchModel>.filter.**",
+                               "**.<AnimalSearchModel>.animals.paginator.**"})
     public void reloadAnimals() {
         // TODO how to load data async and update the animals ref?
         LOG.info("RELOADING animals ...");

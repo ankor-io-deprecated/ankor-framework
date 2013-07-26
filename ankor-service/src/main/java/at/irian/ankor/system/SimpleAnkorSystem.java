@@ -1,10 +1,8 @@
 package at.irian.ankor.system;
 
-import at.irian.ankor.action.ActionEvent;
 import at.irian.ankor.annotation.BeanAnnotationActionEventListener;
 import at.irian.ankor.annotation.BeanAnnotationChangeEventListener;
 import at.irian.ankor.annotation.ViewModelAnnotationScanner;
-import at.irian.ankor.change.ChangeEventListener;
 import at.irian.ankor.event.ArrayListEventListeners;
 import at.irian.ankor.event.EventDelaySupport;
 import at.irian.ankor.event.EventListeners;
@@ -15,6 +13,7 @@ import at.irian.ankor.messaging.PipeMessageLoop;
 import at.irian.ankor.messaging.json.JsonViewModelMessageMapper;
 import at.irian.ankor.model.ViewModelPostProcessor;
 import at.irian.ankor.model.ViewModelPropertyFieldsInitializer;
+import at.irian.ankor.path.PathSyntax;
 import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.ref.el.SingletonModelELRefContextFactory;
 import com.typesafe.config.Config;
@@ -32,24 +31,23 @@ public class SimpleAnkorSystem extends AnkorSystem {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SimpleAnkorSystem.class);
 
     private final PipeMessageLoop<String> messageLoop;
+    private final BeanResolver beanResolver;
 
     protected SimpleAnkorSystem(MessageFactory messageFactory,
                                 PipeMessageLoop<String> messageLoop,
                                 RefContextFactory refContextFactory,
                                 EventListeners globalEventListeners,
                                 String name,
-                                ActionEvent.Listener annotationActionEventListener,
-                                ChangeEventListener annotationChangeEventListener) {
-        super(name, messageFactory, messageLoop.getMessageBus(), globalEventListeners, refContextFactory,
-              annotationActionEventListener, annotationChangeEventListener);
+                                BeanResolver beanResolver) {
+        super(name, messageFactory, messageLoop.getMessageBus(), globalEventListeners, refContextFactory);
         this.messageLoop = messageLoop;
+        this.beanResolver = beanResolver;
     }
 
 
     public static SimpleAnkorSystem create(String systemName,
                                            Class<?> modelType,
                                            BeanResolver beanResolver,
-                                           boolean enableAnnotationListeners,
                                            MessageMapper<String> messageMapper) {
         MessageFactory messageFactory = new MessageFactory();
 
@@ -72,21 +70,17 @@ public class SimpleAnkorSystem extends AnkorSystem {
                                                                                             beanResolver,
                                                                                             eventDelaySupport,
                                                                                             viewModelPostProcessors);
-        //jsonMessageMapper.init(refContextFactory.);
 
-        ActionEvent.Listener annotationActionEventListener = null;
-        ChangeEventListener annotationChangeEventListener = null;
-        if (enableAnnotationListeners) {
-            annotationActionEventListener = new BeanAnnotationActionEventListener(beanResolver);
-            annotationChangeEventListener = new BeanAnnotationChangeEventListener(beanResolver, refContextFactory.createRefContext().pathSyntax());
-        }
-
-        return new SimpleAnkorSystem(messageFactory, messageLoop, refContextFactory, globalEventListeners,
-                                     systemName, annotationActionEventListener, annotationChangeEventListener);
+        return new SimpleAnkorSystem(messageFactory,
+                                     messageLoop,
+                                     refContextFactory,
+                                     globalEventListeners,
+                                     systemName,
+                                     beanResolver);
     }
 
     public static SimpleAnkorSystem create(String name, Class<?> modelType, boolean enableRemoteActionListener) {
-        return create(name, modelType, null, enableRemoteActionListener, new JsonViewModelMessageMapper());
+        return create(name, modelType, null, new JsonViewModelMessageMapper());
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -107,7 +101,7 @@ public class SimpleAnkorSystem extends AnkorSystem {
                 return new String[]{singletonBeanName};
             }
         };
-        return create(name, modelType, beanResolver, enableRemoteActionListener, new JsonViewModelMessageMapper());
+        return create(name, modelType, beanResolver, new JsonViewModelMessageMapper());
     }
 
     public void connectTo(SimpleAnkorSystem other) {
@@ -133,7 +127,16 @@ public class SimpleAnkorSystem extends AnkorSystem {
         if (!messageLoop.isConnected()) {
             throw new IllegalStateException("message loop is not connected");
         }
+
         super.start();
+
+        if (beanResolver != null) {
+            PathSyntax pathSyntax = getRefContextFactory().getPathSyntax();
+            getGlobalEventListeners().add(new BeanAnnotationActionEventListener(beanResolver));
+            getGlobalEventListeners().add(new BeanAnnotationChangeEventListener(beanResolver, pathSyntax));
+            // todo  cleanup in stop()
+        }
+
         messageLoop.start();
     }
 

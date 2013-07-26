@@ -6,6 +6,8 @@ import at.irian.ankor.event.EventDelaySupport;
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.messaging.MessageSender;
 import at.irian.ankor.model.ViewModelPostProcessor;
+import at.irian.ankor.path.PathSyntax;
+import at.irian.ankor.path.el.ELPathSyntax;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefContextFactory;
 import com.typesafe.config.Config;
@@ -46,5 +48,10 @@ public class ELRefContextFactory implements RefContextFactory {
     public RefContext createRefContext() {
         return new ELRefContext(elSupport, config, globalEventListeners,
                                 modelHolder, messageSender, eventDelaySupport, viewModelPostProcessors);
+    }
+
+    @Override
+    public PathSyntax getPathSyntax() {
+        return ELPathSyntax.getInstance();
     }
 }

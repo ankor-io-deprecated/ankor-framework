@@ -25,8 +25,15 @@ public class ViewModelAnnotationScanner implements ViewModelPostProcessor {
 
 
     private void scan(ViewModelBase modelObject, Ref modelRef) {
+        Class<?> modelType = modelObject.getClass();
+        while (modelType != null) {
+            scan(modelObject, modelRef, modelType);
+            modelType = modelType.getSuperclass();
+        }
+    }
 
-        for (Method method : this.getClass().getDeclaredMethods()) {
+    private void scan(ViewModelBase modelObject, Ref modelRef, Class<?> modelType) {
+        for (Method method : modelType.getDeclaredMethods()) {
 
             ChangeListener changeListenerAnnotation = method.getAnnotation(ChangeListener.class);
             if (changeListenerAnnotation != null) {

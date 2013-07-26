@@ -18,7 +18,7 @@ public class MessageFactory {
         return new ActionMessage(messageUUIDGenerator.createId(), actionPropertyPath, action);
     }
 
-    public <T> Message createChangeMessage(String changedPropertyPath, T newValue) {
+    public Message createChangeMessage(String changedPropertyPath, Object newValue) {
         return new ChangeMessage(messageUUIDGenerator.createId(), changedPropertyPath, newValue);
     }
 
