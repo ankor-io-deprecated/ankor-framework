@@ -105,19 +105,7 @@
 
     <div class="masthead">
         <h3 class="muted">Ankor</h3>
-        <div class="navbar" id="navbar">
-            <div class="navbar-inner">
-                <div class="container">
-                    <ul class="nav">
-                        <li class="active"><a href="/">Home</a></li>
-                        <li><a href="#">Download</a></li>
-                        <li><a href="/examples">Examples</a></li>
-                        <li><a href="#">Documentation</a></li>
-                        <li><a href="#">Contribute</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div><!-- /.navbar -->
+        {% include "navbar.html" %}
     </div>
 
     {% block content %}

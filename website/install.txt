@@ -1,0 +1,12 @@
+--- Donwload
+Download Django  Django-1.5.1.tar.gz from https://www.djangoproject.com/download/
+                           ´
+--- Install
+tar xzvf Django-1.5.1.tar.gz
+cd Django-1.5.1
+sudo python setup.py install
+
+--- Test
+python -c "import django; print(django.get_version())"
+
+1.5.1
