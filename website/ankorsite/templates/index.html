@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+<!-- Jumbotron -->
+<div class="jumbotron">
+    <h1>Ankor</h1>
+    <p class="lead">Web application development made easy. Support for Java FX and Javascript Rich Clients.<br/>Multiple server platforms Netty, Tomcat, J2EE, Node.</p>
+    <a class="btn btn-large btn-success" href="#">Get started today</a>
+</div>
+
+<hr>
+
+<!-- Example row of columns -->
+<div class="row-fluid">
+    <div class="span6">
+        <h2>Simple to use</h2>
+<pre class="prettyprint">
+class AnimalViewModel extends ViewModelBase {
+    private final AnimalRepository;
+    Animal animal;
+
+    @Action
+    public void save()
+        animalRepository.save(animal);
+    }
+}
+</pre>
+        <p><a class="btn" href="#">View details &raquo;</a></p>
+    </div>
+    <div class="span6">
+        <h2>MVVM Pattern</h2>
+        <p>Model-View-ViewModel Pattern</p>
+        <p><a class="btn" href="#">View details &raquo;</a></p>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,17 +1,17 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Ankor &middot; Home</title>
+    <title>Ankor &middot; {% block title %}{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
 
     <!-- Le styles -->
+    {% load staticfiles %}
     <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
-    <link href="google-code-prettify/prettify.css" type="text/css" rel="stylesheet"/>
-    <link href="sunburst.css" type="text/css" rel="stylesheet" />
+    <link href="{% static 'google-code-prettify/prettify.css' %}" type="text/css" rel="stylesheet"/>
+    <link href="{% static 'sunburst.css' %}" type="text/css" rel="stylesheet" />
 
     <style type="text/css">
         body {
@@ -109,9 +109,9 @@
             <div class="navbar-inner">
                 <div class="container">
                     <ul class="nav">
-                        <li class="active"><a href="index.html">Home</a></li>
+                        <li class="active"><a href="/">Home</a></li>
                         <li><a href="#">Download</a></li>
-                        <li><a href="examples.html">Examples</a></li>
+                        <li><a href="/examples">Examples</a></li>
                         <li><a href="#">Documentation</a></li>
                         <li><a href="#">Contribute</a></li>
                     </ul>
@@ -120,33 +120,8 @@
         </div><!-- /.navbar -->
     </div>
 
-    <!-- Jumbotron -->
-    <div class="jumbotron">
-        <h1>Ankor</h1>
-        <p class="lead">Web application development made easy. Support for Java FX and Javascript Rich Clients.<br/>Multiple server platforms Netty, Tomcat, J2EE, Node.</p>
-        <a class="btn btn-large btn-success" href="#">Get started today</a>
-    </div>
-
-    <hr>
-
-    <!-- Example row of columns -->
-    <div class="row-fluid">
-        <div class="span6">
-            <h2>Simple to use</h2>
-<pre class="prettyprint">
-@Action(name = "save", refType = AnimalDetailModel.class)
-public void saveAnimal(@ActionPropertyRef Ref modelRef) {
-
-}
-</pre>
-            <p><a class="btn" href="#">View details &raquo;</a></p>
-        </div>
-        <div class="span6">
-            <h2>Model-View-ViewModel Pattern</h2>
-            <p>Model-View-ViewModel Pattern</p>
-            <p><a class="btn" href="#">View details &raquo;</a></p>
-        </div>
-    </div>
+    {% block content %}
+    {% endblock %}
 
     <hr>
 
