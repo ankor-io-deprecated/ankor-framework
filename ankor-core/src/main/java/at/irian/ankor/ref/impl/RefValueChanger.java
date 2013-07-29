@@ -61,7 +61,7 @@ public class RefValueChanger {
 
     private Map<ModelEventListener, Object> findAppropriateListeners() {
         IdentityHashMap<ModelEventListener, Object> result = new IdentityHashMap<ModelEventListener, Object>();
-        for (ModelEventListener listener : context.allEventListeners()) {
+        for (ModelEventListener listener : context.eventListeners()) {
             if (changeEvent.isAppropriateListener(listener)) {
                 Object oldWatchedValue = null;
                 if (listener instanceof PropertyWatcher) {

@@ -97,7 +97,7 @@ public class ELRef extends AbstractRef {
     @Override
     public void fireAction(Action action) {
         ActionEvent actionEvent = new ActionEvent(this, action);
-        for (ModelEventListener listener : refContext.allEventListeners()) {
+        for (ModelEventListener listener : refContext.eventListeners()) {
             if (actionEvent.isAppropriateListener(listener)) {
                 try {
                     actionEvent.processBy(listener);

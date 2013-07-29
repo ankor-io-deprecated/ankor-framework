@@ -107,7 +107,7 @@ public abstract class AbstractRef implements Ref {
 
     @Override
     public void addPropChangeListener(final ChangeListener listener) {
-        context().modelEventListeners().add(new ChangeEventListener(this) {
+        context().eventListeners().add(new ChangeEventListener(this) {
             @Override
             public void process(ChangeEvent event) {
                 processPropChangeEvent(event.getChangedProperty(), getWatchedProperty(), listener);
@@ -117,7 +117,7 @@ public abstract class AbstractRef implements Ref {
 
     @Override
     public void addPropChangeListener(final ChangeListener listener, long delayMilliseconds) {
-        context().modelEventListeners().add(new DelayedChangeEventListener(this, delayMilliseconds) {
+        context().eventListeners().add(new DelayedChangeEventListener(this, delayMilliseconds) {
             @Override
             public void processImmediately(ChangeEvent event) {
                 processPropChangeEvent(event.getChangedProperty(), getWatchedProperty(), listener);
@@ -127,7 +127,7 @@ public abstract class AbstractRef implements Ref {
 
     @Override
     public void addTreeChangeListener(final ChangeListener listener) {
-        context().modelEventListeners().add(new ChangeEventListener(this) {
+        context().eventListeners().add(new ChangeEventListener(this) {
             @Override
             public void process(ChangeEvent event) {
                 processTreeChangeEvent(event.getChangedProperty(), getWatchedProperty(), listener);
@@ -137,7 +137,7 @@ public abstract class AbstractRef implements Ref {
 
     @Override
     public void addTreeChangeListener(final ChangeListener listener, long delayMilliseconds) {
-        context().modelEventListeners().add(new DelayedChangeEventListener(this, delayMilliseconds) {
+        context().eventListeners().add(new DelayedChangeEventListener(this, delayMilliseconds) {
             @Override
             public void processImmediately(ChangeEvent event) {
                 processTreeChangeEvent(event.getChangedProperty(), getWatchedProperty(), listener);
@@ -147,7 +147,7 @@ public abstract class AbstractRef implements Ref {
 
     @Override
     public void addPropActionListener(final ActionListener listener) {
-        context().modelEventListeners().add(new ActionEvent.Listener(this) {
+        context().eventListeners().add(new ActionEvent.Listener(this) {
             @Override
             public void process(ActionEvent event) {
                 processPropActionEvent(event.getActionProperty(), getWatchedProperty(), listener, event.getAction());
@@ -157,7 +157,7 @@ public abstract class AbstractRef implements Ref {
 
     @Override
     public void addChangeListener(final ChangeListener listener) {
-        context().modelEventListeners().add(new ChangeEventListener(null) {
+        context().eventListeners().add(new ChangeEventListener(null) {
             @Override
             public void process(ChangeEvent event) {
                 listener.processChange(null, event.getChangedProperty());
