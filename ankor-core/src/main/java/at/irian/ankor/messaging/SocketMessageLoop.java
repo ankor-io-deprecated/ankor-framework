@@ -70,14 +70,14 @@ public class SocketMessageLoop<S> extends AbstractMessageLoop<S> {
     }
 
     @Override
-    public void start() {
+    public void start(boolean daemon) {
         try {
             serverSocket = new ServerSocket(localPort);
         } catch (IOException e) {
             throw new IllegalStateException("Cannot open local server socket");
         }
 
-        super.start();
+        super.start(daemon);
     }
 
     @Override

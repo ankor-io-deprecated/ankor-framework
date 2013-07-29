@@ -6,7 +6,7 @@ package at.irian.ankor.messaging;
 public interface MessageLoop<S> {
     MessageBus<S> getMessageBus();
 
-    void start();
+    void start(boolean daemon);
 
     void stop();
 

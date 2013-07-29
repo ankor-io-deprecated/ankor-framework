@@ -55,12 +55,12 @@ public abstract class AbstractMessageLoop<S> implements MessageLoop<S> {
     }
 
     @Override
-    public void start() {
+    public void start(boolean daemon) {
         if (receiveLoopThread != null) {
             throw new IllegalStateException("Already started");
         }
         receiveLoopThread = new Thread(receiveLoop, "Ankor '" + name + "'");
-        receiveLoopThread.setDaemon(true);
+        receiveLoopThread.setDaemon(daemon);
         receiveLoopThread.start();
         LOG.info("{} started", this);
     }
