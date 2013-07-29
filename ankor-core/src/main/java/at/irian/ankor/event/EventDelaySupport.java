@@ -7,6 +7,7 @@ import java.util.concurrent.ThreadFactory;
 /**
  * @author Manfred Geiler
  */
+@Deprecated
 public class EventDelaySupport {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(EventDelaySupport.class);
 

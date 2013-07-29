@@ -11,7 +11,7 @@ import at.irian.ankor.ref.RefContext;
 public interface RefContextImplementor extends RefContext {
 
     EventListeners modelEventListeners();
-    EventListeners globalEventListeners();
+
     Iterable<ModelEventListener> allEventListeners();
 
     EventDelaySupport eventDelaySupport();

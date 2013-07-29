@@ -2,10 +2,7 @@ package at.irian.ankor.messaging.json;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.SimpleAction;
-import at.irian.ankor.messaging.ActionMessage;
-import at.irian.ankor.messaging.ChangeMessage;
-import at.irian.ankor.messaging.Message;
-import at.irian.ankor.messaging.MessageFactory;
+import at.irian.ankor.messaging.*;
 import junit.framework.Assert;
 import org.junit.Test;
 
@@ -20,14 +17,14 @@ public class JsonViewModelMessageMapperTest {
 
     @org.junit.Before
     public void setUp() throws Exception {
-        messageFactory = new MessageFactory();
+        messageFactory = new MessageFactory(new CounterMessageIdGenerator());
         msgMapper = new JsonViewModelMessageMapper();
     }
 
     @Test
     public void testSimpleAction() throws Exception {
         Action action = new SimpleAction("test");
-        Message msg = messageFactory.createActionMessage("context.model", action);
+        Message msg = messageFactory.createActionMessage("sid", "context.model", action);
         String json = msgMapper.serialize(msg);
         LOG.info("JSON: {}", json);
 
@@ -43,7 +40,7 @@ public class JsonViewModelMessageMapperTest {
 
     @Test
     public void testChange() throws Exception {
-        Message msg = messageFactory.createChangeMessage("root.test1", "new-value");
+        Message msg = messageFactory.createChangeMessage("sid", "root.test1", "new-value");
         String json = msgMapper.serialize(msg);
         LOG.info("JSON: {}", json);
 
@@ -58,7 +55,7 @@ public class JsonViewModelMessageMapperTest {
 
     @Test
     public void testChangeRoot() throws Exception {
-        Message msg = messageFactory.createChangeMessage("root", "new-value");
+        Message msg = messageFactory.createChangeMessage("sid", "root", "new-value");
         String json = msgMapper.serialize(msg);
         LOG.info("JSON: {}", json);
 
