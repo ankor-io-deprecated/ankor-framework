@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>ankorman-js-client</artifactId>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <name>AnkorMan Sample App - JavaScript Client</name>
 
     <dependencies>
