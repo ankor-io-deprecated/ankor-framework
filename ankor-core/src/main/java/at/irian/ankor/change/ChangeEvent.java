@@ -10,12 +10,19 @@ import at.irian.ankor.ref.Ref;
 public class ChangeEvent extends ModelEvent {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ChangeEvent.class);
 
-    public ChangeEvent(Ref changedProperty) {
+    private final Change change;
+
+    public ChangeEvent(Ref changedProperty, Change change) {
         super(changedProperty);
+        this.change = change;
     }
 
     public Ref getChangedProperty() {
         return (Ref)source;
+    }
+
+    public Change getChange() {
+        return change;
     }
 
     @Override
@@ -25,9 +32,14 @@ public class ChangeEvent extends ModelEvent {
 
     @Override
     public void processBy(ModelEventListener listener) {
-        if (listener instanceof ChangeEventListener) {
-            ((ChangeEventListener)listener).process(this);
-        }
+        ((ChangeEventListener)listener).process(this);
     }
 
+    @Override
+    public String toString() {
+        return "ChangeEvent{" +
+               "changedProperty=" + getChangedProperty() +
+               ", change=" + change +
+               '}';
+    }
 }

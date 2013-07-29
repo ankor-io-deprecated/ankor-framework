@@ -7,7 +7,7 @@ import at.irian.ankor.event.EventListeners;
  */
 public interface ModelContext {
 
-    EventListeners getModelEventListeners();
+    EventListeners getEventListeners();
 
     Object getModelRoot();
 

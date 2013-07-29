@@ -1,5 +1,6 @@
 package at.irian.ankorman.sample1.viewmodel;
 
+import at.irian.ankor.change.Change;
 import at.irian.ankor.messaging.Message;
 import at.irian.ankor.messaging.MessageFactory;
 import at.irian.ankor.messaging.json.JsonViewModelMessageMapper;
@@ -56,13 +57,13 @@ public class ModelRootJsonTest {
         data.setRows(animals);
         model.setAnimals(data);
 
-        String json = mapper.serialize(messageFactory.createChangeMessage("sid", rf.ref("root").path(), root));
+        String json = mapper.serialize(messageFactory.createChangeMessage("sid", rf.ref("root").path(), new Change(root)));
         LOG.info(json);
 
         Message message = mapper.deserialize(json);
         LOG.info(message.toString());
 
-        json = mapper.serialize(messageFactory.createChangeMessage("sid", rf.ref("root.tabs.A1.model.animals").path(), animals));
+        json = mapper.serialize(messageFactory.createChangeMessage("sid", rf.ref("root.tabs.A1.model.animals").path(), new Change(animals)));
         LOG.info(json);
     }
 }

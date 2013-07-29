@@ -1,5 +1,7 @@
 package at.irian.ankor.fx.app;
 
+import akka.actor.ActorSystem;
+import at.irian.ankor.akka.AkkaEventDispatcherFactory;
 import at.irian.ankor.messaging.MessageMapper;
 import at.irian.ankor.messaging.SocketMessageLoop;
 import at.irian.ankor.messaging.json.JsonViewDataMessageMapper;
@@ -18,7 +20,7 @@ import java.util.Map;
  * @author Thomas Spiegl
  */
 public class SocketAppBuilder {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SimpleAppServiceFactory.class);
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SocketAppBuilder.class);
 
     private static final String HOST = "localhost";
     private static final int serverPort = 8080;
@@ -56,7 +58,6 @@ public class SocketAppBuilder {
      * @return the client's RefFactory
      */
     public RefFactory create() {
-        // createRefContext
 
         Thread serverThread = new Thread(new Runnable() {
             @Override
@@ -68,14 +69,19 @@ public class SocketAppBuilder {
 
                 SocketMessageLoop<String> serverMessageLoop = new SocketMessageLoop<String>(serverName,
                                                                                             serverMessageMapper,
-                                                                                      HOST,
-                                                                                      clientPort,
-                                                                                      serverPort);
+                                                                                            HOST,
+                                                                                            clientPort,
+                                                                                            serverPort);
+
+                ActorSystem actorSystem = ActorSystem.create();
+                AkkaEventDispatcherFactory akkaDispatcherFactory = new AkkaEventDispatcherFactory(actorSystem);
+
                 AnkorSystem serverSystem = new AnkorSystemBuilder()
                         .withName(serverName)
                         .withBeanResolver(beanResolver)
                         .withModelRootFactory(modelRootFactory)
                         .withMessageBus(serverMessageLoop.getMessageBus())
+                        .withDispatcherFactory(akkaDispatcherFactory)
                         .createServer();
 
                 serverSystem.start();
@@ -84,7 +90,14 @@ public class SocketAppBuilder {
             }
         });
         serverThread.setDaemon(true);
+        serverThread.start();
 
+        LOG.info("waiting for server to come up...");
+        try {
+            Thread.sleep(2000L);
+        } catch (InterruptedException e) {
+            Thread.interrupted();
+        }
 
         String clientName = "client";
 
@@ -101,9 +114,7 @@ public class SocketAppBuilder {
                 .createClient();
 
         // start
-        serverThread.start();
         clientSystem.start();
-
         clientMessageLoop.start();
 
         RefContext clientRefContext = clientSystem.getSessionManager().getOrCreateSession(null).getRefContext();

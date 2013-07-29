@@ -10,7 +10,6 @@
     </appender>
 
     <logger name="at.irian.ankor.messaging" level="DEBUG" />
-    <logger name="at.irian.ankor.messaging.CircuitBreakerMessageSender" level="WARN" />
 
     <root level="INFO">
         <appender-ref ref="STDOUT" />

@@ -1,6 +1,6 @@
 package at.irian.ankorman.sample1.fxclient;
 
-import at.irian.ankor.action.SimpleAction;
+import at.irian.ankor.action.Action;
 import at.irian.ankor.fx.binding.BindingContext;
 import at.irian.ankor.ref.ChangeListener;
 import at.irian.ankor.ref.Ref;
@@ -49,7 +49,7 @@ public class MainController implements Initializable {
                         .createWithin(bindingContext);
             }
         });
-        rootRef.fireAction(new SimpleAction("init"));
+        rootRef.fireAction(new Action("init"));
 
     }
 

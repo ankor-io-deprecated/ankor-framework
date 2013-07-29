@@ -2,10 +2,11 @@ package at.irian.ankor.ref.impl;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionEvent;
+import at.irian.ankor.action.ActionEventListener;
+import at.irian.ankor.change.Change;
 import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.change.ChangeEventListener;
 import at.irian.ankor.change.DelayedChangeEventListener;
-import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.ref.ActionListener;
 import at.irian.ankor.ref.ChangeListener;
 import at.irian.ankor.ref.Ref;
@@ -22,6 +23,13 @@ public abstract class AbstractRef implements Ref {
     @SuppressWarnings("SimplifiableIfStatement")
     @Override
     public void setValue(final Object newValue) {
+        apply(new Change(newValue));
+    }
+
+    @Override
+    public void apply(Change change) {
+
+        final Object newValue = change.getNewValue();
 
         final Object newUnwrappedValue;
         if (newValue != null && newValue instanceof Wrapper) {
@@ -30,13 +38,13 @@ public abstract class AbstractRef implements Ref {
             newUnwrappedValue = newValue;
         }
 
-        new RefValueChanger(this).setValueTo(newValue, new RefValueChanger.SetValueCallback() {
+        new RefValueChanger(this).doChange(change, new RefValueChanger.SetValueCallback() {
             @Override
             public void doSetValue() {
                 Class<?> type = getType();
                 if (Wrapper.class.isAssignableFrom(type)) {
 
-                    if (newValue != null  && newValue instanceof Wrapper) {
+                    if (newValue != null && newValue instanceof Wrapper) {
                         internalSetValue(newValue);
                     } else {
 
@@ -49,29 +57,35 @@ public abstract class AbstractRef implements Ref {
 
                             try {
                                 //noinspection unchecked
-                                Constructor<Wrapper> refConstructor = ((Class<Wrapper>) type).getDeclaredConstructor(Ref.class);
+                                Constructor<Wrapper> refConstructor
+                                        = ((Class<Wrapper>) type).getDeclaredConstructor(Ref.class);
                                 if (!refConstructor.isAccessible()) {
                                     refConstructor.setAccessible(true);
                                 }
                                 try {
                                     wrapper = refConstructor.newInstance(AbstractRef.this);
                                 } catch (Exception e) {
-                                    throw new RuntimeException("Error invoking ref based constructor for type " + type, e);
+                                    throw new RuntimeException("Error invoking ref based constructor for type " + type,
+                                                               e);
                                 }
                             } catch (NoSuchMethodException e) {
                                 try {
                                     //noinspection unchecked
-                                    Constructor<Wrapper> defaultConstructor = ((Class<Wrapper>) type).getDeclaredConstructor();
+                                    Constructor<Wrapper> defaultConstructor
+                                            = ((Class<Wrapper>) type).getDeclaredConstructor();
                                     if (!defaultConstructor.isAccessible()) {
                                         defaultConstructor.setAccessible(true);
                                     }
                                     try {
                                         wrapper = defaultConstructor.newInstance();
                                     } catch (Exception e1) {
-                                        throw new RuntimeException("Error invoking default constructor for type " + type, e1);
+                                        throw new RuntimeException("Error invoking default constructor for type "
+                                                                   + type, e1);
                                     }
                                 } catch (NoSuchMethodException e1) {
-                                    throw new IllegalStateException(type + " does not have a ref based or default constructor", e);
+                                    throw new IllegalStateException(type
+                                                                    + " does not have a ref based or default constructor",
+                                                                    e);
                                 }
                             }
                             internalSetValue(wrapper);
@@ -148,7 +162,7 @@ public abstract class AbstractRef implements Ref {
 
     @Override
     public void addPropActionListener(final ActionListener listener) {
-        context().eventListeners().add(new ActionEvent.Listener(this) {
+        context().eventListeners().add(new ActionEventListener(this) {
             @Override
             public void process(ActionEvent event) {
                 processPropActionEvent(event.getActionProperty(), getWatchedProperty(), listener, event.getAction());
@@ -207,14 +221,6 @@ public abstract class AbstractRef implements Ref {
     @Override
     public void fireAction(Action action) {
         ActionEvent actionEvent = new ActionEvent(this, action);
-        for (ModelEventListener listener : context().eventListeners()) {
-            if (actionEvent.isAppropriateListener(listener)) {
-                try {
-                    actionEvent.processBy(listener);
-                } catch (Exception e) {
-                    LOG.error("Listener " + listener + " threw exception while processing " + actionEvent, e);
-                }
-            }
-        }
+        context().eventDispatcher().dispatch(actionEvent);
     }
 }

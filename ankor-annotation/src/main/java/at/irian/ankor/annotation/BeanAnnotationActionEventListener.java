@@ -1,8 +1,8 @@
 package at.irian.ankor.annotation;
 
+import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionEvent;
-import at.irian.ankor.action.SimpleAction;
-import at.irian.ankor.action.SimpleParamAction;
+import at.irian.ankor.action.ActionEventListener;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.system.BeanResolver;
 import at.irian.ankor.util.ObjectUtils;
@@ -18,7 +18,7 @@ import java.util.Map;
 /**
  * @author Thomas Spiegl
  */
-public class BeanAnnotationActionEventListener extends ActionEvent.Listener {
+public class BeanAnnotationActionEventListener extends ActionEventListener {
 
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(BeanAnnotationActionEventListener.class);
 
@@ -33,20 +33,18 @@ public class BeanAnnotationActionEventListener extends ActionEvent.Listener {
 
     @Override
     public void process(ActionEvent event) {
-        if (event.getAction() instanceof SimpleAction) {
-            Object value = event.getActionProperty().getValue();
-            String actionPropertyType;
-            if (value != null) {
-                actionPropertyType = value.getClass().getName();
-            } else {
-                actionPropertyType = null;
-            }
-            ActionTarget actionTarget = actionMapper.findTargetFor(((SimpleAction) event.getAction()).getName(), actionPropertyType);
-            if (actionTarget != null) {
-                actionTarget.invoke(event, beanResolver);
-            } else {
-                LOG.warn("No AnkorAction listener found for action {} propertyType {} ", ((SimpleAction) event.getAction()).getName(), actionPropertyType);
-            }
+        Object value = event.getActionProperty().getValue();
+        String actionPropertyType;
+        if (value != null) {
+            actionPropertyType = value.getClass().getName();
+        } else {
+            actionPropertyType = null;
+        }
+        ActionTarget actionTarget = actionMapper.findTargetFor(((Action) event.getAction()).getName(), actionPropertyType);
+        if (actionTarget != null) {
+            actionTarget.invoke(event, beanResolver);
+        } else {
+            LOG.warn("No AnkorAction listener found for action {} propertyType {} ", ((Action) event.getAction()).getName(), actionPropertyType);
         }
     }
 
@@ -123,13 +121,9 @@ public class BeanAnnotationActionEventListener extends ActionEvent.Listener {
                             if (ObjectUtils.isEmpty(paramName)) {
                                 throw new IllegalStateException(String.format("AnkorActionParam has no value %s", this));
                             } else {
-                                if (event.getAction() instanceof SimpleParamAction) {
-                                    paramValues[i] = ((SimpleParamAction) event.getAction()).getParams().get(paramName);
-                                    if (paramValues[i] == null && !((Param) annotation).optional()) {
-                                        throw new IllegalStateException(String.format("Parameter %s may not be null (optional=false) for method with @AnkorActionParam %s", paramName, this));
-                                    }
-                                } else {
-                                    throw new IllegalStateException(String.format("Excpected SimpleParamAction for method with @AnkorActionParam %s", this));
+                                paramValues[i] = event.getAction().getParams().get(paramName);
+                                if (paramValues[i] == null && !((Param) annotation).optional()) {
+                                    throw new IllegalStateException(String.format("Parameter %s may not be null (optional=false) for method with @AnkorActionParam %s", paramName, this));
                                 }
                             }
 

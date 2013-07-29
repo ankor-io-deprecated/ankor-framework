@@ -3,7 +3,7 @@ package at.irian.ankor.el;
 import at.irian.ankor.context.ModelContext;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefFactory;
-import at.irian.ankor.session.DefaultServerSession;
+import at.irian.ankor.session.ServerSession;
 import com.typesafe.config.Config;
 
 import javax.el.ELContext;
@@ -58,7 +58,7 @@ public class ModelRootELResolver extends ELResolver {
             return Ref.class;
         } else if (base == null && modelContextVarName.equals(property)) {
             context.setPropertyResolved(true);
-            return DefaultServerSession.class;
+            return ServerSession.class;
         }
         return null;
     }

@@ -1,6 +1,6 @@
 package at.irian.ankorman.sample1.fxclient.animal;
 
-import at.irian.ankor.action.SimpleAction;
+import at.irian.ankor.action.Action;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorman.sample1.fxclient.BaseTabController;
 import javafx.event.ActionEvent;
@@ -59,7 +59,7 @@ public class AnimalDetailTabController extends BaseTabController {
 
     @FXML
     protected void save(@SuppressWarnings("UnusedParameters") ActionEvent event) {
-        getTabRef().append("model").fireAction(new SimpleAction("save"));
+        getTabRef().append("model").fireAction(new Action("save"));
     }
 
 }

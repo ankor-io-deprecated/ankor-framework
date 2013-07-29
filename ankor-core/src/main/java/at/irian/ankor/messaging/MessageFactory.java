@@ -1,6 +1,7 @@
 package at.irian.ankor.messaging;
 
 import at.irian.ankor.action.Action;
+import at.irian.ankor.change.Change;
 
 /**
  * @author Manfred Geiler
@@ -18,8 +19,8 @@ public class MessageFactory {
         return new ActionMessage(sessionId, messageIdGenerator.create(), actionPropertyPath, action);
     }
 
-    public Message createChangeMessage(String sessionId, String changedPropertyPath, Object newValue) {
-        return new ChangeMessage(sessionId, messageIdGenerator.create(), changedPropertyPath, newValue);
+    public Message createChangeMessage(String sessionId, String changedPropertyPath, Change change) {
+        return new ChangeMessage(sessionId, messageIdGenerator.create(), changedPropertyPath, change);
     }
 
 }

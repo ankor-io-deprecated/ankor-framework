@@ -1,6 +1,7 @@
 package at.irian.ankor.ref;
 
 import at.irian.ankor.action.Action;
+import at.irian.ankor.change.Change;
 
 /**
  * @author Manfred Geiler
@@ -92,4 +93,6 @@ public interface Ref {
     void addTreeChangeListener(ChangeListener listener, long delayMilliseconds);
 
     void addChangeListener(ChangeListener listener);
+
+    void apply(Change change);
 }

@@ -8,7 +8,7 @@ import at.irian.ankor.action.Action;
 public class ActionMessage extends Message {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ActionMessage.class);
 
-    private String actionPropertyPath;
+    private String actionProperty;
     private Action action;
 
     /**
@@ -18,14 +18,14 @@ public class ActionMessage extends Message {
     protected ActionMessage() {}
 
     protected ActionMessage(String sessionId, String messageId,
-                            String actionPropertyPath, Action action) {
+                            String actionProperty, Action action) {
         super(sessionId, messageId);
-        this.actionPropertyPath = actionPropertyPath;
+        this.actionProperty = actionProperty;
         this.action = action;
     }
 
-    public String getActionPropertyPath() {
-        return actionPropertyPath;
+    public String getActionProperty() {
+        return actionProperty;
     }
 
     public Action getAction() {
@@ -44,7 +44,7 @@ public class ActionMessage extends Message {
 
         ActionMessage that = (ActionMessage) o;
 
-        if (!actionPropertyPath.equals(that.actionPropertyPath)) {
+        if (!actionProperty.equals(that.actionProperty)) {
             return false;
         }
         if (!action.equals(that.action)) {
@@ -56,7 +56,7 @@ public class ActionMessage extends Message {
 
     @Override
     public int hashCode() {
-        int result = actionPropertyPath.hashCode();
+        int result = actionProperty.hashCode();
         result = 31 * result + action.hashCode();
         return result;
     }
@@ -65,7 +65,7 @@ public class ActionMessage extends Message {
     public String toString() {
         return "ActionMessage{" +
                "messageId='" + getMessageId() + '\'' +
-               ", actionPropertyPath='" + actionPropertyPath + '\'' +
+               ", actionProperty='" + actionProperty + '\'' +
                ", action=" + action +
                '}';
     }

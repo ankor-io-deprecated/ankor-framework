@@ -3,17 +3,18 @@ package at.irian.ankor.system;
 import at.irian.ankor.annotation.ViewModelAnnotationScanner;
 import at.irian.ankor.context.DefaultModelContext;
 import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.dispatch.EventDispatcherFactory;
+import at.irian.ankor.dispatch.SessionSynchronisedEventDispatcherFactory;
 import at.irian.ankor.event.EventDelaySupport;
-import at.irian.ankor.messaging.CounterMessageIdGenerator;
-import at.irian.ankor.messaging.MessageBus;
-import at.irian.ankor.messaging.MessageFactory;
-import at.irian.ankor.messaging.MessageIdGenerator;
+import at.irian.ankor.event.EventListeners;
+import at.irian.ankor.messaging.*;
 import at.irian.ankor.model.ViewModelPostProcessor;
 import at.irian.ankor.model.ViewModelPropertyFieldsInitializer;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.ref.el.ELRefContextFactory;
+import at.irian.ankor.ref.impl.RefContextImplementor;
 import at.irian.ankor.session.*;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -33,6 +34,7 @@ public class AnkorSystemBuilder {
     private List<ViewModelPostProcessor> viewModelPostProcessors;
     private SessionIdGenerator sessionIdGenerator;
     private MessageIdGenerator messageIdGenerator;
+    private EventDispatcherFactory eventDispatcherFactory;
 
     private ModelRootFactory modelRootFactory;
     private BeanResolver beanResolver;
@@ -44,6 +46,7 @@ public class AnkorSystemBuilder {
         this.viewModelPostProcessors = null;
         this.sessionIdGenerator = new CounterSessionIdGenerator();
         this.messageIdGenerator = new CounterMessageIdGenerator();
+        this.eventDispatcherFactory = new SessionSynchronisedEventDispatcherFactory();
     }
 
     public AnkorSystemBuilder withName(String name) {
@@ -63,6 +66,11 @@ public class AnkorSystemBuilder {
 
     public AnkorSystemBuilder withBeanResolver(BeanResolver beanResolver) {
         this.beanResolver = beanResolver;
+        return this;
+    }
+
+    public AnkorSystemBuilder withDispatcherFactory(EventDispatcherFactory eventDispatcherFactory) {
+        this.eventDispatcherFactory = eventDispatcherFactory;
         return this;
     }
 
@@ -96,11 +104,19 @@ public class AnkorSystemBuilder {
                                                                       eventDelaySupport,
                                                                       viewModelPostProcessors);
 
-        MessageFactory messageFactory = new MessageFactory(messageIdGenerator);
+        final MessageFactory messageFactory = new MessageFactory(messageIdGenerator);
 
-        SessionFactory sessionFactory = new DefaultServerSessionFactory(modelRootFactory,
-                                                                       refContextFactory,
-                                                                       messageFactory);
+        SessionFactory sessionFactory = new ServerSessionFactory(modelRootFactory,
+                                                                 refContextFactory,
+                                                                 eventDispatcherFactory) {
+            @Override
+            public ServerSession create(String sessionId) {
+                ServerSession session = super.create(sessionId);
+                addDefaultEventListeners(session, messageFactory, messageBus);
+                return session;
+            }
+        };
+
         SessionManager sessionManager = new DefaultSessionManager(sessionFactory, sessionIdGenerator);
 
         return new AnkorSystem(systemName, messageFactory, messageBus, refContextFactory, sessionManager);
@@ -144,19 +160,32 @@ public class AnkorSystemBuilder {
         SessionManager sessionManager = new SingletonSessionManager(modelContext, refContext);
         Session session = sessionManager.getOrCreateSession(null);
 
+        ((RefContextImplementor)refContext).setSession(session);
+
         MessageFactory messageFactory = new MessageFactory(messageIdGenerator);
 
-        // action event listener for sending action events to remote partner
-        modelContext.getModelEventListeners().add(new DefaultSyncActionEventListener(messageFactory, session));
-
-        // global change event listener for sending change events to remote partner
-        modelContext.getModelEventListeners().add(new DefaultSyncChangeEventListener(messageFactory, session));
-
-        session.setMessageSender(messageBus);
+        addDefaultEventListeners(session, messageFactory, messageBus);
 
         return new AnkorSystem(systemName, messageFactory, messageBus, refContextFactory, sessionManager);
     }
 
+
+    private void addDefaultEventListeners(Session session, MessageFactory messageFactory, MessageSender messageSender) {
+
+        EventListeners eventListeners = session.getModelContext().getEventListeners();
+
+        // remote actions and changes listener
+        eventListeners.add(new RemoteEventListener());
+
+        // action event listener for sending action events to remote partner
+        eventListeners.add(new DefaultSyncActionEventListener(messageFactory, messageSender));
+
+        // global change event listener for sending change events to remote partner
+        eventListeners.add(new DefaultSyncChangeEventListener(messageFactory, messageSender));
+
+        // global change event listener for cleaning up obsolete listeners
+        eventListeners.add(new ListenerCleanupChangeEventListener(eventListeners));
+    }
 
 
     private List<ViewModelPostProcessor> createDefaultServerViewModelPostProcessors() {

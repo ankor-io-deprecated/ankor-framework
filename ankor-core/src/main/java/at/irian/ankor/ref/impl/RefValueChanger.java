@@ -1,5 +1,6 @@
 package at.irian.ankor.ref.impl;
 
+import at.irian.ankor.change.Change;
 import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.event.PropertyWatcher;
@@ -17,17 +18,20 @@ public class RefValueChanger {
 
     private final AbstractRef changedProperty;
     private final RefContextImplementor context;
-    private final ChangeEvent changeEvent;
 
     public RefValueChanger(AbstractRef changedProperty) {
         this.changedProperty = changedProperty;
         this.context = changedProperty.context();
-        this.changeEvent = new ChangeEvent(changedProperty);
     }
 
-    public void setValueTo(Object refPropNewValue, SetValueCallback callback) {
+    public void doChange(Change change, SetValueCallback callback) {
+
+        Object refPropNewValue = change.getNewValue();
+
+        ChangeEvent changeEvent = new ChangeEvent(changedProperty, change);
+
         // determine eligible change event listeners and remember old watched values
-        Map<ModelEventListener, Object> listeners = findAppropriateListeners();
+        Map<ModelEventListener, Object> listeners = findAppropriateListeners(changeEvent);
 
         if (listeners.isEmpty()) {
             // there is no proper change event listener for this ref
@@ -53,13 +57,13 @@ public class RefValueChanger {
             }
 
             if (isInvokeListener(watchedProperty, watchedPropOldValue, refPropOldValue, refPropNewValue)) {
-                invokeListener(listener);
+                invokeListener(changeEvent, listener);
             }
         }
 
     }
 
-    private Map<ModelEventListener, Object> findAppropriateListeners() {
+    private Map<ModelEventListener, Object> findAppropriateListeners(ChangeEvent changeEvent) {
         IdentityHashMap<ModelEventListener, Object> result = new IdentityHashMap<ModelEventListener, Object>();
         for (ModelEventListener listener : context.eventListeners()) {
             if (changeEvent.isAppropriateListener(listener)) {
@@ -118,7 +122,7 @@ public class RefValueChanger {
         return !ObjectUtils.nullSafeEquals(changedPropOldValue, changedPropNewValue);
     }
 
-    private void invokeListener(ModelEventListener listener) {
+    private void invokeListener(ChangeEvent changeEvent, ModelEventListener listener) {
         try {
             changeEvent.processBy(listener);
         } catch (Exception e) {

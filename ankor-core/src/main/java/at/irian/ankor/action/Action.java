@@ -1,7 +1,65 @@
 package at.irian.ankor.action;
 
+import java.util.Collections;
+import java.util.Map;
+
 /**
  * @author Manfred Geiler
  */
-public interface Action {
+public class Action {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(Action.class);
+
+    private String name;
+    private Map<String, Object> params;
+
+    /**
+     * for deserialization only
+     */
+    protected Action() {}
+
+    public Action(String name) {
+        this(name, Collections.<String, Object>emptyMap());
+    }
+
+    public Action(String name, Map<String, Object> params) {
+        this.name = name;
+        this.params = params;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Map<String, Object> getParams() {
+        return params;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Action action = (Action) o;
+
+        return name.equals(action.name) && params.equals(action.params);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name.hashCode();
+        result = 31 * result + params.hashCode();
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Action{" +
+               "name='" + name + '\'' +
+               ", params=" + getParams() +
+               '}';
+    }
 }

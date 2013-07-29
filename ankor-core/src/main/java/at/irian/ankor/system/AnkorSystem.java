@@ -1,5 +1,6 @@
 package at.irian.ankor.system;
 
+import at.irian.ankor.action.Action;
 import at.irian.ankor.messaging.*;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
@@ -77,21 +78,17 @@ public class AnkorSystem {
                 String sessionId = message.getSessionId();
                 Session session = sessionManager.getOrCreateSession(sessionId);
 
-                MessageSender originalMessageSender = session.getMessageSender();
-                MessageSender messageSender = new CircuitBreakerMessageSender(messageBus, message);
-                session.setMessageSender(messageSender);
-
                 if (!session.isActive()) {
                     session.start();
                 }
 
                 RefContext refContext = session.getRefContext();
-                Ref actionProperty = refContext.refFactory().ref(message.getActionPropertyPath());
+                Ref actionProperty = refContext.refFactory().ref(message.getActionProperty());
 
-                session.getDispatcher().dispatchAction(actionProperty, message.getAction());
-
-                messageSender.flush();
-                session.setMessageSender(originalMessageSender);
+                Action action = message.getAction();
+                RemoteEvent event = new RemoteEvent(actionProperty,
+                                                    new RemoteAction(action.getName(), action.getParams()));
+                session.getEventDispatcher().dispatch(event);
             }
 
             @Override
@@ -99,21 +96,16 @@ public class AnkorSystem {
                 String sessionId = message.getSessionId();
                 Session session = sessionManager.getOrCreateSession(sessionId);
 
-                MessageSender originalMessageSender = session.getMessageSender();
-                MessageSender messageSender = new CircuitBreakerMessageSender(messageBus, message);
-                session.setMessageSender(messageSender);
-
                 if (!session.isActive()) {
                     session.start();
                 }
 
                 RefContext refContext = session.getRefContext();
-                Ref changedProperty = refContext.refFactory().ref(message.getChange().getChangedProperty());
+                Ref changedProperty = refContext.refFactory().ref(message.getChangedProperty());
 
-                session.getDispatcher().dispatchChange(changedProperty, message.getChange().getNewValue());
-
-                messageSender.flush();
-                session.setMessageSender(originalMessageSender);
+                RemoteEvent event = new RemoteEvent(changedProperty,
+                                                    new RemoteChange(message.getChange().getNewValue()));
+                session.getEventDispatcher().dispatch(event);
             }
         };
 

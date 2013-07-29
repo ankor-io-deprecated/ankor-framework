@@ -22,7 +22,7 @@ public class DefaultModelContext implements ModelContext {
     }
 
     @Override
-    public EventListeners getModelEventListeners() {
+    public EventListeners getEventListeners() {
         return eventListeners;
     }
 

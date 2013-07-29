@@ -1,6 +1,6 @@
 package at.irian.ankorman.sample1.fxclient.animal;
 
-import at.irian.ankor.action.SimpleAction;
+import at.irian.ankor.action.Action;
 import at.irian.ankor.fx.binding.ClickAction;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorman.sample1.fxclient.BaseTabController;
@@ -87,7 +87,7 @@ public class AnimalSearchTabController extends BaseTabController {
                 .callAction(new ClickAction<Ref>() {
                     @Override
                     public void onClick(Ref paginator) {
-                        paginator.fireAction(new SimpleAction("previous"));
+                        paginator.fireAction(new Action("previous"));
                     }
                 })
                 .withParam(paginatorRef).create();
@@ -96,7 +96,7 @@ public class AnimalSearchTabController extends BaseTabController {
                 .callAction(new ClickAction<Ref>() {
                     @Override
                     public void onClick(Ref paginator) {
-                        paginator.fireAction(new SimpleAction("next"));
+                        paginator.fireAction(new Action("next"));
                     }
                 })
                 .withParam(paginatorRef).create();
@@ -105,7 +105,7 @@ public class AnimalSearchTabController extends BaseTabController {
                 .callAction(new ClickAction() {
                     @Override
                     public void onClick(Object value) {
-                        tabRef.append("model").fireAction(new SimpleAction("save"));
+                        tabRef.append("model").fireAction(new Action("save"));
                     }
                 }).create();
 

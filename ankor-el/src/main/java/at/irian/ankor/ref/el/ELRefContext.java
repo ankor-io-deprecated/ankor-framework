@@ -1,6 +1,7 @@
 package at.irian.ankor.ref.el;
 
 import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.dispatch.EventDispatcher;
 import at.irian.ankor.el.ELSupport;
 import at.irian.ankor.el.StandardELContext;
 import at.irian.ankor.event.EventDelaySupport;
@@ -11,6 +12,7 @@ import at.irian.ankor.path.el.ELPathSyntax;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.ref.impl.RefContextImplementor;
+import at.irian.ankor.session.Session;
 import com.typesafe.config.Config;
 
 import javax.el.ExpressionFactory;
@@ -28,6 +30,9 @@ public class ELRefContext implements RefContext, RefContextImplementor {
     private final ModelContext modelContext;
     private final EventDelaySupport eventDelaySupport;
     private final List<ViewModelPostProcessor> viewModelPostProcessors;
+
+    private Session session;
+
 
     ELRefContext(ELSupport elSupport,
                  Config config,
@@ -57,7 +62,7 @@ public class ELRefContext implements RefContext, RefContextImplementor {
 
     @Override
     public EventListeners eventListeners() {
-        return modelContext.getModelEventListeners();
+        return modelContext.getEventListeners();
     }
 
     String getModelRootVarName() {
@@ -76,5 +81,20 @@ public class ELRefContext implements RefContext, RefContextImplementor {
     @Override
     public List<ViewModelPostProcessor> viewModelPostProcessors() {
         return viewModelPostProcessors;
+    }
+
+    @Override
+    public void setSession(Session session) {
+        this.session = session;
+    }
+
+    @Override
+    public EventDispatcher eventDispatcher() {
+        return session.getEventDispatcher();
+    }
+
+    @Override
+    public Session session() {
+        return session;
     }
 }

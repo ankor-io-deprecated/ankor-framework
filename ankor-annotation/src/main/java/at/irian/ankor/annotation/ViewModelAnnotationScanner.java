@@ -1,8 +1,6 @@
 package at.irian.ankor.annotation;
 
 import at.irian.ankor.action.Action;
-import at.irian.ankor.action.SimpleAction;
-import at.irian.ankor.action.SimpleParamAction;
 import at.irian.ankor.model.ViewModelBase;
 import at.irian.ankor.model.ViewModelPostProcessor;
 import at.irian.ankor.path.PathSyntax;
@@ -113,19 +111,17 @@ public class ViewModelAnnotationScanner implements ViewModelPostProcessor {
 
         @Override
         public void processAction(Ref sourceProperty, Action action) {
-            if (action instanceof SimpleAction) {
-                if (((SimpleAction)action).getName().equals(actionName)) {
-                    try {
-                        Object[] paramValues = new Object[paramNames.length];
-                        for (int i = 0; i < paramNames.length; i++) {
-                            paramValues[i] = ((SimpleParamAction) action).getParams().get(paramNames[i]);
-                        }
-                        method.invoke(modelObject, paramValues);
-                    } catch (Exception e) {
-                        throw new RuntimeException(String.format("Error invoking action listener method %s on view model object %s",
-                                                                 method,
-                                                                 modelObject), e);
+            if (action.getName().equals(actionName)) {
+                try {
+                    Object[] paramValues = new Object[paramNames.length];
+                    for (int i = 0; i < paramNames.length; i++) {
+                        paramValues[i] = action.getParams().get(paramNames[i]);
                     }
+                    method.invoke(modelObject, paramValues);
+                } catch (Exception e) {
+                    throw new RuntimeException(String.format("Error invoking action listener method %s on view model object %s",
+                                                             method,
+                                                             modelObject), e);
                 }
             }
         }

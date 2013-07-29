@@ -1,8 +1,5 @@
 package at.irian.ankor.messaging.json;
 
-import at.irian.ankor.action.Action;
-import at.irian.ankor.action.SimpleAction;
-import at.irian.ankor.action.SimpleParamAction;
 import at.irian.ankor.messaging.ActionMessage;
 import at.irian.ankor.messaging.ChangeMessage;
 import at.irian.ankor.messaging.Message;
@@ -43,7 +40,6 @@ public class JsonViewModelMessageMapper implements MessageMapper<String> {
                 new SimpleModule("ViewModelJsonMessageMapperModule",
                                  new Version(1, 0, 0, null, null, null));
         module.addDeserializer(Message.class, new MessageDeserializer());
-        module.addDeserializer(Action.class, new ActionDeserializer());
         module.addSerializer(ViewModelProperty.class, new ModelPropertySerializer());
         module.addDeserializer(ViewModelProperty.class, new ModelPropertyDeserializer());
 
@@ -113,33 +109,6 @@ public class JsonViewModelMessageMapper implements MessageMapper<String> {
         }
     }
 
-    class ActionDeserializer extends StdDeserializer<Action> {
-
-        ActionDeserializer() {
-            super(Action.class);
-        }
-
-        @Override
-        public Action deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
-            ObjectMapper mapper = (ObjectMapper) jp.getCodec();
-            ObjectNode tree = mapper.readTree(jp);
-            Class<? extends Action> detectedType = null;
-            Iterator<Map.Entry<String, JsonNode>> elementsIterator = tree.fields();
-            while (elementsIterator.hasNext())
-            {
-                Map.Entry<String, JsonNode> element=elementsIterator.next();
-                String name = element.getKey();
-                if (name.equals("params")) { // TODO find a better way
-                    detectedType = SimpleParamAction.class;
-                    break;
-                }
-            }
-            if (detectedType == null) {
-                detectedType = SimpleAction.class;
-            }
-            return mapper.treeToValue(tree, detectedType);
-        }
-    }
 
     class ModelPropertySerializer extends StdSerializer<ViewModelProperty> {
 

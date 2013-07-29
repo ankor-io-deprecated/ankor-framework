@@ -1,8 +1,6 @@
 package at.irian.ankor.messaging.json;
 
-import at.irian.ankor.action.Action;
-import at.irian.ankor.action.SimpleAction;
-import at.irian.ankor.action.SimpleParamAction;
+import at.irian.ankor.change.Change;
 import at.irian.ankor.messaging.ActionMessage;
 import at.irian.ankor.messaging.ChangeMessage;
 import at.irian.ankor.messaging.Message;
@@ -44,8 +42,7 @@ public class JsonViewDataMessageMapper implements MessageMapper<String> {
                 new SimpleModule("ViewDataJsonMessageMapperModule",
                                  new Version(1, 0, 0, null, null, null));
         module.addDeserializer(Message.class, new MessageDeserializer());
-        module.addDeserializer(Action.class, new ActionDeserializer());
-        module.addDeserializer(ChangeMessage.Change.class, new ChangeDeserializer());
+        module.addDeserializer(Change.class, new ChangeDeserializer());
 
         mapper = new ObjectMapper();
         //mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
@@ -113,46 +110,17 @@ public class JsonViewDataMessageMapper implements MessageMapper<String> {
         }
     }
 
-    class ActionDeserializer extends StdDeserializer<Action> {
 
-        ActionDeserializer() {
-            super(Action.class);
-        }
-
-        @Override
-        public Action deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
-            ObjectMapper mapper = (ObjectMapper) jp.getCodec();
-            ObjectNode tree = mapper.readTree(jp);
-            Class<? extends Action> detectedType = null;
-            Iterator<Map.Entry<String, JsonNode>> elementsIterator = tree.fields();
-            while (elementsIterator.hasNext())
-            {
-                Map.Entry<String, JsonNode> element=elementsIterator.next();
-                String name = element.getKey();
-                if (name.equals("params")) { // TODO find a better way
-                    detectedType = SimpleParamAction.class;
-                    break;
-                }
-            }
-            if (detectedType == null) {
-                detectedType = SimpleAction.class;
-            }
-            return mapper.treeToValue(tree, detectedType);
-        }
-    }
-
-
-    class ChangeDeserializer extends StdDeserializer<ChangeMessage.Change> {
+    class ChangeDeserializer extends StdDeserializer<Change> {
 
         ChangeDeserializer() {
-            super(ChangeMessage.Change.class);
+            super(Change.class);
         }
 
         @Override
-        public ChangeMessage.Change deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
+        public Change deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
             ObjectMapper mapper = (ObjectMapper) jp.getCodec();
             ObjectNode tree = mapper.readTree(jp);
-            String changedProperty = tree.get("changedProperty").asText();
 
             Object newValue;
             JsonNode newValueTree = tree.get("newValue");
@@ -164,7 +132,7 @@ public class JsonViewDataMessageMapper implements MessageMapper<String> {
                 newValue = mapper.treeToValue(newValueTree, Object.class);
             }
 
-            return new ChangeMessage.Change(changedProperty, newValue);
+            return new Change(newValue);
         }
     }
 }

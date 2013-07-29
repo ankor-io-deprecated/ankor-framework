@@ -1,6 +1,7 @@
 package at.irian.ankor.ref.el;
 
 import at.irian.ankor.action.Action;
+import at.irian.ankor.change.Change;
 import at.irian.ankor.path.el.ELPathSyntax;
 import at.irian.ankor.ref.ActionListener;
 import at.irian.ankor.ref.ChangeListener;
@@ -34,6 +35,11 @@ public class MockELRef implements Ref {
     @Override
     public void setValue(Object value) {
         this.propertyValue = value;
+    }
+
+    @Override
+    public void apply(Change change) {
+        this.propertyValue = change.getNewValue();
     }
 
     @SuppressWarnings("unchecked")

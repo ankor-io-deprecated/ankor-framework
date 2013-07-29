@@ -44,7 +44,6 @@ public class Tabs extends ViewModelMapBase<String, Tab> {
 
         Tab<AnimalSearchModel> tab = new Tab<AnimalSearchModel>(tabId, tabRef, "Animal Search");
         AnimalSearchModel model = new AnimalSearchModel(tabRef.append("model"), animalRepository, getAnimalSelectItems(), tab.getName());
-
         tab.setModel(model);
 
         tabRef.setValue(tab);
@@ -58,14 +57,12 @@ public class Tabs extends ViewModelMapBase<String, Tab> {
         ModelRoot root = thisRef().root().getValue();
 
         Tab<AnimalDetailModel> tab = new Tab<AnimalDetailModel>(tabId, tabRef, "New Animal");
-
         AnimalDetailModel model = new AnimalDetailModel(tabRef.append("model"),
                                                         new Animal(),
                                                         getAnimalSelectItems(),
                                                         animalRepository,
                                                         tab.getName(),
                                                         root.getServerStatus());
-
         tab.setModel(model);
 
         tabRef.setValue(tab);
