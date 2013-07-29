@@ -1,9 +1,6 @@
 package at.irian.ankor.ref.el;
 
-import at.irian.ankor.action.Action;
-import at.irian.ankor.action.ActionEvent;
 import at.irian.ankor.el.ELUtils;
-import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.path.PathSyntax;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
@@ -92,20 +89,6 @@ public class ELRef extends AbstractRef {
     @Override
     public Ref appendPathKey(String pathKey) {
         return refFactory().ref(pathSyntax().addMapKey(path(), pathKey));
-    }
-
-    @Override
-    public void fireAction(Action action) {
-        ActionEvent actionEvent = new ActionEvent(this, action);
-        for (ModelEventListener listener : refContext.eventListeners()) {
-            if (actionEvent.isAppropriateListener(listener)) {
-                try {
-                    actionEvent.processBy(listener);
-                } catch (Exception e) {
-                    LOG.error("Listener " + listener + " threw exception while processing " + actionEvent, e);
-                }
-            }
-        }
     }
 
     @Override

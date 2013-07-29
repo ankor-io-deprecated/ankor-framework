@@ -1,6 +1,8 @@
 package at.irian.ankor.session;
 
 import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.dispatch.Dispatcher;
+import at.irian.ankor.dispatch.SessionSynchronisedDispatcher;
 import at.irian.ankor.messaging.MessageSender;
 import at.irian.ankor.ref.RefContext;
 
@@ -13,11 +15,13 @@ public class SingletonSession implements Session {
     private String sessionId;
     private final ModelContext modelContext;
     private final RefContext refContext;
+    private final Dispatcher dispatcher;
     private MessageSender messageSender;
 
     public SingletonSession(ModelContext modelContext, RefContext refContext) {
         this.modelContext = modelContext;
         this.refContext = refContext;
+        this.dispatcher = new SessionSynchronisedDispatcher(this);
     }
 
     @Override
@@ -59,5 +63,10 @@ public class SingletonSession implements Session {
 
     public void setMessageSender(MessageSender messageSender) {
         this.messageSender = messageSender;
+    }
+
+    @Override
+    public Dispatcher getDispatcher() {
+        return dispatcher;
     }
 }

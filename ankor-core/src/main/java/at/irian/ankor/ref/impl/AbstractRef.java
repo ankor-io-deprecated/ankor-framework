@@ -5,6 +5,7 @@ import at.irian.ankor.action.ActionEvent;
 import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.change.ChangeEventListener;
 import at.irian.ankor.change.DelayedChangeEventListener;
+import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.ref.ActionListener;
 import at.irian.ankor.ref.ChangeListener;
 import at.irian.ankor.ref.Ref;
@@ -16,7 +17,7 @@ import java.lang.reflect.Constructor;
  * @author Manfred Geiler
  */
 public abstract class AbstractRef implements Ref {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AbstractRef.class);
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AbstractRef.class);
 
     @SuppressWarnings("SimplifiableIfStatement")
     @Override
@@ -203,4 +204,17 @@ public abstract class AbstractRef implements Ref {
         return watchedProperty.equals(actionProperty);
     }
 
+    @Override
+    public void fireAction(Action action) {
+        ActionEvent actionEvent = new ActionEvent(this, action);
+        for (ModelEventListener listener : context().eventListeners()) {
+            if (actionEvent.isAppropriateListener(listener)) {
+                try {
+                    actionEvent.processBy(listener);
+                } catch (Exception e) {
+                    LOG.error("Listener " + listener + " threw exception while processing " + actionEvent, e);
+                }
+            }
+        }
+    }
 }

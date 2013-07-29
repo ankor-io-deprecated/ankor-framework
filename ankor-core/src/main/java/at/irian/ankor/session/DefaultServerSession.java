@@ -1,6 +1,7 @@
 package at.irian.ankor.session;
 
 import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.dispatch.Dispatcher;
 import at.irian.ankor.messaging.MessageSender;
 import at.irian.ankor.ref.RefContext;
 
@@ -14,6 +15,7 @@ public class DefaultServerSession implements Session {
     private final ModelContext modelContext;
     private final RefContext refContext;
     private final ModelRootFactory modelRootFactory;
+    private Dispatcher dispatcher;
     private MessageSender messageSender;
     private boolean active;
 
@@ -70,5 +72,14 @@ public class DefaultServerSession implements Session {
 
     public void setMessageSender(MessageSender messageSender) {
         this.messageSender = messageSender;
+    }
+
+    protected void setDispatcher(Dispatcher dispatcher) {
+        this.dispatcher = dispatcher;
+    }
+
+    @Override
+    public Dispatcher getDispatcher() {
+        return dispatcher;
     }
 }

@@ -1,6 +1,7 @@
 package at.irian.ankor.session;
 
 import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.dispatch.Dispatcher;
 import at.irian.ankor.messaging.MessageSender;
 import at.irian.ankor.ref.RefContext;
 
@@ -24,4 +25,7 @@ public interface Session {
     MessageSender getMessageSender();
 
     void setMessageSender(MessageSender messageSender);
+
+    Dispatcher getDispatcher();
+
 }

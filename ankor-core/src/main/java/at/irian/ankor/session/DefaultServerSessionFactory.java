@@ -2,6 +2,7 @@ package at.irian.ankor.session;
 
 import at.irian.ankor.context.DefaultModelContext;
 import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.dispatch.SessionSynchronisedDispatcher;
 import at.irian.ankor.messaging.MessageFactory;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefContextFactory;
@@ -32,7 +33,9 @@ public class DefaultServerSessionFactory implements SessionFactory {
         ModelContext modelContext = new DefaultModelContext();
         RefContext refContext = refContextFactory.createRefContextFor(modelContext);
 
-        Session session = new DefaultServerSession(sessionId, modelContext, refContext, modelRootFactory);
+        DefaultServerSession session = new DefaultServerSession(sessionId, modelContext, refContext, modelRootFactory);
+
+        session.setDispatcher(new SessionSynchronisedDispatcher(session));
 
         // action event listener for sending action events to remote partner
         modelContext.getModelEventListeners().add(new DefaultSyncActionEventListener(messageFactory, session));

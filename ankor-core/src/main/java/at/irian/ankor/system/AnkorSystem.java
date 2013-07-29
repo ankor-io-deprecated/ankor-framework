@@ -10,6 +10,7 @@ import at.irian.ankor.session.SessionManager;
 /**
  * @author Manfred Geiler
  */
+@SuppressWarnings("UnusedDeclaration")
 public class AnkorSystem {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnkorSystem.class);
 
@@ -86,7 +87,8 @@ public class AnkorSystem {
 
                 RefContext refContext = session.getRefContext();
                 Ref actionProperty = refContext.refFactory().ref(message.getActionPropertyPath());
-                actionProperty.fireAction(message.getAction());
+
+                session.getDispatcher().dispatchAction(actionProperty, message.getAction());
 
                 messageSender.flush();
                 session.setMessageSender(originalMessageSender);
@@ -107,9 +109,8 @@ public class AnkorSystem {
 
                 RefContext refContext = session.getRefContext();
                 Ref changedProperty = refContext.refFactory().ref(message.getChange().getChangedProperty());
-                if (changedProperty.isRoot() || changedProperty.isValid()) {
-                    changedProperty.setValue(message.getChange().getNewValue());
-                }
+
+                session.getDispatcher().dispatchChange(changedProperty, message.getChange().getNewValue());
 
                 messageSender.flush();
                 session.setMessageSender(originalMessageSender);
