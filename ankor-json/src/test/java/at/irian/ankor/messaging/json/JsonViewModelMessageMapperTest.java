@@ -2,10 +2,7 @@ package at.irian.ankor.messaging.json;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.SimpleAction;
-import at.irian.ankor.messaging.ActionMessage;
-import at.irian.ankor.messaging.ChangeMessage;
-import at.irian.ankor.messaging.Message;
-import at.irian.ankor.messaging.MessageFactory;
+import at.irian.ankor.messaging.*;
 import junit.framework.Assert;
 import org.junit.Test;
 
@@ -20,7 +17,7 @@ public class JsonViewModelMessageMapperTest {
 
     @org.junit.Before
     public void setUp() throws Exception {
-        messageFactory = new MessageFactory();
+        messageFactory = new MessageFactory(new CounterMessageIdGenerator());
         msgMapper = new JsonViewModelMessageMapper();
     }
 

@@ -1,7 +1,6 @@
 package at.irian.ankor.session;
 
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -12,16 +11,18 @@ public class DefaultSessionManager implements SessionManager {
 
     private final Map<String, Session> sessionMap = new ConcurrentHashMap<String, Session>();
     private final SessionFactory sessionFactory;
+    private final SessionIdGenerator sessionIdGenerator;
 
-    public DefaultSessionManager(SessionFactory sessionFactory) {
+    public DefaultSessionManager(SessionFactory sessionFactory, SessionIdGenerator sessionIdGenerator) {
         this.sessionFactory = sessionFactory;
+        this.sessionIdGenerator = sessionIdGenerator;
     }
 
     @Override
     public Session getOrCreateSession(String id) {
         Session session;
         if (id == null) {
-            id = UUID.randomUUID().toString();
+            id = sessionIdGenerator.create();
             session = sessionFactory.create(id);
             sessionMap.put(id, session);
         } else {
@@ -46,7 +47,7 @@ public class DefaultSessionManager implements SessionManager {
             synchronized (sessionMap) {
                 session = sessionMap.get(id);
                 if (session != null) {
-                    session.invalidate();
+                    session.stop();
                     sessionMap.remove(id);
                 }
             }

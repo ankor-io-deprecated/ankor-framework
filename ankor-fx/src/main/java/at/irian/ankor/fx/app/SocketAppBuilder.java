@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  * @author Thomas Spiegl
  */
-public class SocketAppServiceBuilder {
+public class SocketAppBuilder {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SimpleAppServiceFactory.class);
 
     private static final String HOST = "localhost";
@@ -28,7 +28,7 @@ public class SocketAppServiceBuilder {
     private Map<String, Object> beans = new HashMap<String, Object>();
     private ModelRootFactory modelRootFactory;
 
-    public SocketAppServiceBuilder() {
+    public SocketAppBuilder() {
         beanResolver = new BeanResolver() {
             @Override
             public Object resolveByName(String beanName) {
@@ -42,17 +42,20 @@ public class SocketAppServiceBuilder {
         };
     }
 
-    public SocketAppServiceBuilder withModelRootFactory(ModelRootFactory modelRootFactory) {
+    public SocketAppBuilder withModelRootFactory(ModelRootFactory modelRootFactory) {
         this.modelRootFactory = modelRootFactory;
         return this;
     }
 
-    public SocketAppServiceBuilder withBean(String beanName, Object bean) {
+    public SocketAppBuilder withBean(String beanName, Object bean) {
         this.beans.put(beanName, bean);
         return this;
     }
 
-    public AppService create() {
+    /**
+     * @return the client's RefFactory
+     */
+    public RefFactory create() {
         // createRefContext
 
         Thread serverThread = new Thread(new Runnable() {
@@ -104,8 +107,7 @@ public class SocketAppServiceBuilder {
         clientMessageLoop.start();
 
         RefContext clientRefContext = clientSystem.getSessionManager().getOrCreateSession(null).getRefContext();
-        RefFactory clientRefFactory = clientRefContext.refFactory();
-        return new AppService(clientRefFactory);
+        return clientRefContext.refFactory();
     }
 
 }

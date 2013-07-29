@@ -13,21 +13,45 @@ public class DefaultServerSession implements Session {
     private final String sessionId;
     private final ModelContext modelContext;
     private final RefContext refContext;
+    private final ModelRootFactory modelRootFactory;
     private MessageSender messageSender;
+    private boolean active;
 
     public DefaultServerSession(String sessionId,
                                 ModelContext modelContext,
-                                RefContext refContext) {
+                                RefContext refContext,
+                                ModelRootFactory modelRootFactory) {
         this.sessionId = sessionId;
         this.modelContext = modelContext;
         this.refContext = refContext;
+        this.modelRootFactory = modelRootFactory;
         this.messageSender = null;
+        this.active = false;
     }
 
     @Override
     public String getId() {
         return sessionId;
     }
+
+    @Override
+    public boolean isActive() {
+        return active;
+    }
+
+    @Override
+    public void start() {
+        Object modelRoot = modelRootFactory.createModelRoot(refContext.refFactory().rootRef());
+        refContext.refFactory().rootRef().setValue(modelRoot);
+        this.active = true;
+    }
+
+    @Override
+    public void stop() {
+        refContext.refFactory().rootRef().setValue(null);
+        this.active = false;
+    }
+
 
     @Override
     public ModelContext getModelContext() {
@@ -37,11 +61,6 @@ public class DefaultServerSession implements Session {
     @Override
     public RefContext getRefContext() {
         return refContext;
-    }
-
-    @Override
-    public void invalidate() {
-
     }
 
     @Override

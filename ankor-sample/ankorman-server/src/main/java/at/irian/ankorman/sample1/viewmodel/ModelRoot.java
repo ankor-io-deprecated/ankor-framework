@@ -12,26 +12,27 @@ import at.irian.ankorman.sample1.server.AnimalRepository;
 public class ModelRoot extends ViewModelBase {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TestModel.class);
 
-    private String userName;
+    private ViewModelProperty<String> userName;
     private ViewModelProperty<String> serverStatus;
     private Tabs tabs;
 
     public ModelRoot(Ref viewModelRef, AnimalRepository animalRepository) {
         super(viewModelRef);
         this.tabs = new Tabs(viewModelRef.append("tabs"), animalRepository);
+        this.userName.set("");
         this.serverStatus.set("");
     }
 
     @ActionListener
     public void init() {
-        //todo ...   how to propagate the root change to the server?!
+        userName.set("John Doe");
     }
 
-    public String getUserName() {
+    public ViewModelProperty<String> getUserName() {
         return userName;
     }
 
-    public void setUserName(String userName) {
+    public void setUserName(ViewModelProperty<String> userName) {
         this.userName = userName;
     }
 

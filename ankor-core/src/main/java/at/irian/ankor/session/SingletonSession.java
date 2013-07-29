@@ -25,6 +25,19 @@ public class SingletonSession implements Session {
         return sessionId;
     }
 
+    @Override
+    public boolean isActive() {
+        return true;
+    }
+
+    @Override
+    public void start() {
+    }
+
+    @Override
+    public void stop() {
+    }
+
     public void setId(String sessionId) {
         this.sessionId = sessionId;
     }
@@ -37,11 +50,6 @@ public class SingletonSession implements Session {
     @Override
     public RefContext getRefContext() {
         return refContext;
-    }
-
-    @Override
-    public void invalidate() {
-
     }
 
     @Override

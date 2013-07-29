@@ -31,9 +31,8 @@ public class DefaultServerSessionFactory implements SessionFactory {
 
         ModelContext modelContext = new DefaultModelContext();
         RefContext refContext = refContextFactory.createRefContextFor(modelContext);
-        Object modelRoot = modelRootFactory.createModelRoot(refContext.refFactory().rootRef());
-        modelContext.setModelRoot(modelRoot);
-        Session session = new DefaultServerSession(sessionId, modelContext, refContext);
+
+        Session session = new DefaultServerSession(sessionId, modelContext, refContext, modelRootFactory);
 
         // action event listener for sending action events to remote partner
         modelContext.getModelEventListeners().add(new DefaultSyncActionEventListener(messageFactory, session));

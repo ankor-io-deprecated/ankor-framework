@@ -40,7 +40,9 @@ public class MainController implements Initializable {
             public void processChange(Ref watchedProperty, Ref changedProperty) {
                 Ref rootRef = refFactory().rootRef();
 
-                userName.setText((String) rootRef.append("userName").getValue());
+                bindValue(rootRef.append("userName"))
+                        .toText(userName)
+                        .createWithin(bindingContext);
 
                 bindValue(rootRef.append("serverStatus"))
                         .toText(serverStatus)

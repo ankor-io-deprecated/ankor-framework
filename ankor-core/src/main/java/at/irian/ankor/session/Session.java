@@ -11,7 +11,11 @@ public interface Session {
 
     String getId();
 
-    void invalidate();
+    boolean isActive();
+
+    void start();
+
+    void stop();
 
     ModelContext getModelContext();
 

@@ -42,7 +42,7 @@ public class ModelRootJsonTest {
     @Test
     public void test() throws Exception {
         ModelRoot root = new ModelRoot(rf.rootRef(), new AnimalRepository());
-        root.setUserName("Max Muster");
+        root.getUserName().set("Max Muster");
 
         Tab<AnimalSearchModel> tab = new Tab<AnimalSearchModel>("A1", rf.ref("root.tabs").append("A1"), "Test");
         root.getTabs().put("A1", tab);

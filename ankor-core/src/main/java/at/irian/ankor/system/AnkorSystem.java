@@ -80,6 +80,10 @@ public class AnkorSystem {
                 MessageSender messageSender = new CircuitBreakerMessageSender(messageBus, message);
                 session.setMessageSender(messageSender);
 
+                if (!session.isActive()) {
+                    session.start();
+                }
+
                 RefContext refContext = session.getRefContext();
                 Ref actionProperty = refContext.refFactory().ref(message.getActionPropertyPath());
                 actionProperty.fireAction(message.getAction());
@@ -96,6 +100,10 @@ public class AnkorSystem {
                 MessageSender originalMessageSender = session.getMessageSender();
                 MessageSender messageSender = new CircuitBreakerMessageSender(messageBus, message);
                 session.setMessageSender(messageSender);
+
+                if (!session.isActive()) {
+                    session.start();
+                }
 
                 RefContext refContext = session.getRefContext();
                 Ref changedProperty = refContext.refFactory().ref(message.getChange().getChangedProperty());

@@ -4,8 +4,10 @@ import at.irian.ankor.annotation.ViewModelAnnotationScanner;
 import at.irian.ankor.context.DefaultModelContext;
 import at.irian.ankor.context.ModelContext;
 import at.irian.ankor.event.EventDelaySupport;
+import at.irian.ankor.messaging.CounterMessageIdGenerator;
 import at.irian.ankor.messaging.MessageBus;
 import at.irian.ankor.messaging.MessageFactory;
+import at.irian.ankor.messaging.MessageIdGenerator;
 import at.irian.ankor.model.ViewModelPostProcessor;
 import at.irian.ankor.model.ViewModelPropertyFieldsInitializer;
 import at.irian.ankor.ref.Ref;
@@ -28,8 +30,9 @@ public class AnkorSystemBuilder {
 
     private String systemName;
     private Config config;
-    private MessageFactory messageFactory;
     private List<ViewModelPostProcessor> viewModelPostProcessors;
+    private SessionIdGenerator sessionIdGenerator;
+    private MessageIdGenerator messageIdGenerator;
 
     private ModelRootFactory modelRootFactory;
     private BeanResolver beanResolver;
@@ -38,8 +41,9 @@ public class AnkorSystemBuilder {
     public AnkorSystemBuilder() {
         this.systemName = null;
         this.config = ConfigFactory.load();
-        this.messageFactory = new MessageFactory();
         this.viewModelPostProcessors = null;
+        this.sessionIdGenerator = new CounterSessionIdGenerator();
+        this.messageIdGenerator = new CounterMessageIdGenerator();
     }
 
     public AnkorSystemBuilder withName(String name) {
@@ -92,10 +96,12 @@ public class AnkorSystemBuilder {
                                                                       eventDelaySupport,
                                                                       viewModelPostProcessors);
 
+        MessageFactory messageFactory = new MessageFactory(messageIdGenerator);
+
         SessionFactory sessionFactory = new DefaultServerSessionFactory(modelRootFactory,
                                                                        refContextFactory,
                                                                        messageFactory);
-        SessionManager sessionManager = new DefaultSessionManager(sessionFactory);
+        SessionManager sessionManager = new DefaultSessionManager(sessionFactory, sessionIdGenerator);
 
         return new AnkorSystem(systemName, messageFactory, messageBus, refContextFactory, sessionManager);
     }
@@ -137,6 +143,8 @@ public class AnkorSystemBuilder {
         RefContext refContext = refContextFactory.createRefContextFor(modelContext);
         SessionManager sessionManager = new SingletonSessionManager(modelContext, refContext);
         Session session = sessionManager.getOrCreateSession(null);
+
+        MessageFactory messageFactory = new MessageFactory(messageIdGenerator);
 
         // action event listener for sending action events to remote partner
         modelContext.getModelEventListeners().add(new DefaultSyncActionEventListener(messageFactory, session));

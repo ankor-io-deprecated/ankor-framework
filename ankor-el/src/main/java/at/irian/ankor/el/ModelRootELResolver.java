@@ -66,9 +66,8 @@ public class ModelRootELResolver extends ELResolver {
     @Override
     public void setValue(ELContext context, Object base, Object property, Object value) {
         if (base == null && modelRootVarName.equals(property)) {
-//            context.setPropertyResolved(true);
-//            session.setModelRoot(value);
-            throw new PropertyNotWritableException(property.toString());
+            context.setPropertyResolved(true);
+            modelContext.setModelRoot(value);
         } else if (base == null && modelRootRefVarName.equals(property)) {
             throw new PropertyNotWritableException(property.toString());
         } else if (base == null && modelContextVarName.equals(property)) {
@@ -107,7 +106,7 @@ public class ModelRootELResolver extends ELResolver {
             fd3.setName(modelContextVarName);
             fd3.setDisplayName(modelContextVarName);
             fd3.setExpert(true);
-            fd3.setShortDescription("ref to the current model holder");
+            fd3.setShortDescription("ref to the current model context");
 
             return Arrays.asList(fd1, fd2, fd3).iterator();
         }
