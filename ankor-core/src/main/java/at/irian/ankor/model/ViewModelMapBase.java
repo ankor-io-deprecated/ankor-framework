@@ -48,36 +48,43 @@ public abstract class ViewModelMapBase<K, V> extends ViewModelBase implements Ma
 
     @Override
     public V put(K key, V value) {
+        // todo  propagate change
         return map.put(key, value);
     }
 
     @Override
     public V remove(Object key) {
+        // todo  propagate change
         return map.remove(key);
     }
 
     @Override
     public void putAll(Map<? extends K, ? extends V> m) {
+        // todo  propagate changes
         map.putAll(m);
     }
 
     @Override
     public void clear() {
+        // todo  propagate changes
         map.clear();
     }
 
     @Override
     public Set<K> keySet() {
+        // todo  propagate key set changes
         return map.keySet();
     }
 
     @Override
     public Collection<V> values() {
+        // todo  propagate value collection changes
         return map.values();
     }
 
     @Override
     public Set<Entry<K, V>> entrySet() {
+        // todo  propagate entry set changes
         return map.entrySet();
     }
 }
