@@ -37,7 +37,7 @@ public class SingletonSession implements Session {
     }
 
     @Override
-    public void stop() {
+    public void close() {
         eventDispatcher.close();
     }
 

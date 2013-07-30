@@ -46,7 +46,7 @@ public class ServerSession implements Session {
     }
 
     @Override
-    public void stop() {
+    public void close() {
         refContext.refFactory().rootRef().setValue(null);
         eventDispatcher.close();
         this.active = false;

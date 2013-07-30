@@ -15,7 +15,7 @@ public interface Session {
 
     void start();
 
-    void stop();
+    void close();
 
     ModelContext getModelContext();
 

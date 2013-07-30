@@ -47,7 +47,7 @@ public class DefaultSessionManager implements SessionManager {
             synchronized (sessionMap) {
                 session = sessionMap.get(id);
                 if (session != null) {
-                    session.stop();
+                    session.close();
                     sessionMap.remove(id);
                 }
             }
