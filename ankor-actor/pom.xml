@@ -29,4 +29,14 @@
 
     </dependencies>
 
+    <repositories>
+        <repository>
+            <id>typesafe</id>
+            <url>http://repo.typesafe.com/typesafe/releases/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+    </repositories>
+
 </project>

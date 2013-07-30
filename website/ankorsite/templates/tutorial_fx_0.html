@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Examples{% endblock %}
+
+{% block content %}
+{% load staticfiles %}
+
+<div class="row">
+    <div class="span3">
+        <div class="well sidebar-nav">
+            <ul class="nav nav-list">
+                <li class="active"><a href="#">0 - Bootstraping</a></li>
+                <li><a href="#">1 - View Model Binding</a></li>
+            </ul>
+        </div><!--/.well -->
+    </div><!--/span-->
+    <div class="span9">
+        <ul class="breadcrumb">
+            <li><a href="#">Tutorials</a> <span class="divider">/</span></li>
+            <li><a href="#">Java FX Tutorial</a> <span class="divider">/</span></li>
+            <li><a href="#">0 - Bootstraping</a></li>
+        </ul>
+        <div class="btn-toolbar">
+            <div class="btn-group">
+                <button class="btn btn-primary">Previous</button>
+                <button class="btn btn-primary">Next</button>
+            </div>
+        </div>
+        <p>&nbsp;</p>
+        <h3>Before you start</h3>
+        <p>Please check that all software components are installed properly. Especially check the Java FX section to make sure
+        that JavaFX is on the Classpath.</p>
+        <div class="tabbable ">
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#tab1" data-toggle="tab">Java</a></li>
+                <li><a href="#tab2" data-toggle="tab">Maven</a></li>
+                <li><a href="#tab3" data-toggle="tab">Java FX</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="tab1">
+                    <p>JDK 1.7, download from <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">here</a>.</p>
+                    <p>Make sure that<p></p>
+                    <ul>
+                        <li>JAVA_HOME exists in your user variables (JDK installation directory)</li>
+                        <li>and that %JAVA_HOME%\bin is in your Path environment variable</li>
+                    </ul>
+                    <p>Open command line and test</p>
+                    <pre><code>java -version</code></pre>
+                </div>
+                <div class="tab-pane" id="tab2">
+                    <p>Maven 3.0.5 or higher, download from <a href="http://maven.apache.org/download.cgi">here</a>.</p>
+                    <p>Make sure that<p></p>
+                    <ul>
+                        <li>MAVEN_HOME exists in your user variables (JDK installation directory)</li>
+                        <li>and that %MAVEN_HOME%\bin is in your Path environment variable</li>
+                    </ul>
+                    <p>Open command line and test</p>
+                    <pre><code>mvn -version</code></pre>
+                </div>
+                <div class="tab-pane" id="tab3">
+                    <p>To get JavaFX on the Classpath execute</p>
+                    <pre><code>mvn com.zenjava:javafx-maven-plugin:2.0:fix-classpath</code></pre>
+                    <p>On unix systems you may need <code>sudo mvn ...</code></p>
+                    <p>If you are interested in why this is needed read <a href="http://zenjava.com/javafx/maven/fix-classpath.html">"Getting JavaFX on the Classpath"</a></p>
+                </div>
+            </div>
+        </div>
+
+        <h3>Get the code</h3>
+        <p>Clone git repository.</p>
+<pre><code>git clone https://github.com/ankor-io/ankor-phonecat</code></pre>
+
+        <p>The folder ankor-phonecat is empty. To get the first tutorial step, checkout branch
+            <a href="https://github.com/ankor-io/ankor-phonecat/tree/fx-step-0">fx-step-0</a>.
+            This is how you may switch between tutorial steps later.</p>
+<pre>
+<code>cd ankor-phonecat
+git checkout -f fx-step-0</code></pre>
+
+        <p>Now you got a maven project based on 3 modules</p>
+<pre>
+<code>boot : Utility to start client and server
+    client : Client application (Java FX)
+    server : Server application</code></pre>
+
+        <h3>Hello World</h3>
+
+        <p>Start application</p>
+<pre>
+<code>cd boot
+mvn install exec:java
+</code></pre>
+        <p>This is what you get ...</p>
+        <img src="{% static 'images/tutorial/fx-step-0-1.png' %}" class="img-rounded">
+        <p>A simple java FX sample app</p>
+        <br/>
+        <a class="btn btn-primary" href="#">Next »</a> - learn how to write your first Ankor Application.
+
+    </div><!--/span-->
+</div><!--/row-->
+
+{% endblock %}

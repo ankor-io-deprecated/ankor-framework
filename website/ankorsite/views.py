@@ -15,8 +15,8 @@ def download(request):
         })
     return HttpResponse(template.render(context))
 
-def examples(request):
-    template = loader.get_template('examples.html')
+def tutorials(request, type, step):
+    template = loader.get_template('tutorial_' + type + '_' + step + '.html')
     context = RequestContext(request, {
                 'examples': 'active',
         })
