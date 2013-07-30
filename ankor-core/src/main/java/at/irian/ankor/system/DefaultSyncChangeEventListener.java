@@ -30,7 +30,7 @@ public class DefaultSyncChangeEventListener extends ChangeEventListener {
         if (change instanceof RemoteChange) {
             // do not relay remote changes back to remote partner ...
         } else {
-            LOG.info("processing local change event {}", event);
+            LOG.debug("processing local change event {}", event);
             Ref changedProperty = event.getChangedProperty();
             String changedPropertyPath = changedProperty.path();
             Message message = messageFactory.createChangeMessage(changedProperty.context().session().getId(),

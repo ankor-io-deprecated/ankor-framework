@@ -31,7 +31,7 @@ public class DefaultSyncActionEventListener extends ActionEventListener {
         if (action instanceof RemoteAction) {
             // do not relay remote action back to remote partner ...
         } else {
-            LOG.info("processing local action event {}", event);
+            LOG.debug("processing local action event {}", event);
             Ref actionProperty = event.getActionProperty();
             String actionPropertyPath = actionProperty.path();
             Message message = messageFactory.createActionMessage(actionProperty.context().session().getId(),
