@@ -23,4 +23,7 @@ public class SessionSynchronisedEventDispatcher extends SimpleEventDispatcher {
         }
     }
 
+    @Override
+    public void close() {
+    }
 }

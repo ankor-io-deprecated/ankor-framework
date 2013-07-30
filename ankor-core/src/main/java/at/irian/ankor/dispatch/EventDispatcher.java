@@ -9,4 +9,5 @@ public interface EventDispatcher {
 
     void dispatch(ModelEvent event);
 
+    void close();
 }

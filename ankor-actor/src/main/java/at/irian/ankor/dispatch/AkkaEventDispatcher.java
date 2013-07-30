@@ -1,7 +1,7 @@
-package at.irian.ankor.akka;
+package at.irian.ankor.dispatch;
 
 import akka.actor.ActorRef;
-import at.irian.ankor.dispatch.EventDispatcher;
+import akka.actor.ActorSystem;
 import at.irian.ankor.event.ModelEvent;
 
 /**
@@ -9,9 +9,11 @@ import at.irian.ankor.event.ModelEvent;
 */
 class AkkaEventDispatcher implements EventDispatcher {
 
+    private final ActorSystem actorSystem;
     private final ActorRef actor;
 
-    public AkkaEventDispatcher(ActorRef actor) {
+    public AkkaEventDispatcher(ActorSystem actorSystem, ActorRef actor) {
+        this.actorSystem = actorSystem;
         this.actor = actor;
     }
 
@@ -20,4 +22,8 @@ class AkkaEventDispatcher implements EventDispatcher {
        actor.tell(event, null);
     }
 
+    @Override
+    public void close() {
+        actorSystem.stop(actor);
+    }
 }

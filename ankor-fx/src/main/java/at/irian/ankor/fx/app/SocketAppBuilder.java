@@ -1,7 +1,7 @@
 package at.irian.ankor.fx.app;
 
 import akka.actor.ActorSystem;
-import at.irian.ankor.akka.AkkaEventDispatcherFactory;
+import at.irian.ankor.dispatch.AkkaEventDispatcherFactory;
 import at.irian.ankor.messaging.MessageMapper;
 import at.irian.ankor.messaging.SocketMessageLoop;
 import at.irian.ankor.messaging.json.JsonViewDataMessageMapper;

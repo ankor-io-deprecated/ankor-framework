@@ -29,4 +29,7 @@ public class SimpleEventDispatcher implements EventDispatcher {
         }
     }
 
+    @Override
+    public void close() {
+    }
 }

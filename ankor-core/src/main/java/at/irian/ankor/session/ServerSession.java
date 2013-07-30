@@ -48,6 +48,7 @@ public class ServerSession implements Session {
     @Override
     public void stop() {
         refContext.refFactory().rootRef().setValue(null);
+        eventDispatcher.close();
         this.active = false;
     }
 
