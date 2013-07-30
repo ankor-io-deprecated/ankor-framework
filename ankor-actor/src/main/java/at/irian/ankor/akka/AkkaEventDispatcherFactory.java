@@ -23,7 +23,7 @@ public class AkkaEventDispatcherFactory implements EventDispatcherFactory {
     public EventDispatcher createFor(Session session) {
 
         final ActorRef actor = actorSystem.actorOf(new Props(AnkorActor.class), "ankor_" + session.getId());
-        actor.tell(new InitMsg(session));
+        actor.tell(new InitMsg(session), null);
 
         return new AkkaEventDispatcher(actor);
     }

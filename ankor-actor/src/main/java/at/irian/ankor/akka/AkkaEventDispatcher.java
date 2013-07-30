@@ -17,7 +17,7 @@ class AkkaEventDispatcher implements EventDispatcher {
 
     @Override
     public void dispatch(ModelEvent event) {
-       actor.tell(event);
+       actor.tell(event, null);
     }
 
 }

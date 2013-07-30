@@ -19,8 +19,9 @@ import java.util.Map;
 /**
  * @author Thomas Spiegl
  */
+@SuppressWarnings("UnusedDeclaration")
 public class SocketAppBuilder {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SocketAppBuilder.class);
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SocketAppBuilder.class);
 
     private static final String HOST = "localhost";
     private static final int serverPort = 8080;
@@ -69,6 +70,7 @@ public class SocketAppBuilder {
                                                                                     clientPort,
                                                                                     serverPort);
 
+        LOG.info("Starting akka actor system");
         ActorSystem actorSystem = ActorSystem.create();
         AkkaEventDispatcherFactory akkaDispatcherFactory = new AkkaEventDispatcherFactory(actorSystem);
 
