@@ -1,9 +1,8 @@
 package at.irian.ankorman.sample1.fxclient;
 
 import at.irian.ankor.action.ActionBuilder;
-import at.irian.ankor.change.ChangeEvent;
-import at.irian.ankor.change.ChangeEventListener;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.ref.listener.RefChangeListener;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Tab;
@@ -13,6 +12,8 @@ import javafx.util.Callback;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
+import static at.irian.ankor.ref.listener.RefListeners.addChangeListener;
+import static at.irian.ankor.ref.listener.RefListeners.removeListener;
 import static at.irian.ankorman.sample1.fxclient.App.refFactory;
 
 /**
@@ -42,12 +43,11 @@ public class TabLoader {
 
         final Ref tabRef = tabsRef.append(tabId);
 
-        // todo  change listener instead...
-        tabsRef.context().eventListeners().add(new ChangeEventListener(tabRef) {
+        addChangeListener(tabsRef, new RefChangeListener() {
             @Override
-            public void process(ChangeEvent event) {
-                if (event.getChangedProperty().equals(tabRef)) {
-                    tabsRef.context().eventListeners().remove(this);
+            public void processChange(Ref changedProperty) {
+                if (changedProperty.equals(tabRef)) {
+                    removeListener(tabRef.context(), this);
                     showTab(tabPane);
                 }
             }

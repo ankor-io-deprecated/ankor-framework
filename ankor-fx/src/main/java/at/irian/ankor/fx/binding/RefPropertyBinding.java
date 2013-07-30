@@ -1,7 +1,8 @@
 package at.irian.ankor.fx.binding;
 
-import at.irian.ankor.ref.ChangeListener;
+import at.irian.ankor.ref.listener.RefChangeListener;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.ref.listener.RefListeners;
 import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
@@ -17,7 +18,7 @@ import static at.irian.ankor.util.ObjectUtils.nullSafeEquals;
 * @author Thomas Spiegl
 */
 @SuppressWarnings("unchecked")
-public class RefPropertyBinding implements ChangeListener, javafx.beans.value.ChangeListener<Object> {
+public class RefPropertyBinding implements RefChangeListener, javafx.beans.value.ChangeListener<Object> {
 
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RefPropertyBinding.class);
 
@@ -28,23 +29,24 @@ public class RefPropertyBinding implements ChangeListener, javafx.beans.value.Ch
         this.valueRef = valueRef;
         this.property = property;
 
-        setPropertyValue(valueRef);
+        setPropertyValue();
 
-        this.valueRef.addPropChangeListener(this);
+        RefListeners.addPropChangeListener(this.valueRef, this);
+
         this.property.addListener(this);
     }
 
     @Override
-    public void processChange(final Ref watchedProperty, Ref changedProperty) {
+    public void processChange(Ref changedProperty) {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                setPropertyValue(watchedProperty);
+                setPropertyValue();
             }
         });
     }
 
-    private void setPropertyValue(Ref valueRef) {
+    private void setPropertyValue() {
         Object remoteValue = valueRef.getValue();
         if (remoteValue instanceof String) {
             property.setValue(remoteValue);

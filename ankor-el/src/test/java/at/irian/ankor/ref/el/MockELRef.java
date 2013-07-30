@@ -2,8 +2,6 @@ package at.irian.ankor.ref.el;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.path.el.ELPathSyntax;
-import at.irian.ankor.ref.ActionListener;
-import at.irian.ankor.ref.ChangeListener;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 
@@ -137,23 +135,4 @@ public class MockELRef implements Ref {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void addPropActionListener(ActionListener listener) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void addPropChangeListener(ChangeListener listener) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void addTreeChangeListener(ChangeListener listener) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void addChangeListener(ChangeListener listener) {
-        throw new UnsupportedOperationException();
-    }
 }

@@ -2,15 +2,11 @@ package at.irian.ankor.ref.impl;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionEvent;
-import at.irian.ankor.action.ActionEventListener;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.change.ChangeEvent;
-import at.irian.ankor.change.ChangeEventListener;
 import at.irian.ankor.change.OldValuesAwareChangeEvent;
 import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.event.PropertyWatcher;
-import at.irian.ankor.ref.ActionListener;
-import at.irian.ankor.ref.ChangeListener;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.Wrapper;
 
@@ -167,78 +163,9 @@ public abstract class AbstractRef implements Ref {
     public abstract RefContextImplementor context();
 
     @Override
-    public void addPropChangeListener(final ChangeListener listener) {
-        context().eventListeners().add(new ChangeEventListener(this) {
-            @Override
-            public void process(ChangeEvent event) {
-                Ref changedProperty = event.getChangedProperty();
-                Ref watchedProperty = getWatchedProperty();
-                if (isRelevantPropChange(changedProperty, watchedProperty)) {
-                    listener.processChange(watchedProperty, changedProperty);
-                }
-            }
-
-            private boolean isRelevantPropChange(Ref changedProperty, Ref watchedProperty) {
-                return watchedProperty.equals(changedProperty) || watchedProperty.isDescendantOf(changedProperty);
-            }
-
-        });
-    }
-
-    @Override
-    public void addTreeChangeListener(final ChangeListener listener) {
-        context().eventListeners().add(new ChangeEventListener(this) {
-            @Override
-            public void process(ChangeEvent event) {
-                Ref changedProperty = event.getChangedProperty();
-                Ref watchedProperty = getWatchedProperty();
-                if (isRelevantTreeChange(changedProperty, watchedProperty)) {
-                    listener.processChange(watchedProperty, changedProperty);
-                }
-            }
-
-            private boolean isRelevantTreeChange(Ref changedProperty, Ref watchedProperty) {
-                return watchedProperty.equals(changedProperty) || watchedProperty.isAncestorOf(changedProperty);
-            }
-
-        });
-    }
-
-    @Override
-    public void addPropActionListener(final ActionListener listener) {
-        context().eventListeners().add(new ActionEventListener(this) {
-            @Override
-            public void process(ActionEvent event) {
-                Ref watchedProperty = getWatchedProperty();
-                if (isRelevantActionProperty(event.getActionProperty(), watchedProperty)) {
-                    listener.processAction(watchedProperty, event.getAction());
-                }
-            }
-
-            private boolean isRelevantActionProperty(Ref actionProperty, Ref watchedProperty) {
-                return watchedProperty.equals(actionProperty);
-            }
-        });
-    }
-
-    @Override
-    public void addChangeListener(final ChangeListener listener) {
-        context().eventListeners().add(new ChangeEventListener(null) {
-            @Override
-            public void process(ChangeEvent event) {
-                listener.processChange(null, event.getChangedProperty());
-            }
-
-            @Override
-            public Ref getOwner() {
-                return AbstractRef.this;
-            }
-        });
-    }
-
-    @Override
     public void fireAction(Action action) {
         ActionEvent actionEvent = new ActionEvent(this, action);
         context().eventDispatcher().dispatch(actionEvent);
     }
+
 }

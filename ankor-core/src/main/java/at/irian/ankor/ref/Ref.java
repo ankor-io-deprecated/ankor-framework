@@ -82,12 +82,4 @@ public interface Ref {
 
     void fireAction(Action action);
 
-    void addPropActionListener(ActionListener listener);
-
-    void addPropChangeListener(ChangeListener listener);
-
-    void addTreeChangeListener(ChangeListener listener);
-
-    void addChangeListener(ChangeListener listener);
-
 }

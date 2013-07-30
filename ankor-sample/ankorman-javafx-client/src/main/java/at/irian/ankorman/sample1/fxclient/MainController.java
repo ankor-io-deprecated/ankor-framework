@@ -2,8 +2,9 @@ package at.irian.ankorman.sample1.fxclient;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.fx.binding.BindingContext;
-import at.irian.ankor.ref.ChangeListener;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.ref.listener.RefChangeListener;
+import at.irian.ankor.ref.listener.RefListeners;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -35,9 +36,10 @@ public class MainController implements Initializable {
 
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Ref rootRef = refFactory().rootRef();
-        rootRef.addPropChangeListener(new ChangeListener() {
+
+        RefListeners.addPropChangeListener(rootRef, new RefChangeListener() {
             @Override
-            public void processChange(Ref watchedProperty, Ref changedProperty) {
+            public void processChange(Ref changedProperty) {
                 Ref rootRef = refFactory().rootRef();
 
                 bindValue(rootRef.append("userName"))
@@ -49,8 +51,8 @@ public class MainController implements Initializable {
                         .createWithin(bindingContext);
             }
         });
-        rootRef.fireAction(new Action("init"));
 
+        rootRef.fireAction(new Action("init"));
     }
 
     public void openAnimalSearchTab(@SuppressWarnings("UnusedParameters") ActionEvent actionEvent) {

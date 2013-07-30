@@ -6,9 +6,14 @@ import at.irian.ankor.model.ViewModelPostProcessor;
 import at.irian.ankor.path.PathSyntax;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefMatcher;
+import at.irian.ankor.ref.listener.RefActionListener;
+import at.irian.ankor.ref.listener.RefChangeListener;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+
+import static at.irian.ankor.ref.listener.RefListeners.addChangeListener;
+import static at.irian.ankor.ref.listener.RefListeners.addPropActionListener;
 
 /**
  * @author Manfred Geiler
@@ -35,9 +40,9 @@ public class ViewModelAnnotationScanner implements ViewModelPostProcessor {
 
             ChangeListener changeListenerAnnotation = method.getAnnotation(ChangeListener.class);
             if (changeListenerAnnotation != null) {
-                modelRef.addChangeListener(new MyChangeListener(modelObject, modelRef,
-                                                                changeListenerAnnotation.pattern(),
-                                                                method));
+                addChangeListener(modelRef, new MyChangeListener(modelObject, modelRef,
+                                                                 changeListenerAnnotation.pattern(),
+                                                                 method));
             }
 
             ActionListener actionListenerAnnotation = method.getAnnotation(ActionListener.class);
@@ -55,13 +60,14 @@ public class ViewModelAnnotationScanner implements ViewModelPostProcessor {
                         }
                     }
                 }
-                modelRef.addPropActionListener(new MyActionListener(modelObject, actionName, method, paramNames));
+                addPropActionListener(modelRef, new MyActionListener(modelObject, actionName,
+                                                                     method, paramNames));
             }
         }
     }
 
 
-    private static class MyChangeListener implements at.irian.ankor.ref.ChangeListener {
+    private static class MyChangeListener implements RefChangeListener {
 
         private final ViewModelBase modelObject;
         private final Ref modelRef;
@@ -76,7 +82,7 @@ public class ViewModelAnnotationScanner implements ViewModelPostProcessor {
         }
 
         @Override
-        public void processChange(Ref unusedWatchedProperty, Ref changedProperty) {
+        public void processChange(Ref changedProperty) {
             PathSyntax pathSyntax = modelRef.context().pathSyntax();
             for (String pattern : patterns) {
                 RefMatcher matcher = new RefMatcher(pathSyntax, pattern);
@@ -95,7 +101,7 @@ public class ViewModelAnnotationScanner implements ViewModelPostProcessor {
     }
 
 
-    private static class MyActionListener implements at.irian.ankor.ref.ActionListener {
+    private static class MyActionListener implements RefActionListener {
 
         private final ViewModelBase modelObject;
         private final String actionName;
