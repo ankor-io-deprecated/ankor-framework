@@ -28,12 +28,7 @@ public class SingletonSession implements Session {
     }
 
     @Override
-    public boolean isActive() {
-        return true;
-    }
-
-    @Override
-    public void start() {
+    public void init() {
     }
 
     @Override

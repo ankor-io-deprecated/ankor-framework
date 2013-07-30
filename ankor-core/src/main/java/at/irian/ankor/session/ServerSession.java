@@ -2,6 +2,7 @@ package at.irian.ankor.session;
 
 import at.irian.ankor.context.ModelContext;
 import at.irian.ankor.dispatch.EventDispatcher;
+import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 
 /**
@@ -15,7 +16,6 @@ public class ServerSession implements Session {
     private final RefContext refContext;
     private final ModelRootFactory modelRootFactory;
     private EventDispatcher eventDispatcher;
-    private boolean active;
 
     public ServerSession(String sessionId,
                          ModelContext modelContext,
@@ -25,7 +25,6 @@ public class ServerSession implements Session {
         this.modelContext = modelContext;
         this.refContext = refContext;
         this.modelRootFactory = modelRootFactory;
-        this.active = false;
     }
 
     @Override
@@ -33,23 +32,20 @@ public class ServerSession implements Session {
         return sessionId;
     }
 
+    /**
+     * Create the view model root
+     */
     @Override
-    public boolean isActive() {
-        return active;
-    }
-
-    @Override
-    public void start() {
-        Object modelRoot = modelRootFactory.createModelRoot(refContext.refFactory().rootRef());
-        refContext.refFactory().rootRef().setValue(modelRoot);
-        this.active = true;
+    public void init() {
+        Ref rootRef = refContext.refFactory().rootRef();
+        Object modelRoot = modelRootFactory.createModelRoot(rootRef);
+        rootRef.setValue(modelRoot);
     }
 
     @Override
     public void close() {
         refContext.refFactory().rootRef().setValue(null);
         eventDispatcher.close();
-        this.active = false;
     }
 
 

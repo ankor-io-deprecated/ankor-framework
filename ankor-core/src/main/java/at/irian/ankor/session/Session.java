@@ -11,9 +11,7 @@ public interface Session {
 
     String getId();
 
-    boolean isActive();
-
-    void start();
+    void init();
 
     void close();
 

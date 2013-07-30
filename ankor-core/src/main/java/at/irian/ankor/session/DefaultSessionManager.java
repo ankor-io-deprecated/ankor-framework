@@ -23,7 +23,7 @@ public class DefaultSessionManager implements SessionManager {
         Session session;
         if (id == null) {
             id = sessionIdGenerator.create();
-            session = sessionFactory.create(id);
+            session = createAndInitSession(id);
             sessionMap.put(id, session);
         } else {
             session = sessionMap.get(id);
@@ -31,12 +31,18 @@ public class DefaultSessionManager implements SessionManager {
                 synchronized (sessionMap) {
                     session = sessionMap.get(id);
                     if (session == null) {
-                        session = sessionFactory.create(id);
+                        session = createAndInitSession(id);
                         sessionMap.put(id, session);
                     }
                 }
             }
         }
+        return session;
+    }
+
+    protected Session createAndInitSession(String id) {
+        Session session = sessionFactory.create(id);
+        session.init();
         return session;
     }
 

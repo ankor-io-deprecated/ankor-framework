@@ -78,10 +78,6 @@ public class AnkorSystem {
                 String sessionId = message.getSessionId();
                 Session session = sessionManager.getOrCreateSession(sessionId);
 
-                if (!session.isActive()) {
-                    session.start();
-                }
-
                 RefContext refContext = session.getRefContext();
                 Ref actionProperty = refContext.refFactory().ref(message.getActionProperty());
 
@@ -95,10 +91,6 @@ public class AnkorSystem {
             public void onChangeMessage(ChangeMessage message) {
                 String sessionId = message.getSessionId();
                 Session session = sessionManager.getOrCreateSession(sessionId);
-
-                if (!session.isActive()) {
-                    session.start();
-                }
 
                 RefContext refContext = session.getRefContext();
                 Ref changedProperty = refContext.refFactory().ref(message.getChangedProperty());
