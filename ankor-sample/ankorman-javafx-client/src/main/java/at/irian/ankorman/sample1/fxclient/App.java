@@ -35,7 +35,7 @@ public class App extends javafx.application.Application {
         primaryStage.show();
     }
 
-    private void createSocketApp() throws ClassNotFoundException {
+    private void createSocketApp() {
 
         SocketAppBuilder appBuilder = new SocketAppBuilder()
                 .withModelRootFactory(new ModelRootFactory() {

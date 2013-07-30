@@ -29,6 +29,7 @@ public class SimpleEventDispatcher implements EventDispatcher {
         }
     }
 
+    @SuppressWarnings("EmptyMethod")
     @Override
     public void close() {
     }

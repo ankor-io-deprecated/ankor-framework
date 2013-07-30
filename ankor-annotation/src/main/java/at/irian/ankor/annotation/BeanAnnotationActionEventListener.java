@@ -40,11 +40,11 @@ public class BeanAnnotationActionEventListener extends ActionEventListener {
         } else {
             actionPropertyType = null;
         }
-        ActionTarget actionTarget = actionMapper.findTargetFor(((Action) event.getAction()).getName(), actionPropertyType);
+        ActionTarget actionTarget = actionMapper.findTargetFor((event.getAction()).getName(), actionPropertyType);
         if (actionTarget != null) {
             actionTarget.invoke(event, beanResolver);
         } else {
-            LOG.warn("No AnkorAction listener found for action {} propertyType {} ", ((Action) event.getAction()).getName(), actionPropertyType);
+            LOG.warn("No AnkorAction listener found for action {} propertyType {} ", event.getAction().getName(), actionPropertyType);
         }
     }
 

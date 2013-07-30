@@ -18,7 +18,7 @@ import java.lang.reflect.Constructor;
  * @author Manfred Geiler
  */
 public abstract class AbstractRef implements Ref {
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AbstractRef.class);
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AbstractRef.class);
 
     @SuppressWarnings("SimplifiableIfStatement")
     @Override
