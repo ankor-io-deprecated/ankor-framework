@@ -17,7 +17,7 @@ public class JsonViewModelMessageMapperTest {
 
     @org.junit.Before
     public void setUp() throws Exception {
-        messageFactory = new MessageFactory(new CounterMessageIdGenerator());
+        messageFactory = new MessageFactory(new CounterMessageIdGenerator(""));
         msgMapper = new JsonViewModelMessageMapper();
     }
 
@@ -34,7 +34,7 @@ public class JsonViewModelMessageMapperTest {
         Assert.assertEquals(ActionMessage.class, desMsg.getClass());
         ActionMessage actionMsg = (ActionMessage) desMsg;
         Assert.assertEquals(Action.class, actionMsg.getAction().getClass());
-        Action simpleAction = (Action) actionMsg.getAction();
+        Action simpleAction = actionMsg.getAction();
         Assert.assertEquals("test", simpleAction.getName());
     }
 

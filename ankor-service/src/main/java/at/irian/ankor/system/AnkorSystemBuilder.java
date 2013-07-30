@@ -45,7 +45,7 @@ public class AnkorSystemBuilder {
         this.config = ConfigFactory.load();
         this.viewModelPostProcessors = null;
         this.sessionIdGenerator = new CounterSessionIdGenerator();
-        this.messageIdGenerator = new CounterMessageIdGenerator();
+        this.messageIdGenerator = null;
         this.eventDispatcherFactory = new SessionSynchronisedEventDispatcherFactory();
     }
 
@@ -79,6 +79,10 @@ public class AnkorSystemBuilder {
         if (systemName == null) {
             systemName = "Unnamed Server";
             LOG.warn("No system name specified, using default name {}", systemName);
+        }
+
+        if (messageIdGenerator == null) {
+            messageIdGenerator = createDefaultMessageIdGenerator();
         }
 
         if (modelRootFactory == null) {
@@ -130,6 +134,10 @@ public class AnkorSystemBuilder {
             LOG.warn("No system name specified, using default name {}", systemName);
         }
 
+        if (messageIdGenerator == null) {
+            messageIdGenerator = createDefaultMessageIdGenerator();
+        }
+
         if (modelRootFactory != null) {
             throw new IllegalStateException("custom modelRootFactory not supported for client system");
         }
@@ -169,6 +177,9 @@ public class AnkorSystemBuilder {
         return new AnkorSystem(systemName, messageFactory, messageBus, refContextFactory, sessionManager);
     }
 
+    private CounterMessageIdGenerator createDefaultMessageIdGenerator() {
+        return new CounterMessageIdGenerator(systemName.substring(0, 1) + "#");
+    }
 
     private void addDefaultEventListeners(Session session, MessageFactory messageFactory, MessageSender messageSender) {
 
