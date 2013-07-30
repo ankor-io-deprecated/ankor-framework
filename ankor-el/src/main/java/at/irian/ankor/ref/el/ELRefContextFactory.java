@@ -3,7 +3,6 @@ package at.irian.ankor.ref.el;
 import at.irian.ankor.context.ModelContext;
 import at.irian.ankor.el.AnkorELSupport;
 import at.irian.ankor.el.ELSupport;
-import at.irian.ankor.event.EventDelaySupport;
 import at.irian.ankor.model.ViewModelPostProcessor;
 import at.irian.ankor.path.PathSyntax;
 import at.irian.ankor.path.el.ELPathSyntax;
@@ -22,16 +21,13 @@ public class ELRefContextFactory implements RefContextFactory {
 
     private final Config config;
     private final BeanResolver beanResolver;
-    private final EventDelaySupport eventDelaySupport;
     private final List<ViewModelPostProcessor> viewModelPostProcessors;
 
     public ELRefContextFactory(Config config,
                                BeanResolver beanResolver,
-                               EventDelaySupport eventDelaySupport,
                                List<ViewModelPostProcessor> viewModelPostProcessors) {
         this.config = config;
         this.beanResolver = beanResolver;
-        this.eventDelaySupport = eventDelaySupport;
         this.viewModelPostProcessors = viewModelPostProcessors;
     }
 
@@ -41,7 +37,6 @@ public class ELRefContextFactory implements RefContextFactory {
         return new ELRefContext(elSupport,
                                 config,
                                 modelContext,
-                                eventDelaySupport,
                                 viewModelPostProcessors
         );
     }

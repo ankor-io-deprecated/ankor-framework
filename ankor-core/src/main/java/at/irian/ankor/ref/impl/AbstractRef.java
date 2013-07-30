@@ -6,7 +6,6 @@ import at.irian.ankor.action.ActionEventListener;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.change.ChangeEventListener;
-import at.irian.ankor.change.DelayedChangeEventListener;
 import at.irian.ankor.ref.ActionListener;
 import at.irian.ankor.ref.ChangeListener;
 import at.irian.ankor.ref.Ref;
@@ -131,30 +130,10 @@ public abstract class AbstractRef implements Ref {
     }
 
     @Override
-    public void addPropChangeListener(final ChangeListener listener, long delayMilliseconds) {
-        context().eventListeners().add(new DelayedChangeEventListener(this, delayMilliseconds) {
-            @Override
-            public void processImmediately(ChangeEvent event) {
-                processPropChangeEvent(event.getChangedProperty(), getWatchedProperty(), listener);
-            }
-        });
-    }
-
-    @Override
     public void addTreeChangeListener(final ChangeListener listener) {
         context().eventListeners().add(new ChangeEventListener(this) {
             @Override
             public void process(ChangeEvent event) {
-                processTreeChangeEvent(event.getChangedProperty(), getWatchedProperty(), listener);
-            }
-        });
-    }
-
-    @Override
-    public void addTreeChangeListener(final ChangeListener listener, long delayMilliseconds) {
-        context().eventListeners().add(new DelayedChangeEventListener(this, delayMilliseconds) {
-            @Override
-            public void processImmediately(ChangeEvent event) {
                 processTreeChangeEvent(event.getChangedProperty(), getWatchedProperty(), listener);
             }
         });

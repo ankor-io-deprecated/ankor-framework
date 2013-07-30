@@ -86,11 +86,7 @@ public interface Ref {
 
     void addPropChangeListener(ChangeListener listener);
 
-    void addPropChangeListener(ChangeListener listener, long delayMilliseconds);
-
     void addTreeChangeListener(ChangeListener listener);
-
-    void addTreeChangeListener(ChangeListener listener, long delayMilliseconds);
 
     void addChangeListener(ChangeListener listener);
 

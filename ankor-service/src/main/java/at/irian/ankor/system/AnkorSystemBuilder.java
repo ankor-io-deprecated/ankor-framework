@@ -5,7 +5,6 @@ import at.irian.ankor.context.DefaultModelContext;
 import at.irian.ankor.context.ModelContext;
 import at.irian.ankor.dispatch.EventDispatcherFactory;
 import at.irian.ankor.dispatch.SessionSynchronisedEventDispatcherFactory;
-import at.irian.ankor.event.EventDelaySupport;
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.messaging.*;
 import at.irian.ankor.model.ViewModelPostProcessor;
@@ -101,11 +100,8 @@ public class AnkorSystemBuilder {
             beanResolver = new EmptyBeanResolver();
         }
 
-        EventDelaySupport eventDelaySupport = new EventDelaySupport(systemName);
-
         RefContextFactory refContextFactory = new ELRefContextFactory(config,
                                                                       beanResolver,
-                                                                      eventDelaySupport,
                                                                       viewModelPostProcessors);
 
         final MessageFactory messageFactory = new MessageFactory(messageIdGenerator);
@@ -156,11 +152,8 @@ public class AnkorSystemBuilder {
         }
         beanResolver = new EmptyBeanResolver();
 
-        EventDelaySupport eventDelaySupport = new EventDelaySupport(systemName);
-
         RefContextFactory refContextFactory = new ELRefContextFactory(config,
                                                                       beanResolver,
-                                                                      eventDelaySupport,
                                                                       viewModelPostProcessors);
 
         ModelContext modelContext = new DefaultModelContext(new HashMap());
