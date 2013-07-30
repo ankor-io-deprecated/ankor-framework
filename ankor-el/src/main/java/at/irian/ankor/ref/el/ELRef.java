@@ -32,7 +32,7 @@ public class ELRef extends AbstractRef {
     protected <T> T internalGetValue() {
         try {
             return (T)ve.getValue(refContext.getElContext());
-        } catch (Exception e) {
+        } catch (IllegalStateException e) {
             LOG.warn("unable to get value of " + this, e);
             return null;
         }

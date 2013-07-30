@@ -1,7 +1,6 @@
 package at.irian.ankor.ref;
 
 import at.irian.ankor.action.Action;
-import at.irian.ankor.change.Change;
 
 /**
  * @author Manfred Geiler
@@ -19,12 +18,13 @@ public interface Ref {
      * Get the value of the underlying model object.
      * @param <T>  type of the model field (for convenience only, no explicit cast needed)
      * @return value of the underlying model field
+     * @throws IllegalStateException if value is not valid
      */
     <T> T getValue();
 
     /**
      * @return true, if the value of this Ref can be resolved;
-     *         false, if resolving the value would cause an Exception (because the parent Ref no longer exists)
+     *         false, if resolving the value would cause an IllegalStateException (because the parent Ref no longer exists)
      */
     boolean isValid();
 
@@ -90,5 +90,4 @@ public interface Ref {
 
     void addChangeListener(ChangeListener listener);
 
-    void apply(Change change);
 }

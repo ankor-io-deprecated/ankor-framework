@@ -3,6 +3,7 @@ package at.irian.ankor.system;
 import at.irian.ankor.action.Action;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.event.ModelEventListener;
+import at.irian.ankor.ref.impl.AbstractRef;
 
 /**
  * @author Manfred Geiler
@@ -26,7 +27,7 @@ public class RemoteEventListener implements ModelEventListener {
 
         Change change = event.getChange();
         if (change != null) {
-            event.getSourceProperty().apply(change);
+            ((AbstractRef)event.getSourceProperty()).apply(change);
         }
 
     }

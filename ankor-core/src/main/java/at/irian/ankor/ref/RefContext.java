@@ -16,6 +16,7 @@ public interface RefContext {
 
     RefFactory refFactory();
 
+    @Deprecated
     EventListeners eventListeners();
 
     List<ViewModelPostProcessor> viewModelPostProcessors();

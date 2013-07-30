@@ -42,6 +42,7 @@ public class TabLoader {
 
         final Ref tabRef = tabsRef.append(tabId);
 
+        // todo  change listener instead...
         tabsRef.context().eventListeners().add(new ChangeEventListener(tabRef) {
             @Override
             public void process(ChangeEvent event) {
