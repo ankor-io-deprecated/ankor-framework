@@ -16,9 +16,22 @@ def download(request):
     return HttpResponse(template.render(context))
 
 def tutorials(request, type, step):
-    template = loader.get_template('tutorial_' + type + '_' + step + '.html')
+    template = loader.get_template('tutorial/tutorial_' + type + '_' + step + '.html')
+
+    step = int(step)
+
+    nextStep = int(step) + 1
+    if (nextStep > 2):
+        nextStep = 2
+    previousStep = int(step) - 1
+    if (previousStep < 0):
+        previousStep = 0
+
     context = RequestContext(request, {
-                'examples': 'active',
+                'tutorials' : 'active',
+                'step' : step,
+                'previousStep' : previousStep,
+                'nextStep' : nextStep,
         })
     return HttpResponse(template.render(context))
 

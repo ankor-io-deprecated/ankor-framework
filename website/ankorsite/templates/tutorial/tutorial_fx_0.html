@@ -7,27 +7,17 @@
 
 <div class="row">
     <div class="span3">
-        <div class="well sidebar-nav">
-            <ul class="nav nav-list">
-                <li class="active"><a href="#">0 - Bootstraping</a></li>
-                <li><a href="#">1 - View Model Binding</a></li>
-            </ul>
-        </div><!--/.well -->
+        {% include "tutorial/tutorial_fx_menu.html" %}
     </div><!--/span-->
     <div class="span9">
         <ul class="breadcrumb">
-            <li><a href="#">Tutorials</a> <span class="divider">/</span></li>
-            <li><a href="#">Java FX Tutorial</a> <span class="divider">/</span></li>
-            <li><a href="#">0 - Bootstraping</a></li>
+            {% include "tutorial/tutorial_fx_breadcrumbs.html" %}
+            <li><a href="/tutorials/fx/0">0 - Bootstraping</a></li>
         </ul>
-        <div class="btn-toolbar">
-            <div class="btn-group">
-                <button class="btn btn-primary">Previous</button>
-                <button class="btn btn-primary">Next</button>
-            </div>
-        </div>
+        {% include "tutorial/tutorial_fx_pagination.html" %}
         <p>&nbsp;</p>
-        <h3>Before you start</h3>
+
+        <h3 id="beforeyoustart">Before you start</h3>
         <p>Please check that all software components are installed properly. Especially check the Java FX section to make sure
         that JavaFX is on the Classpath.</p>
         <div class="tabbable ">
@@ -35,6 +25,7 @@
                 <li class="active"><a href="#tab1" data-toggle="tab">Java</a></li>
                 <li><a href="#tab2" data-toggle="tab">Maven</a></li>
                 <li><a href="#tab3" data-toggle="tab">Java FX</a></li>
+                <li><a href="#tab4" data-toggle="tab">Git</a></li>
             </ul>
             <div class="tab-content">
                 <div class="tab-pane active" id="tab1">
@@ -63,6 +54,9 @@
                     <p>On unix systems you may need <code>sudo mvn ...</code></p>
                     <p>If you are interested in why this is needed read <a href="http://zenjava.com/javafx/maven/fix-classpath.html">"Getting JavaFX on the Classpath"</a></p>
                 </div>
+                <div class="tab-pane" id="tab4">
+                    <p>Install Git, download from <a href="http://git-scm.com/download">the Git site</a>.</p>
+                </div>
             </div>
         </div>
 
@@ -79,7 +73,7 @@ git checkout -f fx-step-0</code></pre>
 
         <p>Now you got a maven project based on 3 modules</p>
 <pre>
-<code>boot : Utility to start client and server
+<code>boot   : Utility to start client and server
 client : Client application (Java FX)
 server : Server application</code></pre>
 
@@ -90,9 +84,11 @@ server : Server application</code></pre>
 <code>cd boot
 mvn install exec:java
 </code></pre>
-        <p>This is what you get ...</p>
+        <p>What you get is ...</p>
         <img src="{% static 'images/tutorial/fx-step-0-1.png' %}" class="img-rounded">
-        <p>A simple java FX sample app</p>
+        <p>... a simple java FX sample app. As the setup is working fine you are are now ready
+            to start programming with Ankor. If you experience problems running the
+            JavaFX application please check <a href="#beforeyoustart">"Before you start"</a> section.</p>
         <br/>
         <a class="btn btn-primary" href="#">Next »</a>&nbsp;&nbsp;Learn how to write your first Ankor Application.
 
