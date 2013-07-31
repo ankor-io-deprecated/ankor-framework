@@ -7,4 +7,5 @@ public interface SessionFactory {
 
     Session create(String sessionId);
 
+    void close();
 }

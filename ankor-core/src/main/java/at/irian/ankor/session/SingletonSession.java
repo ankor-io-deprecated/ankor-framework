@@ -2,7 +2,7 @@ package at.irian.ankor.session;
 
 import at.irian.ankor.context.ModelContext;
 import at.irian.ankor.event.dispatch.EventDispatcher;
-import at.irian.ankor.event.dispatch.SessionSynchronisedEventDispatcher;
+import at.irian.ankor.event.dispatch.SynchronisedEventDispatcher;
 import at.irian.ankor.ref.RefContext;
 
 /**
@@ -22,7 +22,7 @@ public class SingletonSession implements Session {
     public SingletonSession(ModelContext modelContext, RefContext refContext) {
         this.modelContext = modelContext;
         this.refContext = refContext;
-        this.eventDispatcher = new SessionSynchronisedEventDispatcher(this);
+        this.eventDispatcher = new SynchronisedEventDispatcher(modelContext);
     }
 
     @Override

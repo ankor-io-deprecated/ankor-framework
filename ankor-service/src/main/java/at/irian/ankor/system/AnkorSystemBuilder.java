@@ -2,11 +2,11 @@ package at.irian.ankor.system;
 
 import at.irian.ankor.annotation.ViewModelAnnotationScanner;
 import at.irian.ankor.base.BeanResolver;
-import at.irian.ankor.context.DefaultModelContext;
 import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.context.ModelContextFactory;
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.event.dispatch.EventDispatcherFactory;
-import at.irian.ankor.event.dispatch.SessionSynchronisedEventDispatcherFactory;
+import at.irian.ankor.event.dispatch.SynchronisedEventDispatcherFactory;
 import at.irian.ankor.messaging.*;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
@@ -37,6 +37,7 @@ public class AnkorSystemBuilder {
     private ModelRootFactory modelRootFactory;
     private BeanResolver beanResolver;
     private MessageBus messageBus;
+    private ModelContextFactory modelContextFactory;
 
     public AnkorSystemBuilder() {
         this.systemName = null;
@@ -44,7 +45,7 @@ public class AnkorSystemBuilder {
         this.viewModelPostProcessors = null;
         this.sessionIdGenerator = new CounterSessionIdGenerator();
         this.messageIdGenerator = null;
-        this.eventDispatcherFactory = new SessionSynchronisedEventDispatcherFactory();
+        this.eventDispatcherFactory = new SynchronisedEventDispatcherFactory();
     }
 
     public AnkorSystemBuilder withName(String name) {
@@ -99,13 +100,18 @@ public class AnkorSystemBuilder {
             beanResolver = new EmptyBeanResolver();
         }
 
+        if (modelContextFactory == null) {
+            modelContextFactory = new ModelContextFactory();
+        }
+
         RefContextFactory refContextFactory = new ELRefContextFactory(config,
                                                                       beanResolver,
                                                                       viewModelPostProcessors);
 
         final MessageFactory messageFactory = new MessageFactory(messageIdGenerator);
 
-        SessionFactory sessionFactory = new ServerSessionFactory(modelRootFactory,
+        SessionFactory sessionFactory = new ServerSessionFactory(modelContextFactory,
+                                                                 modelRootFactory,
                                                                  refContextFactory,
                                                                  eventDispatcherFactory) {
             @Override
@@ -151,11 +157,15 @@ public class AnkorSystemBuilder {
         }
         beanResolver = new EmptyBeanResolver();
 
+        if (modelContextFactory == null) {
+            modelContextFactory = new ModelContextFactory();
+        }
+
         RefContextFactory refContextFactory = new ELRefContextFactory(config,
                                                                       beanResolver,
                                                                       viewModelPostProcessors);
 
-        ModelContext modelContext = new DefaultModelContext(new HashMap());
+        ModelContext modelContext = modelContextFactory.createModelContext();
         RefContext refContext = refContextFactory.createRefContextFor(modelContext);
         SessionManager sessionManager = new SingletonSessionManager(modelContext, refContext);
         Session session = sessionManager.getOrCreateSession(null);

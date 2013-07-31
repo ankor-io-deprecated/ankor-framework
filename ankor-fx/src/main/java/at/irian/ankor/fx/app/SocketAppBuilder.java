@@ -1,6 +1,5 @@
 package at.irian.ankor.fx.app;
 
-import akka.actor.ActorSystem;
 import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.event.dispatch.AkkaEventDispatcherFactory;
 import at.irian.ankor.messaging.MessageMapper;
@@ -71,9 +70,7 @@ public class SocketAppBuilder {
                                                                               clientPort,
                                                                               serverPort);
 
-        LOG.info("Starting akka actor system");
-        ActorSystem actorSystem = ActorSystem.create();
-        AkkaEventDispatcherFactory akkaDispatcherFactory = new AkkaEventDispatcherFactory(actorSystem);
+        AkkaEventDispatcherFactory akkaDispatcherFactory = new AkkaEventDispatcherFactory();
 
         AnkorSystem serverSystem = new AnkorSystemBuilder()
                 .withName(serverName)

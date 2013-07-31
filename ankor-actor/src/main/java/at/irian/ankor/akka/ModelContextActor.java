@@ -6,31 +6,30 @@ import at.irian.ankor.context.ModelContext;
 import at.irian.ankor.event.ModelEvent;
 import at.irian.ankor.event.dispatch.EventDispatcher;
 import at.irian.ankor.event.dispatch.SimpleEventDispatcher;
-import at.irian.ankor.session.Session;
 
 /**
  * @author Manfred Geiler
  */
-public class AnkorActor extends UntypedActor {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnkorActor.class);
+public class ModelContextActor extends UntypedActor {
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelContextActor.class);
 
-    public static Props props(Session session) {
-        return Props.create(AnkorActor.class, session);
+    public static Props props(ModelContext modelContext) {
+        return Props.create(ModelContextActor.class, modelContext);
     }
 
-    public static String name(Session session) {
-        return "ankor_" + session.getId();
+    public static String name(ModelContext modelContext) {
+        return "ankor_" + modelContext.getId();
     }
 
     private final EventDispatcher eventDispatcher;
 
-    public AnkorActor(Session session) {
-        ModelContext modelContext = session.getModelContext();
+    public ModelContextActor(ModelContext modelContext) {
         this.eventDispatcher = new SimpleEventDispatcher(modelContext.getEventListeners());
     }
 
     @Override
     public void onReceive(Object msg) throws Exception {
+        LOG.debug("{} received {}", self(), msg);
         if (msg instanceof ModelEvent) {
             handleEvent((ModelEvent) msg);
         } else {

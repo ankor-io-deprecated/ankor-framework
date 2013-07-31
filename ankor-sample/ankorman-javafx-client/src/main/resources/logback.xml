@@ -10,6 +10,7 @@
     </appender>
 
     <logger name="at.irian.ankor.messaging" level="DEBUG" />
+    <!--<logger name="at.irian.ankor.akka" level="DEBUG" />-->
 
     <root level="INFO">
         <appender-ref ref="STDOUT" />

@@ -6,19 +6,25 @@ import at.irian.ankor.event.EventListeners;
 /**
  * @author Manfred Geiler
  */
-public class DefaultModelContext implements ModelContext {
+class DefaultModelContext implements ModelContext {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelContext.class);
 
+    private final String id;
     private final EventListeners eventListeners;
     private Object modelRoot;
 
-    public DefaultModelContext() {
-        this(null);
+    DefaultModelContext(String id) {
+        this(id, null);
     }
 
-    public DefaultModelContext(Object modelRoot) {
+    DefaultModelContext(String id, Object modelRoot) {
+        this.id = id;
         this.eventListeners = new ArrayListEventListeners();
         this.modelRoot = modelRoot;
+    }
+
+    public String getId() {
+        return id;
     }
 
     @Override

@@ -1,7 +1,7 @@
 package at.irian.ankor.session;
 
-import at.irian.ankor.context.DefaultModelContext;
 import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.context.ModelContextFactory;
 import at.irian.ankor.event.dispatch.EventDispatcher;
 import at.irian.ankor.event.dispatch.EventDispatcherFactory;
 import at.irian.ankor.ref.RefContext;
@@ -14,13 +14,16 @@ import at.irian.ankor.ref.impl.RefContextImplementor;
 public class ServerSessionFactory implements SessionFactory {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ServerSessionFactory.class);
 
+    private final ModelContextFactory modelContextFactory;
     private final ModelRootFactory modelRootFactory;
     private final RefContextFactory refContextFactory;
     private final EventDispatcherFactory eventDispatcherFactory;
 
-    public ServerSessionFactory(ModelRootFactory modelRootFactory,
+    public ServerSessionFactory(ModelContextFactory modelContextFactory,
+                                ModelRootFactory modelRootFactory,
                                 RefContextFactory refContextFactory,
                                 EventDispatcherFactory eventDispatcherFactory) {
+        this.modelContextFactory = modelContextFactory;
         this.modelRootFactory = modelRootFactory;
         this.refContextFactory = refContextFactory;
         this.eventDispatcherFactory = eventDispatcherFactory;
@@ -32,16 +35,21 @@ public class ServerSessionFactory implements SessionFactory {
     @Override
     public ServerSession create(String sessionId) {
 
-        ModelContext modelContext = new DefaultModelContext();
+        ModelContext modelContext = modelContextFactory.createModelContext();
         RefContext refContext = refContextFactory.createRefContextFor(modelContext);
 
         ServerSession session = new ServerSession(sessionId, modelContext, refContext, modelRootFactory);
 
-        EventDispatcher eventDispatcher = eventDispatcherFactory.createFor(session);
+        EventDispatcher eventDispatcher = eventDispatcherFactory.createFor(modelContext);
         session.setEventDispatcher(eventDispatcher);
 
         ((RefContextImplementor)refContext).setSession(session);
 
         return session;
+    }
+
+    @Override
+    public void close() {
+        eventDispatcherFactory.close();
     }
 }

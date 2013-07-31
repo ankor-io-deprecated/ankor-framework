@@ -1,11 +1,8 @@
 package at.irian.ankor.event.dispatch;
 
-import akka.actor.ActorRef;
-import akka.actor.ActorSystem;
-import at.irian.ankor.session.Session;
-
-import static at.irian.ankor.akka.AnkorActor.name;
-import static at.irian.ankor.akka.AnkorActor.props;
+import at.irian.ankor.akka.AnkorActorSystem;
+import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.event.ModelEvent;
 
 /**
  * @author Manfred Geiler
@@ -13,16 +10,33 @@ import static at.irian.ankor.akka.AnkorActor.props;
 public class AkkaEventDispatcherFactory implements EventDispatcherFactory {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AkkaEventDispatcherFactory.class);
 
-    private final ActorSystem actorSystem;
+    private final AnkorActorSystem ankorActorSystem;
 
-    public AkkaEventDispatcherFactory(ActorSystem actorSystem) {
-        this.actorSystem = actorSystem;
+    public AkkaEventDispatcherFactory() {
+        this.ankorActorSystem = AnkorActorSystem.create();
     }
 
     @Override
-    public EventDispatcher createFor(Session session) {
-        final ActorRef actor = actorSystem.actorOf(props(session), name(session));
-        return new AkkaEventDispatcher(actorSystem, actor);
+    public EventDispatcher createFor(final ModelContext modelContext) {
+
+        ankorActorSystem.register(modelContext);
+
+        return new EventDispatcher() {
+            @Override
+            public void dispatch(ModelEvent event) {
+                ankorActorSystem.send(modelContext, event);
+            }
+
+            @Override
+            public void close() {
+                ankorActorSystem.unregister(modelContext);
+            }
+        };
+    }
+
+    @Override
+    public void close() {
+        ankorActorSystem.close();
     }
 
 }
