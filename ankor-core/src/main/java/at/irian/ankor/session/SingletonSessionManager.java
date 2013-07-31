@@ -5,10 +5,10 @@ import at.irian.ankor.ref.RefContext;
 
 /**
  * SessionManager that manages exactly one Session.
- * On a call to {@link #getOrCreateSession(String)} the SingletonSessionManager always returns the same
- * SingletonSession instance. If this Session instance does not yet have an ID, it is set to the given ID.
- * Calling {@link #getOrCreateSession(String)} with a different ID than this instance's singleton Session
- * an IllegalStateException is thrown.
+ * On a call to {@link #getOrCreate(at.irian.ankor.context.ModelContext, String)} the SingletonSessionManager always returns the same
+ * SingletonSession instance.
+ * Calling {@link #getOrCreate(at.irian.ankor.context.ModelContext, String)} with a different ModelContext than this instance's
+ * singleton Session's ModelContext causes an IllegalStateException.
  *
  * @author Manfred Geiler
  * @see SingletonSession
@@ -16,28 +16,26 @@ import at.irian.ankor.ref.RefContext;
 public class SingletonSessionManager implements SessionManager {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SingletonSessionManager.class);
 
-    private final SingletonSession session;
+    private final Session session;
 
     public SingletonSessionManager(ModelContext modelContext, RefContext refContext) {
-        this.session = new SingletonSession(modelContext, refContext);
+        this.session = new SingletonSession("singletonSession", modelContext, refContext);
     }
 
     @Override
-    public Session getOrCreateSession(String id) {
-        if (id != null) {
-            if (session.getId() != null) {
-                if (!session.getId().equals(id)) {
-                    throw new IllegalStateException("wrong singleton session id");
-                }
-            } else {
-                session.setId(id);
-            }
+    public Session getOrCreate(ModelContext modelContext, String remoteSystemId) {
+        if (!modelContext.equals(session.getModelContext())) {
+            throw new IllegalStateException("wrong model context " + modelContext + " - expected " + session.getModelContext());
         }
         return session;
     }
 
     @Override
-    public void invalidateSession(String id) {
+    public void invalidate(Session session) {
         throw new UnsupportedOperationException();
+    }
+
+    public Session getSession() {
+        return session;
     }
 }

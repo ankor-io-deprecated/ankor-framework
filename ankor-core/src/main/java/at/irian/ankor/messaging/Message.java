@@ -6,7 +6,8 @@ package at.irian.ankor.messaging;
 public abstract class Message {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(Message.class);
 
-    private String sessionId;
+    private String senderId;
+    private String modelId;
     private String messageId;
 
     /**
@@ -14,13 +15,18 @@ public abstract class Message {
      */
     protected Message() {}
 
-    protected Message(String sessionId, String messageId) {
-        this.sessionId = sessionId;
+    protected Message(String senderId, String modelId, String messageId) {
+        this.senderId = senderId;
+        this.modelId = modelId;
         this.messageId = messageId;
     }
 
-    public String getSessionId() {
-        return sessionId;
+    public String getSenderId() {
+        return senderId;
+    }
+
+    public String getModelId() {
+        return modelId;
     }
 
     public String getMessageId() {

@@ -61,7 +61,7 @@ public abstract class RefBase implements Ref {
         // fire change event
         ChangeEvent changeEvent
                 = new OldValuesAwareChangeEvent(this, change, oldValue, oldWatchedValues);
-        context().eventDispatcher().dispatch(changeEvent);
+        context().modelContext().getEventDispatcher().dispatch(changeEvent);
     }
 
     private Map<Ref, Object> getOldWatchedValues() {
@@ -249,7 +249,7 @@ public abstract class RefBase implements Ref {
     @Override
     public void fireAction(Action action) {
         ActionEvent actionEvent = new ActionEvent(this, action);
-        context().eventDispatcher().dispatch(actionEvent);
+        context().modelContext().getEventDispatcher().dispatch(actionEvent);
     }
 
     @Override

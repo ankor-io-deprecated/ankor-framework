@@ -1,7 +1,6 @@
 package at.irian.ankor.session;
 
 import at.irian.ankor.context.ModelContext;
-import at.irian.ankor.event.dispatch.EventDispatcher;
 import at.irian.ankor.ref.RefContext;
 
 /**
@@ -25,7 +24,5 @@ public interface Session {
     ModelContext getModelContext();
 
     RefContext getRefContext();
-
-    EventDispatcher getEventDispatcher();
 
 }

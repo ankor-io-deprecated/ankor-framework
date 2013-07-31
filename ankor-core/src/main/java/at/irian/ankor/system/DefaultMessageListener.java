@@ -1,6 +1,8 @@
 package at.irian.ankor.system;
 
 import at.irian.ankor.action.Action;
+import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.context.ModelContextManager;
 import at.irian.ankor.messaging.ActionMessage;
 import at.irian.ankor.messaging.ChangeMessage;
 import at.irian.ankor.messaging.MessageListener;
@@ -21,34 +23,36 @@ import static at.irian.ankor.system.RemoteEvent.createChangeEvent;
 */
 public class DefaultMessageListener implements MessageListener {
 
+    private final ModelContextManager modelContextManager;
     private final SessionManager sessionManager;
 
-    DefaultMessageListener(SessionManager sessionManager) {
+    DefaultMessageListener(ModelContextManager modelContextManager, SessionManager sessionManager) {
+        this.modelContextManager = modelContextManager;
         this.sessionManager = sessionManager;
     }
 
     @Override
     public void onActionMessage(ActionMessage message) {
-        String sessionId = message.getSessionId();
-        Session session = sessionManager.getOrCreateSession(sessionId);
+        ModelContext modelContext = modelContextManager.getOrCreate(message.getModelId());
+        Session session = sessionManager.getOrCreate(modelContext, message.getSenderId());
 
         RefContext refContext = session.getRefContext();
         Ref actionProperty = refContext.refFactory().ref(message.getProperty());
 
         Action action = message.getAction();
         RemoteEvent event = createActionEvent(actionProperty, action.getName(), action.getParams());
-        session.getEventDispatcher().dispatch(event);
+        modelContext.getEventDispatcher().dispatch(event);
     }
 
     @Override
     public void onChangeMessage(ChangeMessage message) {
-        String sessionId = message.getSessionId();
-        Session session = sessionManager.getOrCreateSession(sessionId);
+        ModelContext modelContext = modelContextManager.getOrCreate(message.getModelId());
+        Session session = sessionManager.getOrCreate(modelContext, message.getSenderId());
 
         RefContext refContext = session.getRefContext();
         Ref changedProperty = refContext.refFactory().ref(message.getProperty());
 
         RemoteEvent event = createChangeEvent(changedProperty, message.getChange().getNewValue());
-        session.getEventDispatcher().dispatch(event);
+        modelContext.getEventDispatcher().dispatch(event);
     }
 }

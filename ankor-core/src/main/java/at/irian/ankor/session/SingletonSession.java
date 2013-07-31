@@ -1,8 +1,6 @@
 package at.irian.ankor.session;
 
 import at.irian.ankor.context.ModelContext;
-import at.irian.ankor.event.dispatch.EventDispatcher;
-import at.irian.ankor.event.dispatch.SynchronisedEventDispatcher;
 import at.irian.ankor.ref.RefContext;
 
 /**
@@ -14,15 +12,14 @@ import at.irian.ankor.ref.RefContext;
 public class SingletonSession implements Session {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ServerSession.class);
 
-    private String sessionId;
+    private final String sessionId;
     private final ModelContext modelContext;
     private final RefContext refContext;
-    private final EventDispatcher eventDispatcher;
 
-    public SingletonSession(ModelContext modelContext, RefContext refContext) {
+    public SingletonSession(String sessionId, ModelContext modelContext, RefContext refContext) {
+        this.sessionId = sessionId;
         this.modelContext = modelContext;
         this.refContext = refContext;
-        this.eventDispatcher = new SynchronisedEventDispatcher(modelContext);
     }
 
     @Override
@@ -36,11 +33,6 @@ public class SingletonSession implements Session {
 
     @Override
     public void close() {
-        eventDispatcher.close();
-    }
-
-    public void setId(String sessionId) {
-        this.sessionId = sessionId;
     }
 
     @Override
@@ -53,8 +45,4 @@ public class SingletonSession implements Session {
         return refContext;
     }
 
-    @Override
-    public EventDispatcher getEventDispatcher() {
-        return eventDispatcher;
-    }
 }

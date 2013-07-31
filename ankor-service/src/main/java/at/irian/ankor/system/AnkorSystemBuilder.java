@@ -2,8 +2,10 @@ package at.irian.ankor.system;
 
 import at.irian.ankor.annotation.ViewModelAnnotationScanner;
 import at.irian.ankor.base.BeanResolver;
+import at.irian.ankor.context.DefaultModelContextManager;
 import at.irian.ankor.context.ModelContext;
 import at.irian.ankor.context.ModelContextFactory;
+import at.irian.ankor.context.SingletonModelContextManager;
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.event.dispatch.EventDispatcherFactory;
 import at.irian.ankor.event.dispatch.SynchronisedEventDispatcherFactory;
@@ -12,7 +14,6 @@ import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.ref.el.ELRefContextFactory;
-import at.irian.ankor.ref.impl.RefContextImplementor;
 import at.irian.ankor.session.*;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
 import at.irian.ankor.viewmodel.ViewModelPropertyFieldsInitializer;
@@ -27,12 +28,14 @@ import java.util.*;
 public class AnkorSystemBuilder {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnkorSystemBuilder.class);
 
+    private static int modelContextIdCnt = 0;
+
     private String systemName;
     private Config config;
     private List<ViewModelPostProcessor> viewModelPostProcessors;
-    private SessionIdGenerator sessionIdGenerator;
     private MessageIdGenerator messageIdGenerator;
     private EventDispatcherFactory eventDispatcherFactory;
+    private String modelContextId;
 
     private ModelRootFactory modelRootFactory;
     private BeanResolver beanResolver;
@@ -43,9 +46,9 @@ public class AnkorSystemBuilder {
         this.systemName = null;
         this.config = ConfigFactory.load();
         this.viewModelPostProcessors = null;
-        this.sessionIdGenerator = new CounterSessionIdGenerator();
         this.messageIdGenerator = null;
         this.eventDispatcherFactory = new SynchronisedEventDispatcherFactory();
+        this.modelContextId = null;
     }
 
     public AnkorSystemBuilder withName(String name) {
@@ -101,30 +104,33 @@ public class AnkorSystemBuilder {
         }
 
         if (modelContextFactory == null) {
-            modelContextFactory = new ModelContextFactory();
+            modelContextFactory = new ModelContextFactory(eventDispatcherFactory);
         }
+
+        DefaultModelContextManager modelContextManager = new DefaultModelContextManager(modelContextFactory);
 
         RefContextFactory refContextFactory = new ELRefContextFactory(config,
                                                                       beanResolver,
                                                                       viewModelPostProcessors);
 
-        final MessageFactory messageFactory = new MessageFactory(messageIdGenerator);
+        final MessageFactory messageFactory = new MessageFactory(systemName, messageIdGenerator);
 
-        SessionFactory sessionFactory = new ServerSessionFactory(modelContextFactory,
-                                                                 modelRootFactory,
+        SessionFactory sessionFactory = new ServerSessionFactory(modelRootFactory,
                                                                  refContextFactory,
                                                                  eventDispatcherFactory) {
             @Override
-            public ServerSession create(String sessionId) {
-                ServerSession session = super.create(sessionId);
+            public ServerSession create(ModelContext modelContext, String sessionId) {
+                ServerSession session = super.create(modelContext, sessionId);
                 addDefaultEventListeners(session, messageFactory, messageBus);
                 return session;
             }
         };
 
-        SessionManager sessionManager = new DefaultSessionManager(sessionFactory, sessionIdGenerator);
+        SessionManager sessionManager = new DefaultSessionManager(sessionFactory);
 
-        return new AnkorSystem(systemName, messageFactory, messageBus, refContextFactory, sessionManager);
+        return new AnkorSystem(systemName, messageFactory, messageBus, refContextFactory,
+                               modelContextManager,
+                               sessionManager);
     }
 
 
@@ -158,25 +164,33 @@ public class AnkorSystemBuilder {
         beanResolver = new EmptyBeanResolver();
 
         if (modelContextFactory == null) {
-            modelContextFactory = new ModelContextFactory();
+            modelContextFactory = new ModelContextFactory(eventDispatcherFactory);
+        }
+
+        if (modelContextId == null) {
+            modelContextId = "" + (++modelContextIdCnt);
         }
 
         RefContextFactory refContextFactory = new ELRefContextFactory(config,
                                                                       beanResolver,
                                                                       viewModelPostProcessors);
 
-        ModelContext modelContext = modelContextFactory.createModelContext();
+        SingletonModelContextManager modelContextManager
+                = new SingletonModelContextManager(modelContextFactory, modelContextId);
+
+        ModelContext modelContext = modelContextManager.getOrCreate(modelContextId);
+
         RefContext refContext = refContextFactory.createRefContextFor(modelContext);
         SessionManager sessionManager = new SingletonSessionManager(modelContext, refContext);
-        Session session = sessionManager.getOrCreateSession(null);
+        Session session = sessionManager.getOrCreate(modelContext, systemName);
 
-        ((RefContextImplementor)refContext).setSession(session);
-
-        MessageFactory messageFactory = new MessageFactory(messageIdGenerator);
+        MessageFactory messageFactory = new MessageFactory(systemName, messageIdGenerator);
 
         addDefaultEventListeners(session, messageFactory, messageBus);
 
-        return new AnkorSystem(systemName, messageFactory, messageBus, refContextFactory, sessionManager);
+        return new AnkorSystem(systemName, messageFactory, messageBus, refContextFactory,
+                               modelContextManager,
+                               sessionManager);
     }
 
     private CounterMessageIdGenerator createDefaultMessageIdGenerator() {

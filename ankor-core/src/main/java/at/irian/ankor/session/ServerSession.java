@@ -1,7 +1,6 @@
 package at.irian.ankor.session;
 
 import at.irian.ankor.context.ModelContext;
-import at.irian.ankor.event.dispatch.EventDispatcher;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 
@@ -15,7 +14,6 @@ public class ServerSession implements Session {
     private final ModelContext modelContext;
     private final RefContext refContext;
     private final ModelRootFactory modelRootFactory;
-    private EventDispatcher eventDispatcher;
 
     public ServerSession(String sessionId,
                          ModelContext modelContext,
@@ -45,7 +43,6 @@ public class ServerSession implements Session {
     @Override
     public void close() {
         refContext.refFactory().rootRef().setValue(null);
-        eventDispatcher.close();
     }
 
 
@@ -59,12 +56,4 @@ public class ServerSession implements Session {
         return refContext;
     }
 
-    public void setEventDispatcher(EventDispatcher eventDispatcher) {
-        this.eventDispatcher = eventDispatcher;
-    }
-
-    @Override
-    public EventDispatcher getEventDispatcher() {
-        return eventDispatcher;
-    }
 }

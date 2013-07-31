@@ -1,5 +1,6 @@
 package at.irian.ankor.system;
 
+import at.irian.ankor.context.ModelContextManager;
 import at.irian.ankor.messaging.MessageBus;
 import at.irian.ankor.messaging.MessageFactory;
 import at.irian.ankor.messaging.MessageListener;
@@ -29,13 +30,13 @@ public class AnkorSystem {
                           MessageFactory messageFactory,
                           MessageBus messageBus,
                           RefContextFactory refContextFactory,
-                          SessionManager sessionManager) {
+                          ModelContextManager modelContextManager, SessionManager sessionManager) {
         this.systemName = systemName;
         this.messageFactory = messageFactory;
         this.messageBus = messageBus;
         this.refContextFactory = refContextFactory;
         this.sessionManager = sessionManager;
-        this.messageListener = new DefaultMessageListener(sessionManager);
+        this.messageListener = new DefaultMessageListener(modelContextManager, sessionManager);
     }
 
     public String getSystemName() {

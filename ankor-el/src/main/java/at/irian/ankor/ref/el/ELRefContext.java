@@ -4,13 +4,11 @@ import at.irian.ankor.context.ModelContext;
 import at.irian.ankor.el.ELSupport;
 import at.irian.ankor.el.StandardELContext;
 import at.irian.ankor.event.EventListeners;
-import at.irian.ankor.event.dispatch.EventDispatcher;
 import at.irian.ankor.path.PathSyntax;
 import at.irian.ankor.path.el.SimpleELPathSyntax;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.ref.impl.RefContextImplementor;
-import at.irian.ankor.session.Session;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
 import com.typesafe.config.Config;
 
@@ -28,9 +26,6 @@ public class ELRefContext implements RefContext, RefContextImplementor {
     private final String modelRootVarName;
     private final ModelContext modelContext;
     private final List<ViewModelPostProcessor> viewModelPostProcessors;
-
-    private Session session;
-
 
     ELRefContext(ELSupport elSupport,
                  Config config,
@@ -76,17 +71,7 @@ public class ELRefContext implements RefContext, RefContextImplementor {
     }
 
     @Override
-    public void setSession(Session session) {
-        this.session = session;
-    }
-
-    @Override
-    public EventDispatcher eventDispatcher() {
-        return session.getEventDispatcher();
-    }
-
-    @Override
-    public Session session() {
-        return session;
+    public ModelContext modelContext() {
+        return modelContext;
     }
 }

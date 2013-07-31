@@ -9,6 +9,7 @@ import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.session.ModelRootFactory;
+import at.irian.ankor.session.SingletonSessionManager;
 import at.irian.ankor.system.AnkorSystem;
 import at.irian.ankor.system.AnkorSystemBuilder;
 
@@ -103,7 +104,7 @@ public class SocketAppBuilder {
         clientSystem.start();
         clientMessageLoop.start(true);
 
-        RefContext clientRefContext = clientSystem.getSessionManager().getOrCreateSession(null).getRefContext();
+        RefContext clientRefContext = ((SingletonSessionManager)clientSystem.getSessionManager()).getSession().getRefContext();
         return clientRefContext.refFactory();
     }
 

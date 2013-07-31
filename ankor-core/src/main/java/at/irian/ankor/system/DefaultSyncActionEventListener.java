@@ -40,7 +40,7 @@ public class DefaultSyncActionEventListener extends ActionEventListener {
             LOG.debug("processing local action event {}", event);
             Ref actionProperty = event.getActionProperty();
             String actionPropertyPath = actionProperty.path();
-            Message message = messageFactory.createActionMessage(actionProperty.context().session().getId(),
+            Message message = messageFactory.createActionMessage(actionProperty.context().modelContext(),
                                                                  actionPropertyPath,
                                                                  action);
             messageSender.sendMessage(message);

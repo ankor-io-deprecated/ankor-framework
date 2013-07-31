@@ -35,8 +35,7 @@ public class ELRefContextFactory implements RefContextFactory {
         return new ELRefContext(elSupport,
                                 config,
                                 modelContext,
-                                viewModelPostProcessors
-        );
+                                viewModelPostProcessors);
     }
 
 }

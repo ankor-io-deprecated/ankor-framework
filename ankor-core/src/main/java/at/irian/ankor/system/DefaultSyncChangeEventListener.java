@@ -40,8 +40,9 @@ public class DefaultSyncChangeEventListener extends ChangeEventListener {
             LOG.debug("processing local change event {}", event);
             Ref changedProperty = event.getChangedProperty();
             String changedPropertyPath = changedProperty.path();
-            Message message = messageFactory.createChangeMessage(changedProperty.context().session().getId(),
-                                                                 changedPropertyPath, change);
+            Message message = messageFactory.createChangeMessage(changedProperty.context().modelContext(),
+                                                                 changedPropertyPath,
+                                                                 change);
             messageSender.sendMessage(message);
         }
     }
