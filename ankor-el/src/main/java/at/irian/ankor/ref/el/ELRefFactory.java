@@ -35,7 +35,7 @@ public class ELRefFactory implements RefFactory {
 
     private static Ref ref(ELRefContext ref2Context, String path) {
         ValueExpression ve = createValueExpressionFor(ref2Context, path);
-        return new ELRef(ve, ref2Context);
+        return new ELRef(ref2Context, ve);
     }
 
     private static ValueExpression createValueExpressionFor(ELRefContext ref2Context, String path) {

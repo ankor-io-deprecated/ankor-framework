@@ -5,9 +5,9 @@ import at.irian.ankor.model.ViewModelBase;
 import at.irian.ankor.model.ViewModelPostProcessor;
 import at.irian.ankor.path.PathSyntax;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.ref.RefMatcher;
 import at.irian.ankor.ref.listener.RefActionListener;
 import at.irian.ankor.ref.listener.RefChangeListener;
+import at.irian.ankor.ref.match.RefMatcher;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;

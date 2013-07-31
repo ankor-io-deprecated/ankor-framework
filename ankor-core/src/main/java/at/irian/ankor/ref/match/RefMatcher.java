@@ -1,6 +1,7 @@
-package at.irian.ankor.ref;
+package at.irian.ankor.ref.match;
 
 import at.irian.ankor.path.PathSyntax;
+import at.irian.ankor.ref.Ref;
 
 import java.util.ArrayList;
 import java.util.Collections;

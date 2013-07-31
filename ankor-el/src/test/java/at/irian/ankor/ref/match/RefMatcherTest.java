@@ -1,7 +1,8 @@
-package at.irian.ankor.ref;
+package at.irian.ankor.ref.match;
 
 import at.irian.ankor.path.PathSyntax;
-import at.irian.ankor.path.el.ELPathSyntax;
+import at.irian.ankor.path.el.SimpleELPathSyntax;
+import at.irian.ankor.ref.Ref;
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,7 +37,7 @@ public class RefMatcherTest {
 
     @Before
     public void init() {
-        pathSyntax = ELPathSyntax.getInstance();
+        pathSyntax = SimpleELPathSyntax.getInstance();
 
         RefMatcherTest root1Val = new RefMatcherTest();
         RefMatcherTest root2Val = new RefMatcherTest();
@@ -495,7 +496,7 @@ public class RefMatcherTest {
 
     @Test
     public void test_t6() throws Exception {
-        RefMatcher m = createMatcher("<at.irian.ankor.ref.RefMatcherTest>.**");
+        RefMatcher m = createMatcher("<at.irian.ankor.ref.match.RefMatcherTest>.**");
 
         Assert.assertFalse(matches(m, r1));
         Assert.assertFalse(matches(m, r2));

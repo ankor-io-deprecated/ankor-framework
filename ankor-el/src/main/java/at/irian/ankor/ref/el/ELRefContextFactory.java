@@ -4,8 +4,6 @@ import at.irian.ankor.context.ModelContext;
 import at.irian.ankor.el.AnkorELSupport;
 import at.irian.ankor.el.ELSupport;
 import at.irian.ankor.model.ViewModelPostProcessor;
-import at.irian.ankor.path.PathSyntax;
-import at.irian.ankor.path.el.ELPathSyntax;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.system.BeanResolver;
@@ -41,8 +39,4 @@ public class ELRefContextFactory implements RefContextFactory {
         );
     }
 
-    @Override
-    public PathSyntax getPathSyntax() {
-        return ELPathSyntax.getInstance();
-    }
 }

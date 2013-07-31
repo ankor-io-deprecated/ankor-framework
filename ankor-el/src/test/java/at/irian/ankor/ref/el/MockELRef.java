@@ -1,7 +1,7 @@
 package at.irian.ankor.ref.el;
 
 import at.irian.ankor.action.Action;
-import at.irian.ankor.path.el.ELPathSyntax;
+import at.irian.ankor.path.el.SimpleELPathSyntax;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 
@@ -84,18 +84,18 @@ public class MockELRef implements Ref {
         if (parent == null) {
             return propertyName;
         } else {
-            return ELPathSyntax.getInstance().concat(parent.path(), propertyName);
+            return SimpleELPathSyntax.getInstance().concat(parent.path(), propertyName);
         }
     }
 
     @Override
     public boolean isDescendantOf(Ref ref) {
-        return ELPathSyntax.getInstance().isDescendant(path(), ref.path());
+        return SimpleELPathSyntax.getInstance().isDescendant(path(), ref.path());
     }
 
     @Override
     public boolean isAncestorOf(Ref ref) {
-        return ELPathSyntax.getInstance().isDescendant(ref.path(), path());
+        return SimpleELPathSyntax.getInstance().isDescendant(ref.path(), path());
     }
 
     @Override
@@ -122,11 +122,6 @@ public class MockELRef implements Ref {
 
     @Override
     public RefContext context() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Ref withContext(RefContext newContext) {
         throw new UnsupportedOperationException();
     }
 

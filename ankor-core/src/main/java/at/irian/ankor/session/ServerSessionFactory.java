@@ -2,8 +2,8 @@ package at.irian.ankor.session;
 
 import at.irian.ankor.context.DefaultModelContext;
 import at.irian.ankor.context.ModelContext;
-import at.irian.ankor.dispatch.EventDispatcher;
-import at.irian.ankor.dispatch.EventDispatcherFactory;
+import at.irian.ankor.event.dispatch.EventDispatcher;
+import at.irian.ankor.event.dispatch.EventDispatcherFactory;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.ref.impl.RefContextImplementor;

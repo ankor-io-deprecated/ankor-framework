@@ -1,7 +1,7 @@
 package at.irian.ankor.fx.app;
 
 import akka.actor.ActorSystem;
-import at.irian.ankor.dispatch.AkkaEventDispatcherFactory;
+import at.irian.ankor.event.dispatch.AkkaEventDispatcherFactory;
 import at.irian.ankor.messaging.MessageMapper;
 import at.irian.ankor.messaging.SocketMessageLoop;
 import at.irian.ankor.messaging.json.JsonViewDataMessageMapper;
@@ -28,7 +28,7 @@ public class SocketAppBuilder {
     private static final int clientPort = 9090;
 
     private final BeanResolver beanResolver;
-    private Map<String, Object> beans = new HashMap<String, Object>();
+    private Map<String, Object> beans = new HashMap<>();
     private ModelRootFactory modelRootFactory;
 
     public SocketAppBuilder() {
@@ -64,11 +64,11 @@ public class SocketAppBuilder {
 
         MessageMapper<String> serverMessageMapper = new JsonViewModelMessageMapper();
 
-        SocketMessageLoop<String> serverMessageLoop = new SocketMessageLoop<String>(serverName,
-                                                                                    serverMessageMapper,
-                                                                                    HOST,
-                                                                                    clientPort,
-                                                                                    serverPort);
+        SocketMessageLoop<String> serverMessageLoop = new SocketMessageLoop<>(serverName,
+                                                                              serverMessageMapper,
+                                                                              HOST,
+                                                                              clientPort,
+                                                                              serverPort);
 
         LOG.info("Starting akka actor system");
         ActorSystem actorSystem = ActorSystem.create();
@@ -91,8 +91,8 @@ public class SocketAppBuilder {
 
         MessageMapper<String> clientMessageMapper = new JsonViewDataMessageMapper();
 
-        SocketMessageLoop<String> clientMessageLoop = new SocketMessageLoop<String>(clientName,
-                                                                                    clientMessageMapper,
+        SocketMessageLoop<String> clientMessageLoop = new SocketMessageLoop<>(clientName,
+                                                                              clientMessageMapper,
                                                                               HOST,
                                                                               serverPort,
                                                                               clientPort);

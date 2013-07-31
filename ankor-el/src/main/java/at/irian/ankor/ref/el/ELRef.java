@@ -1,11 +1,7 @@
 package at.irian.ankor.ref.el;
 
 import at.irian.ankor.el.ELUtils;
-import at.irian.ankor.path.PathSyntax;
-import at.irian.ankor.ref.Ref;
-import at.irian.ankor.ref.RefContext;
-import at.irian.ankor.ref.RefFactory;
-import at.irian.ankor.ref.impl.AbstractRef;
+import at.irian.ankor.ref.impl.RefBase;
 
 import javax.el.PropertyNotFoundException;
 import javax.el.ValueExpression;
@@ -13,25 +9,26 @@ import javax.el.ValueExpression;
 /**
  * @author Manfred Geiler
  */
-public class ELRef extends AbstractRef {
+public class ELRef extends RefBase {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ELRef.class);
 
     private final ValueExpression ve;
-    private final ELRefContext refContext;
 
-    protected ELRef(ValueExpression ve, ELRefContext refContext) {
+    protected ELRef(ELRefContext refContext, ValueExpression ve) {
+        super(refContext);
         this.ve = ve;
-        this.refContext = refContext;
     }
 
+    @Override
     protected void internalSetValue(Object newValue) {
-        ve.setValue(refContext.getElContext(), newValue);
+        ve.setValue(context().getElContext(), newValue);
     }
 
     @SuppressWarnings("unchecked")
+    @Override
     protected <T> T internalGetValue() {
         try {
-            return (T)ve.getValue(refContext.getElContext());
+            return (T)ve.getValue(context().getElContext());
         } catch (IllegalStateException e) {
             LOG.warn("unable to get value of " + this, e);
             return null;
@@ -40,55 +37,17 @@ public class ELRef extends AbstractRef {
 
     @Override
     protected Class<?> getType() {
-        return ve.getType(refContext.getElContext());
+        return ve.getType(context().getElContext());
     }
 
     @Override
     public boolean isValid() {
         try {
-            ve.getValueReference(refContext.getElContext());
+            ve.getValueReference(context().getElContext());
         } catch (PropertyNotFoundException e) {
             return false;
         }
         return true;
-    }
-
-    @Override
-    public Ref root() {
-        return refFactory().rootRef();
-    }
-
-    @Override
-    public Ref parent() {
-        if (isRoot()) {
-            throw new UnsupportedOperationException("root ref has no parent");
-        } else {
-            return refFactory().ref(pathSyntax().parentOf(path()));
-        }
-    }
-
-    private PathSyntax pathSyntax() {return refContext.pathSyntax();}
-
-    private RefFactory refFactory() {return refContext.refFactory();}
-
-    @Override
-    public Ref append(String propertyOrSubPath) {
-        return refFactory().ref(pathSyntax().concat(path(), propertyOrSubPath));
-    }
-
-    @Override
-    public Ref appendIdx(int index) {
-        return refFactory().ref(pathSyntax().addArrayIdx(path(), index));
-    }
-
-    @Override
-    public Ref appendLiteralKey(String literalKey) {
-        return refFactory().ref(pathSyntax().addLiteralMapKey(path(), literalKey));
-    }
-
-    @Override
-    public Ref appendPathKey(String pathKey) {
-        return refFactory().ref(pathSyntax().addMapKey(path(), pathKey));
     }
 
     @Override
@@ -97,49 +56,13 @@ public class ELRef extends AbstractRef {
     }
 
     @Override
-    public boolean isDescendantOf(Ref ref) {
-        if (isRoot()) {
-            return false;
-        }
-        Ref parentRef = parent();
-        return parentRef != null && (parentRef.equals(ref) || parentRef.isDescendantOf(ref));
-    }
-
-    @Override
-    public boolean isAncestorOf(Ref ref) {
-        return ref.isDescendantOf(this);
-    }
-
-    @Override
-    public String propertyName() {
-        return refContext.pathSyntax().getPropertyName(path());
-    }
-
-    @Override
-    public Ref ancestor(String ancestorPropertyName) {
-        if (isRoot()) {
-            throw new IllegalArgumentException("No ancestor with name " + ancestorPropertyName);
-        }
-        Ref parent = parent();
-        if (parent.propertyName().equals(ancestorPropertyName)) {
-            return parent;
-        }
-        return parent.ancestor(ancestorPropertyName);
-    }
-
-    @Override
     public boolean isRoot() {
-        return path().equals(refContext.getModelRootVarName());
+        return path().equals(context().getModelRootVarName());
     }
 
     @Override
     public ELRefContext context() {
-        return refContext;
-    }
-
-    @Override
-    public Ref withContext(RefContext newRefContext) {
-        return new ELRef(ve, (ELRefContext)newRefContext);
+        return (ELRefContext)super.context();
     }
 
     @Override
@@ -155,11 +78,6 @@ public class ELRef extends AbstractRef {
     @Override
     public int hashCode() {
         return expression().hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return "Ref{" + path() + "}";
     }
 
 }

@@ -7,7 +7,9 @@ import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.change.OldValuesAwareChangeEvent;
 import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.event.PropertyWatcher;
+import at.irian.ankor.path.PathSyntax;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.ref.Wrapper;
 
 import java.lang.reflect.Constructor;
@@ -17,8 +19,14 @@ import java.util.Map;
 /**
  * @author Manfred Geiler
  */
-public abstract class AbstractRef implements Ref {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AbstractRef.class);
+public abstract class RefBase implements Ref {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RefBase.class);
+
+    private final RefContextImplementor refContext;
+
+    protected RefBase(RefContextImplementor refContext) {
+        this.refContext = refContext;
+    }
 
     @SuppressWarnings("SimplifiableIfStatement")
     @Override
@@ -94,7 +102,7 @@ public abstract class AbstractRef implements Ref {
 
         } else {
 
-            Wrapper wrapper = (Wrapper) internalGetValue();
+            Wrapper wrapper = internalGetValue();
             if (wrapper == null) {
                 wrapper = createNewWrapperInstance(type);
                 internalSetValue(wrapper);
@@ -160,12 +168,99 @@ public abstract class AbstractRef implements Ref {
     protected abstract Class<?> getType();
 
     @Override
-    public abstract RefContextImplementor context();
+    public RefContextImplementor context() {
+        return refContext;
+    }
+
+    protected PathSyntax pathSyntax() {
+        return refContext.pathSyntax();
+    }
+
+    protected RefFactory refFactory() {
+        return refContext.refFactory();
+    }
+
+    @Override
+    public Ref root() {
+        return refFactory().rootRef();
+    }
+
+    @Override
+    public Ref parent() {
+        if (isRoot()) {
+            throw new UnsupportedOperationException("root ref has no parent");
+        } else {
+            return refFactory().ref(pathSyntax().parentOf(path()));
+        }
+    }
+
+    @Override
+    public Ref append(String propertyOrSubPath) {
+        return refFactory().ref(pathSyntax().concat(path(), propertyOrSubPath));
+    }
+
+    @Override
+    public Ref appendIdx(int index) {
+        return refFactory().ref(pathSyntax().addArrayIdx(path(), index));
+    }
+
+    @Override
+    public Ref appendLiteralKey(String literalKey) {
+        return refFactory().ref(pathSyntax().addLiteralMapKey(path(), literalKey));
+    }
+
+    @Override
+    public Ref appendPathKey(String pathKey) {
+        return refFactory().ref(pathSyntax().addPathMapKey(path(), pathKey));
+    }
+
+    @Override
+    public boolean isDescendantOf(Ref ref) {
+        if (isRoot()) {
+            return false;
+        }
+        Ref parentRef = parent();
+        return parentRef != null && (parentRef.equals(ref) || parentRef.isDescendantOf(ref));
+    }
+
+    @Override
+    public boolean isAncestorOf(Ref ref) {
+        return ref.isDescendantOf(this);
+    }
+
+    @Override
+    public String propertyName() {
+        return context().pathSyntax().getPropertyName(path());
+    }
+
+    @Override
+    public Ref ancestor(String ancestorPropertyName) {
+        if (isRoot()) {
+            throw new IllegalArgumentException("No ancestor with name " + ancestorPropertyName);
+        }
+        Ref parent = parent();
+        if (parent.propertyName().equals(ancestorPropertyName)) {
+            return parent;
+        }
+        return parent.ancestor(ancestorPropertyName);
+    }
+
 
     @Override
     public void fireAction(Action action) {
         ActionEvent actionEvent = new ActionEvent(this, action);
         context().eventDispatcher().dispatch(actionEvent);
+    }
+
+    @Override
+    public abstract int hashCode();
+
+    @Override
+    public abstract boolean equals(Object obj);
+
+    @Override
+    public String toString() {
+        return "Ref{" + path() + "}";
     }
 
 }

@@ -3,7 +3,7 @@ package at.irian.ankor.annotation;
 import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.change.ChangeEventListener;
 import at.irian.ankor.path.PathSyntax;
-import at.irian.ankor.ref.RefMatcher;
+import at.irian.ankor.ref.match.RefMatcher;
 import at.irian.ankor.system.BeanResolver;
 
 import java.lang.annotation.Annotation;

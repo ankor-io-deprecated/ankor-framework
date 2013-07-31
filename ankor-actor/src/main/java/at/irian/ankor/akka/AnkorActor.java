@@ -3,9 +3,9 @@ package at.irian.ankor.akka;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
 import at.irian.ankor.context.ModelContext;
-import at.irian.ankor.dispatch.EventDispatcher;
-import at.irian.ankor.dispatch.SimpleEventDispatcher;
 import at.irian.ankor.event.ModelEvent;
+import at.irian.ankor.event.dispatch.EventDispatcher;
+import at.irian.ankor.event.dispatch.SimpleEventDispatcher;
 import at.irian.ankor.session.Session;
 
 /**

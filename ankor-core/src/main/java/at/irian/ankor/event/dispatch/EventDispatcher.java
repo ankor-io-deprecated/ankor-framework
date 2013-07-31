@@ -1,4 +1,4 @@
-package at.irian.ankor.dispatch;
+package at.irian.ankor.event.dispatch;
 
 import at.irian.ankor.event.ModelEvent;
 
