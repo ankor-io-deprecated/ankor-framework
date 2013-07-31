@@ -1,11 +1,5 @@
 .DS_Store
-.idea/artifacts/
-.idea/copyright/
-.idea/inspectionProfiles/
-.idea/libraries/
-.idea/scopes/
-.idea/*.xml
-.idea/.*
+.idea/
 *.ipr
 *.iml
 *.iws
