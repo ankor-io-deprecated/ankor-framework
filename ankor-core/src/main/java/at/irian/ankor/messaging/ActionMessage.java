@@ -8,7 +8,7 @@ import at.irian.ankor.action.Action;
 public class ActionMessage extends Message {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ActionMessage.class);
 
-    private String actionProperty;
+    private String property;
     private Action action;
 
     /**
@@ -20,12 +20,12 @@ public class ActionMessage extends Message {
     protected ActionMessage(String sessionId, String messageId,
                             String actionProperty, Action action) {
         super(sessionId, messageId);
-        this.actionProperty = actionProperty;
+        this.property = actionProperty;
         this.action = action;
     }
 
-    public String getActionProperty() {
-        return actionProperty;
+    public String getProperty() {
+        return property;
     }
 
     public Action getAction() {
@@ -44,7 +44,7 @@ public class ActionMessage extends Message {
 
         ActionMessage that = (ActionMessage) o;
 
-        if (!actionProperty.equals(that.actionProperty)) {
+        if (!property.equals(that.property)) {
             return false;
         }
         if (!action.equals(that.action)) {
@@ -56,7 +56,7 @@ public class ActionMessage extends Message {
 
     @Override
     public int hashCode() {
-        int result = actionProperty.hashCode();
+        int result = property.hashCode();
         result = 31 * result + action.hashCode();
         return result;
     }
@@ -65,7 +65,7 @@ public class ActionMessage extends Message {
     public String toString() {
         return "ActionMessage{" +
                "messageId='" + getMessageId() + '\'' +
-               ", actionProperty='" + actionProperty + '\'' +
+               ", property='" + property + '\'' +
                ", action=" + action +
                '}';
     }

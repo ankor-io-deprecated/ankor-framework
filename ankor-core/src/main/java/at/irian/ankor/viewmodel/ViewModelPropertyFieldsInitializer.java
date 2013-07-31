@@ -1,4 +1,4 @@
-package at.irian.ankor.model;
+package at.irian.ankor.viewmodel;
 
 import at.irian.ankor.ref.Ref;
 
@@ -7,6 +7,7 @@ import java.lang.reflect.Field;
 /**
 * @author Manfred Geiler
 */
+@SuppressWarnings("UnusedDeclaration")
 public class ViewModelPropertyFieldsInitializer implements ViewModelPostProcessor {
 
     @Override

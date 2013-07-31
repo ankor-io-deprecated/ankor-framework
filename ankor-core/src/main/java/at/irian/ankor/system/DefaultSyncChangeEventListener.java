@@ -9,6 +9,8 @@ import at.irian.ankor.messaging.MessageSender;
 import at.irian.ankor.ref.Ref;
 
 /**
+ * Global ChangeEventListener that relays all locally happened {@link ChangeEvent ChangeEvents} to the remote system.
+ *
  * @author Manfred Geiler
  */
 public class DefaultSyncChangeEventListener extends ChangeEventListener {
@@ -23,11 +25,16 @@ public class DefaultSyncChangeEventListener extends ChangeEventListener {
         this.messageSender = messageSender;
     }
 
+    @Override
+    public boolean isDiscardable() {
+        return false; // this is a global system listener
+    }
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public void process(ChangeEvent event) {
         Change change = event.getChange();
-        if (change instanceof RemoteChange) {
+        if (change instanceof RemoteEvent.Change) {
             // do not relay remote changes back to remote partner ...
         } else {
             LOG.debug("processing local change event {}", event);

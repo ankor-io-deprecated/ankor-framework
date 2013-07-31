@@ -1,14 +1,15 @@
 package at.irian.ankorman.sample1.viewmodel;
 
 import at.irian.ankor.annotation.ActionListener;
-import at.irian.ankor.model.ViewModelBase;
-import at.irian.ankor.model.ViewModelProperty;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.viewmodel.ViewModelBase;
+import at.irian.ankor.viewmodel.ViewModelProperty;
 import at.irian.ankorman.sample1.server.AnimalRepository;
 
 /**
  * @author Thomas Spiegl
  */
+@SuppressWarnings("UnusedDeclaration")
 public class ModelRoot extends ViewModelBase {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TestModel.class);
 

@@ -85,33 +85,4 @@ public final class JsonUtils {
         }
     }
 
-//    private static class ActionDeserializer extends StdDeserializer<Action> {
-//
-//        ActionDeserializer() {
-//            super(Action.class);
-//        }
-//
-//        @Override
-//        public Action deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
-//            ObjectMapper mapper = (ObjectMapper) jp.getCodec();
-//            ObjectNode tree = mapper.readTree(jp);
-//            Class<? extends Action> detectedType = null;
-//            Iterator<Map.Entry<String, JsonNode>> elementsIterator = tree.fields();
-//            while (elementsIterator.hasNext())
-//            {
-//                Map.Entry<String, JsonNode> element=elementsIterator.next();
-//                String name = element.getKey();
-//                if (name.equals("params")) { // TODO find a better way
-//                    detectedType = SimpleParamAction.class;
-//                    break;
-//                }
-//            }
-//            if (detectedType == null) {
-//                detectedType = Action.class;
-//            }
-//            return mapper.treeToValue(tree, detectedType);
-//        }
-//    }
-
-
 }

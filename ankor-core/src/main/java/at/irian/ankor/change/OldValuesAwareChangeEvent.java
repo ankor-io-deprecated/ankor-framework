@@ -1,8 +1,8 @@
 package at.irian.ankor.change;
 
+import at.irian.ankor.base.ObjectUtils;
 import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.util.ObjectUtils;
 
 import java.util.Map;
 

@@ -2,8 +2,8 @@ package at.irian.ankorman.sample1.viewmodel;
 
 import at.irian.ankor.annotation.ActionListener;
 import at.irian.ankor.annotation.Param;
-import at.irian.ankor.model.ViewModelMapBase;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.viewmodel.ViewModelMapBase;
 import at.irian.ankorman.sample1.domain.animal.Animal;
 import at.irian.ankorman.sample1.domain.animal.AnimalFamily;
 import at.irian.ankorman.sample1.domain.animal.AnimalType;
@@ -42,7 +42,7 @@ public class Tabs extends ViewModelMapBase<String, Tab> {
     public void createAnimalSearchTab(@Param("tabId") final String tabId) {
         Ref tabRef = thisRef().append(tabId);
 
-        Tab<AnimalSearchModel> tab = new Tab<AnimalSearchModel>(tabId, tabRef, "Animal Search");
+        Tab<AnimalSearchModel> tab = new Tab<>(tabId, tabRef, "Animal Search");
         AnimalSearchModel model = new AnimalSearchModel(tabRef.append("model"), animalRepository, getAnimalSelectItems(), tab.getName());
         tab.setModel(model);
 
@@ -56,7 +56,7 @@ public class Tabs extends ViewModelMapBase<String, Tab> {
         Ref tabRef = thisRef().append(tabId);
         ModelRoot root = thisRef().root().getValue();
 
-        Tab<AnimalDetailModel> tab = new Tab<AnimalDetailModel>(tabId, tabRef, "New Animal");
+        Tab<AnimalDetailModel> tab = new Tab<>(tabId, tabRef, "New Animal");
         AnimalDetailModel model = new AnimalDetailModel(tabRef.append("model"),
                                                         new Animal(),
                                                         getAnimalSelectItems(),
@@ -69,7 +69,7 @@ public class Tabs extends ViewModelMapBase<String, Tab> {
     }
 
     private AnimalSelectItems getAnimalSelectItems() {
-        List<AnimalType> types = new ArrayList<AnimalType>(AnimalType.values().length + 1);
+        List<AnimalType> types = new ArrayList<>(AnimalType.values().length + 1);
         types.addAll(Arrays.asList(AnimalType.values()));
         return new AnimalSelectItems(types, new ArrayList<AnimalFamily>());
     }

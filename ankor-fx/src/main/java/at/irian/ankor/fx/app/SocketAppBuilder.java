@@ -1,18 +1,19 @@
 package at.irian.ankor.fx.app;
 
 import akka.actor.ActorSystem;
+import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.event.dispatch.AkkaEventDispatcherFactory;
 import at.irian.ankor.messaging.MessageMapper;
 import at.irian.ankor.messaging.SocketMessageLoop;
-import at.irian.ankor.messaging.json.JsonViewDataMessageMapper;
-import at.irian.ankor.messaging.json.JsonViewModelMessageMapper;
+import at.irian.ankor.messaging.json.simpletree.SimpleTreeJsonMessageMapper;
+import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.session.ModelRootFactory;
 import at.irian.ankor.system.AnkorSystem;
 import at.irian.ankor.system.AnkorSystemBuilder;
-import at.irian.ankor.system.BeanResolver;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,8 +40,8 @@ public class SocketAppBuilder {
             }
 
             @Override
-            public String[] getBeanDefinitionNames() {
-                return beans.keySet().toArray(new String[beans.keySet().size()]);
+            public Collection<String> getKnownBeanNames() {
+                return beans.keySet();
             }
         };
     }
@@ -62,7 +63,7 @@ public class SocketAppBuilder {
 
         String serverName = "server";
 
-        MessageMapper<String> serverMessageMapper = new JsonViewModelMessageMapper();
+        MessageMapper<String> serverMessageMapper = new ViewModelJsonMessageMapper();
 
         SocketMessageLoop<String> serverMessageLoop = new SocketMessageLoop<>(serverName,
                                                                               serverMessageMapper,
@@ -89,7 +90,7 @@ public class SocketAppBuilder {
 
         String clientName = "client";
 
-        MessageMapper<String> clientMessageMapper = new JsonViewDataMessageMapper();
+        MessageMapper<String> clientMessageMapper = new SimpleTreeJsonMessageMapper();
 
         SocketMessageLoop<String> clientMessageLoop = new SocketMessageLoop<>(clientName,
                                                                               clientMessageMapper,

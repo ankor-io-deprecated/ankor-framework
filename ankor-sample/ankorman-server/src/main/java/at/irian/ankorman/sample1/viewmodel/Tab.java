@@ -1,12 +1,13 @@
 package at.irian.ankorman.sample1.viewmodel;
 
-import at.irian.ankor.model.ViewModelBase;
-import at.irian.ankor.model.ViewModelProperty;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.viewmodel.ViewModelBase;
+import at.irian.ankor.viewmodel.ViewModelProperty;
 
 /**
  * @author Thomas Spiegl
  */
+@SuppressWarnings("UnusedDeclaration")
 public class Tab<T> extends ViewModelBase {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(Tab.class);
 

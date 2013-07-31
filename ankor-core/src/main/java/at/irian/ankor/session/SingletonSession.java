@@ -6,7 +6,10 @@ import at.irian.ankor.event.dispatch.SessionSynchronisedEventDispatcher;
 import at.irian.ankor.ref.RefContext;
 
 /**
+ * Simple Session, typically used on client systems that handle only one view model at the same time.
+ *
  * @author Manfred Geiler
+ * @see SingletonSessionManager
  */
 public class SingletonSession implements Session {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ServerSession.class);

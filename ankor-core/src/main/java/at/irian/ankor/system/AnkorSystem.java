@@ -1,14 +1,17 @@
 package at.irian.ankor.system;
 
-import at.irian.ankor.action.Action;
-import at.irian.ankor.messaging.*;
-import at.irian.ankor.ref.Ref;
-import at.irian.ankor.ref.RefContext;
+import at.irian.ankor.messaging.MessageBus;
+import at.irian.ankor.messaging.MessageFactory;
+import at.irian.ankor.messaging.MessageListener;
 import at.irian.ankor.ref.RefContextFactory;
-import at.irian.ankor.session.Session;
 import at.irian.ankor.session.SessionManager;
 
 /**
+ * This is the main system object that sticks all the Ankor parts together.
+ * Typically every node in an Ankor environment has exactly one AnkorSystem instance.
+ * So, in a pure-Java client-server environment (e.g. JavaFX client and Java web server) there is
+ * one AnkorSystem instance on the client side and one AnkorSystem instance on the server side.
+ *
  * @author Manfred Geiler
  */
 @SuppressWarnings("UnusedDeclaration")
@@ -20,7 +23,7 @@ public class AnkorSystem {
     private final MessageBus messageBus;
     private final RefContextFactory refContextFactory;
     private final SessionManager sessionManager;
-    private MessageListener messageListener;
+    private final MessageListener messageListener;
 
     protected AnkorSystem(String systemName,
                           MessageFactory messageFactory,
@@ -32,6 +35,7 @@ public class AnkorSystem {
         this.messageBus = messageBus;
         this.refContextFactory = refContextFactory;
         this.sessionManager = sessionManager;
+        this.messageListener = new DefaultMessageListener(sessionManager);
     }
 
     public String getSystemName() {
@@ -60,61 +64,16 @@ public class AnkorSystem {
         return "AnkorSystem{'" + systemName + "'}";
     }
 
-    public boolean isStarted() {
-        return messageListener != null;
-    }
-
     public void start() {
-
         LOG.info("Starting {}", this);
-
-        if (isStarted()) {
-            throw new IllegalStateException("already started?");
-        }
-
-        messageListener = new MessageListener() {
-            @Override
-            public void onActionMessage(ActionMessage message) {
-                String sessionId = message.getSessionId();
-                Session session = sessionManager.getOrCreateSession(sessionId);
-
-                RefContext refContext = session.getRefContext();
-                Ref actionProperty = refContext.refFactory().ref(message.getActionProperty());
-
-                Action action = message.getAction();
-                RemoteEvent event = new RemoteEvent(actionProperty,
-                                                    new RemoteAction(action.getName(), action.getParams()));
-                session.getEventDispatcher().dispatch(event);
-            }
-
-            @Override
-            public void onChangeMessage(ChangeMessage message) {
-                String sessionId = message.getSessionId();
-                Session session = sessionManager.getOrCreateSession(sessionId);
-
-                RefContext refContext = session.getRefContext();
-                Ref changedProperty = refContext.refFactory().ref(message.getChangedProperty());
-
-                RemoteEvent event = new RemoteEvent(changedProperty,
-                                                    new RemoteChange(message.getChange().getNewValue()));
-                session.getEventDispatcher().dispatch(event);
-            }
-        };
-
         messageBus.registerMessageListener(messageListener);
     }
 
 
     @SuppressWarnings("UnusedDeclaration")
     public void stop() {
-
         LOG.info("Stopping {}", this);
-
-        if (messageListener != null) {
-            messageBus.unregisterMessageListener(messageListener);
-            messageListener = null;
-        }
-
+        messageBus.unregisterMessageListener(messageListener);
     }
 
 }

@@ -1,6 +1,6 @@
 package at.irian.ankorman.sample1.viewmodel;
 
-import at.irian.ankor.util.ObjectUtils;
+import at.irian.ankor.base.ObjectUtils;
 
 /**
  * @author Thomas Spiegl

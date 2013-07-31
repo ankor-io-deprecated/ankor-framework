@@ -5,13 +5,13 @@ import at.irian.ankor.el.ELSupport;
 import at.irian.ankor.el.StandardELContext;
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.event.dispatch.EventDispatcher;
-import at.irian.ankor.model.ViewModelPostProcessor;
 import at.irian.ankor.path.PathSyntax;
 import at.irian.ankor.path.el.SimpleELPathSyntax;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.ref.impl.RefContextImplementor;
 import at.irian.ankor.session.Session;
+import at.irian.ankor.viewmodel.ViewModelPostProcessor;
 import com.typesafe.config.Config;
 
 import javax.el.ExpressionFactory;

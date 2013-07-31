@@ -1,12 +1,12 @@
 package at.irian.ankor.ref.el;
 
+import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.context.ModelContext;
 import at.irian.ankor.el.AnkorELSupport;
 import at.irian.ankor.el.ELSupport;
-import at.irian.ankor.model.ViewModelPostProcessor;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefContextFactory;
-import at.irian.ankor.system.BeanResolver;
+import at.irian.ankor.viewmodel.ViewModelPostProcessor;
 import com.typesafe.config.Config;
 
 import java.util.List;

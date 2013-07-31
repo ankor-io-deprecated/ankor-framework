@@ -8,7 +8,7 @@ import at.irian.ankor.change.Change;
 public class ChangeMessage extends Message {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ChangeMessage.class);
 
-    private String changedProperty;
+    private String property;
     private Change change;
 
     /**
@@ -20,12 +20,12 @@ public class ChangeMessage extends Message {
     protected ChangeMessage(String sessionId, String messageId,
                             String changedProperty, Change change) {
         super(sessionId, messageId);
-        this.changedProperty = changedProperty;
+        this.property = changedProperty;
         this.change = change;
     }
 
-    public String getChangedProperty() {
-        return changedProperty;
+    public String getProperty() {
+        return property;
     }
 
     public Change getChange() {

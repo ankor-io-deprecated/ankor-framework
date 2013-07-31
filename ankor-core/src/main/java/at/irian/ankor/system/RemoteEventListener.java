@@ -6,6 +6,8 @@ import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.ref.impl.RefBase;
 
 /**
+ * ModelEventListener that handles {@link RemoteEvent RemoteEvents}.
+ *
  * @author Manfred Geiler
  */
 public class RemoteEventListener implements ModelEventListener {
@@ -13,12 +15,10 @@ public class RemoteEventListener implements ModelEventListener {
 
     @Override
     public boolean isDiscardable() {
-        return false;
+        return false; // this is a global system listener
     }
 
     public void process(RemoteEvent event) {
-
-        //LOG.info("processing remote event {}", event);
 
         Action action = event.getAction();
         if (action != null) {

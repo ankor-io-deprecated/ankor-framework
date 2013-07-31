@@ -2,9 +2,9 @@ package at.irian.ankorman.sample1.viewmodel.animal;
 
 import at.irian.ankor.annotation.ActionListener;
 import at.irian.ankor.annotation.ChangeListener;
-import at.irian.ankor.model.ViewModelBase;
-import at.irian.ankor.model.ViewModelProperty;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.viewmodel.ViewModelBase;
+import at.irian.ankor.viewmodel.ViewModelProperty;
 import at.irian.ankorman.sample1.domain.animal.Animal;
 import at.irian.ankorman.sample1.server.AnimalRepository;
 import at.irian.ankorman.sample1.viewmodel.TabNameCreator;
@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 /**
 * @author Thomas Spiegl
 */
+@SuppressWarnings("UnusedDeclaration")
 public class AnimalSearchModel extends ViewModelBase {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalSearchModel.class);
 
@@ -36,7 +37,7 @@ public class AnimalSearchModel extends ViewModelBase {
         this.tabName = tabName;
         this.filter = new AnimalSearchFilter();
         this.selectItems = selectItems;
-        this.animals = new Data<Animal>(new Paginator(0, 5));
+        this.animals = new Data<>(new Paginator(0, 5));
     }
 
     public AnimalSearchFilter getFilter() {

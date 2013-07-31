@@ -9,6 +9,8 @@ import at.irian.ankor.messaging.MessageSender;
 import at.irian.ankor.ref.Ref;
 
 /**
+ * Global ActionEventListener that relays all locally happened {@link ActionEvent ActionEvents} to the remote system.
+ *
  * @author Manfred Geiler
  */
 public class DefaultSyncActionEventListener extends ActionEventListener {
@@ -23,13 +25,17 @@ public class DefaultSyncActionEventListener extends ActionEventListener {
         this.messageSender = messageSender;
     }
 
+    @Override
+    public boolean isDiscardable() {
+        return false; // this is a global system listener
+    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public void process(ActionEvent event) {
         Action action = event.getAction();
-        if (action instanceof RemoteAction) {
-            // do not relay remote action back to remote partner ...
+        if (action instanceof RemoteEvent.Action) {
+            // do not relay remote actions back to the remote system
         } else {
             LOG.debug("processing local action event {}", event);
             Ref actionProperty = event.getActionProperty();

@@ -2,6 +2,7 @@ package at.irian.ankor.ref.impl;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionEvent;
+import at.irian.ankor.base.Wrapper;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.change.OldValuesAwareChangeEvent;
@@ -10,7 +11,6 @@ import at.irian.ankor.event.PropertyWatcher;
 import at.irian.ankor.path.PathSyntax;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefFactory;
-import at.irian.ankor.ref.Wrapper;
 
 import java.lang.reflect.Constructor;
 import java.util.HashMap;

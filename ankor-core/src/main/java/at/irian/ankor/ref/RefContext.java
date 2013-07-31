@@ -1,9 +1,9 @@
 package at.irian.ankor.ref;
 
 import at.irian.ankor.event.EventListeners;
-import at.irian.ankor.model.ViewModelPostProcessor;
 import at.irian.ankor.path.PathSyntax;
 import at.irian.ankor.session.Session;
+import at.irian.ankor.viewmodel.ViewModelPostProcessor;
 
 import java.util.List;
 

@@ -6,6 +6,9 @@ import at.irian.ankor.change.ChangeEventListener;
 import at.irian.ankor.event.EventListeners;
 
 /**
+ * Global ChangeEventListener that automatically discards all ModelEventListeners that are no longer owned by valid
+ * model Ref after a model property's value has changed to <code>null</code>.
+ *
  * @author Manfred Geiler
  */
 public class ListenerCleanupChangeEventListener extends ChangeEventListener {
@@ -19,10 +22,12 @@ public class ListenerCleanupChangeEventListener extends ChangeEventListener {
     }
 
     @Override
+    public boolean isDiscardable() {
+        return false; // this is a global system listener
+    }
+
+    @Override
     public void process(ChangeEvent event) {
-
-        //todo/check  called twice on remote change?
-
         Change change = event.getChange();
         if (change.getNewValue() == null) {
             eventListeners.cleanup();

@@ -13,7 +13,7 @@
         <module>ankor-annotation</module>
         <module>ankor-el</module>
         <module>ankor-json</module>
-        <!--<module>ankor-netty</module>-->
+        <module>ankor-netty</module>
         <module>ankor-actor</module>
         <module>ankor-service</module>
         <module>ankor-servlet</module>

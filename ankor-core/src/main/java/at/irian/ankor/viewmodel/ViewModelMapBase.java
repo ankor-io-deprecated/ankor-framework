@@ -1,4 +1,4 @@
-package at.irian.ankor.model;
+package at.irian.ankor.viewmodel;
 
 import at.irian.ankor.ref.Ref;
 

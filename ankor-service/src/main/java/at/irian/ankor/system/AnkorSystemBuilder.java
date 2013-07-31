@@ -1,26 +1,25 @@
 package at.irian.ankor.system;
 
 import at.irian.ankor.annotation.ViewModelAnnotationScanner;
+import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.context.DefaultModelContext;
 import at.irian.ankor.context.ModelContext;
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.event.dispatch.EventDispatcherFactory;
 import at.irian.ankor.event.dispatch.SessionSynchronisedEventDispatcherFactory;
 import at.irian.ankor.messaging.*;
-import at.irian.ankor.model.ViewModelPostProcessor;
-import at.irian.ankor.model.ViewModelPropertyFieldsInitializer;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.ref.el.ELRefContextFactory;
 import at.irian.ankor.ref.impl.RefContextImplementor;
 import at.irian.ankor.session.*;
+import at.irian.ankor.viewmodel.ViewModelPostProcessor;
+import at.irian.ankor.viewmodel.ViewModelPropertyFieldsInitializer;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Manfred Geiler
@@ -208,16 +207,14 @@ public class AnkorSystemBuilder {
 
     private static class EmptyBeanResolver implements BeanResolver {
 
-        private static final String[] EMPTY_STRING_ARRAY = new String[0];
-
         @Override
         public Object resolveByName(String beanName) {
             return null;
         }
 
         @Override
-        public String[] getBeanDefinitionNames() {
-            return EMPTY_STRING_ARRAY;
+        public Collection<String> getKnownBeanNames() {
+            return Collections.emptyList();
         }
     }
 }

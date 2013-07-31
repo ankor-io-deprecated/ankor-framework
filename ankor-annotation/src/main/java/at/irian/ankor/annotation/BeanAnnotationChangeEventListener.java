@@ -1,10 +1,10 @@
 package at.irian.ankor.annotation;
 
+import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.change.ChangeEventListener;
 import at.irian.ankor.path.PathSyntax;
 import at.irian.ankor.ref.match.RefMatcher;
-import at.irian.ankor.system.BeanResolver;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -31,7 +31,7 @@ public class BeanAnnotationChangeEventListener extends ChangeEventListener {
 
     private List<ChangeTarget> scan(BeanResolver beanResolver) {
         List<ChangeTarget> result = new ArrayList<ChangeTarget>();
-        for (String beanName : beanResolver.getBeanDefinitionNames()) {
+        for (String beanName : beanResolver.getKnownBeanNames()) {
             Object bean = beanResolver.resolveByName(beanName);
             Class<?> beanType = bean.getClass();
             for (Method method : beanType.getMethods()) {

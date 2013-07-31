@@ -8,9 +8,9 @@
         <version>0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>ankor-actor</artifactId>
+    <artifactId>ankor-netty</artifactId>
     <packaging>jar</packaging>
-    <name>Ankor - Akka Actor Support</name>
+    <name>Ankor - Netty support</name>
 
     <dependencies>
 
@@ -22,9 +22,16 @@
         </dependency>
 
         <dependency>
-            <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-actor_2.10</artifactId>
-            <version>2.2.0</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.0.0.CR6</version>
+            <scope>compile</scope>
         </dependency>
 
     </dependencies>

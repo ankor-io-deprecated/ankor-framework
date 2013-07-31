@@ -2,9 +2,9 @@ package at.irian.ankorman.sample1.viewmodel.animal;
 
 import at.irian.ankor.annotation.ActionListener;
 import at.irian.ankor.annotation.ChangeListener;
-import at.irian.ankor.model.ViewModelBase;
-import at.irian.ankor.model.ViewModelProperty;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.viewmodel.ViewModelBase;
+import at.irian.ankor.viewmodel.ViewModelProperty;
 import at.irian.ankorman.sample1.domain.animal.Animal;
 import at.irian.ankorman.sample1.server.AnimalRepository;
 import at.irian.ankorman.sample1.viewmodel.TabNameCreator;

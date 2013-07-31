@@ -1,7 +1,7 @@
 package at.irian.ankor.fx.binding;
 
-import at.irian.ankor.ref.listener.RefChangeListener;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.ref.listener.RefChangeListener;
 import at.irian.ankor.ref.listener.RefListeners;
 import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.application.Platform;
@@ -12,7 +12,7 @@ import javafx.collections.ObservableList;
 import java.util.Collection;
 import java.util.List;
 
-import static at.irian.ankor.util.ObjectUtils.nullSafeEquals;
+import static at.irian.ankor.base.ObjectUtils.nullSafeEquals;
 
 /**
 * @author Thomas Spiegl

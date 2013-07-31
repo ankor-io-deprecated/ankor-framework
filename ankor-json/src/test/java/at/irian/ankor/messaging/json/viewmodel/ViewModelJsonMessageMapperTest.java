@@ -1,4 +1,4 @@
-package at.irian.ankor.messaging.json;
+package at.irian.ankor.messaging.json.viewmodel;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.change.Change;
@@ -9,16 +9,16 @@ import org.junit.Test;
 /**
  * @author Manfred Geiler
  */
-public class JsonViewModelMessageMapperTest {
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(JsonViewModelMessageMapperTest.class);
+public class ViewModelJsonMessageMapperTest {
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ViewModelJsonMessageMapperTest.class);
 
     private MessageFactory messageFactory;
-    private JsonViewModelMessageMapper msgMapper;
+    private ViewModelJsonMessageMapper msgMapper;
 
     @org.junit.Before
     public void setUp() throws Exception {
         messageFactory = new MessageFactory(new CounterMessageIdGenerator(""));
-        msgMapper = new JsonViewModelMessageMapper();
+        msgMapper = new ViewModelJsonMessageMapper();
     }
 
     @Test
@@ -49,7 +49,7 @@ public class JsonViewModelMessageMapperTest {
 
         Assert.assertEquals(ChangeMessage.class, desMsg.getClass());
         ChangeMessage changeMsg = (ChangeMessage) desMsg;
-        Assert.assertEquals("root.test1", changeMsg.getChangedProperty());
+        Assert.assertEquals("root.test1", changeMsg.getProperty());
     }
 
     @Test
@@ -63,7 +63,7 @@ public class JsonViewModelMessageMapperTest {
 
         Assert.assertEquals(ChangeMessage.class, desMsg.getClass());
         ChangeMessage changeMsg = (ChangeMessage) desMsg;
-        Assert.assertEquals("root", changeMsg.getChangedProperty());
+        Assert.assertEquals("root", changeMsg.getProperty());
     }
 
 

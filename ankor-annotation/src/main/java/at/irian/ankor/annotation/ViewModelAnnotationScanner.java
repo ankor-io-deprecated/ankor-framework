@@ -1,13 +1,13 @@
 package at.irian.ankor.annotation;
 
 import at.irian.ankor.action.Action;
-import at.irian.ankor.model.ViewModelBase;
-import at.irian.ankor.model.ViewModelPostProcessor;
 import at.irian.ankor.path.PathSyntax;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.listener.RefActionListener;
 import at.irian.ankor.ref.listener.RefChangeListener;
 import at.irian.ankor.ref.match.RefMatcher;
+import at.irian.ankor.viewmodel.ViewModelBase;
+import at.irian.ankor.viewmodel.ViewModelPostProcessor;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;

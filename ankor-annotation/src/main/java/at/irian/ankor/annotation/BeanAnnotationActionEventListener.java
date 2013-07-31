@@ -1,11 +1,10 @@
 package at.irian.ankor.annotation;
 
-import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionEvent;
 import at.irian.ankor.action.ActionEventListener;
+import at.irian.ankor.base.BeanResolver;
+import at.irian.ankor.base.ObjectUtils;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.system.BeanResolver;
-import at.irian.ankor.util.ObjectUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -58,7 +57,7 @@ public class BeanAnnotationActionEventListener extends ActionEventListener {
         }
 
         private void scanBeans(BeanResolver beanResolver) {
-            for (String beanName : beanResolver.getBeanDefinitionNames()) {
+            for (String beanName : beanResolver.getKnownBeanNames()) {
                 Object bean = beanResolver.resolveByName(beanName);
                 Class<?> beanType = bean.getClass();
                 for (Method method : beanType.getMethods()) {

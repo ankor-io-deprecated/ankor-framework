@@ -10,6 +10,7 @@ public class Action {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(Action.class);
 
     private String name;
+
     private Map<String, Object> params;
 
     /**
@@ -18,12 +19,14 @@ public class Action {
     protected Action() {}
 
     public Action(String name) {
-        this(name, Collections.<String, Object>emptyMap());
+        this(name, null);
     }
 
     public Action(String name, Map<String, Object> params) {
         this.name = name;
-        this.params = params;
+        this.params = params != null && !params.isEmpty()
+                      ? Collections.unmodifiableMap(params)
+                      : null;
     }
 
     public String getName() {
@@ -31,7 +34,7 @@ public class Action {
     }
 
     public Map<String, Object> getParams() {
-        return params;
+        return params != null ? params : Collections.<String, Object>emptyMap();
     }
 
     @Override

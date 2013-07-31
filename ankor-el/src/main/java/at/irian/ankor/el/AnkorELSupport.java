@@ -1,8 +1,8 @@
 package at.irian.ankor.el;
 
+import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.context.ModelContext;
 import at.irian.ankor.ref.RefFactory;
-import at.irian.ankor.system.BeanResolver;
 import com.typesafe.config.Config;
 
 import javax.el.ExpressionFactory;

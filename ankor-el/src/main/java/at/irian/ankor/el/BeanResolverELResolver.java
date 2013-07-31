@@ -1,6 +1,6 @@
 package at.irian.ankor.el;
 
-import at.irian.ankor.system.BeanResolver;
+import at.irian.ankor.base.BeanResolver;
 
 import javax.el.ELContext;
 import javax.el.ELResolver;

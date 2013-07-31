@@ -1,7 +1,7 @@
-package at.irian.ankor.model;
+package at.irian.ankor.viewmodel;
 
+import at.irian.ankor.base.Wrapper;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.ref.Wrapper;
 
 /**
  * @author Manfred Geiler
