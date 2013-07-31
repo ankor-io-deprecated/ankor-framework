@@ -4,14 +4,14 @@ from django.template import RequestContext, loader
 def index(request):
     template = loader.get_template('index.html')
     context = RequestContext(request, {
-                'home': 'active',
+                'activeMenu': 'home',
         })
     return HttpResponse(template.render(context))
 
 def download(request):
     template = loader.get_template('download.html')
     context = RequestContext(request, {
-                'download': 'active',
+                'activeMenu': 'download',
         })
     return HttpResponse(template.render(context))
 
@@ -28,7 +28,7 @@ def tutorials(request, type, step):
         previousStep = 0
 
     context = RequestContext(request, {
-                'tutorials' : 'active',
+                'activeMenu' : 'tutorials',
                 'step' : step,
                 'previousStep' : previousStep,
                 'nextStep' : nextStep,
@@ -38,13 +38,13 @@ def tutorials(request, type, step):
 def documentation(request):
     template = loader.get_template('documentation.html')
     context = RequestContext(request, {
-                'documentation': 'active',
+                'activeMenu': 'documentation',
         })
     return HttpResponse(template.render(context))
 
 def contribute(request):
     template = loader.get_template('contribute.html')
     context = RequestContext(request, {
-                'contribute': 'active',
+                'activeMenu': 'contribute',
         })
     return HttpResponse(template.render(context))

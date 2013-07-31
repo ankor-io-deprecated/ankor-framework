@@ -4,11 +4,11 @@
             <a class="brand" href="/">Ankor</a>
             <div class="nav-collapse">
                 <ul class="nav">
-                    <li {% if home %}class="active"{% endif %}><a href="/">Home</a></li>
-                    <li {% if download %}class="active"{% endif %}><a href="/download">Download</a></li>
-                    <li {% if tutorials %}class="active"{% endif %}><a href="/tutorials/fx/0">Tutorials</a></li>
-                    <li {% if documentation %}class="active"{% endif %}><a href="/documentation">Documentation</a></li>
-                    <li {% if contribute %}class="active"{% endif %}><a href="/contribute">Contribute</a></li>
+                    <li {% if activeMenu == 'home' %}class="active"{% endif %}><a href="/">Home</a></li>
+                    <li {% if activeMenu == 'download' %}class="active"{% endif %}><a href="/download">Download</a></li>
+                    <li {% if activeMenu == 'tutorials' %}class="active"{% endif %}><a href="/tutorials/fx/0">Tutorials</a></li>
+                    <li {% if activeMenu == 'documentation' %}class="active"{% endif %}><a href="/documentation">Documentation</a></li>
+                    <li {% if activeMenu == 'contribute' %}class="active"{% endif %}><a href="/contribute">Contribute</a></li>
                 </ul>
             </div>
         </div>

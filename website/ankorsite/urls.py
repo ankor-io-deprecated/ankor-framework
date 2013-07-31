@@ -21,5 +21,6 @@ urlpatterns = patterns('',
     url(r'^tutorials/(?P<type>[a-z]+)/(?P<step>\d+)', views.tutorials),
     url(r'^documentation', views.documentation),
     url(r'^contribute', views.contribute),
+    url(r'^javadoc', 'javadoc/index.html'),
     url(r'^.*', views.index),
 )
