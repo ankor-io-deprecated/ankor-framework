@@ -22,6 +22,7 @@
     </modules>
 
     <properties>
+        <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
         <jackson.version>2.2.2</jackson.version>
     </properties>
 
