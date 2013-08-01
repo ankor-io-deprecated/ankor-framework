@@ -12,10 +12,10 @@ public class StandardELContext extends ELContext {
     private final FunctionMapper functionMapper;
     private final VariableMapper variableMapper;
 
-    public StandardELContext() {
-        this.elResolver = new StandardELResolver();
-        this.functionMapper = new StandardFunctionMapper();
-        this.variableMapper = new StandardVariableMapper();
+    public StandardELContext(ELResolver... additionalResolvers) {
+        this(new StandardELResolver(additionalResolvers),
+             new StandardFunctionMapper(),
+             new StandardVariableMapper());
     }
 
     protected StandardELContext(ELResolver elResolver, FunctionMapper functionMapper, VariableMapper variableMapper) {

@@ -68,7 +68,7 @@ public abstract class RefBase implements Ref {
 
     private Map<Ref, Object> getOldWatchedValues() {
         Map<Ref, Object> result = new HashMap<Ref, Object>();
-        for (ModelEventListener listener : context().eventListeners()) {
+        for (ModelEventListener listener : context().modelContext().getEventListeners()) {
             if (listener instanceof PropertyWatcher) {
                 Ref watchedProperty = ((PropertyWatcher) listener).getWatchedProperty();
                 if (watchedProperty != null && !(result.containsKey(watchedProperty))) {

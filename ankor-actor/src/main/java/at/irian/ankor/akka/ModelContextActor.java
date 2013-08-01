@@ -4,6 +4,7 @@ import akka.actor.Props;
 import akka.actor.UntypedActor;
 import at.irian.ankor.context.ModelContext;
 import at.irian.ankor.event.ModelEvent;
+import at.irian.ankor.event.dispatch.DispatchThreadChecker;
 import at.irian.ankor.event.dispatch.EventDispatcher;
 import at.irian.ankor.event.dispatch.SimpleEventDispatcher;
 
@@ -22,9 +23,11 @@ public class ModelContextActor extends UntypedActor {
     }
 
     private final EventDispatcher eventDispatcher;
+    private final DispatchThreadChecker dispatchThreadChecker;
 
     public ModelContextActor(ModelContext modelContext) {
         this.eventDispatcher = new SimpleEventDispatcher(modelContext.getEventListeners());
+        this.dispatchThreadChecker = new DispatchThreadChecker(modelContext);
     }
 
     @Override
@@ -38,7 +41,12 @@ public class ModelContextActor extends UntypedActor {
     }
 
     private void handleEvent(ModelEvent event) {
-        eventDispatcher.dispatch(event);
+        dispatchThreadChecker.register();
+        try {
+            eventDispatcher.dispatch(event);
+        } finally {
+            dispatchThreadChecker.clear();
+        }
     }
 
 }

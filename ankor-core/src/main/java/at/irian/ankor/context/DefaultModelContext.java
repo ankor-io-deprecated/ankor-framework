@@ -2,19 +2,22 @@ package at.irian.ankor.context;
 
 import at.irian.ankor.event.ArrayListEventListeners;
 import at.irian.ankor.event.EventListeners;
+import at.irian.ankor.event.dispatch.DispatchThreadAware;
 import at.irian.ankor.event.dispatch.EventDispatcher;
 import at.irian.ankor.event.dispatch.EventDispatcherFactory;
 
 /**
  * @author Manfred Geiler
  */
-class DefaultModelContext implements ModelContext {
+class DefaultModelContext implements ModelContext, DispatchThreadAware {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelContext.class);
 
     private final String id;
     private final EventListeners eventListeners;
     private EventDispatcher eventDispatcher;
     private Object modelRoot;
+
+    private volatile Thread dispatchThread;
 
     DefaultModelContext(String id, EventListeners eventListeners, Object modelRoot) {
         this.id = id;
@@ -71,4 +74,16 @@ class DefaultModelContext implements ModelContext {
                "id='" + id + '\'' +
                '}';
     }
+
+
+    @Override
+    public void setCurrentDispatchThread(Thread dispatchThread) {
+        this.dispatchThread = dispatchThread;
+    }
+
+    @Override
+    public Thread getCurrentDispatchThread() {
+        return dispatchThread;
+    }
+
 }

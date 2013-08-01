@@ -19,7 +19,13 @@ public class SynchronisedEventDispatcher extends SimpleEventDispatcher {
     @Override
     public void dispatch(ModelEvent event) {
         synchronized (modelContext) {
-            super.dispatch(event);
+            DispatchThreadChecker dispatchThreadChecker = new DispatchThreadChecker(modelContext);
+            dispatchThreadChecker.register();
+            try {
+                super.dispatch(event);
+            } finally {
+                dispatchThreadChecker.clear();
+            }
         }
     }
 

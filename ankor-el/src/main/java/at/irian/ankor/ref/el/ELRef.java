@@ -1,6 +1,7 @@
 package at.irian.ankor.ref.el;
 
 import at.irian.ankor.el.ELUtils;
+import at.irian.ankor.event.dispatch.DispatchThreadChecker;
 import at.irian.ankor.ref.impl.RefBase;
 
 import javax.el.PropertyNotFoundException;
@@ -21,14 +22,18 @@ public class ELRef extends RefBase {
 
     @Override
     protected void internalSetValue(Object newValue) {
-        ve.setValue(context().getElContext(), newValue);
+
+        // check if we are correctly running in a event dispatcher thread
+        new DispatchThreadChecker(context().modelContext()).check();
+
+        ve.setValue(context().createELContext(), newValue);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     protected <T> T internalGetValue() {
         try {
-            return (T)ve.getValue(context().getElContext());
+            return (T)ve.getValue(context().createELContext());
         } catch (IllegalStateException e) {
             LOG.warn("unable to get value of " + this, e);
             return null;
@@ -37,13 +42,13 @@ public class ELRef extends RefBase {
 
     @Override
     protected Class<?> getType() {
-        return ve.getType(context().getElContext());
+        return ve.getType(context().createELContext());
     }
 
     @Override
     public boolean isValid() {
         try {
-            ve.getValueReference(context().getElContext());
+            ve.getValueReference(context().createELContext());
         } catch (PropertyNotFoundException e) {
             return false;
         }
