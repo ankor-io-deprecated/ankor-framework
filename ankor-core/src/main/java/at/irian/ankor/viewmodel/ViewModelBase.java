@@ -1,7 +1,7 @@
 package at.irian.ankor.viewmodel;
 
+import at.irian.ankor.messaging.AnkorIgnore;
 import at.irian.ankor.ref.Ref;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * @author Manfred Geiler
@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public abstract class ViewModelBase {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ViewModelBase.class);
 
-    @JsonIgnore
+    @AnkorIgnore
     private final Ref viewModelRef;
 
     protected ViewModelBase(Ref viewModelRef) {

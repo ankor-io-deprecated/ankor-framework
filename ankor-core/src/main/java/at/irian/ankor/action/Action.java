@@ -4,6 +4,10 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
+ * An action that happened.
+ * Typically an Action is reported by means of an {@link ActionEvent}.
+ * Every action must have a name and optionally can have parameters.
+ *
  * @author Manfred Geiler
  */
 public class Action {

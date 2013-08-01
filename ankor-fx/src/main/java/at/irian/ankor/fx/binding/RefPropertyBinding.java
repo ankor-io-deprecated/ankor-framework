@@ -36,6 +36,9 @@ public class RefPropertyBinding implements RefChangeListener, javafx.beans.value
         this.property.addListener(this);
     }
 
+    /**
+     * Process changes from remote server.
+     */
     @Override
     public void processChange(Ref changedProperty) {
         Platform.runLater(new Runnable() {

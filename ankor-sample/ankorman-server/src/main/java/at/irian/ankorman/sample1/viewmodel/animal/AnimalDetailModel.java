@@ -2,13 +2,13 @@ package at.irian.ankorman.sample1.viewmodel.animal;
 
 import at.irian.ankor.annotation.ActionListener;
 import at.irian.ankor.annotation.ChangeListener;
+import at.irian.ankor.messaging.AnkorIgnore;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.viewmodel.ViewModelBase;
 import at.irian.ankor.viewmodel.ViewModelProperty;
 import at.irian.ankorman.sample1.domain.animal.Animal;
 import at.irian.ankorman.sample1.server.AnimalRepository;
 import at.irian.ankorman.sample1.viewmodel.TabNameCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * @author Thomas Spiegl
@@ -17,13 +17,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class AnimalDetailModel extends ViewModelBase {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalDetailModel.class);
 
-    @JsonIgnore
+    @AnkorIgnore
     private final AnimalRepository animalRepository;
-    @JsonIgnore
+    @AnkorIgnore
     private final ViewModelProperty<String> tabName;
-    @JsonIgnore
+    @AnkorIgnore
     private final ViewModelProperty<String> serverStatus;
-    @JsonIgnore
+    @AnkorIgnore
     private boolean saved = false;
 
     private Animal animal;

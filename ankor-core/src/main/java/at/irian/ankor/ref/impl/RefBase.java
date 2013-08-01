@@ -45,7 +45,7 @@ public abstract class RefBase implements Ref {
             oldValue = null;
         }
 
-        // remember old value of the watched properties
+        // remember old values of the watched properties
         Map<Ref, Object> oldWatchedValues = getOldWatchedValues();
 
         Object newValue = change.getNewValue();

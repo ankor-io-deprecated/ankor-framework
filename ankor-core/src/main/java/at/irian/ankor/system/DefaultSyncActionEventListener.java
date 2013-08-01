@@ -3,6 +3,7 @@ package at.irian.ankor.system;
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionEvent;
 import at.irian.ankor.action.ActionEventListener;
+import at.irian.ankor.action.RemoteAction;
 import at.irian.ankor.context.ModelContext;
 import at.irian.ankor.messaging.Message;
 import at.irian.ankor.messaging.MessageFactory;
@@ -43,8 +44,8 @@ public class DefaultSyncActionEventListener extends ActionEventListener {
         ModelContext modelContext = actionProperty.context().modelContext();
         Collection<Session> sessions = sessionManager.getAllFor(modelContext);
         for (Session session : sessions) {
-            if (action instanceof RemoteEvent.Action) {
-                Session initiatingSession = ((RemoteEvent.Action) action).getSession();
+            if (action instanceof RemoteAction) {
+                Session initiatingSession = ((RemoteAction) action).getSession();
                 if (session.equals(initiatingSession)) {
                     // do not relay remote actions back to the remote system
                     continue;
