@@ -37,11 +37,17 @@ public abstract class BaseTabController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
+        tab.setUserData(tabId);
+
         tab.setOnClosed(new EventHandler<Event>() {
             @Override
             public void handle(Event event) {
                 bindingContext.unbind();
-                getTabRef().setValue(null);
+                Ref tabRef = getTabRef();
+                if (tabRef.isValid()) {
+                    tabRef.setValue(null);
+                }
             }
         });
         Platform.runLater(new Runnable() {

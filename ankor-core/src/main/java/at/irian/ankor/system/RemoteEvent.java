@@ -4,6 +4,7 @@ import at.irian.ankor.event.ModelEvent;
 import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.session.Session;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.Map;
 
@@ -64,6 +65,8 @@ public class RemoteEvent extends ModelEvent {
     }
 
     public static class Action extends at.irian.ankor.action.Action {
+
+        @JsonIgnore
         private final Session session;
 
         private Action(Session session, String actionName, Map<String, Object> params) {
@@ -77,6 +80,8 @@ public class RemoteEvent extends ModelEvent {
     }
 
     public static class Change extends at.irian.ankor.change.Change {
+
+        @JsonIgnore
         private final Session session;
 
         private Change(Session session, Object newValue) {
