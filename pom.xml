@@ -19,6 +19,7 @@
         <module>ankor-servlet</module>
         <module>ankor-fx</module>
         <module>ankor-sample</module>
+        <module>ankor-sample-todo</module>
     </modules>
 
     <properties>

@@ -1,0 +1,43 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>at.irian.ankorman</groupId>
+        <artifactId>ankor-sample-todo</artifactId>
+        <version>0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>ankor-sample-todo-javafx-client</artifactId>
+    <packaging>jar</packaging>
+    <name>AnkorMan Sample App - JavaFX Client</name>
+
+    <properties>
+        <javafx.version>2.2.21</javafx.version>
+        <javafx.runtime.lib.jar>${java.home}/lib/jfxrt.jar</javafx.runtime.lib.jar>
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>at.irian.ankor</groupId>
+            <artifactId>ankor-fx</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>at.irian.ankorman</groupId>
+            <artifactId>ankorman-server</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+    </dependencies>
+
+</project>
