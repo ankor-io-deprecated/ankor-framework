@@ -3,6 +3,7 @@ package at.irian.ankor.system;
 import at.irian.ankor.event.ModelEvent;
 import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.session.Session;
 
 import java.util.Map;
 
@@ -36,12 +37,12 @@ public class RemoteEvent extends ModelEvent {
         this.action = action;
     }
 
-    public static RemoteEvent createChangeEvent(Ref changedProperty, Object newValue) {
-        return new RemoteEvent(changedProperty, new Change(newValue));
+    public static RemoteEvent createChangeEvent(Session session, Ref changedProperty, Object newValue) {
+        return new RemoteEvent(changedProperty, new Change(session, newValue));
     }
 
-    public static RemoteEvent createActionEvent(Ref actionProperty, String actionName, Map<String, Object> actionParams) {
-        return new RemoteEvent(actionProperty, new Action(actionName, actionParams));
+    public static RemoteEvent createActionEvent(Session session, Ref actionProperty, String actionName, Map<String, Object> actionParams) {
+        return new RemoteEvent(actionProperty, new Action(session, actionName, actionParams));
     }
 
     public Change getChange() {
@@ -63,14 +64,28 @@ public class RemoteEvent extends ModelEvent {
     }
 
     public static class Action extends at.irian.ankor.action.Action {
-        private Action(String name, Map<String, Object> params) {
-            super(name, params);
+        private final Session session;
+
+        private Action(Session session, String actionName, Map<String, Object> params) {
+            super(actionName, params);
+            this.session = session;
+        }
+
+        public Session getSession() {
+            return session;
         }
     }
 
     public static class Change extends at.irian.ankor.change.Change {
-        private Change(Object newValue) {
+        private final Session session;
+
+        private Change(Session session, Object newValue) {
             super(newValue);
+            this.session = session;
+        }
+
+        public Session getSession() {
+            return session;
         }
     }
 }

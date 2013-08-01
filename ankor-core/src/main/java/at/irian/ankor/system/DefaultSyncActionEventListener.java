@@ -3,10 +3,14 @@ package at.irian.ankor.system;
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionEvent;
 import at.irian.ankor.action.ActionEventListener;
+import at.irian.ankor.context.ModelContext;
 import at.irian.ankor.messaging.Message;
 import at.irian.ankor.messaging.MessageFactory;
-import at.irian.ankor.messaging.MessageSender;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.session.Session;
+import at.irian.ankor.session.SessionManager;
+
+import java.util.Collection;
 
 /**
  * Global ActionEventListener that relays all locally happened {@link ActionEvent ActionEvents} to the remote system.
@@ -14,15 +18,16 @@ import at.irian.ankor.ref.Ref;
  * @author Manfred Geiler
  */
 public class DefaultSyncActionEventListener extends ActionEventListener {
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(DefaultSyncActionEventListener.class);
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(DefaultSyncActionEventListener.class);
 
     private final MessageFactory messageFactory;
-    private final MessageSender messageSender;
+    private final SessionManager sessionManager;
 
-    public DefaultSyncActionEventListener(MessageFactory messageFactory, MessageSender messageSender) {
+    public DefaultSyncActionEventListener(MessageFactory messageFactory,
+                                          SessionManager sessionManager) {
         super(null); //global listener
         this.messageFactory = messageFactory;
-        this.messageSender = messageSender;
+        this.sessionManager = sessionManager;
     }
 
     @Override
@@ -34,16 +39,23 @@ public class DefaultSyncActionEventListener extends ActionEventListener {
     @Override
     public void process(ActionEvent event) {
         Action action = event.getAction();
-        if (action instanceof RemoteEvent.Action) {
-            // do not relay remote actions back to the remote system
-        } else {
-            LOG.debug("processing local action event {}", event);
-            Ref actionProperty = event.getActionProperty();
+        Ref actionProperty = event.getActionProperty();
+        ModelContext modelContext = actionProperty.context().modelContext();
+        Collection<Session> sessions = sessionManager.getAllFor(modelContext);
+        for (Session session : sessions) {
+            if (action instanceof RemoteEvent.Action) {
+                Session initiatingSession = ((RemoteEvent.Action) action).getSession();
+                if (session.equals(initiatingSession)) {
+                    // do not relay remote actions back to the remote system
+                    continue;
+                }
+            }
+
             String actionPropertyPath = actionProperty.path();
             Message message = messageFactory.createActionMessage(actionProperty.context().modelContext(),
                                                                  actionPropertyPath,
                                                                  action);
-            messageSender.sendMessage(message);
+            session.getMessageSender().sendMessage(message);
         }
     }
 }

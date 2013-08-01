@@ -5,9 +5,11 @@ import at.irian.ankor.context.ModelContext;
 import at.irian.ankor.context.ModelContextManager;
 import at.irian.ankor.messaging.ActionMessage;
 import at.irian.ankor.messaging.ChangeMessage;
+import at.irian.ankor.messaging.Message;
 import at.irian.ankor.messaging.MessageListener;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
+import at.irian.ankor.session.RemoteSystem;
 import at.irian.ankor.session.Session;
 import at.irian.ankor.session.SessionManager;
 
@@ -34,25 +36,45 @@ public class DefaultMessageListener implements MessageListener {
     @Override
     public void onActionMessage(ActionMessage message) {
         ModelContext modelContext = modelContextManager.getOrCreate(message.getModelId());
-        Session session = sessionManager.getOrCreate(modelContext, message.getSenderId());
+        Session session = sessionManager.getOrCreate(modelContext, getRemoteSystemOf(message));
 
         RefContext refContext = session.getRefContext();
         Ref actionProperty = refContext.refFactory().ref(message.getProperty());
 
         Action action = message.getAction();
-        RemoteEvent event = createActionEvent(actionProperty, action.getName(), action.getParams());
+        RemoteEvent event = createActionEvent(session, actionProperty, action.getName(), action.getParams());
         modelContext.getEventDispatcher().dispatch(event);
     }
 
     @Override
     public void onChangeMessage(ChangeMessage message) {
         ModelContext modelContext = modelContextManager.getOrCreate(message.getModelId());
-        Session session = sessionManager.getOrCreate(modelContext, message.getSenderId());
+        Session session = sessionManager.getOrCreate(modelContext, getRemoteSystemOf(message));
 
         RefContext refContext = session.getRefContext();
         Ref changedProperty = refContext.refFactory().ref(message.getProperty());
 
-        RemoteEvent event = createChangeEvent(changedProperty, message.getChange().getNewValue());
+        RemoteEvent event = createChangeEvent(session, changedProperty, message.getChange().getNewValue());
         modelContext.getEventDispatcher().dispatch(event);
+    }
+
+
+    private RemoteSystem getRemoteSystemOf(Message message) {
+        return new SimpleRemoteSystem(message.getSenderId());
+    }
+
+
+    private static class SimpleRemoteSystem implements RemoteSystem {
+
+        private final String id;
+
+        private SimpleRemoteSystem(String id) {
+            this.id = id;
+        }
+
+        @Override
+        public String getId() {
+            return id;
+        }
     }
 }

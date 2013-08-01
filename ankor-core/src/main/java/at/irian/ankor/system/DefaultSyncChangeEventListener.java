@@ -3,26 +3,33 @@ package at.irian.ankor.system;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.change.ChangeEventListener;
+import at.irian.ankor.context.ModelContext;
 import at.irian.ankor.messaging.Message;
 import at.irian.ankor.messaging.MessageFactory;
-import at.irian.ankor.messaging.MessageSender;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.ref.RefContext;
+import at.irian.ankor.session.Session;
+import at.irian.ankor.session.SessionInitEvent;
+import at.irian.ankor.session.SessionManager;
+
+import java.util.Collection;
 
 /**
  * Global ChangeEventListener that relays all locally happened {@link ChangeEvent ChangeEvents} to the remote system.
  *
  * @author Manfred Geiler
  */
-public class DefaultSyncChangeEventListener extends ChangeEventListener {
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(DefaultSyncChangeEventListener.class);
+public class DefaultSyncChangeEventListener extends ChangeEventListener implements SessionInitEvent.Listener {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(DefaultSyncChangeEventListener.class);
 
     private final MessageFactory messageFactory;
-    private final MessageSender messageSender;
+    private final SessionManager sessionManager;
 
-    public DefaultSyncChangeEventListener(MessageFactory messageFactory, MessageSender messageSender) {
+    public DefaultSyncChangeEventListener(MessageFactory messageFactory,
+                                          SessionManager sessionManager) {
         super(null); //global listener
         this.messageFactory = messageFactory;
-        this.messageSender = messageSender;
+        this.sessionManager = sessionManager;
     }
 
     @Override
@@ -34,16 +41,35 @@ public class DefaultSyncChangeEventListener extends ChangeEventListener {
     @Override
     public void process(ChangeEvent event) {
         Change change = event.getChange();
-        if (change instanceof RemoteEvent.Change) {
-            // do not relay remote changes back to remote partner ...
-        } else {
-            LOG.debug("processing local change event {}", event);
-            Ref changedProperty = event.getChangedProperty();
+        Ref changedProperty = event.getChangedProperty();
+        ModelContext modelContext = changedProperty.context().modelContext();
+        Collection<Session> sessions = sessionManager.getAllFor(modelContext);
+        for (Session session : sessions) {
+            if (change instanceof RemoteEvent.Change) {
+                Session initiatingSession = ((RemoteEvent.Change) change).getSession();
+                if (session.equals(initiatingSession)) {
+                    // do not relay remote actions back to the remote system
+                    continue;
+                }
+            }
+
             String changedPropertyPath = changedProperty.path();
             Message message = messageFactory.createChangeMessage(changedProperty.context().modelContext(),
                                                                  changedPropertyPath,
                                                                  change);
-            messageSender.sendMessage(message);
+            session.getMessageSender().sendMessage(message);
         }
+
+    }
+
+    @Override
+    public void processModelInit(SessionInitEvent event) {
+        Session session = event.getSession();
+        RefContext refContext = session.getRefContext();
+        ModelContext modelContext = refContext.modelContext();
+        Message message = messageFactory.createChangeMessage(modelContext,
+                                                             refContext.refFactory().rootRef().path(),
+                                                             new Change(modelContext.getModelRoot()));
+        session.getMessageSender().sendMessage(message);
     }
 }

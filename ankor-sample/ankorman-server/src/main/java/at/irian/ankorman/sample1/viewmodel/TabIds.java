@@ -1,4 +1,4 @@
-package at.irian.ankorman.sample1.fxclient;
+package at.irian.ankorman.sample1.viewmodel;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

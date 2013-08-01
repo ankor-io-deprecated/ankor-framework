@@ -1,8 +1,13 @@
 package at.irian.ankor.messaging;
 
+import at.irian.ankor.session.RemoteSystem;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Manfred Geiler
@@ -10,25 +15,32 @@ import java.net.Socket;
 public class SocketMessageLoop<S> extends AbstractMessageLoop<S> {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SocketMessageLoop.class);
 
-    private final String remoteHost;
-    private final int remotePort;
     private final int localPort;
+    private final Map<String, Host> remoteSystems = new HashMap<String, Host>();
     private ServerSocket serverSocket;
 
-    public SocketMessageLoop(String name, MessageMapper<S> messageMapper, String remoteHost, int remotePort, int localPort) {
-        super(name, messageMapper);
-        this.remoteHost = remoteHost;
-        this.remotePort = remotePort;
-        this.localPort = localPort;
+    public SocketMessageLoop(Host localHost, MessageMapper<S> messageMapper) {
+        super(localHost.getId(), messageMapper);
+        this.localPort = localHost.getPort();
+    }
+
+    public void addRemoteSystem(Host remoteHost) {
+        remoteSystems.put(remoteHost.getId(), remoteHost);
     }
 
     @Override
-    protected void send(S msg) {
+    protected void send(String remoteSystemId, S msg) {
+
+        Host remoteSystem = remoteSystems.get(remoteSystemId);
+        if (remoteSystem == null) {
+            throw new IllegalArgumentException("Unknown remote system " + remoteSystemId);
+        }
+
         Socket socket;
         try {
-            socket = new Socket(remoteHost, remotePort);
+            socket = new Socket(remoteSystem.getHostName(), remoteSystem.getPort());
         } catch (IOException e) {
-            throw new IllegalStateException("Cannot connect to " + remoteHost + ":" + remotePort);
+            throw new IllegalStateException("Cannot connect to " + remoteSystem);
         }
 
         try {
@@ -90,4 +102,42 @@ public class SocketMessageLoop<S> extends AbstractMessageLoop<S> {
             throw new IllegalStateException("Cannot close local server socket");
         }
     }
+
+
+    @Override
+    protected Collection<? extends RemoteSystem> getKnownRemoteSystems() {
+        return remoteSystems.values();
+    }
+
+    public static class Host implements RemoteSystem {
+
+        private final String id;
+        private final String hostName;
+        private final int port;
+
+        public Host(String id, String hostName, int port) {
+            this.id = id;
+            this.hostName = hostName;
+            this.port = port;
+        }
+
+        @Override
+        public String getId() {
+            return id;
+        }
+
+        private String getHostName() {
+            return hostName;
+        }
+
+        private int getPort() {
+            return port;
+        }
+
+        @Override
+        public String toString() {
+            return hostName + ":" + port;
+        }
+    }
+
 }

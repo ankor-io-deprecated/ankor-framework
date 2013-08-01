@@ -1,12 +1,14 @@
 package at.irian.ankor.messaging;
 
+import at.irian.ankor.session.RemoteSystem;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Manfred Geiler
  */
-public abstract class MessageBus<S> implements MessageSender {
+public abstract class MessageBus<S> implements MessageSenderProvider {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(MessageBus.class);
 
     private final MessageSerializer<S> messageSerializer;
@@ -25,8 +27,14 @@ public abstract class MessageBus<S> implements MessageSender {
     }
 
     @Override
-    public void sendMessage(Message msg) {
-        sendSerializedMessage(messageSerializer.serialize(msg));
+    public MessageSender getMessageSenderFor(final RemoteSystem remoteSystem) {
+        return new MessageSender() {
+            @Override
+            public void sendMessage(Message msg) {
+                sendSerializedMessage(remoteSystem.getId(), messageSerializer.serialize(msg));
+            }
+
+        };
     }
 
     public void registerMessageListener(MessageListener messageListener) {
@@ -59,7 +67,7 @@ public abstract class MessageBus<S> implements MessageSender {
         }
     }
 
-    protected abstract void sendSerializedMessage(S msg);
+    protected abstract void sendSerializedMessage(String remoteSystemId, S msg);
 
     public void receiveSerializedMessage(S msg) {
         receiveMessage(messageDeserializer.deserialize(msg));

@@ -13,14 +13,17 @@ public class Tab<T> extends ViewModelBase {
 
     private String id;
 
+    private String type;
+
     private T model;
 
     private ViewModelProperty<String> name;
 
-    public Tab(String id, Ref tabRef, String initialTabName) {
+    public Tab(String id, Ref tabRef, String initialTabName, String type) {
         super(tabRef);
         this.id = id;
         this.name.set(initialTabName);
+        this.type = type;
     }
 
     public String getId() {
@@ -43,7 +46,12 @@ public class Tab<T> extends ViewModelBase {
         this.name = name;
     }
 
+    public String getType() {
+        return type;
+    }
+
     public void close() {
         thisRef().setValue(null);
     }
+
 }

@@ -1,8 +1,5 @@
 package at.irian.ankorman.sample1.fxclient;
 
-import at.irian.ankor.action.ActionBuilder;
-import at.irian.ankor.ref.Ref;
-import at.irian.ankor.ref.listener.RefChangeListener;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Tab;
@@ -11,10 +8,6 @@ import javafx.util.Callback;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-
-import static at.irian.ankor.ref.listener.RefListeners.addChangeListener;
-import static at.irian.ankor.ref.listener.RefListeners.removeListener;
-import static at.irian.ankorman.sample1.fxclient.App.refFactory;
 
 /**
  * @author Thomas Spiegl
@@ -25,45 +18,16 @@ public class TabLoader {
 
     private final String tabId;
     private final TabType tabType;
-    private final Ref tabsRef;
 
-    public TabLoader(TabType tabType) {
+    public TabLoader(TabType tabType, String tabId) {
         if (tabType == null) {
             throw new IllegalStateException("tabType is null");
         }
-        this.tabId = TabIds.next();
         this.tabType = tabType;
-        this.tabsRef = refFactory().rootRef().append("tabs");
+        this.tabId = tabId;
     }
 
-    public void loadTabTo(final TabPane tabPane) {
-        if (tabPane == null) {
-            throw new IllegalStateException("tabPane is null");
-        }
-
-        final Ref tabRef = tabsRef.append(tabId);
-
-        addChangeListener(tabsRef, new RefChangeListener() {
-            @Override
-            public void processChange(Ref changedProperty) {
-                if (changedProperty.equals(tabRef)) {
-                    removeListener(tabRef.context(), this);
-                    showTab(tabPane);
-                }
-            }
-        });
-
-        // load tab
-        tabsRef.fireAction(action()
-                .withName(tabType.getActionName())
-                .withParam("tabId", tabId).create());
-    }
-
-    private static ActionBuilder action() {
-        return new ActionBuilder();
-    }
-
-    private void showTab(final TabPane tabPane) {
+    public void showTab(final TabPane tabPane) {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {

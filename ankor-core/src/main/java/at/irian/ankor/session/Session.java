@@ -1,6 +1,7 @@
 package at.irian.ankor.session;
 
 import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.messaging.MessageSender;
 import at.irian.ankor.ref.RefContext;
 
 /**
@@ -15,8 +16,6 @@ import at.irian.ankor.ref.RefContext;
  */
 public interface Session {
 
-    String getId();
-
     void init();
 
     void close();
@@ -25,4 +24,5 @@ public interface Session {
 
     RefContext getRefContext();
 
+    MessageSender getMessageSender();
 }

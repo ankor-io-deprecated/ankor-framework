@@ -1,6 +1,7 @@
 package at.irian.ankor.session;
 
 import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.messaging.MessageSender;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 
@@ -10,24 +11,19 @@ import at.irian.ankor.ref.RefContext;
 public class ServerSession implements Session {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ServerSession.class);
 
-    private final String sessionId;
     private final ModelContext modelContext;
     private final RefContext refContext;
     private final ModelRootFactory modelRootFactory;
+    private final MessageSender messageSender;
 
-    public ServerSession(String sessionId,
-                         ModelContext modelContext,
+    public ServerSession(ModelContext modelContext,
                          RefContext refContext,
-                         ModelRootFactory modelRootFactory) {
-        this.sessionId = sessionId;
+                         ModelRootFactory modelRootFactory,
+                         MessageSender messageSender) {
         this.modelContext = modelContext;
         this.refContext = refContext;
         this.modelRootFactory = modelRootFactory;
-    }
-
-    @Override
-    public String getId() {
-        return sessionId;
+        this.messageSender = messageSender;
     }
 
     /**
@@ -36,8 +32,14 @@ public class ServerSession implements Session {
     @Override
     public void init() {
         Ref rootRef = refContext.refFactory().rootRef();
-        Object modelRoot = modelRootFactory.createModelRoot(rootRef);
-        rootRef.setValue(modelRoot);
+
+        if (modelContext.getModelRoot() == null) {
+            // todo  do we have to synchronize this?
+            Object modelRoot = modelRootFactory.createModelRoot(rootRef);
+            modelContext.setModelRoot(modelRoot);
+        }
+
+        refContext.modelContext().getEventDispatcher().dispatch(new SessionInitEvent(this));
     }
 
     @Override
@@ -56,4 +58,8 @@ public class ServerSession implements Session {
         return refContext;
     }
 
+    @Override
+    public MessageSender getMessageSender() {
+        return messageSender;
+    }
 }

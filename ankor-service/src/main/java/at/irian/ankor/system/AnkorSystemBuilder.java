@@ -2,10 +2,7 @@ package at.irian.ankor.system;
 
 import at.irian.ankor.annotation.ViewModelAnnotationScanner;
 import at.irian.ankor.base.BeanResolver;
-import at.irian.ankor.context.DefaultModelContextManager;
-import at.irian.ankor.context.ModelContext;
-import at.irian.ankor.context.ModelContextFactory;
-import at.irian.ankor.context.SingletonModelContextManager;
+import at.irian.ankor.context.*;
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.event.dispatch.EventDispatcherFactory;
 import at.irian.ankor.event.dispatch.SynchronisedEventDispatcherFactory;
@@ -104,10 +101,8 @@ public class AnkorSystemBuilder {
         }
 
         if (modelContextFactory == null) {
-            modelContextFactory = new ModelContextFactory(eventDispatcherFactory);
+            modelContextFactory = new DefaultModelContextFactory(eventDispatcherFactory);
         }
-
-        DefaultModelContextManager modelContextManager = new DefaultModelContextManager(modelContextFactory);
 
         RefContextFactory refContextFactory = new ELRefContextFactory(config,
                                                                       beanResolver,
@@ -115,18 +110,21 @@ public class AnkorSystemBuilder {
 
         final MessageFactory messageFactory = new MessageFactory(systemName, messageIdGenerator);
 
+
         SessionFactory sessionFactory = new ServerSessionFactory(modelRootFactory,
                                                                  refContextFactory,
-                                                                 eventDispatcherFactory) {
-            @Override
-            public ServerSession create(ModelContext modelContext, String sessionId) {
-                ServerSession session = super.create(modelContext, sessionId);
-                addDefaultEventListeners(session, messageFactory, messageBus);
-                return session;
-            }
-        };
+                                                                 eventDispatcherFactory,
+                                                                 messageBus);
+        final SessionManager sessionManager = new DefaultSessionManager(sessionFactory);
 
-        SessionManager sessionManager = new DefaultSessionManager(sessionFactory);
+        ModelContextManager modelContextManager = new DefaultModelContextManager(new ModelContextFactory() {
+            @Override
+            public ModelContext createModelContext(String modelContextId) {
+                ModelContext modelContext = modelContextFactory.createModelContext(modelContextId);
+                addDefaultEventListeners(messageFactory, modelContext, sessionManager);
+                return modelContext;
+            }
+        });
 
         return new AnkorSystem(systemName, messageFactory, messageBus, refContextFactory,
                                modelContextManager,
@@ -164,7 +162,7 @@ public class AnkorSystemBuilder {
         beanResolver = new EmptyBeanResolver();
 
         if (modelContextFactory == null) {
-            modelContextFactory = new ModelContextFactory(eventDispatcherFactory);
+            modelContextFactory = new DefaultModelContextFactory(eventDispatcherFactory);
         }
 
         if (modelContextId == null) {
@@ -181,12 +179,20 @@ public class AnkorSystemBuilder {
         ModelContext modelContext = modelContextManager.getOrCreate(modelContextId);
 
         RefContext refContext = refContextFactory.createRefContextFor(modelContext);
-        SessionManager sessionManager = new SingletonSessionManager(modelContext, refContext);
-        Session session = sessionManager.getOrCreate(modelContext, systemName);
+
+        Collection<? extends RemoteSystem> remoteSystems = messageBus.getKnownRemoteSystems();
+        if (remoteSystems.size() != 1) {
+            throw new IllegalStateException("None or multiple remote systems?");
+        }
+        RemoteSystem remoteSystem = remoteSystems.iterator().next();
+
+        MessageSender messageSender = messageBus.getMessageSenderFor(remoteSystem);
+        SessionManager sessionManager = new SingletonSessionManager(modelContext, refContext, messageSender);
+        Session session = sessionManager.getOrCreate(modelContext, remoteSystem);
 
         MessageFactory messageFactory = new MessageFactory(systemName, messageIdGenerator);
 
-        addDefaultEventListeners(session, messageFactory, messageBus);
+        addDefaultEventListeners(messageFactory, session.getModelContext(), sessionManager);
 
         return new AnkorSystem(systemName, messageFactory, messageBus, refContextFactory,
                                modelContextManager,
@@ -194,21 +200,23 @@ public class AnkorSystemBuilder {
     }
 
     private CounterMessageIdGenerator createDefaultMessageIdGenerator() {
-        return new CounterMessageIdGenerator(systemName.substring(0, 1) + "#");
+        return new CounterMessageIdGenerator(systemName + "#");
     }
 
-    private void addDefaultEventListeners(Session session, MessageFactory messageFactory, MessageSender messageSender) {
+    private void addDefaultEventListeners(MessageFactory messageFactory,
+                                          ModelContext modelContext,
+                                          SessionManager sessionManager) {
 
-        EventListeners eventListeners = session.getModelContext().getEventListeners();
+        EventListeners eventListeners = modelContext.getEventListeners();
 
         // remote actions and changes listener
         eventListeners.add(new RemoteEventListener());
 
         // action event listener for sending action events to remote partner
-        eventListeners.add(new DefaultSyncActionEventListener(messageFactory, messageSender));
+        eventListeners.add(new DefaultSyncActionEventListener(messageFactory, sessionManager));
 
         // global change event listener for sending change events to remote partner
-        eventListeners.add(new DefaultSyncChangeEventListener(messageFactory, messageSender));
+        eventListeners.add(new DefaultSyncChangeEventListener(messageFactory, sessionManager));
 
         // global change event listener for cleaning up obsolete listeners
         eventListeners.add(new ListenerCleanupChangeEventListener(eventListeners));

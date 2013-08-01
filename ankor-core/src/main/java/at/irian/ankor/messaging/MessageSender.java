@@ -7,5 +7,4 @@ public interface MessageSender {
 
     void sendMessage(Message msg);
 
-    void flush();
 }

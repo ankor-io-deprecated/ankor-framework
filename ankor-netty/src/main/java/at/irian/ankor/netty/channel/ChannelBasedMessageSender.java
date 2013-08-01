@@ -20,9 +20,4 @@ public class ChannelBasedMessageSender<T> implements MessageSender {
         ctx.write(msg); // Encoders will take care of serializing this
     }
 
-    @Override
-    public void flush() {
-        // Doesn't make sense with NIO
-    }
-
 }

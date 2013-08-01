@@ -7,7 +7,7 @@ import at.irian.ankor.context.ModelContext;
  */
 public interface SessionFactory {
 
-    Session create(ModelContext modelContext, String sessionId);
+    Session create(ModelContext modelContext, RemoteSystem remoteSystem);
 
     void close();
 }

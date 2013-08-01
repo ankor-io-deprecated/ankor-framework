@@ -1,5 +1,9 @@
 package at.irian.ankor.messaging;
 
+import at.irian.ankor.session.RemoteSystem;
+
+import java.util.Collection;
+
 /**
  * @author Manfred Geiler
  */
@@ -15,16 +19,17 @@ public abstract class AbstractMessageLoop<S> implements MessageLoop<S> {
         this.name = systemName;
         this.messageBus = new MessageBus<S>(messageMapper) {
             @Override
-            protected void sendSerializedMessage(S msg) {
+            protected void sendSerializedMessage(String remoteSystemId, S msg) {
                 if (!isConnected()) {
                     throw new IllegalStateException("not connected");
                 }
-                LOG.debug("{} sends {}", systemName, msg);
-                send(msg);
+                LOG.debug("{} sends {} to {}", systemName, msg, remoteSystemId);
+                send(remoteSystemId, msg);
             }
 
             @Override
-            public void flush() {
+            public Collection<? extends RemoteSystem> getKnownRemoteSystems() {
+                return AbstractMessageLoop.this.getKnownRemoteSystems();
             }
         };
         this.receiveLoop = new Runnable() {
@@ -54,6 +59,8 @@ public abstract class AbstractMessageLoop<S> implements MessageLoop<S> {
         return messageBus;
     }
 
+    protected abstract Collection<? extends RemoteSystem> getKnownRemoteSystems();
+
     @Override
     public void start(boolean daemon) {
         if (receiveLoopThread != null) {
@@ -81,7 +88,7 @@ public abstract class AbstractMessageLoop<S> implements MessageLoop<S> {
         return "MessageLoop{'" + name + "'}";
     }
 
-    protected abstract void send(S msg);
+    protected abstract void send(String remoteSystemId, S msg);
 
     protected abstract S receive() throws InterruptedException;
 
