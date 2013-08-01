@@ -44,10 +44,7 @@ public abstract class BaseTabController implements Initializable {
             @Override
             public void handle(Event event) {
                 bindingContext.unbind();
-                Ref tabRef = getTabRef();
-                if (tabRef.isValid()) {
-                    tabRef.setValue(null);
-                }
+                getTabRef().requestChangeTo(null);
             }
         });
         Platform.runLater(new Runnable() {

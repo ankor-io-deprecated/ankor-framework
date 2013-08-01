@@ -87,7 +87,7 @@ public class AnimalSearchTabController extends BaseTabController {
                 .callAction(new ClickAction<Ref>() {
                     @Override
                     public void onClick(Ref paginator) {
-                        paginator.fireAction(new Action("previous"));
+                        paginator.fire(new Action("previous"));
                     }
                 })
                 .withParam(paginatorRef).create();
@@ -96,7 +96,7 @@ public class AnimalSearchTabController extends BaseTabController {
                 .callAction(new ClickAction<Ref>() {
                     @Override
                     public void onClick(Ref paginator) {
-                        paginator.fireAction(new Action("next"));
+                        paginator.fire(new Action("next"));
                     }
                 })
                 .withParam(paginatorRef).create();
@@ -105,7 +105,7 @@ public class AnimalSearchTabController extends BaseTabController {
                 .callAction(new ClickAction() {
                     @Override
                     public void onClick(Object value) {
-                        tabRef.append("model").fireAction(new Action("save"));
+                        tabRef.append("model").fire(new Action("save"));
                     }
                 }).create();
 
@@ -122,7 +122,8 @@ public class AnimalSearchTabController extends BaseTabController {
                     @Override
                     public void handle(TableColumn.CellEditEvent<Map, String> t) {
                         int rowNum = t.getTablePosition().getRow();
-                        getTabRef().append(String.format("model.animals.rows[%d].name", rowNum)).setValue(t.getNewValue());
+                        Ref rowNameRef = getTabRef().append(String.format("model.animals.rows[%d].name", rowNum));
+                        rowNameRef.requestChangeTo(t.getNewValue());
                     }
                 });
 

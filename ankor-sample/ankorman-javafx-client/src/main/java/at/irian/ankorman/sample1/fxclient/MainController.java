@@ -83,7 +83,7 @@ public class MainController implements Initializable {
             }
         });
 
-        rootRef.fireAction(new Action("init"));
+        rootRef.fire(new Action("init"));
     }
 
     private void showTab(Ref tabRef) {
@@ -95,11 +95,11 @@ public class MainController implements Initializable {
 
     public void openAnimalSearchTab(@SuppressWarnings("UnusedParameters") ActionEvent actionEvent) {
         Ref tabsRef = refFactory().rootRef().append("tabs");
-        tabsRef.fireAction(new ActionBuilder().withName(animalSearchTab.getActionName()).create());
+        tabsRef.fire(new ActionBuilder().withName(animalSearchTab.getActionName()).create());
     }
 
     public void openAnimalDetailTab(@SuppressWarnings("UnusedParameters") ActionEvent actionEvent) {
         Ref tabsRef = refFactory().rootRef().append("tabs");
-        tabsRef.fireAction(new ActionBuilder().withName(animalDetailTab.getActionName()).create());
+        tabsRef.fire(new ActionBuilder().withName(animalDetailTab.getActionName()).create());
     }
 }

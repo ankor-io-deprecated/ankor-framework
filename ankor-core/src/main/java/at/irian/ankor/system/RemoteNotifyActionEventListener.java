@@ -14,18 +14,19 @@ import at.irian.ankor.session.SessionManager;
 import java.util.Collection;
 
 /**
- * Global ActionEventListener that relays all locally happened {@link ActionEvent ActionEvents} to the remote system.
+ * Global ActionEventListener that relays locally happened {@link ActionEvent ActionEvents} to all remote systems
+ * connected to the underlying ModelContext.
  *
  * @author Manfred Geiler
  */
-public class DefaultSyncActionEventListener extends ActionEventListener {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(DefaultSyncActionEventListener.class);
+public class RemoteNotifyActionEventListener extends ActionEventListener {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RemoteNotifyActionEventListener.class);
 
     private final MessageFactory messageFactory;
     private final SessionManager sessionManager;
 
-    public DefaultSyncActionEventListener(MessageFactory messageFactory,
-                                          SessionManager sessionManager) {
+    public RemoteNotifyActionEventListener(MessageFactory messageFactory,
+                                           SessionManager sessionManager) {
         super(null); //global listener
         this.messageFactory = messageFactory;
         this.sessionManager = sessionManager;

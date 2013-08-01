@@ -44,7 +44,6 @@ public class ServerSession implements Session {
 
     @Override
     public void close() {
-        refContext.refFactory().rootRef().setValue(null);
     }
 
 

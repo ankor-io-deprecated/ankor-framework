@@ -2,6 +2,7 @@ package at.irian.ankor.system;
 
 import at.irian.ankor.annotation.ViewModelAnnotationScanner;
 import at.irian.ankor.base.BeanResolver;
+import at.irian.ankor.change.ChangeRequestEventListener;
 import at.irian.ankor.context.*;
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.event.dispatch.EventDispatcherFactory;
@@ -213,13 +214,16 @@ public class AnkorSystemBuilder {
         eventListeners.add(new RemoteEventListener());
 
         // action event listener for sending action events to remote partner
-        eventListeners.add(new DefaultSyncActionEventListener(messageFactory, sessionManager));
+        eventListeners.add(new RemoteNotifyActionEventListener(messageFactory, sessionManager));
 
         // global change event listener for sending change events to remote partner
-        eventListeners.add(new DefaultSyncChangeEventListener(messageFactory, sessionManager));
+        eventListeners.add(new RemoteNotifyChangeEventListener(messageFactory, sessionManager));
 
         // global change event listener for cleaning up obsolete listeners
         eventListeners.add(new ListenerCleanupChangeEventListener(eventListeners));
+
+        // global change request event listener
+        eventListeners.add(new ChangeRequestEventListener());
     }
 
 

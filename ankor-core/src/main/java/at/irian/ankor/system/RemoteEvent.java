@@ -13,9 +13,10 @@ import java.util.Map;
  * A RemoteEvent is the instantiation of a ModelEvent that happened on the remote side and was transferred
  * via messaging to the local system.
  *
- * The RemoteEvent acts as a "circuit breaker" that defines special {@link at.irian.ankor.action.RemoteAction} and {@link at.irian.ankor.change.RemoteChange} types.
- * These special types are well-known to the relaying event listeners ({@link DefaultSyncActionEventListener}
- * and {@link DefaultSyncChangeEventListener}), which are hence able to detect if an event was just received
+ * The RemoteEvent acts as a "circuit breaker" that uses special {@link at.irian.ankor.action.RemoteAction}
+ * and {@link at.irian.ankor.change.RemoteChange} types.
+ * These special types are well-known to the relaying event listeners ({@link RemoteNotifyActionEventListener}
+ * and {@link RemoteNotifyChangeEventListener}), which are hence able to detect if an event was just received
  * from the remote system. This way it is guaranteed that remote events are not relayed back to the remote system,
  * which would of course lead to an immediate short-circuit.
  *

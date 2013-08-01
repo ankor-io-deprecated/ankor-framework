@@ -1,6 +1,7 @@
 package at.irian.ankor.ref;
 
 import at.irian.ankor.action.Action;
+import at.irian.ankor.event.ModelEvent;
 
 /**
  * @author Manfred Geiler
@@ -103,6 +104,9 @@ public interface Ref {
 
     RefContext context();
 
-    void fireAction(Action action);
+    void fire(Action action);
 
+    void fire(ModelEvent event);
+
+    void requestChangeTo(Object newValue);
 }

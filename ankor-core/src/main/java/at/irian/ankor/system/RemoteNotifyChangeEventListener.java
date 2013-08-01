@@ -16,18 +16,19 @@ import at.irian.ankor.session.SessionManager;
 import java.util.Collection;
 
 /**
- * Global ChangeEventListener that relays all locally happened {@link ChangeEvent ChangeEvents} to the remote system.
+ * Global ChangeEventListener that relays locally happened {@link ChangeEvent ChangeEvents} to all remote systems
+ * connected to the underlying ModelContext.
  *
  * @author Manfred Geiler
  */
-public class DefaultSyncChangeEventListener extends ChangeEventListener implements SessionInitEvent.Listener {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(DefaultSyncChangeEventListener.class);
+public class RemoteNotifyChangeEventListener extends ChangeEventListener implements SessionInitEvent.Listener {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RemoteNotifyChangeEventListener.class);
 
     private final MessageFactory messageFactory;
     private final SessionManager sessionManager;
 
-    public DefaultSyncChangeEventListener(MessageFactory messageFactory,
-                                          SessionManager sessionManager) {
+    public RemoteNotifyChangeEventListener(MessageFactory messageFactory,
+                                           SessionManager sessionManager) {
         super(null); //global listener
         this.messageFactory = messageFactory;
         this.sessionManager = sessionManager;

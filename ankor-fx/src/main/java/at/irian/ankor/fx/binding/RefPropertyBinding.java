@@ -12,8 +12,6 @@ import javafx.collections.ObservableList;
 import java.util.Collection;
 import java.util.List;
 
-import static at.irian.ankor.base.ObjectUtils.nullSafeEquals;
-
 /**
 * @author Thomas Spiegl
 */
@@ -84,12 +82,9 @@ public class RefPropertyBinding implements RefChangeListener, javafx.beans.value
     @SuppressWarnings("TypeParameterExplicitlyExtendsObject")
     @Override
     public void changed(ObservableValue<? extends Object> observableValue, Object oldValue, Object newValue)  {
-        try {
-            if (!nullSafeEquals(valueRef.getValue(), newValue)) {
-                valueRef.setValue(newValue);
-            }
-        } catch(IllegalArgumentException ignored) {
-        }
+        // we do not have exclusive access to the model here...
+        // ... therefore we must not set the Ref value directly:
+        valueRef.requestChangeTo(newValue);
     }
 
 }

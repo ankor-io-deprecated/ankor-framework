@@ -62,6 +62,7 @@ class DefaultModelContext implements ModelContext {
         if (eventDispatcher != null) {
             eventDispatcher.close();
         }
+        modelRoot = null;
     }
 
     @Override

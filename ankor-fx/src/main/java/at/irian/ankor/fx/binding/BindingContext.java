@@ -16,7 +16,7 @@ public class BindingContext {
     private Set<Property> properties;
 
     public BindingContext() {
-        properties = new HashSet<Property>();
+        properties = new HashSet<>();
     }
 
     void add(Property property) {

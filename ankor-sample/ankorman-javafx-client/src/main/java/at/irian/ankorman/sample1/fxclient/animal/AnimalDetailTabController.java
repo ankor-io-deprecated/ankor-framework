@@ -59,7 +59,7 @@ public class AnimalDetailTabController extends BaseTabController {
 
     @FXML
     protected void save(@SuppressWarnings("UnusedParameters") ActionEvent event) {
-        getTabRef().append("model").fireAction(new Action("save"));
+        getTabRef().append("model").fire(new Action("save"));
     }
 
 }
