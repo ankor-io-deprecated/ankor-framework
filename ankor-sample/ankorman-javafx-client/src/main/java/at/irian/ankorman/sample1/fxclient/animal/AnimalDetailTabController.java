@@ -41,6 +41,7 @@ public class AnimalDetailTabController extends BaseTabController {
         bindValue(animalRef.append("name"))
                 .toInput(name)
                 .withEditable(modelRef.append("editable"))
+                .withFloodControlDelay(500L)
                 .createWithin(bindingContext);
         bindValue(modelRef.append("nameStatus"))
                 .toText(nameStatus)
@@ -48,10 +49,12 @@ public class AnimalDetailTabController extends BaseTabController {
         bindValue(animalRef.append("type"))
                 .toInput(type)
                 .withSelectItems(selItemsRef.append("types"))
+                .withEditable(modelRef.append("editable"))
                 .createWithin(bindingContext);
         bindValue(animalRef.append("family"))
                 .toInput(family)
                 .withSelectItems(selItemsRef.append("families"))
+                .withEditable(modelRef.append("editable"))
                 .createWithin(bindingContext);
 
         name.requestFocus();

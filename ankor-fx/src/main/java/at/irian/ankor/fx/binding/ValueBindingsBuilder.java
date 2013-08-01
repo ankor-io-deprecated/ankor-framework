@@ -35,6 +35,8 @@ public class ValueBindingsBuilder {
 
     private Ref editableRef;
 
+    private Long floodControlDelay;
+
     public static ValueBindingsBuilder bindValue(Ref value) {
         return new ValueBindingsBuilder().forValue(value);
     }
@@ -79,6 +81,11 @@ public class ValueBindingsBuilder {
         return this;
     }
 
+    public ValueBindingsBuilder withFloodControlDelay(Long delayMillis) {
+        this.floodControlDelay = delayMillis;
+        return this;
+    }
+
     public void createWithin(BindingContext bindingContext) {
         if (text != null) {
             bind(valueRef, text, bindingContext);
@@ -89,8 +96,11 @@ public class ValueBindingsBuilder {
                 throw new IllegalStateException("Illegal Binding, missing itemsRef " + this);
             }
             bind(valueRef, itemsRef, comboBox);
+            if (editableRef != null) {
+                //todo bindEditable(editableRef, comboBox, bindingContext);
+            }
         } else if (inputControl != null) {
-            bind(valueRef, inputControl, bindingContext);
+            bind(valueRef, inputControl, bindingContext, floodControlDelay);
             if (editableRef != null) {
                 bindEditable(editableRef, inputControl, bindingContext);
             }
@@ -130,13 +140,17 @@ public class ValueBindingsBuilder {
         new RefPropertyBinding(valueRef, createProperty(tab.textProperty(), context));
     }
 
-    private static void bind(final Ref valueRef, final TextInputControl control, BindingContext context) {
-        new RefPropertyBinding(valueRef, createProperty(control.textProperty(), context));
+    private static void bind(final Ref valueRef, final TextInputControl control, BindingContext context, Long floodControlDelay) {
+        new RefPropertyBinding(valueRef, createProperty(control.textProperty(), context), floodControlDelay);
     }
 
     private static void bindEditable(Ref valueRef, TextInputControl control, BindingContext context) {
         new RefPropertyBinding(valueRef, createBooleanProperty(control.editableProperty(), context));
     }
+
+//    private static void bindEditable(Ref valueRef, ComboBox comboBox, BindingContext context) {
+//        new RefPropertyBinding(valueRef, createBooleanProperty(comboBox.disabledProperty(), context));
+//    }
 
     private static void bind(Ref valueRef, TableView tableView) {
         new RefPropertyBinding(valueRef, tableView.itemsProperty());

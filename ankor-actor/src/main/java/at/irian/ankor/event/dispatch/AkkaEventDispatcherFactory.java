@@ -16,6 +16,10 @@ public class AkkaEventDispatcherFactory implements EventDispatcherFactory {
         this.ankorActorSystem = AnkorActorSystem.create();
     }
 
+    public AkkaEventDispatcherFactory(AnkorActorSystem ankorActorSystem) {
+        this.ankorActorSystem = ankorActorSystem;
+    }
+
     @Override
     public EventDispatcher createFor(final ModelContext modelContext) {
 

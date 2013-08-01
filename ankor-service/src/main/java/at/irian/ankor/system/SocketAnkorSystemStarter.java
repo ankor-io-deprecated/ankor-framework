@@ -1,6 +1,8 @@
 package at.irian.ankor.system;
 
+import at.irian.ankor.akka.AnkorActorSystem;
 import at.irian.ankor.base.BeanResolver;
+import at.irian.ankor.delay.AkkaScheduler;
 import at.irian.ankor.event.dispatch.AkkaEventDispatcherFactory;
 import at.irian.ankor.messaging.SocketMessageLoop;
 import at.irian.ankor.messaging.json.simpletree.SimpleTreeJsonMessageMapper;
@@ -69,13 +71,15 @@ public class SocketAnkorSystemStarter {
             serverMessageLoop.addRemoteSystem(client);
         }
 
+        AnkorActorSystem ankorActorSystem = AnkorActorSystem.create();
         AnkorSystem serverSystem = new AnkorSystemBuilder()
                 .withName(server.getId())
                 .withBeanResolver(beanResolver)
                 .withModelRootFactory(modelRootFactory)
                 .withMessageBus(serverMessageLoop.getMessageBus())
-                .withDispatcherFactory(new AkkaEventDispatcherFactory())
-                        //.withDispatcherFactory(new SynchronisedEventDispatcherFactory())
+//              .withDispatcherFactory(new SynchronisedEventDispatcherFactory())
+                .withDispatcherFactory(new AkkaEventDispatcherFactory(ankorActorSystem))
+                .withScheduler(new AkkaScheduler(ankorActorSystem))
                 .createServer();
 
         serverSystem.start();

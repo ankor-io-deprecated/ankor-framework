@@ -1,5 +1,6 @@
 package at.irian.ankor.fx.binding;
 
+import at.irian.ankor.delay.FloodControl;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.listener.RefChangeListener;
 import at.irian.ankor.ref.listener.RefListeners;
@@ -22,8 +23,13 @@ public class RefPropertyBinding implements RefChangeListener, javafx.beans.value
 
     private final Ref valueRef;
     private final Property property;
+    private final FloodControl floodControl;
 
     public RefPropertyBinding(Ref valueRef, Property property) {
+        this(valueRef, property, null);
+    }
+
+    public RefPropertyBinding(Ref valueRef, Property property, Long floodControlDelay) {
         this.valueRef = valueRef;
         this.property = property;
 
@@ -32,6 +38,12 @@ public class RefPropertyBinding implements RefChangeListener, javafx.beans.value
         RefListeners.addPropChangeListener(this.valueRef, this);
 
         this.property.addListener(this);
+
+        if (floodControlDelay != null) {
+            this.floodControl = new FloodControl(valueRef, floodControlDelay);
+        } else {
+            this.floodControl = null;
+        }
     }
 
     /**
@@ -81,10 +93,19 @@ public class RefPropertyBinding implements RefChangeListener, javafx.beans.value
 
     @SuppressWarnings("TypeParameterExplicitlyExtendsObject")
     @Override
-    public void changed(ObservableValue<? extends Object> observableValue, Object oldValue, Object newValue)  {
-        // we do not have exclusive access to the model here...
-        // ... therefore we must not set the Ref value directly:
-        valueRef.requestChangeTo(newValue);
+    public void changed(ObservableValue<? extends Object> observableValue, Object oldValue, final Object newValue)  {
+        if (floodControl != null) {
+            floodControl.control(new Runnable() {
+                @Override
+                public void run() {
+                    valueRef.setValue(newValue);
+                }
+            });
+        } else {
+            // we do not have exclusive access to the model here...
+            // ... therefore we must not set the Ref value directly:
+            valueRef.requestChangeTo(newValue);
+        }
     }
 
 }

@@ -4,6 +4,9 @@ import at.irian.ankor.annotation.ViewModelAnnotationScanner;
 import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.change.ChangeRequestEventListener;
 import at.irian.ankor.context.*;
+import at.irian.ankor.delay.Scheduler;
+import at.irian.ankor.delay.SimpleScheduler;
+import at.irian.ankor.delay.TaskRequestEventListener;
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.event.dispatch.EventDispatcherFactory;
 import at.irian.ankor.event.dispatch.SynchronisedEventDispatcherFactory;
@@ -34,6 +37,7 @@ public class AnkorSystemBuilder {
     private MessageIdGenerator messageIdGenerator;
     private EventDispatcherFactory eventDispatcherFactory;
     private String modelContextId;
+    private Scheduler scheduler;
 
     private ModelRootFactory modelRootFactory;
     private BeanResolver beanResolver;
@@ -47,6 +51,7 @@ public class AnkorSystemBuilder {
         this.messageIdGenerator = null;
         this.eventDispatcherFactory = new SynchronisedEventDispatcherFactory();
         this.modelContextId = null;
+        this.scheduler = null;
     }
 
     public AnkorSystemBuilder withName(String name) {
@@ -73,6 +78,12 @@ public class AnkorSystemBuilder {
         this.eventDispatcherFactory = eventDispatcherFactory;
         return this;
     }
+
+    public AnkorSystemBuilder withScheduler(Scheduler scheduler) {
+        this.scheduler = scheduler;
+        return this;
+    }
+
 
     public AnkorSystem createServer() {
 
@@ -105,9 +116,14 @@ public class AnkorSystemBuilder {
             modelContextFactory = new DefaultModelContextFactory(eventDispatcherFactory);
         }
 
+        if (scheduler == null) {
+            scheduler = new SimpleScheduler();
+        }
+
         RefContextFactory refContextFactory = new ELRefContextFactory(config,
                                                                       beanResolver,
-                                                                      viewModelPostProcessors);
+                                                                      viewModelPostProcessors,
+                                                                      scheduler);
 
         final MessageFactory messageFactory = new MessageFactory(systemName, messageIdGenerator);
 
@@ -170,9 +186,14 @@ public class AnkorSystemBuilder {
             modelContextId = "" + (++modelContextIdCnt);
         }
 
+        if (scheduler == null) {
+            scheduler = new SimpleScheduler();
+        }
+
         RefContextFactory refContextFactory = new ELRefContextFactory(config,
                                                                       beanResolver,
-                                                                      viewModelPostProcessors);
+                                                                      viewModelPostProcessors,
+                                                                      scheduler);
 
         SingletonModelContextManager modelContextManager
                 = new SingletonModelContextManager(modelContextFactory, modelContextId);
@@ -224,6 +245,9 @@ public class AnkorSystemBuilder {
 
         // global change request event listener
         eventListeners.add(new ChangeRequestEventListener());
+
+        // global task request event listener
+        eventListeners.add(new TaskRequestEventListener());
     }
 
 

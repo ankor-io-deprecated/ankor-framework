@@ -1,6 +1,7 @@
 package at.irian.ankor.ref.el;
 
 import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.delay.Scheduler;
 import at.irian.ankor.el.ELSupport;
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.path.PathSyntax;
@@ -26,12 +27,15 @@ public class ELRefContext implements RefContext, RefContextImplementor {
     private final ModelContext modelContext;
     private final List<ViewModelPostProcessor> viewModelPostProcessors;
     private final ELRefFactory refFactory;
+    private final Scheduler scheduler;
 
     ELRefContext(ELSupport elSupport,
                  Config config,
                  ModelContext modelContext,
-                 List<ViewModelPostProcessor> viewModelPostProcessors) {
+                 List<ViewModelPostProcessor> viewModelPostProcessors,
+                 Scheduler scheduler) {
         this.elSupport = elSupport;
+        this.scheduler = scheduler;
         this.modelRootVarName = config.getString("ankor.variable-names.modelRoot");
         this.modelContext = modelContext;
         this.viewModelPostProcessors = viewModelPostProcessors;
@@ -73,5 +77,10 @@ public class ELRefContext implements RefContext, RefContextImplementor {
     @Override
     public ModelContext modelContext() {
         return modelContext;
+    }
+
+    @Override
+    public Scheduler scheduler() {
+        return scheduler;
     }
 }

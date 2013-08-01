@@ -2,6 +2,7 @@ package at.irian.ankor.ref.el;
 
 import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.delay.Scheduler;
 import at.irian.ankor.el.AnkorELSupport;
 import at.irian.ankor.el.ELSupport;
 import at.irian.ankor.ref.RefContext;
@@ -20,13 +21,16 @@ public class ELRefContextFactory implements RefContextFactory {
     private final Config config;
     private final BeanResolver beanResolver;
     private final List<ViewModelPostProcessor> viewModelPostProcessors;
+    private final Scheduler scheduler;
 
     public ELRefContextFactory(Config config,
                                BeanResolver beanResolver,
-                               List<ViewModelPostProcessor> viewModelPostProcessors) {
+                               List<ViewModelPostProcessor> viewModelPostProcessors,
+                               Scheduler scheduler) {
         this.config = config;
         this.beanResolver = beanResolver;
         this.viewModelPostProcessors = viewModelPostProcessors;
+        this.scheduler = scheduler;
     }
 
     @Override
@@ -35,7 +39,8 @@ public class ELRefContextFactory implements RefContextFactory {
         return new ELRefContext(elSupport,
                                 config,
                                 modelContext,
-                                viewModelPostProcessors);
+                                viewModelPostProcessors,
+                                scheduler);
     }
 
 }
