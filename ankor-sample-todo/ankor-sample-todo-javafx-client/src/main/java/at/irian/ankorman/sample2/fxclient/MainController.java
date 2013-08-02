@@ -27,8 +27,10 @@ public class MainController implements Initializable {
 
     @FXML
     private Text serverStatus;
+
     @FXML
     private TabPane tabPane;
+
     @FXML
     private Text userName;
 

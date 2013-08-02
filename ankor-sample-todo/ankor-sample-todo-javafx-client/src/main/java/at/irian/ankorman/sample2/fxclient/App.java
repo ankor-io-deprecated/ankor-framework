@@ -1,9 +1,9 @@
 package at.irian.ankorman.sample2.fxclient;
 
-import at.irian.ankor.fx.app.SocketAppBuilder;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.session.ModelRootFactory;
+import at.irian.ankor.system.SocketAnkorSystemStarter;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
@@ -15,6 +15,9 @@ import javafx.stage.Stage;
 public class App extends javafx.application.Application {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(App.class);
 
+    private static final String DEFAULT_SERVER = "server:8080";
+    private static final String DEFAULT_CLIENT = "client:9090";
+
     private static RefFactory refFactory;
 
     public static void main(String[] args) {
@@ -24,7 +27,16 @@ public class App extends javafx.application.Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        createSocketApp();
+        // server
+        String server = DEFAULT_SERVER;
+        String clients = DEFAULT_CLIENT;
+
+        createServerSystem(server, clients);
+
+        // client
+        String client = DEFAULT_CLIENT;
+
+        createClientSystem(server, client);
 
         primaryStage.setTitle("Ankor FX Sample");
         Pane myPane = FXMLLoader.load(getClass().getClassLoader().getResource("main.fxml"));
@@ -35,27 +47,55 @@ public class App extends javafx.application.Application {
         primaryStage.show();
     }
 
-    private void createSocketApp() {
+    private void createServerSystem(String server, String clients) {
 
-        SocketAppBuilder appBuilder = new SocketAppBuilder()
-                .withModelRootFactory(new ModelRootFactory() {
-                    @Override
-                    public Object createModelRoot(Ref rootRef) {
-                        try {
-                            Class<?> modelRootType = Class.forName("at.irian.ankorman.sample2.viewmodel.ModelRoot");
-                            Class<?> repoType = Class.forName("at.irian.ankorman.sample2.server.AnimalRepository");
-                            Object repo = repoType.newInstance();
-                            return modelRootType.getConstructor(Ref.class, repoType).newInstance(rootRef, repo);
-                        } catch (Exception e) {
-                            throw new RuntimeException("Unable to create model root", e);
-                        }
-                    }
-                });
-                //.withBean("service", serviceBean);
-        refFactory = appBuilder.create();
+        String serverName = server.split(":")[0];
+        int serverPort = Integer.parseInt(server.split(":")[1]);
+
+        SocketAnkorSystemStarter appBuilder = new SocketAnkorSystemStarter()
+                .withModelRootFactory(new MyModelRootFactory())
+                .withLocalServer(serverName, serverPort);
+
+        for (String client : clients.split(",")) {
+            String clientName = client.split(":")[0];
+            int clientPort = Integer.parseInt(client.split(":")[1]);
+            appBuilder = appBuilder.withLocalClient(clientName, clientPort);
+        }
+
+        appBuilder.createAndStartServerSystem();
+    }
+
+    private void createClientSystem(String server, String client) {
+
+        String serverName = server.split(":")[0];
+        int serverPort = Integer.parseInt(server.split(":")[1]);
+
+        String clientName = client.split(":")[0];
+        int clientPort = Integer.parseInt(client.split(":")[1]);
+
+        SocketAnkorSystemStarter appBuilder = new SocketAnkorSystemStarter()
+                .withModelRootFactory(new MyModelRootFactory())
+                .withLocalServer(serverName, serverPort)
+                .withLocalClient(clientName, clientPort);
+
+        refFactory = appBuilder.createAndStartClientSystem(clientName);
     }
 
     public static RefFactory refFactory() {
         return refFactory;
+    }
+
+    private static class MyModelRootFactory implements ModelRootFactory {
+        @Override
+        public Object createModelRoot(Ref rootRef) {
+            try {
+                Class<?> modelRootType = Class.forName("at.irian.ankorman.sample1.viewmodel.ModelRoot");
+                Class<?> repoType = Class.forName("at.irian.ankorman.sample1.server.AnimalRepository");
+                Object repo = repoType.newInstance();
+                return modelRootType.getConstructor(Ref.class, repoType).newInstance(rootRef, repo);
+            } catch (Exception e) {
+                throw new RuntimeException("Unable to create model root", e);
+            }
+        }
     }
 }
