@@ -1,9 +1,6 @@
 package at.irian.ankor.delay;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * @author Manfred Geiler
@@ -23,7 +20,13 @@ public class SimpleScheduler implements Scheduler {
     }
 
     @Override
-    public void schedule(long delayMillis, Runnable runnable) {
-        executorService.schedule(runnable, delayMillis, TimeUnit.MILLISECONDS);
+    public Cancellable schedule(long delayMillis, Runnable runnable) {
+        final ScheduledFuture<?> future = executorService.schedule(runnable, delayMillis, TimeUnit.MILLISECONDS);
+        return new Cancellable() {
+            @Override
+            public void cancel() {
+                future.cancel(false);
+            }
+        };
     }
 }

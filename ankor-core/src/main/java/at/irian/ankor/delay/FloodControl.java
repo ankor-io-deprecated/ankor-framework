@@ -13,7 +13,7 @@ public class FloodControl {
     private final Scheduler scheduler;
     private final EventDispatcher eventDispatcher;
     private final long delay;
-    private Runnable lastRunnable;
+    private volatile Cancellable lastDelayed;
 
     public FloodControl(Ref ref, long delay) {
         this.ref = ref;
@@ -23,15 +23,15 @@ public class FloodControl {
     }
 
     public void control(final Runnable task) {
-        lastRunnable = new Runnable() {
+        if (lastDelayed != null) {
+            lastDelayed.cancel();
+        }
+        lastDelayed = scheduler.schedule(delay, new Runnable() {
             @Override
             public void run() {
-                if (lastRunnable == this) {
-                    eventDispatcher.dispatch(new TaskRequestEvent(ref, task));
-                }
+                eventDispatcher.dispatch(new TaskRequestEvent(ref, task));
             }
-        };
-        scheduler.schedule(delay, lastRunnable);
+        });
     }
 
 }

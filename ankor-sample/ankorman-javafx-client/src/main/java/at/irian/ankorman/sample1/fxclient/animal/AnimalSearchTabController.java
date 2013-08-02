@@ -67,7 +67,7 @@ public class AnimalSearchTabController extends BaseTabController {
 
         bindValue(filterRef.append("name"))
                 .toInput(name)
-                .withFloodControlDelay(1000L)
+                .withFloodControlDelay(500L)
                 .createWithin(bindingContext);
 
         bindValue(filterRef.append("type"))

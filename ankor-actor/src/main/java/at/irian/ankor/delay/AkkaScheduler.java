@@ -23,9 +23,16 @@ public class AkkaScheduler implements Scheduler {
     }
 
     @Override
-    public void schedule(long delayMillis, Runnable runnable) {
-        actorSystem.scheduler().scheduleOnce(Duration.create(delayMillis, TimeUnit.MILLISECONDS),
-                                             runnable,
-                                             actorSystem.dispatcher());
+    public Cancellable schedule(long delayMillis, Runnable runnable) {
+        final akka.actor.Cancellable akkaCancellable = actorSystem.scheduler()
+                                             .scheduleOnce(Duration.create(delayMillis, TimeUnit.MILLISECONDS),
+                                                           runnable,
+                                                           actorSystem.dispatcher());
+        return new Cancellable() {
+            @Override
+            public void cancel() {
+                akkaCancellable.cancel();
+            }
+        };
     }
 }
