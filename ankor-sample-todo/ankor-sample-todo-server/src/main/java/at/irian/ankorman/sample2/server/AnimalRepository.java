@@ -4,9 +4,9 @@ import at.irian.ankor.base.ObjectUtils;
 import at.irian.ankorman.sample2.domain.animal.Animal;
 import at.irian.ankorman.sample2.domain.animal.AnimalFamily;
 import at.irian.ankorman.sample2.domain.animal.AnimalType;
-import at.irian.ankorman.sample2.viewmodel.animal.AnimalSearchFilter;
-import at.irian.ankorman.sample2.viewmodel.animal.Data;
-import at.irian.ankorman.sample2.viewmodel.animal.Paginator;
+import at.irian.ankorman.sample2.viewmodel.animal.helper.AnimalSearchFilter;
+import at.irian.ankorman.sample2.viewmodel.animal.helper.Data;
+import at.irian.ankorman.sample2.viewmodel.animal.helper.Paginator;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -15,7 +15,7 @@ import java.util.List;
 /**
 * @author Thomas Spiegl
 */
-@SuppressWarnings("UnusedDeclaration")
+//@SuppressWarnings("UnusedDeclaration")
 public class AnimalRepository {
 
     private List<Animal> animals;
@@ -23,7 +23,7 @@ public class AnimalRepository {
     public static int MAX_NAME_LEN = 10;
 
     public AnimalRepository() {
-        animals = new ArrayList<>();
+        animals = new ArrayList<Animal>();
         animals.add(new Animal("Trout", AnimalType.Fish, AnimalFamily.Salmonidae));
         animals.add(new Animal("Salmon", AnimalType.Fish, AnimalFamily.Salmonidae));
         animals.add(new Animal("Pike", AnimalType.Fish, AnimalFamily.Esocidae));
@@ -38,7 +38,7 @@ public class AnimalRepository {
     public List<AnimalFamily> getAnimalFamilies(AnimalType type) {
         List<AnimalFamily> families;
         if (type != null) {
-            families = new ArrayList<>();
+            families = new ArrayList<AnimalFamily>();
             switch (type) {
                 case Bird:
                     families.add(AnimalFamily.Accipitridae);
@@ -53,7 +53,7 @@ public class AnimalRepository {
                     break;
             }
         } else {
-            families = new ArrayList<>(0);
+            families = new ArrayList<AnimalFamily>(0);
         }
         return families;
     }
@@ -74,7 +74,7 @@ public class AnimalRepository {
             }
         }
         if (first >= animals.size()) {
-            return new Data<>(new Paginator(animals.size(), maxResults));
+            return new Data<Animal>(new Paginator(animals.size(), maxResults));
         }
         if (first < 0) {
             first = 0;
@@ -84,7 +84,7 @@ public class AnimalRepository {
             last = animals.size();
         }
 
-        Data<Animal> data = new Data<>(new Paginator(first, maxResults));
+        Data<Animal> data = new Data<Animal>(new Paginator(first, maxResults));
 
         data.getRows().addAll(animals.subList(first, last));
 
@@ -98,7 +98,7 @@ public class AnimalRepository {
     }
 
     private List<Animal> getAnimals() {
-        List<Animal> result = new ArrayList<>(animals.size());
+        List<Animal> result = new ArrayList<Animal>(animals.size());
         for (Animal animal : animals) {
             result.add(new Animal(animal));
         }

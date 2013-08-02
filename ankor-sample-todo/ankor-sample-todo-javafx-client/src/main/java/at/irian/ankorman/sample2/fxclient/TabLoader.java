@@ -33,7 +33,7 @@ public class TabLoader {
         }
         this.tabId = TabIds.next();
         this.tabType = tabType;
-        this.tabsRef = refFactory().rootRef().append("tabs");
+        this.tabsRef = refFactory().rootRef().append("tabsTask");
     }
 
     public void loadTabTo(final TabPane tabPane) {

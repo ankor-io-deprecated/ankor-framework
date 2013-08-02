@@ -7,6 +7,7 @@ public enum TabType {
 
     animalSearchTab("createAnimalSearchTab", "animal_search_tab.fxml"),
     animalDetailTab("createAnimalDetailTab", "animal_detail_tab.fxml"),
+    taskListTab("createTasksTab", "animal_search_tab.fxml"),
 
     ;
 

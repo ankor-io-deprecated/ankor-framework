@@ -8,12 +8,13 @@ import at.irian.ankor.viewmodel.ViewModelProperty;
 import at.irian.ankorman.sample2.domain.animal.Animal;
 import at.irian.ankorman.sample2.server.AnimalRepository;
 import at.irian.ankorman.sample2.viewmodel.TabNameCreator;
+import at.irian.ankorman.sample2.viewmodel.animal.helper.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
 * @author Thomas Spiegl
 */
-@SuppressWarnings("UnusedDeclaration")
+// @SuppressWarnings("UnusedDeclaration")
 public class AnimalSearchModel extends ViewModelBase {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalSearchModel.class);
 
@@ -37,27 +38,7 @@ public class AnimalSearchModel extends ViewModelBase {
         this.tabName = tabName;
         this.filter = new AnimalSearchFilter();
         this.selectItems = selectItems;
-        this.animals = new Data<>(new Paginator(0, 5));
-    }
-
-    public AnimalSearchFilter getFilter() {
-        return filter;
-    }
-
-    public AnimalSelectItems getSelectItems() {
-        return selectItems;
-    }
-
-    public void setSelectItems(AnimalSelectItems selectItems) {
-        this.selectItems = selectItems;
-    }
-
-    public Data<Animal> getAnimals() {
-        return animals;
-    }
-
-    public void setAnimals(Data<Animal> animals) {
-        this.animals = animals;
+        this.animals = new Data<Animal>(new Paginator(0, 5));
     }
 
     @ChangeListener(pattern = {"**.<AnimalSearchModel>.filter.**",
@@ -65,7 +46,7 @@ public class AnimalSearchModel extends ViewModelBase {
     public void reloadAnimals() {
         // TODO how to load data async and update the animals ref?
         LOG.info("RELOADING animals ...");
-        Paginator paginator = getAnimals().getPaginator();
+        Paginator paginator = animals.getPaginator();
         paginator.reset();
         Data<Animal> animals = animalRepository.searchAnimals(filter, paginator.getFirst(), paginator.getMaxResults());
 
@@ -92,7 +73,7 @@ public class AnimalSearchModel extends ViewModelBase {
     public void save() {
         String status;
         try {
-            for (Animal animal : getAnimals().getRows()) {
+            for (Animal animal : animals.getRows()) {
                 animalRepository.saveAnimal(animal);
             }
             status = "Animals successfully saved";
@@ -105,4 +86,23 @@ public class AnimalSearchModel extends ViewModelBase {
         thisRef().root().append("serverStatus").setValue(status);
     }
 
+    public AnimalSearchFilter getFilter() {
+        return filter;
+    }
+
+    public AnimalSelectItems getSelectItems() {
+        return selectItems;
+    }
+
+    public void setSelectItems(AnimalSelectItems selectItems) {
+        this.selectItems = selectItems;
+    }
+
+    public Data<Animal> getAnimals() {
+        return animals;
+    }
+
+    public void setAnimals(Data<Animal> animals) {
+        this.animals = animals;
+    }
 }

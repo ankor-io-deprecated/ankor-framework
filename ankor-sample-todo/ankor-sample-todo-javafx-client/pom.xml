@@ -27,9 +27,9 @@
 
         <dependency>
             <groupId>at.irian.ankorman</groupId>
-            <artifactId>ankorman-server</artifactId>
+            <artifactId>ankor-sample-todo-server</artifactId>
             <version>${project.version}</version>
-            <scope>runtime</scope>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>

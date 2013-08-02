@@ -16,8 +16,7 @@ import java.util.ResourceBundle;
 
 import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
 import static at.irian.ankorman.sample2.fxclient.App.refFactory;
-import static at.irian.ankorman.sample2.fxclient.TabType.animalDetailTab;
-import static at.irian.ankorman.sample2.fxclient.TabType.animalSearchTab;
+import static at.irian.ankorman.sample2.fxclient.TabType.*;
 
 /**
  * @author Thomas Spiegl
@@ -63,5 +62,9 @@ public class MainController implements Initializable {
 
     public void openAnimalDetailTab(@SuppressWarnings("UnusedParameters") ActionEvent actionEvent) {
         new TabLoader(animalDetailTab).loadTabTo(tabPane);
+    }
+
+    public void openTaskListTab(ActionEvent actionEvent) {
+        new TabLoader(taskListTab).loadTabTo(tabPane);
     }
 }

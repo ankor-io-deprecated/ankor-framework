@@ -10,7 +10,7 @@ import at.irian.ankorman.sample2.domain.animal.AnimalType;
 import at.irian.ankorman.sample2.server.AnimalRepository;
 import at.irian.ankorman.sample2.viewmodel.animal.AnimalDetailModel;
 import at.irian.ankorman.sample2.viewmodel.animal.AnimalSearchModel;
-import at.irian.ankorman.sample2.viewmodel.animal.AnimalSelectItems;
+import at.irian.ankorman.sample2.viewmodel.animal.helper.AnimalSelectItems;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,7 +42,7 @@ public class Tabs extends ViewModelMapBase<String, Tab> {
     public void createAnimalSearchTab(@Param("tabId") final String tabId) {
         Ref tabRef = thisRef().append(tabId);
 
-        Tab<AnimalSearchModel> tab = new Tab<>(tabId, tabRef, "Animal Search");
+        Tab<AnimalSearchModel> tab = new Tab<AnimalSearchModel>(tabId, tabRef, "Animal Search");
         AnimalSearchModel model = new AnimalSearchModel(tabRef.append("model"), animalRepository, getAnimalSelectItems(), tab.getName());
         tab.setModel(model);
 
@@ -56,7 +56,7 @@ public class Tabs extends ViewModelMapBase<String, Tab> {
         Ref tabRef = thisRef().append(tabId);
         ModelRoot root = thisRef().root().getValue();
 
-        Tab<AnimalDetailModel> tab = new Tab<>(tabId, tabRef, "New Animal");
+        Tab<AnimalDetailModel> tab = new Tab<AnimalDetailModel>(tabId, tabRef, "New Animal");
         AnimalDetailModel model = new AnimalDetailModel(tabRef.append("model"),
                                                         new Animal(),
                                                         getAnimalSelectItems(),
@@ -69,7 +69,7 @@ public class Tabs extends ViewModelMapBase<String, Tab> {
     }
 
     private AnimalSelectItems getAnimalSelectItems() {
-        List<AnimalType> types = new ArrayList<>(AnimalType.values().length + 1);
+        List<AnimalType> types = new ArrayList<AnimalType>(AnimalType.values().length + 1);
         types.addAll(Arrays.asList(AnimalType.values()));
         return new AnimalSelectItems(types, new ArrayList<AnimalFamily>());
     }

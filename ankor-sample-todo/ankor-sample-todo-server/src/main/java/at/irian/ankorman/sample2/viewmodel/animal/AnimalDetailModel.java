@@ -8,6 +8,8 @@ import at.irian.ankor.viewmodel.ViewModelProperty;
 import at.irian.ankorman.sample2.domain.animal.Animal;
 import at.irian.ankorman.sample2.server.AnimalRepository;
 import at.irian.ankorman.sample2.viewmodel.TabNameCreator;
+import at.irian.ankorman.sample2.viewmodel.animal.helper.AnimalSelectItems;
+import at.irian.ankorman.sample2.viewmodel.animal.helper.AnimalTypeChangeHandler;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**

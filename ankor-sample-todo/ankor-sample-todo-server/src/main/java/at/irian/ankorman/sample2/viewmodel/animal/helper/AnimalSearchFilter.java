@@ -1,4 +1,4 @@
-package at.irian.ankorman.sample2.viewmodel.animal;
+package at.irian.ankorman.sample2.viewmodel.animal.helper;
 
 import at.irian.ankorman.sample2.domain.animal.AnimalFamily;
 import at.irian.ankorman.sample2.domain.animal.AnimalType;

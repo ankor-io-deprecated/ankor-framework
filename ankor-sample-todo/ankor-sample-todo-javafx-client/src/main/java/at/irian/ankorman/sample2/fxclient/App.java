@@ -4,6 +4,9 @@ import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.session.ModelRootFactory;
 import at.irian.ankor.system.SocketAnkorSystemStarter;
+import at.irian.ankorman.sample2.server.AnimalRepository;
+import at.irian.ankorman.sample2.server.TaskRepository;
+import at.irian.ankorman.sample2.viewmodel.ModelRoot;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
@@ -89,10 +92,13 @@ public class App extends javafx.application.Application {
         @Override
         public Object createModelRoot(Ref rootRef) {
             try {
-                Class<?> modelRootType = Class.forName("at.irian.ankorman.sample1.viewmodel.ModelRoot");
-                Class<?> repoType = Class.forName("at.irian.ankorman.sample1.server.AnimalRepository");
+                /*
+                Class<?> modelRootType = Class.forName("at.irian.ankorman.sample2.viewmodel.ModelRoot");
+                Class<?> repoType = Class.forName("at.irian.ankorman.sample2.server.AnimalRepository");
                 Object repo = repoType.newInstance();
                 return modelRootType.getConstructor(Ref.class, repoType).newInstance(rootRef, repo);
+                */
+                return new ModelRoot(rootRef, new AnimalRepository(), new TaskRepository());
             } catch (Exception e) {
                 throw new RuntimeException("Unable to create model root", e);
             }
