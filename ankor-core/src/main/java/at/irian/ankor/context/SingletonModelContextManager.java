@@ -9,8 +9,8 @@ public class SingletonModelContextManager implements ModelContextManager {
     private final ModelContext modelContext;
     private String modelContextId;
 
-    public SingletonModelContextManager(ModelContextFactory modelContextFactory, String modelContextId) {
-        this.modelContext = modelContextFactory.createModelContext(modelContextId);
+    public SingletonModelContextManager(String modelContextId, ModelContext modelContext) {
+        this.modelContext = modelContext;
         this.modelContextId = modelContextId;
     }
 

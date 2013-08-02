@@ -7,11 +7,11 @@ import at.irian.ankor.context.*;
 import at.irian.ankor.delay.Scheduler;
 import at.irian.ankor.delay.SimpleScheduler;
 import at.irian.ankor.delay.TaskRequestEventListener;
+import at.irian.ankor.event.ArrayListEventListeners;
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.event.dispatch.EventDispatcherFactory;
 import at.irian.ankor.event.dispatch.SynchronisedEventDispatcherFactory;
 import at.irian.ankor.messaging.*;
-import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.ref.el.ELRefContextFactory;
@@ -21,7 +21,10 @@ import at.irian.ankor.viewmodel.ViewModelPropertyFieldsInitializer;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Manfred Geiler
@@ -38,20 +41,23 @@ public class AnkorSystemBuilder {
     private EventDispatcherFactory eventDispatcherFactory;
     private String modelContextId;
     private Scheduler scheduler;
+    private EventListeners globalEventListeners;
+    private ModelContextFactory modelContextFactory;
 
     private ModelRootFactory modelRootFactory;
     private BeanResolver beanResolver;
     private MessageBus messageBus;
-    private ModelContextFactory modelContextFactory;
 
     public AnkorSystemBuilder() {
         this.systemName = null;
         this.config = ConfigFactory.load();
         this.viewModelPostProcessors = null;
         this.messageIdGenerator = null;
-        this.eventDispatcherFactory = new SynchronisedEventDispatcherFactory();
+        this.eventDispatcherFactory = null;
         this.modelContextId = null;
         this.scheduler = null;
+        this.globalEventListeners = null;
+        this.modelContextFactory = null;
     }
 
     public AnkorSystemBuilder withName(String name) {
@@ -87,61 +93,28 @@ public class AnkorSystemBuilder {
 
     public AnkorSystem createServer() {
 
-        if (systemName == null) {
-            systemName = "Unnamed Server";
-            LOG.warn("No system name specified, using default name {}", systemName);
-        }
-
-        if (messageIdGenerator == null) {
-            messageIdGenerator = createDefaultMessageIdGenerator();
-        }
-
-        if (modelRootFactory == null) {
-            throw new IllegalStateException("modelRootFactory not set");
-        }
-
-        if (messageBus == null) {
-            throw new IllegalStateException("messageBus not set");
-        }
-
-        if (viewModelPostProcessors == null) {
-            viewModelPostProcessors = createDefaultServerViewModelPostProcessors();
-        }
-
-        if (beanResolver == null) {
-            beanResolver = new EmptyBeanResolver();
-        }
-
-        if (modelContextFactory == null) {
-            modelContextFactory = new DefaultModelContextFactory(eventDispatcherFactory);
-        }
-
-        if (scheduler == null) {
-            scheduler = new SimpleScheduler();
-        }
+        String systemName = getServerSystemName();
+        MessageBus messageBus = getMessageBus();
+        EventDispatcherFactory eventDispatcherFactory = getEventDispatcherFactory();
 
         RefContextFactory refContextFactory = new ELRefContextFactory(config,
-                                                                      beanResolver,
-                                                                      viewModelPostProcessors,
-                                                                      scheduler);
+                                                                      getServerBeanResolver(),
+                                                                      getServerViewModelPostProcessors(),
+                                                                      getScheduler());
 
-        final MessageFactory messageFactory = new MessageFactory(systemName, messageIdGenerator);
+        MessageFactory messageFactory = new MessageFactory(systemName, getMessageIdGenerator());
 
-
-        SessionFactory sessionFactory = new ServerSessionFactory(modelRootFactory,
+        SessionFactory sessionFactory = new ServerSessionFactory(getServerModelRootFactory(),
                                                                  refContextFactory,
                                                                  eventDispatcherFactory,
                                                                  messageBus);
-        final SessionManager sessionManager = new DefaultSessionManager(sessionFactory);
+        SessionManager sessionManager = new DefaultSessionManager(sessionFactory);
 
-        ModelContextManager modelContextManager = new DefaultModelContextManager(new ModelContextFactory() {
-            @Override
-            public ModelContext createModelContext(String modelContextId) {
-                ModelContext modelContext = modelContextFactory.createModelContext(modelContextId);
-                addDefaultEventListeners(messageFactory, modelContext, sessionManager);
-                return modelContext;
-            }
-        });
+        EventListeners globalEventListeners = getGlobalEventListeners(messageFactory, sessionManager);
+
+        ModelContextFactory modelContextFactory = getModelContextFactory(eventDispatcherFactory, globalEventListeners);
+
+        ModelContextManager modelContextManager = new DefaultModelContextManager(modelContextFactory);
 
         return new AnkorSystem(systemName, messageFactory, messageBus, refContextFactory,
                                modelContextManager,
@@ -149,87 +122,57 @@ public class AnkorSystemBuilder {
     }
 
 
+
     public AnkorSystem createClient() {
-
-        if (systemName == null) {
-            systemName = "Unnamed Client";
-            LOG.warn("No system name specified, using default name {}", systemName);
-        }
-
-        if (messageIdGenerator == null) {
-            messageIdGenerator = createDefaultMessageIdGenerator();
-        }
 
         if (modelRootFactory != null) {
             throw new IllegalStateException("custom modelRootFactory not supported for client system");
-        }
-        modelRootFactory = new DefaultClientModelRootFactory();
-
-        if (messageBus == null) {
-            throw new IllegalStateException("messageBus not set");
         }
 
         if (viewModelPostProcessors != null) {
             throw new IllegalStateException("viewModelPostProcessors not supported for client system");
         }
 
-        if (beanResolver != null) {
-            throw new IllegalStateException("beanResolver not supported for client system");
-        }
-        beanResolver = new EmptyBeanResolver();
-
-        if (modelContextFactory == null) {
-            modelContextFactory = new DefaultModelContextFactory(eventDispatcherFactory);
-        }
-
-        if (modelContextId == null) {
-            modelContextId = "" + (++modelContextIdCnt);
-        }
-
-        if (scheduler == null) {
-            scheduler = new SimpleScheduler();
-        }
+        String systemName = getClientSystemName();
+        MessageBus messageBus = getMessageBus();
 
         RefContextFactory refContextFactory = new ELRefContextFactory(config,
-                                                                      beanResolver,
-                                                                      viewModelPostProcessors,
-                                                                      scheduler);
+                                                                      getClientBeanResolver(),
+                                                                      null,
+                                                                      getScheduler());
 
-        SingletonModelContextManager modelContextManager
-                = new SingletonModelContextManager(modelContextFactory, modelContextId);
+        MessageFactory messageFactory = new MessageFactory(systemName, getMessageIdGenerator());
 
-        ModelContext modelContext = modelContextManager.getOrCreate(modelContextId);
+        String modelContextId = getModelContextId();
+
+        SingletonSessionManager sessionManager = new SingletonSessionManager();
+        EventListeners globalEventListeners = getGlobalEventListeners(messageFactory, sessionManager);
+
+        ModelContextFactory modelContextFactory = getModelContextFactory(getEventDispatcherFactory(), globalEventListeners);
+
+        ModelContext modelContext = modelContextFactory.createModelContext(modelContextId);
 
         RefContext refContext = refContextFactory.createRefContextFor(modelContext);
 
-        Collection<? extends RemoteSystem> remoteSystems = messageBus.getKnownRemoteSystems();
-        if (remoteSystems.size() != 1) {
-            throw new IllegalStateException("None or multiple remote systems?");
-        }
-        RemoteSystem remoteSystem = remoteSystems.iterator().next();
+        RemoteSystem remoteSystem = getSingletonRemoteSystem(messageBus);
 
         MessageSender messageSender = messageBus.getMessageSenderFor(remoteSystem);
-        SessionManager sessionManager = new SingletonSessionManager(modelContext, refContext, messageSender);
-        Session session = sessionManager.getOrCreate(modelContext, remoteSystem);
 
-        MessageFactory messageFactory = new MessageFactory(systemName, messageIdGenerator);
+        sessionManager.setSession(new SingletonSession(modelContext, refContext, messageSender));
 
-        addDefaultEventListeners(messageFactory, session.getModelContext(), sessionManager);
+        ModelContextManager modelContextManager = new SingletonModelContextManager(modelContextId, modelContext);
 
         return new AnkorSystem(systemName, messageFactory, messageBus, refContextFactory,
                                modelContextManager,
                                sessionManager);
     }
 
-    private CounterMessageIdGenerator createDefaultMessageIdGenerator() {
-        return new CounterMessageIdGenerator(systemName + "#");
-    }
 
-    private void addDefaultEventListeners(MessageFactory messageFactory,
-                                          ModelContext modelContext,
-                                          SessionManager sessionManager) {
 
-        EventListeners eventListeners = modelContext.getEventListeners();
+    private EventListeners createDefaultGLobalEventListeners(MessageFactory messageFactory,
+                                                             SessionManager sessionManager) {
+
+        EventListeners eventListeners = new ArrayListEventListeners();
 
         // remote actions and changes listener
         eventListeners.add(new RemoteEventListener());
@@ -248,6 +191,8 @@ public class AnkorSystemBuilder {
 
         // global task request event listener
         eventListeners.add(new TaskRequestEventListener());
+
+        return eventListeners;
     }
 
 
@@ -256,13 +201,6 @@ public class AnkorSystemBuilder {
         list.add(new ViewModelPropertyFieldsInitializer());
         list.add(new ViewModelAnnotationScanner());
         return list;
-    }
-
-    private static class DefaultClientModelRootFactory implements ModelRootFactory {
-        @Override
-        public Object createModelRoot(Ref rootRef) {
-            return new HashMap();
-        }
     }
 
     private static class EmptyBeanResolver implements BeanResolver {
@@ -277,4 +215,111 @@ public class AnkorSystemBuilder {
             return Collections.emptyList();
         }
     }
+
+    private String getServerSystemName() {
+        if (systemName == null) {
+            LOG.warn("No system name specified, using default name {}", systemName);
+            return "Unnamed Server";
+        }
+        return systemName;
+    }
+
+    private String getClientSystemName() {
+        if (systemName == null) {
+            LOG.warn("No system name specified, using default name {}", systemName);
+            return "Unnamed Client";
+        }
+        return systemName;
+    }
+
+    private MessageIdGenerator getMessageIdGenerator() {
+        if (messageIdGenerator == null) {
+            return createDefaultMessageIdGenerator();
+        }
+        return this.messageIdGenerator;
+    }
+
+    private MessageIdGenerator createDefaultMessageIdGenerator() {
+        return new CounterMessageIdGenerator(systemName + "#");
+    }
+
+    private ModelRootFactory getServerModelRootFactory() {
+        if (modelRootFactory == null) {
+            throw new IllegalStateException("modelRootFactory not set");
+        }
+        return this.modelRootFactory;
+    }
+
+    private MessageBus getMessageBus() {
+        if (messageBus == null) {
+            throw new IllegalStateException("messageBus not set");
+        }
+        return this.messageBus;
+    }
+
+    private List<ViewModelPostProcessor> getServerViewModelPostProcessors() {
+        if (viewModelPostProcessors == null) {
+            return createDefaultServerViewModelPostProcessors();
+        }
+        return this.viewModelPostProcessors;
+    }
+
+    private BeanResolver getClientBeanResolver() {
+        if (beanResolver != null) {
+            throw new IllegalStateException("beanResolver not supported for client system");
+        }
+        return new EmptyBeanResolver();
+    }
+
+    private BeanResolver getServerBeanResolver() {
+        if (beanResolver == null) {
+            return new EmptyBeanResolver();
+        }
+        return this.beanResolver;
+    }
+
+    private Scheduler getScheduler() {
+        if (scheduler == null) {
+            return new SimpleScheduler();
+        }
+        return this.scheduler;
+    }
+
+    private EventDispatcherFactory getEventDispatcherFactory() {
+        if (eventDispatcherFactory == null) {
+            return new SynchronisedEventDispatcherFactory();
+        }
+        return this.eventDispatcherFactory;
+    }
+
+    private EventListeners getGlobalEventListeners(MessageFactory messageFactory, SessionManager sessionManager) {
+        if (globalEventListeners == null) {
+            return createDefaultGLobalEventListeners(messageFactory, sessionManager);
+        }
+        return this.globalEventListeners;
+    }
+
+    private ModelContextFactory getModelContextFactory(EventDispatcherFactory eventDispatcherFactory,
+                                                       EventListeners globalEventListeners) {
+        if (modelContextFactory == null) {
+            return new DefaultModelContextFactory(eventDispatcherFactory, globalEventListeners);
+        }
+        return this.modelContextFactory;
+    }
+
+    private String getModelContextId() {
+        if (modelContextId == null) {
+            return "" + (++modelContextIdCnt);
+        }
+        return this.modelContextId;
+    }
+
+    private RemoteSystem getSingletonRemoteSystem(MessageBus messageBus) {
+        Collection<? extends RemoteSystem> remoteSystems = messageBus.getKnownRemoteSystems();
+        if (remoteSystems.size() != 1) {
+            throw new IllegalStateException("None or multiple remote systems?");
+        }
+        return remoteSystems.iterator().next();
+    }
+
 }

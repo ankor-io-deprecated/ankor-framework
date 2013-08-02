@@ -25,8 +25,9 @@ class DefaultModelContext implements ModelContext, DispatchThreadAware {
         this.modelRoot = modelRoot;
     }
 
-    public static ModelContext create(EventDispatcherFactory eventDispatcherFactory, String id, Object initialModelRoot) {
-        EventListeners eventListeners = new ArrayListEventListeners();
+    public static ModelContext create(EventDispatcherFactory eventDispatcherFactory, String id, Object initialModelRoot,
+                                      EventListeners globalEventListeners) {
+        EventListeners eventListeners = new ArrayListEventListeners(globalEventListeners);
         DefaultModelContext modelContext = new DefaultModelContext(id, eventListeners, initialModelRoot);
         modelContext.setEventDispatcher(eventDispatcherFactory.createFor(modelContext));
         return modelContext;

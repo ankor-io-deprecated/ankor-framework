@@ -1,8 +1,6 @@
 package at.irian.ankor.session;
 
 import at.irian.ankor.context.ModelContext;
-import at.irian.ankor.messaging.MessageSender;
-import at.irian.ankor.ref.RefContext;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -20,10 +18,10 @@ import java.util.Collections;
 public class SingletonSessionManager implements SessionManager {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SingletonSessionManager.class);
 
-    private final Session session;
+    private Session session;
 
-    public SingletonSessionManager(ModelContext modelContext, RefContext refContext, MessageSender messageSender) {
-        this.session = new SingletonSession(modelContext, refContext, messageSender);
+    public void setSession(Session session) {
+        this.session = session;
     }
 
     @Override
