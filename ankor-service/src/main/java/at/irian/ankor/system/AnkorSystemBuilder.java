@@ -102,7 +102,7 @@ public class AnkorSystemBuilder {
                                                                       getServerViewModelPostProcessors(),
                                                                       getScheduler());
 
-        MessageFactory messageFactory = new MessageFactory(systemName, getMessageIdGenerator());
+        MessageFactory messageFactory = getServerMessageFactory();
 
         SessionFactory sessionFactory = new ServerSessionFactory(getServerModelRootFactory(),
                                                                  refContextFactory,
@@ -120,7 +120,6 @@ public class AnkorSystemBuilder {
                                modelContextManager,
                                sessionManager);
     }
-
 
 
     public AnkorSystem createClient() {
@@ -141,7 +140,7 @@ public class AnkorSystemBuilder {
                                                                       null,
                                                                       getScheduler());
 
-        MessageFactory messageFactory = new MessageFactory(systemName, getMessageIdGenerator());
+        MessageFactory messageFactory = getClientMessageFactory();
 
         String modelContextId = getModelContextId();
 
@@ -219,7 +218,7 @@ public class AnkorSystemBuilder {
     private String getServerSystemName() {
         if (systemName == null) {
             LOG.warn("No system name specified, using default name {}", systemName);
-            return "Unnamed Server";
+            systemName = "Unnamed Server";
         }
         return systemName;
     }
@@ -227,16 +226,16 @@ public class AnkorSystemBuilder {
     private String getClientSystemName() {
         if (systemName == null) {
             LOG.warn("No system name specified, using default name {}", systemName);
-            return "Unnamed Client";
+            systemName = "Unnamed Client";
         }
         return systemName;
     }
 
-    private MessageIdGenerator getMessageIdGenerator() {
+    public MessageIdGenerator getMessageIdGenerator() {
         if (messageIdGenerator == null) {
-            return createDefaultMessageIdGenerator();
+            messageIdGenerator = createDefaultMessageIdGenerator();
         }
-        return this.messageIdGenerator;
+        return messageIdGenerator;
     }
 
     private MessageIdGenerator createDefaultMessageIdGenerator() {
@@ -247,21 +246,21 @@ public class AnkorSystemBuilder {
         if (modelRootFactory == null) {
             throw new IllegalStateException("modelRootFactory not set");
         }
-        return this.modelRootFactory;
+        return modelRootFactory;
     }
 
     private MessageBus getMessageBus() {
         if (messageBus == null) {
             throw new IllegalStateException("messageBus not set");
         }
-        return this.messageBus;
+        return messageBus;
     }
 
     private List<ViewModelPostProcessor> getServerViewModelPostProcessors() {
         if (viewModelPostProcessors == null) {
-            return createDefaultServerViewModelPostProcessors();
+            viewModelPostProcessors = createDefaultServerViewModelPostProcessors();
         }
-        return this.viewModelPostProcessors;
+        return viewModelPostProcessors;
     }
 
     private BeanResolver getClientBeanResolver() {
@@ -273,45 +272,45 @@ public class AnkorSystemBuilder {
 
     private BeanResolver getServerBeanResolver() {
         if (beanResolver == null) {
-            return new EmptyBeanResolver();
+            beanResolver = new EmptyBeanResolver();
         }
-        return this.beanResolver;
+        return beanResolver;
     }
 
     private Scheduler getScheduler() {
         if (scheduler == null) {
-            return new SimpleScheduler();
+            scheduler = new SimpleScheduler();
         }
-        return this.scheduler;
+        return scheduler;
     }
 
     private EventDispatcherFactory getEventDispatcherFactory() {
         if (eventDispatcherFactory == null) {
-            return new SynchronisedEventDispatcherFactory();
+            eventDispatcherFactory = new SynchronisedEventDispatcherFactory();
         }
-        return this.eventDispatcherFactory;
+        return eventDispatcherFactory;
     }
 
     private EventListeners getGlobalEventListeners(MessageFactory messageFactory, SessionManager sessionManager) {
         if (globalEventListeners == null) {
-            return createDefaultGLobalEventListeners(messageFactory, sessionManager);
+            globalEventListeners = createDefaultGLobalEventListeners(messageFactory, sessionManager);
         }
-        return this.globalEventListeners;
+        return globalEventListeners;
     }
 
     private ModelContextFactory getModelContextFactory(EventDispatcherFactory eventDispatcherFactory,
                                                        EventListeners globalEventListeners) {
         if (modelContextFactory == null) {
-            return new DefaultModelContextFactory(eventDispatcherFactory, globalEventListeners);
+            modelContextFactory = new DefaultModelContextFactory(eventDispatcherFactory, globalEventListeners);
         }
-        return this.modelContextFactory;
+        return modelContextFactory;
     }
 
     private String getModelContextId() {
         if (modelContextId == null) {
-            return "" + (++modelContextIdCnt);
+            modelContextId = "" + (++modelContextIdCnt);
         }
-        return this.modelContextId;
+        return modelContextId;
     }
 
     private RemoteSystem getSingletonRemoteSystem(MessageBus messageBus) {
@@ -322,4 +321,11 @@ public class AnkorSystemBuilder {
         return remoteSystems.iterator().next();
     }
 
+    public MessageFactory getServerMessageFactory() {
+        return new MessageFactory(getServerSystemName(), getMessageIdGenerator());
+    }
+
+    public MessageFactory getClientMessageFactory() {
+        return new MessageFactory(getClientSystemName(), getMessageIdGenerator());
+    }
 }

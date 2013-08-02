@@ -4,13 +4,14 @@ import at.irian.ankor.akka.AnkorActorSystem;
 import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.delay.AkkaScheduler;
 import at.irian.ankor.event.dispatch.AkkaEventDispatcherFactory;
-import at.irian.ankor.messaging.SocketMessageLoop;
 import at.irian.ankor.messaging.json.simpletree.SimpleTreeJsonMessageMapper;
 import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.session.ModelRootFactory;
 import at.irian.ankor.session.SingletonSessionManager;
+import at.irian.ankor.socket.ClientSocketMessageLoop;
+import at.irian.ankor.socket.SocketMessageLoop;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -94,11 +95,12 @@ public class SocketAnkorSystemStarter {
             throw new IllegalArgumentException("Unknown client");
         }
 
-        SocketMessageLoop<String> clientMessageLoop = new SocketMessageLoop<String>(client, new SimpleTreeJsonMessageMapper());
-        clientMessageLoop.addRemoteSystem(server);
+        AnkorSystemBuilder builder = new AnkorSystemBuilder().withName(client.getId());
+        SocketMessageLoop<String> clientMessageLoop = new ClientSocketMessageLoop<String>(client, new SimpleTreeJsonMessageMapper(),
+                                                                                     server,
+                                                                                     builder.getClientMessageFactory());
 
-        AnkorSystem clientSystem = new AnkorSystemBuilder()
-                .withName(client.getId())
+        AnkorSystem clientSystem = builder
                 .withMessageBus(clientMessageLoop.getMessageBus())
                 .createClient();
 

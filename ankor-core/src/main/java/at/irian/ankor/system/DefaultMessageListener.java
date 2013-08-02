@@ -6,7 +6,6 @@ import at.irian.ankor.context.ModelContextManager;
 import at.irian.ankor.messaging.ActionMessage;
 import at.irian.ankor.messaging.ChangeMessage;
 import at.irian.ankor.messaging.Message;
-import at.irian.ankor.messaging.MessageListener;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.session.RemoteSystem;
@@ -23,7 +22,7 @@ import static at.irian.ankor.system.RemoteEvent.createChangeEvent;
  *
 * @author Manfred Geiler
 */
-public class DefaultMessageListener implements MessageListener {
+public class DefaultMessageListener implements ActionMessage.Listener, ChangeMessage.Listener {
 
     private final ModelContextManager modelContextManager;
     private final SessionManager sessionManager;
@@ -35,6 +34,12 @@ public class DefaultMessageListener implements MessageListener {
 
     @Override
     public void onActionMessage(ActionMessage message) {
+
+        if (message.getProperty() == null) {
+            // ignore global actions
+            return;
+        }
+
         ModelContext modelContext = modelContextManager.getOrCreate(message.getModelId());
         Session session = sessionManager.getOrCreate(modelContext, getRemoteSystemOf(message));
 
