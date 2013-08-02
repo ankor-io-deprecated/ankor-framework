@@ -1,4 +1,4 @@
-package at.irian.ankor.system;
+package at.irian.ankor.socket;
 
 import at.irian.ankor.akka.AnkorActorSystem;
 import at.irian.ankor.base.BeanResolver;
@@ -10,8 +10,8 @@ import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.session.ModelRootFactory;
 import at.irian.ankor.session.SingletonSessionManager;
-import at.irian.ankor.socket.ClientSocketMessageLoop;
-import at.irian.ankor.socket.SocketMessageLoop;
+import at.irian.ankor.system.AnkorSystem;
+import at.irian.ankor.system.AnkorSystemBuilder;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -24,8 +24,8 @@ import java.util.Map;
 public class SocketAnkorSystemStarter {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SocketAnkorSystemStarter.class);
 
-    private static final String LOCALHOST = "localhost";
-    private static final int DEFAULT_SERVER_PORT = 8080;
+    private static final SocketMessageLoop.Host DEFAULT_SERVER_HOST = new SocketMessageLoop.Host("server", "localhost", 8080);
+    private static final SocketMessageLoop.Host DEFAULT_CLIENT_HOST = new SocketMessageLoop.Host("client", "localhost", 9090);
 
     private final BeanResolver beanResolver = new BeanResolver() {
         @Override
@@ -40,8 +40,8 @@ public class SocketAnkorSystemStarter {
     };
     private final Map<String, Object> beans = new HashMap<String, Object>();
 
-    private SocketMessageLoop.Host server = new SocketMessageLoop.Host("server", LOCALHOST, DEFAULT_SERVER_PORT);
-    private final Map<String, SocketMessageLoop.Host> clients = new HashMap<String, SocketMessageLoop.Host>();
+    private SocketMessageLoop.Host localHost;
+    private SocketMessageLoop.Host serverHost;
 
     private ModelRootFactory modelRootFactory;
 
@@ -55,22 +55,41 @@ public class SocketAnkorSystemStarter {
         return this;
     }
 
-    public SocketAnkorSystemStarter withLocalServer(String serverName, int serverPort) {
-        this.server = new SocketMessageLoop.Host(serverName, LOCALHOST, serverPort);
+    public SocketAnkorSystemStarter withLocalHost(SocketMessageLoop.Host host) {
+        this.localHost = host;
         return this;
     }
 
-    public SocketAnkorSystemStarter withLocalClient(String clientName, int clientPort) {
-        this.clients.put(clientName, new SocketMessageLoop.Host(clientName, LOCALHOST, clientPort));
+    public SocketAnkorSystemStarter withServerHost(SocketMessageLoop.Host host) {
+        this.serverHost = host;
         return this;
     }
 
-
-    public void createAndStartServerSystem() {
-        SocketMessageLoop<String> serverMessageLoop = new SocketMessageLoop<String>(server, new ViewModelJsonMessageMapper());
-        for (SocketMessageLoop.Host client : clients.values()) {
-            serverMessageLoop.addRemoteSystem(client);
+    public SocketMessageLoop.Host getServerLocalHost() {
+        if (localHost == null) {
+            localHost = DEFAULT_SERVER_HOST;
         }
+        return localHost;
+    }
+
+    public SocketMessageLoop.Host getClientLocalHost() {
+        if (localHost == null) {
+            localHost = DEFAULT_CLIENT_HOST;
+        }
+        return localHost;
+    }
+
+    public SocketMessageLoop.Host getServerHost() {
+        if (serverHost == null) {
+            serverHost = DEFAULT_SERVER_HOST;
+        }
+        return serverHost;
+    }
+
+    public void createAndStartServerSystem(boolean daemon) {
+
+        SocketMessageLoop.Host server = getServerLocalHost();
+        SocketMessageLoop<String> serverMessageLoop = new ServerSocketMessageLoop<String>(server, new ViewModelJsonMessageMapper());
 
         AnkorActorSystem ankorActorSystem = AnkorActorSystem.create();
         AnkorSystem serverSystem = new AnkorSystemBuilder()
@@ -84,20 +103,17 @@ public class SocketAnkorSystemStarter {
                 .createServer();
 
         serverSystem.start();
-        serverMessageLoop.start(true);
+        serverMessageLoop.start(daemon);
     }
 
 
-    public RefFactory createAndStartClientSystem(String clientName) {
+    public RefFactory createAndStartClientSystem() {
 
-        SocketMessageLoop.Host client = clients.get(clientName);
-        if (client == null) {
-            throw new IllegalArgumentException("Unknown client");
-        }
+        SocketMessageLoop.Host client = getClientLocalHost();
 
         AnkorSystemBuilder builder = new AnkorSystemBuilder().withName(client.getId());
         SocketMessageLoop<String> clientMessageLoop = new ClientSocketMessageLoop<String>(client, new SimpleTreeJsonMessageMapper(),
-                                                                                     server,
+                                                                                     getServerHost(),
                                                                                      builder.getClientMessageFactory());
 
         AnkorSystem clientSystem = builder

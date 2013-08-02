@@ -11,8 +11,10 @@ import java.util.Map;
 public class SocketConnectAction extends Action {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SocketConnectAction.class);
 
+    public static final String ACTION_NAME = "$socketConnect";
+
     private SocketConnectAction(Map<String, Object> params) {
-        super("socketConnect", params);
+        super(ACTION_NAME, params);
     }
 
     public static Action create(String hostname, int port) {

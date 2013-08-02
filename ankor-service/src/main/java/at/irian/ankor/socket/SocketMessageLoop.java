@@ -26,8 +26,11 @@ public class SocketMessageLoop<S> extends AbstractMessageLoop<S> {
         this.localPort = localHost.getPort();
     }
 
-    public void addRemoteSystem(Host remoteHost) {
-        remoteSystems.put(remoteHost.getId(), remoteHost);
+    public synchronized void addRemoteSystem(Host remoteHost) {
+        if (remoteSystems.containsKey(remoteHost.getId())) {
+            throw new IllegalStateException("Remote system " + remoteHost + " already connected");
+        }
+        remoteSystems.put(remoteHost.getId(), remoteHost);        //todo   connect timeout and cleanup
     }
 
     @Override
@@ -138,7 +141,7 @@ public class SocketMessageLoop<S> extends AbstractMessageLoop<S> {
 
         @Override
         public String toString() {
-            return hostName + ":" + port;
+            return id + "@" + hostName + ":" + port;
         }
     }
 
