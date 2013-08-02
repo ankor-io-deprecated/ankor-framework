@@ -3,6 +3,8 @@ package at.irian.ankor.delay;
 import at.irian.ankor.event.dispatch.EventDispatcher;
 import at.irian.ankor.ref.Ref;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 /**
  * @author Manfred Geiler
  */
@@ -13,7 +15,8 @@ public class FloodControl {
     private final Scheduler scheduler;
     private final EventDispatcher eventDispatcher;
     private final long delay;
-    private volatile Cancellable lastDelayed;
+
+    private final AtomicReference<Cancellable> lastDelayedRef = new AtomicReference<Cancellable>();
 
     public FloodControl(Ref ref, long delay) {
         this.ref = ref;
@@ -23,15 +26,19 @@ public class FloodControl {
     }
 
     public void control(final Runnable task) {
-        if (lastDelayed != null) {
-            lastDelayed.cancel();
+        Cancellable oldLastDelayed =
+            lastDelayedRef.getAndSet(
+                scheduler.schedule(delay, new Runnable() {
+                    @Override
+                    public void run() {
+                        eventDispatcher.dispatch(new TaskRequestEvent(ref, task));
+                    }
+                })
+            );
+
+        if (oldLastDelayed != null) {
+            oldLastDelayed.cancel();
         }
-        lastDelayed = scheduler.schedule(delay, new Runnable() {
-            @Override
-            public void run() {
-                eventDispatcher.dispatch(new TaskRequestEvent(ref, task));
-            }
-        });
     }
 
 }
