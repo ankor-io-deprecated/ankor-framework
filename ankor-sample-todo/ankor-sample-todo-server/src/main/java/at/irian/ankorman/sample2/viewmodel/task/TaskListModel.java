@@ -32,19 +32,25 @@ public class TaskListModel extends ViewModelBase {
     private List<Task> tasks = new ArrayList<Task>();
 
     private ViewModelProperty<String> filter;
-
     private ViewModelProperty<String> itemsLeft;
+    private ViewModelProperty<String> itemsCompleted;
 
     public TaskListModel(Ref viewModelRef, TaskRepository taskRepository, ViewModelProperty<String> tabName) {
         super(viewModelRef);
         this.taskRepository = taskRepository;
-        //this.tabName = tabName;
         this.filter.set(TasksCategory.all.toString());
         this.itemsLeft.set("0");
+        this.itemsCompleted.set("Clear completed Tasks (0)");
+        //this.tabName = tabName;
     }
 
     @ChangeListener(pattern = "**.<TaskListModel>.filter")
     public void onFilterChanged() {
+        // TODO: reload list
+    }
+
+    @ChangeListener(pattern = "**.<TaskListModel>.itemsLeft")
+    public void onItemsLeftChanged() {
         // TODO: reload list
     }
 
@@ -57,7 +63,11 @@ public class TaskListModel extends ViewModelBase {
 
         // XXX: fixed weired type bug by changing type from integer to string
         int currItemsLeft = Integer.parseInt(itemsLeft.get());
-        itemsLeft.set(String.valueOf(currItemsLeft + 1));
+
+        thisRef().append("itemsLeft").setValue(String.valueOf(currItemsLeft + 1));
+
+        // XXX: Why not:
+        //itemsLeft.set(String.valueOf(currItemsLeft + 1));
     }
 
     public ViewModelProperty<String> getItemsLeft() {
@@ -66,5 +76,13 @@ public class TaskListModel extends ViewModelBase {
 
     public void setItemsLeft(ViewModelProperty<String> itemsLeft) {
         this.itemsLeft = itemsLeft;
+    }
+
+    public ViewModelProperty<String> getItemsCompleted() {
+        return itemsCompleted;
+    }
+
+    public void setItemsCompleted(ViewModelProperty<String> itemsCompleted) {
+        this.itemsCompleted = itemsCompleted;
     }
 }
