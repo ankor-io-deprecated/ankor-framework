@@ -53,11 +53,11 @@
             <MenuItem mnemonicParsing="false" onAction="#openAnimalDetailTab" text="New Animal" />
           </items>
         </Menu>
-          <Menu mnemonicParsing="false" text="Task">
-              <items>
-                  <MenuItem mnemonicParsing="false" onAction="#openTaskListTab" text="Task List" />
-              </items>
-          </Menu>
+        <Menu mnemonicParsing="false" text="Task">
+          <items>
+            <MenuItem mnemonicParsing="false" onAction="#openTaskListTab" text="Task List" />
+          </items>
+        </Menu>
         <Menu mnemonicParsing="false" text="Help">
           <items>
             <MenuItem mnemonicParsing="false" text="About" />
