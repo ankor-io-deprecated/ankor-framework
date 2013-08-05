@@ -21,7 +21,7 @@ public abstract class BaseTabController implements Initializable {
     @FXML
     protected javafx.scene.control.Tab tab;
 
-    private final String tabId;
+    protected final String tabId;
 
     protected BindingContext bindingContext;
 
