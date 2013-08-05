@@ -10,12 +10,7 @@
         {% include "tutorial/tutorial_fx_menu.html" %}
     </div><!--/span-->
     <div class="span9">
-        <ul class="breadcrumb">
-            {% include "tutorial/tutorial_fx_breadcrumbs.html" %}
-            <li><a href="/tutorials/fx/0">0 - Bootstraping</a></li>
-        </ul>
-        {% include "tutorial/tutorial_fx_pagination.html" %}
-        <p>&nbsp;</p>
+        {% include "tutorial/tutorial_fx_head.html" with tutorial_title='Bootstrap' %}
 
         <h3 id="beforeyoustart">Before you start</h3>
         <p>Please check that all software components are installed properly. Especially check the Java FX section to make sure
@@ -85,6 +80,7 @@ server : Server application</code></pre>
 mvn install exec:java
 </code></pre>
         <p>What you get is ...</p>
+        {% load staticfiles %}
         <img src="{% static 'images/tutorial/fx-step-0-1.png' %}" class="img-rounded">
         <p>... a simple java FX sample app. As the setup is working fine you are are now ready
             to start programming with Ankor. If you experience problems running the
