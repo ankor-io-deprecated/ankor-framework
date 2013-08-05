@@ -22,6 +22,8 @@ public class ValueBindingsBuilder {
 
     private Label label;
 
+    private Button button;
+
     private Tab tab;
 
     private Ref itemsRef;
@@ -50,6 +52,11 @@ public class ValueBindingsBuilder {
 
     public ValueBindingsBuilder toLabel(Label label) {
         this.label = label;
+        return this;
+    }
+
+    public ValueBindingsBuilder toButton(Button button) {
+        this.button = button;
         return this;
     }
 
@@ -88,6 +95,8 @@ public class ValueBindingsBuilder {
             bind(valueRef, text, bindingContext);
         } else if (label != null) {
             bind(valueRef, label, bindingContext);
+        } else if (button != null) {
+            bind(valueRef, button, bindingContext);
         } else if (tab != null) {
             bind(valueRef, tab, bindingContext);
         } else if (comboBox != null) {
@@ -134,6 +143,10 @@ public class ValueBindingsBuilder {
 
     private static void bind(final Ref valueRef, final Label label, BindingContext context) {
         new RefPropertyBinding(valueRef, createProperty(label.textProperty(), context));
+    }
+
+    private static void bind(final Ref valueRef, final Button button, BindingContext context) {
+        new RefPropertyBinding(valueRef, createProperty(button.textProperty(), context));
     }
 
     private static void bind(final Ref valueRef, final Tab tab, BindingContext context) {
