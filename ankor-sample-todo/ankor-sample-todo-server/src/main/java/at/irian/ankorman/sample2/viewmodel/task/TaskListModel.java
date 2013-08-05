@@ -32,14 +32,15 @@ public class TaskListModel extends ViewModelBase {
     private List<Task> tasks = new ArrayList<Task>();
 
     private ViewModelProperty<String> filter;
-    private ViewModelProperty<Integer> itemsLeft;
+
+    private ViewModelProperty<String> itemsLeft;
 
     public TaskListModel(Ref viewModelRef, TaskRepository taskRepository, ViewModelProperty<String> tabName) {
         super(viewModelRef);
         this.taskRepository = taskRepository;
         //this.tabName = tabName;
         this.filter.set(TasksCategory.all.toString());
-        this.itemsLeft.set(0);
+        this.itemsLeft.set("0");
     }
 
     @ChangeListener(pattern = "**.<TaskListModel>.filter")
@@ -53,6 +54,17 @@ public class TaskListModel extends ViewModelBase {
 
         Task task = new Task(title);
         taskRepository.saveTask(task);
-        // itemsLeft.set(itemsLeft.get() + 1); // ???
+
+        // XXX: fixed weired type bug by changing type from integer to string
+        int currItemsLeft = Integer.parseInt(itemsLeft.get());
+        itemsLeft.set(String.valueOf(currItemsLeft + 1));
+    }
+
+    public ViewModelProperty<String> getItemsLeft() {
+        return itemsLeft;
+    }
+
+    public void setItemsLeft(ViewModelProperty<String> itemsLeft) {
+        this.itemsLeft = itemsLeft;
     }
 }
