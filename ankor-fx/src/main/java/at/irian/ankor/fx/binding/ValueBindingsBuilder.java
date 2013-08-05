@@ -6,10 +6,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextInputControl;
+import javafx.scene.control.*;
 import javafx.scene.text.Text;
 
 /**
@@ -22,6 +19,8 @@ public class ValueBindingsBuilder {
     private Ref valueRef;
 
     private Text text;
+
+    private Label label;
 
     private Tab tab;
 
@@ -46,6 +45,11 @@ public class ValueBindingsBuilder {
 
     public ValueBindingsBuilder toText(Text text) {
         this.text = text;
+        return this;
+    }
+
+    public ValueBindingsBuilder toLabel(Label label) {
+        this.label = label;
         return this;
     }
 
@@ -82,6 +86,8 @@ public class ValueBindingsBuilder {
     public void createWithin(BindingContext bindingContext) {
         if (text != null) {
             bind(valueRef, text, bindingContext);
+        } else if (label != null) {
+            bind(valueRef, label, bindingContext);
         } else if (tab != null) {
             bind(valueRef, tab, bindingContext);
         } else if (comboBox != null) {
@@ -124,6 +130,10 @@ public class ValueBindingsBuilder {
 
     private static void bind(final Ref valueRef, final Text text, BindingContext context) {
         new RefPropertyBinding(valueRef, createProperty(text.textProperty(), context));
+    }
+
+    private static void bind(final Ref valueRef, final Label label, BindingContext context) {
+        new RefPropertyBinding(valueRef, createProperty(label.textProperty(), context));
     }
 
     private static void bind(final Ref valueRef, final Tab tab, BindingContext context) {
