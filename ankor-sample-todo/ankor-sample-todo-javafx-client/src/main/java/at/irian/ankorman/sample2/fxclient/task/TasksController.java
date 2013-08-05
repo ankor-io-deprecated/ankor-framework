@@ -20,8 +20,8 @@ import static at.irian.ankorman.sample2.fxclient.App.refFactory;
 
 public class TasksController extends BaseTabController {
 
-    @FXML
-    public TextField newTodo;
+    @FXML public TextField newTodo;
+    @FXML public Label todoCountNum;
 
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TasksController.class);
 
@@ -31,7 +31,11 @@ public class TasksController extends BaseTabController {
 
     @Override
     public void initialize() {
-        final Ref tabRef = getTabRef();
+        final Ref modelRef = getTabRef().append("model");
+
+        bindValue(modelRef.append("itemsLeft"))
+                .toLabel(todoCountNum)
+                .createWithin(bindingContext);
     }
 
     @FXML
