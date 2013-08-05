@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public class Task extends HBox {
     public Task() {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("task.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("task.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
         try {

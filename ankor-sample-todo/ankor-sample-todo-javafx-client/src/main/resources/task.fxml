@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 
-<HBox id="" alignment="CENTER_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="65.0" prefWidth="546.0" styleClass="task" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+<fx:root type="javafx.scene.layout.HBox" id="" alignment="CENTER_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="65.0" prefWidth="546.0" styleClass="task" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
   <children>
     <CheckBox alignment="CENTER" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefWidth="45.0">
       <HBox.margin>
@@ -24,4 +24,4 @@
   <stylesheets>
     <URL value="@style.css" />
   </stylesheets>
-</HBox>
+</fx:root>
