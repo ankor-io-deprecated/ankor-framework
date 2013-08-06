@@ -8,10 +8,14 @@ import at.irian.ankorman.sample2.fxclient.BaseTabController;
 import at.irian.ankorman.sample2.fxclient.task.TaskComponent;
 import at.irian.ankorman.sample2.viewmodel.task.Filter;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Callback;
@@ -29,7 +33,6 @@ public class TasksController extends BaseTabController {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TasksController.class);
 
     @FXML public TextField newTodo;
-    @FXML public HBox todoCount;
     @FXML public Label todoCountNum;
     @FXML public Button clearCompleted;
     @FXML public ListView tasksList;
@@ -37,6 +40,9 @@ public class TasksController extends BaseTabController {
     @FXML public Button filterAll;
     @FXML public Button filterActive;
     @FXML public Button filterCompleted;
+
+    @FXML public Node footerTop;
+    @FXML public Node footerBottom;
 
     private List<Button> filterButtons = new ArrayList<Button>();
 
@@ -54,27 +60,32 @@ public class TasksController extends BaseTabController {
         filterButtons.add(filterActive);
         filterButtons.add(filterCompleted);
 
-        String filterString = modelRef.append("filter").getValue();
-        Filter filterEnum = Filter.valueOf(filterString);
-        setFilterButtonStyle(filterEnum);
+        bindValue(modelRef.append("tasks.rows"))
+                .toList(tasksList)
+                .createWithin(bindingContext);
+
 
         bindValue(modelRef.append("itemsLeft"))
                 .toLabel(todoCountNum)
                 .createWithin(bindingContext);
 
-        bindValue(modelRef.append("tasks.rows"))
-                .toList(tasksList)
-                .createWithin(bindingContext);
+        String itemsLeftValue= modelRef.append("itemsLeft").getValue();
+        int itemsLeft = Integer.parseInt(itemsLeftValue);
+        setFooterVisibility(itemsLeft);
 
-        // XXX: Is there a better way to do this? Something like a "visibility variable" maybe?
+        // XXX: Is there a better way to do this?
         RefListeners.addPropChangeListener(modelRef.append("itemsLeft"), new RefChangeListener() {
             @Override
             public void processChange(Ref changedProperty) {
                 String prop = changedProperty.getValue();
                 int itemsLeft = Integer.parseInt(prop);
-                todoCount.setVisible(itemsLeft != 0);
+                setFooterVisibility(itemsLeft);
             }
         });
+
+        String filterValue = modelRef.append("filter").getValue();
+        Filter filterEnum = Filter.valueOf(filterValue);
+        setFilterButtonStyle(filterEnum);
 
         RefListeners.addPropChangeListener(modelRef.append("filter"), new RefChangeListener() {
             @Override
@@ -93,6 +104,11 @@ public class TasksController extends BaseTabController {
         });
     }
 
+    private void setFooterVisibility(int itemsLeft) {
+        footerTop.setVisible(itemsLeft != 0);
+        footerBottom.setVisible(itemsLeft != 0);
+    }
+
     private void setFilterButtonStyle(Filter filter) {
         for (Button b : filterButtons) {
             b.setStyle("-fx-font-weight: normal;");
@@ -107,14 +123,20 @@ public class TasksController extends BaseTabController {
     @FXML
     public void newTodo(ActionEvent actionEvent) {
         if (!newTodo.getText().equals("")) {
-            HashMap<String, Object> params = new HashMap<>();
+
+            LinkedHashMap<String, Object> params = new LinkedHashMap<>();
             params.put("title", newTodo.getText());
+            params.put("completed", false);
+
             modelRef.fireAction(new Action("newTodo", params));
             newTodo.clear();
 
             String itemsLeftValue = modelRef.append("itemsLeft").getValue();
             int itemsLeft = Integer.parseInt(itemsLeftValue);
             modelRef.append("itemsLeft").setValue(String.valueOf(itemsLeft + 1));
+
+            // XXX: For latency compensation
+            tasksList.getItems().add(params);
         }
     }
 

@@ -26,6 +26,7 @@ public class TaskListModel extends ViewModelBase {
     private ViewModelProperty<String> itemsLeft;
 
     private Data<Task> tasks;
+
     // XXX: Did not work using a list
     //private List<Task> tasks = new ArrayList<Task>();
 
@@ -34,25 +35,20 @@ public class TaskListModel extends ViewModelBase {
         this.tabName = tabName;
 
         this.taskRepository = taskRepository;
+
         this.filter.set(Filter.all.toString());
-        this.itemsLeft.set("0"); // XXX: Weird type error if not using string
-        this.tasks = new Data<Task>(new Paginator(0, Integer.MAX_VALUE)); // XXX: Why?
+        this.itemsLeft.set(String.valueOf(taskRepository.getTasks().size())); // XXX: Weird type error if not using string
+        this.tasks = fetchTasksData(new Paginator(0, Integer.MAX_VALUE));
+
     }
 
     @ChangeListener(pattern = {
             "**.<TaskListModel>.itemsLeft",
-            "**.<TaskListModel>.filter" })
+            "**.<TaskListModel>.filter"
+    })
     public void reloadTasks() {
-        LOG.info("RELOADING tasks ...");
-        Paginator paginator = tasks.getPaginator();
-        paginator.reset();
-        Filter filterEnum = Filter.valueOf(filter.get());
-        Data<Task> animals = taskRepository.searchTasks(filterEnum, paginator.getFirst(), paginator.getMaxResults());
-
-        thisRef().append("tasks").setValue(animals);
-
-        LOG.info("... finished RELOADING");
-        thisRef().root().append("serverStatus").setValue("");
+        tasks = fetchTasksData(tasks.getPaginator());
+        thisRef().append("tasks").setValue(tasks);
     }
 
     @ActionListener(name = "newTodo")
@@ -69,6 +65,12 @@ public class TaskListModel extends ViewModelBase {
 
         // XXX: Difference?
         //itemsLeft.set(String.valueOf(currItemsLeft + 1));
+    }
+
+    private Data<Task> fetchTasksData(Paginator paginator) {
+        paginator.reset();
+        Filter filterEnum = Filter.valueOf(filter.get());
+        return taskRepository.searchTasks(filterEnum, paginator.getFirst(), paginator.getMaxResults());
     }
 
     public ViewModelProperty<String> getItemsLeft() {

@@ -69,7 +69,7 @@ public class TaskRepository {
         return data;
     }
 
-    private List<Task> getTasks() {
+    public List<Task> getTasks() {
         List<Task> res = new ArrayList<Task>(tasks.size());
         for(Task t : tasks) {
             res.add(new Task(t));
@@ -77,7 +77,7 @@ public class TaskRepository {
         return res;
     }
 
-    private List<Task> getActiveTasks() {
+    public List<Task> getActiveTasks() {
         List<Task> res = new ArrayList<Task>(tasks.size());
         for(Task t : tasks) {
             if (!t.isCompleted()) {
@@ -87,7 +87,7 @@ public class TaskRepository {
         return res;
     }
 
-    private List<Task> getCompletedTasks() {
+    public List<Task> getCompletedTasks() {
         List<Task> res = new ArrayList<Task>(tasks.size());
         for(Task t : tasks) {
             if (t.isCompleted()) {

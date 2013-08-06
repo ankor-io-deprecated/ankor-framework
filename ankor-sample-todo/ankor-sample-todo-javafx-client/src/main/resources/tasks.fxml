@@ -28,21 +28,21 @@
               <GridPane VBox.vgrow="ALWAYS">
                 <children>
                   <Pane id="bigShadow" style="-fx-background-color: #fff;" styleClass="bigShadow" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                  <AnchorPane id="footer" prefHeight="30.0" styleClass="boxShadow, paper" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                  <AnchorPane id="footer" fx:id="footerBottom" prefHeight="30.0" styleClass="boxShadow, paper" visible="false" GridPane.columnIndex="0" GridPane.rowIndex="2">
                     <children>
-                      <HBox id="filters" alignment="CENTER" prefHeight="35.0" prefWidth="530.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                      <HBox id="filters" alignment="CENTER" prefHeight="35.0" prefWidth="530.0" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                         <children>
-                          <Button fx:id="filterAll" mnemonicParsing="false" text="All" onAction="#displayAll" />
-                          <Button fx:id="filterActive" mnemonicParsing="false" text="Active" onAction="#displayActive" />
-                          <Button fx:id="filterCompleted" mnemonicParsing="false" text="Completed" onAction="#displayCompleted" />
+                          <Button fx:id="filterAll" mnemonicParsing="false" onAction="#displayAll" text="All" />
+                          <Button fx:id="filterActive" mnemonicParsing="false" onAction="#displayActive" text="Active" />
+                          <Button fx:id="filterCompleted" mnemonicParsing="false" onAction="#displayCompleted" text="Completed" />
                         </children>
                         <padding>
                           <Insets top="2.0" />
                         </padding>
                       </HBox>
-                      <HBox fx:id="todoCount" alignment="CENTER_LEFT" prefHeight="35.0" spacing="5.0" visible="false" AnchorPane.leftAnchor="10.0">
+                      <HBox id="todoCount" alignment="CENTER_LEFT" prefHeight="35.0" spacing="5.0" visible="true" AnchorPane.leftAnchor="10.0">
                         <children>
-                          <Label fx:id="todoCountNum" style="-fx-font-weight: bold;" text="3" />
+                          <Label fx:id="todoCountNum" style="-fx-font-weight: bold;" text="0" />
                           <Label text="items left" />
                         </children>
                       </HBox>
@@ -56,7 +56,7 @@
                       <Insets left="10.0" right="10.0" />
                     </GridPane.margin>
                   </AnchorPane>
-                  <Pane styleClass="boxShadow, paper" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                  <Pane fx:id="footerTop" styleClass="boxShadow, paper" visible="false" GridPane.columnIndex="0" GridPane.rowIndex="1">
                     <GridPane.margin>
                       <Insets left="5.0" right="5.0" />
                     </GridPane.margin>
@@ -75,6 +75,9 @@
                                 </HBox.margin>
                               </TextField>
                             </children>
+                            <padding>
+                              <Insets left="1.0" />
+                            </padding>
                           </HBox>
                           <ListView fx:id="tasksList" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
                         </children>
