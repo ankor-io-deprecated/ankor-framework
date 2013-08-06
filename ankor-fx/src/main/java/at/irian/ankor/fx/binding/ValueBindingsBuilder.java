@@ -34,6 +34,8 @@ public class ValueBindingsBuilder {
 
     private TableView tableView;
 
+    private ListView listView;
+
     private Ref editableRef;
 
     public static ValueBindingsBuilder bindValue(Ref value) {
@@ -75,6 +77,11 @@ public class ValueBindingsBuilder {
         return this;
     }
 
+    public ValueBindingsBuilder toList(ListView listView) {
+        this.listView = listView;
+        return this;
+    }
+
     public ValueBindingsBuilder toTabText(Tab tab) {
         this.tab = tab;
         return this;
@@ -111,6 +118,8 @@ public class ValueBindingsBuilder {
             }
         } else if (tableView != null) {
             bind(valueRef, tableView);
+        } else if (listView != null) {
+            bind(valueRef, listView);
         } else {
             throw new IllegalStateException("Illegal Binding " + this);
         }
@@ -163,6 +172,10 @@ public class ValueBindingsBuilder {
 
     private static void bind(Ref valueRef, TableView tableView) {
         new RefPropertyBinding(valueRef, tableView.itemsProperty());
+    }
+
+    private static void bind(Ref valueRef, ListView listView) {
+        new RefPropertyBinding(valueRef, listView.itemsProperty());
     }
 
     private static SimpleStringProperty createProperty(StringProperty property, BindingContext context) {
