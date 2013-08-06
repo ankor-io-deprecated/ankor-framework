@@ -10,7 +10,7 @@
     -fx-font-weight: bold;
     -fx-font-size: 70pt;
     -fx-text-fill: rgba(255, 255, 255, 0.3);
-    -fx-effect: dropshadow(one-pass-box , rgba(0, 0, 0, 0.8), 0, 0 , -1, -1);
+    -fx-effect: dropshadow(one-pass-box, rgba(0, 0, 0, 0.8), 0, 0 , -1, -1);
 }
 
 #pane {
@@ -64,7 +64,7 @@
 .task .text-field, .task .label {
     -fx-font-family: Helvetica, Arial, sans-serif;
     -fx-text-fill: #4d4d4d;
-    -fx-background: none;
+    -fx-background-color: transparent;
     -fx-border: none;
     -fx-font-size: 24pt;
 }
@@ -80,7 +80,7 @@
 }
 
 #filters .button {
-    -fx-background: none;
+    -fx-background-color: transparent;
     -fx-border: none;
     -fx-padding: 0 5;
 }
@@ -90,7 +90,7 @@
 }
 
 #clearCompleted {
-    -fx-background: none;
+    -fx-background-color: transparent;
     -fx-border: none;
     -fx-font-size: 11pt;
     -fx-background-color: rgba(0, 0, 0, 0.1);
@@ -115,8 +115,6 @@
 
 .list-view {
     -fx-background-color: transparent;
-    -fx-padding: 0;
-    -fx-margin: 0;
 }
 
 .list-cell {
