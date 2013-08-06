@@ -1,11 +1,11 @@
 package at.irian.ankorman.sample2.fxclient.task;
 
 import at.irian.ankor.action.Action;
-import at.irian.ankor.fx.binding.ClickAction;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.listener.RefChangeListener;
 import at.irian.ankor.ref.listener.RefListeners;
 import at.irian.ankorman.sample2.fxclient.BaseTabController;
+import at.irian.ankorman.sample2.fxclient.TaskComponent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -13,20 +13,26 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.MapValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static at.irian.ankor.fx.binding.ButtonBindingBuilder.onButtonClick;
 import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
 import static at.irian.ankorman.sample2.fxclient.App.refFactory;
 
 public class TasksController extends BaseTabController {
 
-    @FXML public TextField newTodo;
-    @FXML public HBox todoCount;
-    @FXML public Label todoCountNum;
-    @FXML public Button clearCompleted;
+    public TextField newTodo;
+    public HBox todoCount;
+    public Label todoCountNum;
+    public Button clearCompleted;
+    public ListView tasks;
+    public TableView tasksTable;
+    public TableColumn taskComplete;
+    public TableColumn taskTitle;
+
+    private Ref modelRef;
 
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TasksController.class);
 
@@ -36,26 +42,38 @@ public class TasksController extends BaseTabController {
 
     @Override
     public void initialize() {
-        final Ref modelRef = getTabRef().append("model");
+        modelRef = getTabRef().append("model");
 
         bindValue(modelRef.append("itemsLeft"))
                 .toLabel(todoCountNum)
+                .createWithin(bindingContext);
+
+        /*
+        bindValue(modelRef.append("itemsCompleted"))
+                .toButton(clearCompleted)
+                .createWithin(bindingContext);
+
+        bindValue(modelRef.append("tasks"))
+                .toList(tasks)
+                .createWithin(bindingContext);
+        */
+
+        bindTableColumns();
+        bindValue(modelRef.append("animals.rows"))
+                .toTable(tasksTable)
                 .createWithin(bindingContext);
 
         // XXX: Is there a better way to do this? Something like a "visibility variable" maybe?
         RefListeners.addPropChangeListener(modelRef.append("itemsLeft"), new RefChangeListener() {
             @Override
             public void processChange(Ref changedProperty) {
-                int itemsLeft = Integer.parseInt(changedProperty.<String>getValue());
+                String prop = changedProperty.getValue();
+                int itemsLeft = Integer.parseInt(prop);
                 todoCount.setVisible(itemsLeft != 0);
             }
-
         });
 
-        bindValue(modelRef.append("itemsCompleted"))
-                .toButton(clearCompleted)
-                .createWithin(bindingContext);
-
+        /*
         RefListeners.addPropChangeListener(modelRef.append("itemsCompleted"), new RefChangeListener() {
             @Override
             public void processChange(Ref changedProperty) {
@@ -63,6 +81,23 @@ public class TasksController extends BaseTabController {
                 clearCompleted.setVisible(itemsCompleted != 0);
             }
         });
+        */
+
+        /*
+        TaskComponent test = new TaskComponent();
+        test.setText("Dynamically created Task");
+        test.getCompleted().setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                System.out.println("The button was clicked! 2");
+            }
+        });
+
+        tasks.getItems().add(test);
+        tasks.getItems().add(new TaskComponent());
+        tasks.getItems().add(new TaskComponent());
+        getTabRef().append("model").append("itemsLeft").setValue(String.valueOf(tasks.getItems().size()));
+        */
     }
 
     @FXML
@@ -71,6 +106,15 @@ public class TasksController extends BaseTabController {
         params.put("title", newTodo.getText());
         getTabRef().append("model").fireAction(new Action("newTodo", params));
         newTodo.clear();
+
+        // XXX: fixed weired type bug by changing type from integer to string
+        int currItemsLeft = Integer.parseInt(modelRef.append("itemsLeft").<String>getValue());
+        getTabRef().append("model").append("itemsLeft").setValue(String.valueOf(currItemsLeft + 1));
+    }
+
+    private void bindTableColumns() {
+        taskTitle.setCellValueFactory(new MapValueFactory<String>("title"));
+        taskComplete.setCellValueFactory(new MapValueFactory<Boolean>("complete"));
     }
 
     // XXX

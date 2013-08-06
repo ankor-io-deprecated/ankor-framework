@@ -76,11 +76,12 @@
                               </TextField>
                             </children>
                           </HBox>
-                          <ScrollPane id="ScrollPane" fitToHeight="true" fitToWidth="true" prefViewportHeight="130.5" prefViewportWidth="550.0" style="-fx-background-color:transparent;" VBox.vgrow="ALWAYS">
-                            <content>
-                              <VBox fx:id="tasks" />
-                            </content>
-                          </ScrollPane>
+                          <TableView fx:id="tasksTable" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                            <columns>
+                              <TableColumn fx:id="taskComplete" prefWidth="75.0" text="Complete" />
+                              <TableColumn fx:id="taskTitle" prefWidth="75.0" text="Title" />
+                            </columns>
+                          </TableView>
                         </children>
                       </VBox>
                       <Pane id="lines" layoutX="40.0" prefHeight="208.0" prefWidth="4.0" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="16.0" />

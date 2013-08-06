@@ -26,6 +26,10 @@ public class ModelRoot extends ViewModelBase {
         this.tabsTask = tabsTask;
     }
 
+    public void setTabs(Tabs tabs) {
+        this.tabs = tabs;
+    }
+
     private TabsTask tabsTask;
 
     public ModelRoot(Ref viewModelRef, AnimalRepository animalRepository, TaskRepository taskRepository) { // XXX

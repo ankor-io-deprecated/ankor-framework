@@ -59,9 +59,6 @@
 }
 
 .task {
-    -fx-border-width: 0 0 1 0;
-    -fx-border-color: #ccc;
-    -fx-border-style: dotted;
 }
 
 .task .text-field, .task .label {
@@ -114,4 +111,26 @@
 
 #footer .label, #footer .button {
     -fx-text-fill: #777;
+}
+
+.list-view {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-margin: 0;
+}
+
+.list-cell {
+    -fx-background-color: transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-border-color: #ccc;
+    -fx-border-style: dotted;
+}
+
+.list-cell:filled:hover, .list-cell:filled:selected:focused, .list-cell:filled:selected {
+    -fx-text-fill: inherit;
+    -fx-background-color: transparent;
+}
+
+.list-cell:empty {
+    visibility:hidden;
 }
