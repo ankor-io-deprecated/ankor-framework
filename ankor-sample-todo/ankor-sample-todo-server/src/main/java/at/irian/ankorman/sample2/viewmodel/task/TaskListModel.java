@@ -12,9 +12,6 @@ import at.irian.ankorman.sample2.viewmodel.animal.helper.Data;
 import at.irian.ankorman.sample2.viewmodel.animal.helper.Paginator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class TaskListModel extends ViewModelBase {
 
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TaskListModel.class);
@@ -31,20 +28,11 @@ public class TaskListModel extends ViewModelBase {
     @JsonIgnore
     private ViewModelProperty<String> tabName;
 
-    private List<Task> tasks = new ArrayList<Task>();
+    //private List<Task> tasks = new ArrayList<Task>();
     private ViewModelProperty<String> filter;
     private ViewModelProperty<String> itemsLeft;
-    private ViewModelProperty<String> itemsCompleted;
 
-    public Data<Task> getAnimals() {
-        return animals;
-    }
-
-    public void setAnimals(Data<Task> animals) {
-        this.animals = animals;
-    }
-
-    private Data<Task> animals;
+    private Data<Task> tasks;
 
     public TaskListModel(Ref viewModelRef, TaskRepository taskRepository, ViewModelProperty<String> tabName) {
         super(viewModelRef);
@@ -53,54 +41,21 @@ public class TaskListModel extends ViewModelBase {
         this.taskRepository = taskRepository;
         this.filter.set(Filter.all.toString());
         this.itemsLeft.set("0");
-        //this.itemsCompleted.set("Clear completed Tasks (0)");
-        this.animals = new Data<Task>(new Paginator(0, 5));
+        this.tasks = new Data<Task>(new Paginator(0, 5));
     }
 
     @ChangeListener(pattern = "**.<TaskListModel>.itemsLeft")
-    public void reloadAnimals() {
-        // TODO how to load data async and update the animals ref?
-        LOG.info("RELOADING animals ...");
-        Paginator paginator = animals.getPaginator();
-        paginator.reset();
-        Data<Task> animals = taskRepository.searchAnimals(paginator.getFirst(), paginator.getMaxResults());
-
-        thisRef().append("animals").setValue(animals);
-
-        LOG.info("... finished RELOADING");
-        thisRef().root().append("serverStatus").setValue("");
-    }
-
-    @ChangeListener(pattern = "**.<TaskListModel>.tasks")
-    public void onFilterChanged() {
-        // TODO: reload list
-        LOG.info("test");
-    }
-
-    /*
-    @ChangeListener(pattern = "**.<TaskListModel>.itemsLeft")
-    public void onItemsLeftChanged() {
+    public void reloadTasks() {
         LOG.info("RELOADING tasks ...");
-        tasks = taskRepository.getTasks();
-        thisRef().append("tasks").setValue(tasks);
-    }
-    */
-
-    /*
-    @ChangeListener(pattern = {"**.<AnimalSearchModel>.filter.**",
-            "**.<AnimalSearchModel>.animals.paginator.**"})
-    public void reloadAnimals() {
-        LOG.info("RELOADING animals ...");
-        Paginator paginator = animals.getPaginator();
+        Paginator paginator = tasks.getPaginator();
         paginator.reset();
-        Data<Animal> animals = animalRepository.searchAnimals(filter, paginator.getFirst(), paginator.getMaxResults());
+        Data<Task> animals = taskRepository.searchTasks(paginator.getFirst(), paginator.getMaxResults());
 
-        thisRef().append("animals").setValue(animals);
+        thisRef().append("tasks").setValue(animals);
 
         LOG.info("... finished RELOADING");
         thisRef().root().append("serverStatus").setValue("");
     }
-    */
 
     @ActionListener(name = "newTodo")
     public void newTodo(@Param("title") final String title) {
@@ -118,14 +73,6 @@ public class TaskListModel extends ViewModelBase {
         //itemsLeft.set(String.valueOf(currItemsLeft + 1));
     }
 
-    public List<Task> getTasks() {
-        return tasks;
-    }
-
-    public void setTasks(List<Task> tasks) {
-        this.tasks = tasks;
-    }
-
     public ViewModelProperty<String> getItemsLeft() {
         return itemsLeft;
     }
@@ -134,11 +81,20 @@ public class TaskListModel extends ViewModelBase {
         this.itemsLeft = itemsLeft;
     }
 
-    public ViewModelProperty<String> getItemsCompleted() {
-        return itemsCompleted;
+    public Data<Task> getTasks() {
+        return tasks;
     }
 
-    public void setItemsCompleted(ViewModelProperty<String> itemsCompleted) {
-        this.itemsCompleted = itemsCompleted;
+    public void setTasks(Data<Task> tasks) {
+        this.tasks = tasks;
     }
+
+    public ViewModelProperty<String> getFilter() {
+        return filter;
+    }
+
+    public void setFilter(ViewModelProperty<String> filter) {
+        this.filter = filter;
+    }
+
 }

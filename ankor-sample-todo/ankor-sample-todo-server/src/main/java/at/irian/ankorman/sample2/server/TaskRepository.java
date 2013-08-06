@@ -7,13 +7,6 @@ import at.irian.ankorman.sample2.viewmodel.animal.helper.Paginator;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created with IntelliJ IDEA.
- * User: cell303
- * Date: 8/2/13
- * Time: 11:11 AM
- * To change this template use File | Settings | File Templates.
- */
 public class TaskRepository {
     private List<Task> tasks = new ArrayList<Task>();
 
@@ -66,7 +59,7 @@ public class TaskRepository {
         return null;
     }
 
-    public Data<Task> searchAnimals(int first, int maxResults) {
+    public Data<Task> searchTasks(int first, int maxResults) {
         List<Task> animals = getTasks();
         if (first >= animals.size()) {
             return new Data<Task>(new Paginator(animals.size(), maxResults));

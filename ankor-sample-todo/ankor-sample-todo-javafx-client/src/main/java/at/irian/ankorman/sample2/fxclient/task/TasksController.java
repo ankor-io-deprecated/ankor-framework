@@ -27,10 +27,7 @@ public class TasksController extends BaseTabController {
     public HBox todoCount;
     public Label todoCountNum;
     public Button clearCompleted;
-    public ListView tasks;
-    public TableView tasksTable;
-    public TableColumn taskComplete;
-    public TableColumn taskTitle;
+    public ListView tasksList;
 
     private Ref modelRef;
 
@@ -48,19 +45,8 @@ public class TasksController extends BaseTabController {
                 .toLabel(todoCountNum)
                 .createWithin(bindingContext);
 
-        /*
-        bindValue(modelRef.append("itemsCompleted"))
-                .toButton(clearCompleted)
-                .createWithin(bindingContext);
-
-        bindValue(modelRef.append("tasks"))
-                .toList(tasks)
-                .createWithin(bindingContext);
-        */
-
-        bindTableColumns();
-        bindValue(modelRef.append("animals.rows"))
-                .toTable(tasksTable)
+        bindValue(modelRef.append("tasks.rows"))
+                .toList(tasksList)
                 .createWithin(bindingContext);
 
         // XXX: Is there a better way to do this? Something like a "visibility variable" maybe?
@@ -72,16 +58,6 @@ public class TasksController extends BaseTabController {
                 todoCount.setVisible(itemsLeft != 0);
             }
         });
-
-        /*
-        RefListeners.addPropChangeListener(modelRef.append("itemsCompleted"), new RefChangeListener() {
-            @Override
-            public void processChange(Ref changedProperty) {
-                int itemsCompleted = Integer.parseInt(changedProperty.<String>getValue());
-                clearCompleted.setVisible(itemsCompleted != 0);
-            }
-        });
-        */
 
         /*
         TaskComponent test = new TaskComponent();
@@ -110,11 +86,6 @@ public class TasksController extends BaseTabController {
         // XXX: fixed weired type bug by changing type from integer to string
         int currItemsLeft = Integer.parseInt(modelRef.append("itemsLeft").<String>getValue());
         getTabRef().append("model").append("itemsLeft").setValue(String.valueOf(currItemsLeft + 1));
-    }
-
-    private void bindTableColumns() {
-        taskTitle.setCellValueFactory(new MapValueFactory<String>("title"));
-        taskComplete.setCellValueFactory(new MapValueFactory<Boolean>("complete"));
     }
 
     // XXX
