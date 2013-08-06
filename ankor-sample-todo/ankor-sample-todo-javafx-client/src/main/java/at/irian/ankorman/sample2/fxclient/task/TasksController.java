@@ -93,6 +93,8 @@ public class TasksController extends BaseTabController {
                 return new TaskComponentListCell();
             }
         });
+
+        // TODO: Completing tasks listener
     }
 
     private void setFooterVisibility(int itemsLeft) {
