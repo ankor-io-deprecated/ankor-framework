@@ -1,48 +1,37 @@
 uuid = require("node-uuid")
-async = require("async")
 assert = require("assert")
+{bind} = require("underscore")
 {ModelType} = require("./Type")
 {ModelObject} = require("./ModelObject")
 {ModelRef} = require("./ModelRef")
+{MessageQueue} = require("../message/MessageQueue")
 
 exports.Context = class Context
-    constructor: (ankorSystem, model=null, incomingMessages=[], outgoingMessages=[]) ->
-        @ankorSystem = ankorSystem  #Reference to AnkorSystem
+    constructor: (ankorSystem, model) ->
+        @ankorSystem = ankorSystem                  #Reference to AnkorSystem
+        @id = uuid.v4()                             #Id of this context/model instance
+        @model = model                              #Reference to model
 
-        #Persisted
-        @id = uuid.v4()                         #Id of this context/model instance
-        @model = model                          #Reference to model
-        @incomingMessages = incomingMessages    #Incoming message queue
-        @outgoingMessages = outgoingMessages    #Outgoing message queue
+        @incomingMessageQueue = new MessageQueue()  #Incoming message queue
+        @outgoingMessageQueue = new MessageQueue()  #Outgoing message queue
 
-        if not @model
-            @model = new ModelObject(@ankorSystem.rootType, @, new ModelRef("/"))
+        @incomingMessageQueue.registerNewMessageListener(bind(@processIncomingMessages, @))
 
     createModelObject: (name) ->
         type = @ankorSystem.typeRegistry.getType(name)
         assert(type instanceof ModelType, "createModelObject can only create named ModelTypes (not enum, ...)")
-        return new ModelObject(type, @)
+        return new ModelObject(type)
 
-    save: (cb) ->
-        @ankorSystem.store.save(@, cb)
+    createModelRef: (path) ->
+        return new ModelRef(@, path)
 
-    processIncomingMessages: (cb) ->
-        if @incomingMessages.length == 0
-            cb()
+    processIncomingMessages: (messageQueue) ->
+        messages = messageQueue.dequeue()
+        if messages.length == 0
+            return
 
-        messages = @incomingMessages
-        @incomingMessages = []
-
-        qErr = null
-        q = async.queue((message, cb) =>
+        for message in messages
             if message.type == "action"
-                @ankorSystem.listenerRegistry.triggerActionEvent(@, message.name, cb)
+                @ankorSystem.listenerRegistry.triggerActionEvent(@, message.name)
             else
-                cb(new Error("Can't process unsupported message type #{message.type}"))
-        , 1)
-        q.drain = ->
-            cb(qErr)
-        q.push(messages, (err) ->
-            if err
-                qErr = err
-        )
+                throw new Error("Can't process unsupported message type #{message.type}")

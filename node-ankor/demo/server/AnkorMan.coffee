@@ -1,5 +1,6 @@
 {ContextManager} = require("./base/ContextManager")
 {AnkorService} = require("./service/AnkorService")
+{AppController} = require("./controller/AppController")
 {AppRouter} = require("./routes/AppRouter")
 
 exports.AnkorMan = class AnkorMan
@@ -7,6 +8,7 @@ exports.AnkorMan = class AnkorMan
         @contextManager = new ContextManager()
 
         @contextManager.addObject("ankorService", AnkorService)
+        @contextManager.addObject("appController", AppController)
         @contextManager.init()
 
     init: (app) ->
