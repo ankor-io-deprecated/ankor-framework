@@ -25,6 +25,7 @@ public class TaskListModel extends ViewModelBase {
     private ViewModelProperty<String> filter;
     private ViewModelProperty<String> itemsLeft;
 
+    // TODO: Use a list instead of Data<Task>
     private Data<Task> tasks;
 
     // XXX: Did not work using a list
@@ -39,7 +40,6 @@ public class TaskListModel extends ViewModelBase {
         this.filter.set(Filter.all.toString());
         this.itemsLeft.set(String.valueOf(taskRepository.getTasks().size())); // XXX: Weird type error if not using string
         this.tasks = fetchTasksData(new Paginator(0, Integer.MAX_VALUE));
-
     }
 
     @ChangeListener(pattern = {
@@ -47,8 +47,9 @@ public class TaskListModel extends ViewModelBase {
             "**.<TaskListModel>.filter"
     })
     public void reloadTasks() {
-        tasks = fetchTasksData(tasks.getPaginator());
-        thisRef().append("tasks").setValue(tasks);
+        LOG.info("reloading tasks");
+        Data<Task> tasksData = fetchTasksData(tasks.getPaginator());
+        thisRef().append("tasks").setValue(tasksData);
     }
 
     @ActionListener(name = "newTodo")
