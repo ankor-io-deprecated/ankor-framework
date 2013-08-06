@@ -11,6 +11,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.util.Callback;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -117,14 +118,16 @@ public class TasksController extends BaseTabController {
 
     @FXML
     public void newTodo(ActionEvent actionEvent) {
-        HashMap<String, Object> params = new HashMap<>();
-        params.put("title", newTodo.getText());
-        modelRef.fireAction(new Action("newTodo", params));
-        newTodo.clear();
+        if (!newTodo.getText().equals("")) {
+            HashMap<String, Object> params = new HashMap<>();
+            params.put("title", newTodo.getText());
+            modelRef.fireAction(new Action("newTodo", params));
+            newTodo.clear();
 
-        String itemsLeftValue = modelRef.append("itemsLeft").getValue();
-        int itemsLeft = Integer.parseInt(itemsLeftValue);
-        modelRef.append("itemsLeft").setValue(String.valueOf(itemsLeft + 1));
+            String itemsLeftValue = modelRef.append("itemsLeft").getValue();
+            int itemsLeft = Integer.parseInt(itemsLeftValue);
+            modelRef.append("itemsLeft").setValue(String.valueOf(itemsLeft + 1));
+        }
     }
 
     @FXML
