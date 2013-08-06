@@ -1,4 +1,4 @@
-package at.irian.ankorman.sample2.fxclient;
+package at.irian.ankorman.sample2.fxclient.task;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;

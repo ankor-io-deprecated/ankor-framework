@@ -80,7 +80,7 @@ public class TaskRepository {
     private List<Task> getActiveTasks() {
         List<Task> res = new ArrayList<Task>(tasks.size());
         for(Task t : tasks) {
-            if (!t.isChecked()) {
+            if (!t.isCompleted()) {
                 res.add(new Task(t));
             }
         }
@@ -90,7 +90,7 @@ public class TaskRepository {
     private List<Task> getCompletedTasks() {
         List<Task> res = new ArrayList<Task>(tasks.size());
         for(Task t : tasks) {
-            if (t.isChecked()) {
+            if (t.isCompleted()) {
                 res.add(new Task(t));
             }
         }

@@ -118,6 +118,8 @@
 }
 
 .list-cell {
+    -fx-padding: 0 0 0 0;
+    -fx-margin: -1 0 0 -1;
     -fx-background-color: transparent;
     -fx-border-width: 0 0 1 0;
     -fx-border-color: #ccc;

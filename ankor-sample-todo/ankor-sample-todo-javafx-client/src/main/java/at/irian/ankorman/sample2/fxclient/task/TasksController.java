@@ -5,16 +5,20 @@ import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.listener.RefChangeListener;
 import at.irian.ankor.ref.listener.RefListeners;
 import at.irian.ankorman.sample2.fxclient.BaseTabController;
+import at.irian.ankorman.sample2.fxclient.task.TaskComponent;
 import at.irian.ankorman.sample2.viewmodel.task.Filter;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Callback;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
@@ -81,26 +85,10 @@ public class TasksController extends BaseTabController {
             }
         });
 
-        /*
-        TaskComponent test = new TaskComponent();
-        test.setText("Dynamically created Task");
-        test.getCompleted().setOnAction(new EventHandler<ActionEvent>() {
+        tasksList.setCellFactory(new Callback<ListView, ListCell>() {
             @Override
-            public void handle(ActionEvent actionEvent) {
-                System.out.println("The button was clicked! 2");
-            }
-        });
-
-        tasks.getItems().add(test);
-        tasks.getItems().add(new TaskComponent());
-        tasks.getItems().add(new TaskComponent());
-        getTabRef().append("model").append("itemsLeft").setValue(String.valueOf(tasks.getItems().size()));
-        */
-
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                newTodo.requestFocus();
+            public ListCell call(ListView listView) {
+                return new TaskComponentListCell();
             }
         });
     }
@@ -145,10 +133,28 @@ public class TasksController extends BaseTabController {
         modelRef.append("filter").setValue(Filter.completed.toString());
     }
 
+    private static class TaskComponentListCell extends ListCell<LinkedHashMap<String, Object>> {
+        @Override
+        public void updateItem(LinkedHashMap<String, Object> item, boolean empty) {
+            super.updateItem(item, empty);
+            if (item != null) {
+                String title = (String)item.get("title");
+                boolean completed = (boolean)item.get("completed");
+
+                TaskComponent node = new TaskComponent();
+                node.setText(title);
+                node.getCompleted().setSelected(completed);
+
+                setGraphic(node);
+            }
+        }
+    }
+
     // XXX
     @Override
     public Ref getTabRef() {
         Ref rootRef = refFactory().rootRef();
         return rootRef.append(String.format("tabsTask.%s", tabId));
     }
+
 }
