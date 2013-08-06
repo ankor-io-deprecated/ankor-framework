@@ -11,34 +11,6 @@ import java.util.List;
 public class TaskRepository {
     private List<Task> tasks = new ArrayList<Task>();
 
-    public List<Task> getTasks() {
-        List<Task> res = new ArrayList<Task>(tasks.size());
-        for(Task t : tasks) {
-            res.add(new Task(t));
-        }
-        return res;
-    }
-
-    public List<Task> getActiveTasks() {
-        List<Task> res = new ArrayList<Task>(tasks.size());
-        for(Task t : tasks) {
-            if (!t.isChecked()) {
-                res.add(new Task(t));
-            }
-        }
-        return res;
-    }
-
-    public List<Task> getCompletedTasks() {
-        List<Task> res = new ArrayList<Task>(tasks.size());
-        for(Task t : tasks) {
-            if (t.isChecked()) {
-                res.add(new Task(t));
-            }
-        }
-        return res;
-    }
-
     public void saveTask(Task task) {
 
         // do validation
@@ -87,7 +59,7 @@ public class TaskRepository {
 
         data.getRows().addAll(animals.subList(first, last));
 
-        // TODO: What is that?
+        // XXX: What is that?
         try {
             Thread.sleep(300L);
         } catch (InterruptedException e) {
@@ -95,5 +67,33 @@ public class TaskRepository {
         }
 
         return data;
+    }
+
+    private List<Task> getTasks() {
+        List<Task> res = new ArrayList<Task>(tasks.size());
+        for(Task t : tasks) {
+            res.add(new Task(t));
+        }
+        return res;
+    }
+
+    private List<Task> getActiveTasks() {
+        List<Task> res = new ArrayList<Task>(tasks.size());
+        for(Task t : tasks) {
+            if (!t.isChecked()) {
+                res.add(new Task(t));
+            }
+        }
+        return res;
+    }
+
+    private List<Task> getCompletedTasks() {
+        List<Task> res = new ArrayList<Task>(tasks.size());
+        for(Task t : tasks) {
+            if (t.isChecked()) {
+                res.add(new Task(t));
+            }
+        }
+        return res;
     }
 }

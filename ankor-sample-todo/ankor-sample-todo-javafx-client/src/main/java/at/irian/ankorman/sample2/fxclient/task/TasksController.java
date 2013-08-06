@@ -6,6 +6,7 @@ import at.irian.ankor.ref.listener.RefChangeListener;
 import at.irian.ankor.ref.listener.RefListeners;
 import at.irian.ankorman.sample2.fxclient.BaseTabController;
 import at.irian.ankorman.sample2.viewmodel.task.Filter;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -20,6 +21,8 @@ import static at.irian.ankorman.sample2.fxclient.App.refFactory;
 
 public class TasksController extends BaseTabController {
 
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TasksController.class);
+
     @FXML public TextField newTodo;
     @FXML public HBox todoCount;
     @FXML public Label todoCountNum;
@@ -33,8 +36,6 @@ public class TasksController extends BaseTabController {
     private List<Button> filterButtons = new ArrayList<Button>();
 
     private Ref modelRef;
-
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TasksController.class);
 
     public TasksController(String tabId) {
         super(tabId);
@@ -94,6 +95,13 @@ public class TasksController extends BaseTabController {
         tasks.getItems().add(new TaskComponent());
         getTabRef().append("model").append("itemsLeft").setValue(String.valueOf(tasks.getItems().size()));
         */
+
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                newTodo.requestFocus();
+            }
+        });
     }
 
     private void setFilterButtonStyle(Filter filter) {
@@ -114,19 +122,22 @@ public class TasksController extends BaseTabController {
         modelRef.fireAction(new Action("newTodo", params));
         newTodo.clear();
 
-        // XXX: fixed weired type bug by changing type from integer to string
-        int currItemsLeft = Integer.parseInt(modelRef.append("itemsLeft").<String>getValue());
-        modelRef.append("itemsLeft").setValue(String.valueOf(currItemsLeft + 1));
+        String itemsLeftValue = modelRef.append("itemsLeft").getValue();
+        int itemsLeft = Integer.parseInt(itemsLeftValue);
+        modelRef.append("itemsLeft").setValue(String.valueOf(itemsLeft + 1));
     }
 
+    @FXML
     public void displayAll(ActionEvent actionEvent) {
         modelRef.append("filter").setValue(Filter.all.toString());
     }
 
+    @FXML
     public void displayActive(ActionEvent actionEvent) {
         modelRef.append("filter").setValue(Filter.active.toString());
     }
 
+    @FXML
     public void displayCompleted(ActionEvent actionEvent) {
         modelRef.append("filter").setValue(Filter.completed.toString());
     }

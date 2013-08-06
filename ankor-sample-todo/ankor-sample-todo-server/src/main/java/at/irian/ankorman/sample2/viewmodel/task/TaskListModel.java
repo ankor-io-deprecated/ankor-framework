@@ -22,11 +22,12 @@ public class TaskListModel extends ViewModelBase {
     @JsonIgnore
     private ViewModelProperty<String> tabName;
 
-    //private List<Task> tasks = new ArrayList<Task>();
     private ViewModelProperty<String> filter;
     private ViewModelProperty<String> itemsLeft;
 
     private Data<Task> tasks;
+    // XXX: Did not work using a list
+    //private List<Task> tasks = new ArrayList<Task>();
 
     public TaskListModel(Ref viewModelRef, TaskRepository taskRepository, ViewModelProperty<String> tabName) {
         super(viewModelRef);
@@ -34,8 +35,8 @@ public class TaskListModel extends ViewModelBase {
 
         this.taskRepository = taskRepository;
         this.filter.set(Filter.all.toString());
-        this.itemsLeft.set("0");
-        this.tasks = new Data<Task>(new Paginator(0, 5));
+        this.itemsLeft.set("0"); // XXX: Weird type error if not using string
+        this.tasks = new Data<Task>(new Paginator(0, Integer.MAX_VALUE)); // XXX: Why?
     }
 
     @ChangeListener(pattern = {
@@ -61,12 +62,12 @@ public class TaskListModel extends ViewModelBase {
         Task task = new Task(title);
         taskRepository.saveTask(task);
 
-        // XXX: fixed weired type bug by changing type from integer to string
-        //int currItemsLeft = Integer.parseInt(itemsLeft.get());
+        // XXX: Setting values to refs here causes (sometimes!?) exceptions
 
+        //int currItemsLeft = Integer.parseInt(itemsLeft.get());
         //thisRef().append("itemsLeft").setValue(String.valueOf(currItemsLeft + 1));
 
-        // XXX: Why not:
+        // XXX: Difference?
         //itemsLeft.set(String.valueOf(currItemsLeft + 1));
     }
 
