@@ -44,7 +44,6 @@ public class AnimalSearchModel extends ViewModelBase {
     @ChangeListener(pattern = {"**.<AnimalSearchModel>.filter.**",
                                "**.<AnimalSearchModel>.animals.paginator.**"})
     public void reloadAnimals() {
-        // TODO how to load data async and update the animals ref?
         LOG.info("RELOADING animals ...");
         Paginator paginator = animals.getPaginator();
         paginator.reset();

@@ -1,10 +1,6 @@
 package at.irian.ankorman.sample2.fxclient.task;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.StringProperty;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.CheckBox;
@@ -13,6 +9,7 @@ import javafx.scene.layout.HBox;
 
 import java.io.IOException;
 
+// TODO: Style checkboxes according to TodoMVC
 public class TaskComponent extends HBox {
 
     @FXML public CheckBox completed;

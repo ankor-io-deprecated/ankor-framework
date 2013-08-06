@@ -1,3 +1,4 @@
+// TODO: Remove Tabs
 package at.irian.ankorman.sample2.viewmodel;
 
 import at.irian.ankor.annotation.ActionListener;
@@ -8,7 +9,6 @@ import at.irian.ankorman.sample2.server.TaskRepository;
 import at.irian.ankorman.sample2.viewmodel.task.TaskListModel;
 
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.

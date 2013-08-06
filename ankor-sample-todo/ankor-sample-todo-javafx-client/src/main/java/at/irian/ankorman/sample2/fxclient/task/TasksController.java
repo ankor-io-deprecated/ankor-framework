@@ -5,23 +5,14 @@ import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.listener.RefChangeListener;
 import at.irian.ankor.ref.listener.RefListeners;
 import at.irian.ankorman.sample2.fxclient.BaseTabController;
-import at.irian.ankorman.sample2.fxclient.task.TaskComponent;
 import at.irian.ankorman.sample2.viewmodel.task.Filter;
-import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.util.Callback;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -32,10 +23,10 @@ public class TasksController extends BaseTabController {
 
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TasksController.class);
 
+    @FXML public ListView tasksList;
     @FXML public TextField newTodo;
     @FXML public Label todoCountNum;
     @FXML public Button clearCompleted;
-    @FXML public ListView tasksList;
 
     @FXML public Button filterAll;
     @FXML public Button filterActive;
