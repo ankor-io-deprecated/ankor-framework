@@ -3,6 +3,7 @@ package at.irian.ankorman.sample2.server;
 import at.irian.ankorman.sample2.domain.task.Task;
 import at.irian.ankorman.sample2.viewmodel.animal.helper.Data;
 import at.irian.ankorman.sample2.viewmodel.animal.helper.Paginator;
+import at.irian.ankorman.sample2.viewmodel.task.Filter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,19 +19,23 @@ public class TaskRepository {
         return res;
     }
 
-    public List<Task> getUncompleteTasks() {
+    public List<Task> getActiveTasks() {
         List<Task> res = new ArrayList<Task>(tasks.size());
         for(Task t : tasks) {
-            if (t.isChecked()) {
+            if (!t.isChecked()) {
                 res.add(new Task(t));
             }
         }
         return res;
     }
 
-    public List<Task> getCompleteTasks() {
-        List<Task> res = getTasks();
-        res.removeAll(getUncompleteTasks());
+    public List<Task> getCompletedTasks() {
+        List<Task> res = new ArrayList<Task>(tasks.size());
+        for(Task t : tasks) {
+            if (t.isChecked()) {
+                res.add(new Task(t));
+            }
+        }
         return res;
     }
 
@@ -59,8 +64,14 @@ public class TaskRepository {
         return null;
     }
 
-    public Data<Task> searchTasks(int first, int maxResults) {
-        List<Task> animals = getTasks();
+    public Data<Task> searchTasks(Filter filter, int first, int maxResults) {
+        List<Task> animals = null;
+        switch (filter) {
+            case all:  animals = getTasks(); break;
+            case active: animals = getActiveTasks(); break;
+            case completed: animals = getCompletedTasks(); break;
+        }
+
         if (first >= animals.size()) {
             return new Data<Task>(new Paginator(animals.size(), maxResults));
         }

@@ -5,29 +5,32 @@ import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.listener.RefChangeListener;
 import at.irian.ankor.ref.listener.RefListeners;
 import at.irian.ankorman.sample2.fxclient.BaseTabController;
-import at.irian.ankorman.sample2.fxclient.TaskComponent;
+import at.irian.ankorman.sample2.viewmodel.task.Filter;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.MapValueFactory;
-import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
 import static at.irian.ankorman.sample2.fxclient.App.refFactory;
 
 public class TasksController extends BaseTabController {
 
-    public TextField newTodo;
-    public HBox todoCount;
-    public Label todoCountNum;
-    public Button clearCompleted;
-    public ListView tasksList;
+    @FXML public TextField newTodo;
+    @FXML public HBox todoCount;
+    @FXML public Label todoCountNum;
+    @FXML public Button clearCompleted;
+    @FXML public ListView tasksList;
+
+    @FXML public Button filterAll;
+    @FXML public Button filterActive;
+    @FXML public Button filterCompleted;
+
+    private List<Button> filterButtons = new ArrayList<Button>();
 
     private Ref modelRef;
 
@@ -40,6 +43,14 @@ public class TasksController extends BaseTabController {
     @Override
     public void initialize() {
         modelRef = getTabRef().append("model");
+
+        filterButtons.add(filterAll);
+        filterButtons.add(filterActive);
+        filterButtons.add(filterCompleted);
+
+        String filterString = modelRef.append("filter").getValue();
+        Filter filterEnum = Filter.valueOf(filterString);
+        setFilterButtonStyle(filterEnum);
 
         bindValue(modelRef.append("itemsLeft"))
                 .toLabel(todoCountNum)
@@ -56,6 +67,15 @@ public class TasksController extends BaseTabController {
                 String prop = changedProperty.getValue();
                 int itemsLeft = Integer.parseInt(prop);
                 todoCount.setVisible(itemsLeft != 0);
+            }
+        });
+
+        RefListeners.addPropChangeListener(modelRef.append("filter"), new RefChangeListener() {
+            @Override
+            public void processChange(Ref changedProperty) {
+                String prop = changedProperty.getValue();
+                Filter filterEnum = Filter.valueOf(prop);
+                setFilterButtonStyle(filterEnum);
             }
         });
 
@@ -76,16 +96,39 @@ public class TasksController extends BaseTabController {
         */
     }
 
+    private void setFilterButtonStyle(Filter filter) {
+        for (Button b : filterButtons) {
+            b.setStyle("-fx-font-weight: normal;");
+        }
+        switch (filter) {
+            case all: filterAll.setStyle("-fx-font-weight: bold;"); break;
+            case active: filterActive.setStyle("-fx-font-weight: bold;"); break;
+            case completed: filterCompleted.setStyle("-fx-font-weight: bold;"); break;
+        }
+    }
+
     @FXML
     public void newTodo(ActionEvent actionEvent) {
         HashMap<String, Object> params = new HashMap<>();
         params.put("title", newTodo.getText());
-        getTabRef().append("model").fireAction(new Action("newTodo", params));
+        modelRef.fireAction(new Action("newTodo", params));
         newTodo.clear();
 
         // XXX: fixed weired type bug by changing type from integer to string
         int currItemsLeft = Integer.parseInt(modelRef.append("itemsLeft").<String>getValue());
-        getTabRef().append("model").append("itemsLeft").setValue(String.valueOf(currItemsLeft + 1));
+        modelRef.append("itemsLeft").setValue(String.valueOf(currItemsLeft + 1));
+    }
+
+    public void displayAll(ActionEvent actionEvent) {
+        modelRef.append("filter").setValue(Filter.all.toString());
+    }
+
+    public void displayActive(ActionEvent actionEvent) {
+        modelRef.append("filter").setValue(Filter.active.toString());
+    }
+
+    public void displayCompleted(ActionEvent actionEvent) {
+        modelRef.append("filter").setValue(Filter.completed.toString());
     }
 
     // XXX

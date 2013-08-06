@@ -16,12 +16,6 @@ public class TaskListModel extends ViewModelBase {
 
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TaskListModel.class);
 
-    private enum Filter {
-        all,
-        uncomplete,
-        complete;
-    }
-
     @JsonIgnore
     private final TaskRepository taskRepository;
 
@@ -44,12 +38,15 @@ public class TaskListModel extends ViewModelBase {
         this.tasks = new Data<Task>(new Paginator(0, 5));
     }
 
-    @ChangeListener(pattern = "**.<TaskListModel>.itemsLeft")
+    @ChangeListener(pattern = {
+            "**.<TaskListModel>.itemsLeft",
+            "**.<TaskListModel>.filter" })
     public void reloadTasks() {
         LOG.info("RELOADING tasks ...");
         Paginator paginator = tasks.getPaginator();
         paginator.reset();
-        Data<Task> animals = taskRepository.searchTasks(paginator.getFirst(), paginator.getMaxResults());
+        Filter filterEnum = Filter.valueOf(filter.get());
+        Data<Task> animals = taskRepository.searchTasks(filterEnum, paginator.getFirst(), paginator.getMaxResults());
 
         thisRef().append("tasks").setValue(animals);
 

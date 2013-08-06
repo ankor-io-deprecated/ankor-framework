@@ -32,9 +32,9 @@
                     <children>
                       <HBox id="filters" alignment="CENTER" prefHeight="35.0" prefWidth="530.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                         <children>
-                          <Button mnemonicParsing="false" text="All" />
-                          <Button mnemonicParsing="false" text="Active" />
-                          <Button mnemonicParsing="false" text="Completed" />
+                          <Button fx:id="filterAll" mnemonicParsing="false" text="All" onAction="#displayAll" />
+                          <Button fx:id="filterActive" mnemonicParsing="false" text="Active" onAction="#displayActive" />
+                          <Button fx:id="filterCompleted" mnemonicParsing="false" text="Completed" onAction="#displayCompleted" />
                         </children>
                         <padding>
                           <Insets top="2.0" />
