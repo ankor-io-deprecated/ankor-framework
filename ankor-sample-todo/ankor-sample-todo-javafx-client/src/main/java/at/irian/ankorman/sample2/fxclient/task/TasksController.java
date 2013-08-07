@@ -6,7 +6,6 @@ import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.listener.RefChangeListener;
 import at.irian.ankor.ref.listener.RefListeners;
 import at.irian.ankorman.sample2.viewmodel.task.Filter;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -62,7 +61,7 @@ public class TasksController implements Initializable {
         filterButtons.add(filterActive);
         filterButtons.add(filterCompleted);
 
-        bindValue(modelRef.append("tasks.rows"))
+        bindValue(modelRef.append("tasks"))
                 .toList(tasksList)
                 .createWithin(bindingContext);
 
@@ -133,15 +132,6 @@ public class TasksController implements Initializable {
 
             modelRef.fireAction(new Action("newTodo", params));
             newTodo.clear();
-
-            /*
-            String itemsLeftValue = modelRef.append("itemsLeft").getValue();
-            int itemsLeft = Integer.parseInt(itemsLeftValue);
-            modelRef.append("itemsLeft").setValue(String.valueOf(itemsLeft + 1));
-            */
-
-            // XXX: For latency compensation
-            //tasksList.getItems().add(params);
         }
     }
 

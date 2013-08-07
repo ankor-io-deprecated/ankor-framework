@@ -1,8 +1,6 @@
 package at.irian.ankorman.sample2.server;
 
 import at.irian.ankorman.sample2.domain.task.Task;
-import at.irian.ankorman.sample2.viewmodel.task.helper.Data;
-import at.irian.ankorman.sample2.viewmodel.task.helper.Paginator;
 import at.irian.ankorman.sample2.viewmodel.task.Filter;
 
 import java.util.ArrayList;
@@ -36,30 +34,13 @@ public class TaskRepository {
         return null;
     }
 
-    public Data<Task> searchTasks(Filter filter, int first, int maxResults) {
-        List<Task> animals = null;
+    public List<Task> filterTasks(Filter filter) {
         switch (filter) {
-            case all:  animals = getTasks(); break;
-            case active: animals = getActiveTasks(); break;
-            case completed: animals = getCompletedTasks(); break;
+            case all:  return getTasks();
+            case active: return getActiveTasks();
+            case completed: return getCompletedTasks();
         }
-
-        if (first >= animals.size()) {
-            return new Data<Task>(new Paginator(animals.size(), maxResults));
-        }
-        if (first < 0) {
-            first = 0;
-        }
-        int last = first + maxResults;
-        if (last > animals.size()) {
-            last = animals.size();
-        }
-
-        Data<Task> data = new Data<Task>(new Paginator(first, maxResults));
-
-        data.getRows().addAll(animals.subList(first, last));
-
-        return data;
+        return null;
     }
 
     public List<Task> getTasks() {
