@@ -8,8 +8,8 @@ import at.irian.ankor.viewmodel.ViewModelBase;
 import at.irian.ankor.viewmodel.ViewModelProperty;
 import at.irian.ankorman.sample2.domain.task.Task;
 import at.irian.ankorman.sample2.server.TaskRepository;
-import at.irian.ankorman.sample2.viewmodel.animal.helper.Data;
-import at.irian.ankorman.sample2.viewmodel.animal.helper.Paginator;
+import at.irian.ankorman.sample2.viewmodel.task.helper.Data;
+import at.irian.ankorman.sample2.viewmodel.task.helper.Paginator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class TaskListModel extends ViewModelBase {
@@ -18,9 +18,6 @@ public class TaskListModel extends ViewModelBase {
 
     @JsonIgnore
     private final TaskRepository taskRepository;
-
-    @JsonIgnore
-    private ViewModelProperty<String> tabName;
 
     private ViewModelProperty<String> filter; // XXX: Not possible to use enum type Filter -> type errors again
     private ViewModelProperty<Integer> itemsLeft;
@@ -31,12 +28,12 @@ public class TaskListModel extends ViewModelBase {
     // XXX: Did not work using a list
     // private List<Task> tasks = new ArrayList<Task>();
 
-    public TaskListModel(Ref viewModelRef, TaskRepository taskRepository, ViewModelProperty<String> tabName) {
+    public TaskListModel(Ref viewModelRef, TaskRepository taskRepository) {
         super(viewModelRef);
-        this.tabName = tabName;
 
         this.taskRepository = taskRepository;
 
+        // this.filter = new ViewModelProperty<>(viewModelRef, "filter", Filter.all.toString());
         this.filter.set(Filter.all.toString());
         this.itemsLeft.set(taskRepository.getTasks().size()); // X-X-X: Weird type error if not using string
         this.tasks = fetchTasksData(new Paginator(0, Integer.MAX_VALUE));
@@ -96,5 +93,4 @@ public class TaskListModel extends ViewModelBase {
     public void setFilter(ViewModelProperty<String> filter) {
         this.filter = filter;
     }
-
 }

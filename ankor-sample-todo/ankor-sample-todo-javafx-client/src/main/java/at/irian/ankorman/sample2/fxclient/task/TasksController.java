@@ -1,27 +1,34 @@
 package at.irian.ankorman.sample2.fxclient.task;
 
 import at.irian.ankor.action.Action;
+import at.irian.ankor.fx.binding.BindingContext;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.listener.RefChangeListener;
 import at.irian.ankor.ref.listener.RefListeners;
-import at.irian.ankorman.sample2.fxclient.BaseTabController;
 import at.irian.ankorman.sample2.viewmodel.task.Filter;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.util.Callback;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
 import static at.irian.ankorman.sample2.fxclient.App.refFactory;
 
-public class TasksController extends BaseTabController {
+public class TasksController implements Initializable {
 
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TasksController.class);
+
+    private BindingContext bindingContext = new BindingContext();
+    private Ref modelRef;
 
     @FXML public ListView tasksList;
     @FXML public TextField newTodo;
@@ -31,22 +38,26 @@ public class TasksController extends BaseTabController {
     @FXML public Button filterAll;
     @FXML public Button filterActive;
     @FXML public Button filterCompleted;
+    private List<Button> filterButtons = new ArrayList<Button>();
 
     @FXML public Node footerTop;
     @FXML public Node footerBottom;
 
-    private List<Button> filterButtons = new ArrayList<Button>();
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        this.modelRef = refFactory().rootRef().append("model");
+        RefListeners.addPropChangeListener(modelRef, new RefChangeListener() {
+            @Override
+            public void processChange(Ref changedProperty) {
+                initialize();
+            }
+        });
 
-    private Ref modelRef;
+        refFactory().rootRef().fireAction(new Action("init"));
 
-    public TasksController(String tabId) {
-        super(tabId);
     }
 
-    @Override
     public void initialize() {
-        modelRef = getTabRef().append("model");
-
         filterButtons.add(filterAll);
         filterButtons.add(filterActive);
         filterButtons.add(filterCompleted);
@@ -165,12 +176,4 @@ public class TasksController extends BaseTabController {
             }
         }
     }
-
-    // XXX
-    @Override
-    public Ref getTabRef() {
-        Ref rootRef = refFactory().rootRef();
-        return rootRef.append(String.format("tabsTask.%s", tabId));
-    }
-
 }

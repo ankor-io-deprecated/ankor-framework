@@ -1,4 +1,4 @@
-package at.irian.ankorman.sample2.viewmodel.animal.helper;
+package at.irian.ankorman.sample2.viewmodel.task.helper;
 
 import java.util.ArrayList;
 import java.util.List;

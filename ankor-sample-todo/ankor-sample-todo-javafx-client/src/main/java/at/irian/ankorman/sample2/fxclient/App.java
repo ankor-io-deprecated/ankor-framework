@@ -4,7 +4,6 @@ import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.session.ModelRootFactory;
 import at.irian.ankor.system.SocketAnkorSystemStarter; // TODO: no longer available in master branch
-import at.irian.ankorman.sample2.server.AnimalRepository;
 import at.irian.ankorman.sample2.server.TaskRepository;
 import at.irian.ankorman.sample2.viewmodel.ModelRoot;
 import javafx.fxml.FXMLLoader;
@@ -41,8 +40,8 @@ public class App extends javafx.application.Application {
 
         createClientSystem(server, client);
 
-        primaryStage.setTitle("Ankor FX Sample");
-        Pane myPane = FXMLLoader.load(getClass().getClassLoader().getResource("main.fxml"));
+        primaryStage.setTitle("Ankor todos");
+        Pane myPane = FXMLLoader.load(getClass().getClassLoader().getResource("tasks.fxml"));
 
         Scene myScene = new Scene(myPane);
         myScene.getStylesheets().add("style.css");
@@ -91,7 +90,7 @@ public class App extends javafx.application.Application {
     private static class MyModelRootFactory implements ModelRootFactory {
         @Override
         public Object createModelRoot(Ref rootRef) {
-            return new ModelRoot(rootRef, new AnimalRepository(), new TaskRepository());
+            return new ModelRoot(rootRef, new TaskRepository());
         }
     }
 }

@@ -1,8 +1,8 @@
 package at.irian.ankorman.sample2.server;
 
 import at.irian.ankorman.sample2.domain.task.Task;
-import at.irian.ankorman.sample2.viewmodel.animal.helper.Data;
-import at.irian.ankorman.sample2.viewmodel.animal.helper.Paginator;
+import at.irian.ankorman.sample2.viewmodel.task.helper.Data;
+import at.irian.ankorman.sample2.viewmodel.task.helper.Paginator;
 import at.irian.ankorman.sample2.viewmodel.task.Filter;
 
 import java.util.ArrayList;

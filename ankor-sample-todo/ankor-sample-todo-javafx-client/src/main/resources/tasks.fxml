@@ -10,8 +10,7 @@
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
-<Tab fx:id="tab" closable="true" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="at.irian.ankorman.sample2.fxclient.task.TasksController">
-  <AnchorPane id="body" minWidth="650.0" prefHeight="650.0" prefWidth="650.0">
+  <AnchorPane id="body" minWidth="650.0" prefHeight="650.0" prefWidth="650.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="at.irian.ankorman.sample2.fxclient.task.TasksController">
     <children>
       <VBox alignment="TOP_CENTER" prefWidth="550.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <children>
@@ -134,4 +133,3 @@
       <URL value="@style.css" />
     </stylesheets>
   </AnchorPane>
-</Tab>
