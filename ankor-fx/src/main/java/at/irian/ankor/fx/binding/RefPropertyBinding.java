@@ -72,7 +72,9 @@ public class RefPropertyBinding implements RefChangeListener, javafx.beans.value
                 }
             }
         } else if (remoteValue != null) {
-            property.setValue(remoteValue.toString());
+            // XXX: This caused type errors: (but maybe needed for something else?)
+            // property.setValue(remoteValue.toString());
+            property.setValue(remoteValue);
         } else {
             property.setValue(null);
         }

@@ -22,14 +22,14 @@ public class TaskListModel extends ViewModelBase {
     @JsonIgnore
     private ViewModelProperty<String> tabName;
 
-    private ViewModelProperty<String> filter;
-    private ViewModelProperty<String> itemsLeft;
+    private ViewModelProperty<String> filter; // XXX: Not possible to use enum type Filter -> type errors again
+    private ViewModelProperty<Integer> itemsLeft;
 
     // TODO: Use a list instead of Data<Task>
     private Data<Task> tasks;
 
     // XXX: Did not work using a list
-    //private List<Task> tasks = new ArrayList<Task>();
+    // private List<Task> tasks = new ArrayList<Task>();
 
     public TaskListModel(Ref viewModelRef, TaskRepository taskRepository, ViewModelProperty<String> tabName) {
         super(viewModelRef);
@@ -38,7 +38,7 @@ public class TaskListModel extends ViewModelBase {
         this.taskRepository = taskRepository;
 
         this.filter.set(Filter.all.toString());
-        this.itemsLeft.set(String.valueOf(taskRepository.getTasks().size())); // XXX: Weird type error if not using string
+        this.itemsLeft.set(taskRepository.getTasks().size()); // X-X-X: Weird type error if not using string
         this.tasks = fetchTasksData(new Paginator(0, Integer.MAX_VALUE));
     }
 
@@ -59,13 +59,12 @@ public class TaskListModel extends ViewModelBase {
         Task task = new Task(title);
         taskRepository.saveTask(task);
 
-        // XXX: Setting values to refs here causes (sometimes!?) exceptions
+        // X-X-X: Setting values to refs here causes (sometimes!?) exceptions -> should be fixed in newer ankor commit
 
-        //int currItemsLeft = Integer.parseInt(itemsLeft.get());
-        //thisRef().append("itemsLeft").setValue(String.valueOf(currItemsLeft + 1));
+        thisRef().append("itemsLeft").setValue(itemsLeft.get() + 1);
 
-        // XXX: Difference?
-        //itemsLeft.set(String.valueOf(currItemsLeft + 1));
+        // X-X-X: Difference? -> Convenience
+        // itemsLeft.set(String.valueOf(currItemsLeft + 1));
     }
 
     private Data<Task> fetchTasksData(Paginator paginator) {
@@ -74,11 +73,11 @@ public class TaskListModel extends ViewModelBase {
         return taskRepository.searchTasks(filterEnum, paginator.getFirst(), paginator.getMaxResults());
     }
 
-    public ViewModelProperty<String> getItemsLeft() {
+    public ViewModelProperty<Integer> getItemsLeft() {
         return itemsLeft;
     }
 
-    public void setItemsLeft(ViewModelProperty<String> itemsLeft) {
+    public void setItemsLeft(ViewModelProperty<Integer> itemsLeft) {
         this.itemsLeft = itemsLeft;
     }
 

@@ -57,19 +57,18 @@ public class TasksController extends BaseTabController {
 
 
         bindValue(modelRef.append("itemsLeft"))
+                .forIntegerValue()
                 .toLabel(todoCountNum)
                 .createWithin(bindingContext);
 
-        String itemsLeftValue= modelRef.append("itemsLeft").getValue();
-        int itemsLeft = Integer.parseInt(itemsLeftValue);
+        int itemsLeft = modelRef.append("itemsLeft").getValue();
         setFooterVisibility(itemsLeft);
 
         // XXX: Is there a better way to do this?
         RefListeners.addPropChangeListener(modelRef.append("itemsLeft"), new RefChangeListener() {
             @Override
             public void processChange(Ref changedProperty) {
-                String prop = changedProperty.getValue();
-                int itemsLeft = Integer.parseInt(prop);
+                int itemsLeft = changedProperty.getValue();
                 setFooterVisibility(itemsLeft);
             }
         });
@@ -124,12 +123,14 @@ public class TasksController extends BaseTabController {
             modelRef.fireAction(new Action("newTodo", params));
             newTodo.clear();
 
+            /*
             String itemsLeftValue = modelRef.append("itemsLeft").getValue();
             int itemsLeft = Integer.parseInt(itemsLeftValue);
             modelRef.append("itemsLeft").setValue(String.valueOf(itemsLeft + 1));
+            */
 
             // XXX: For latency compensation
-            tasksList.getItems().add(params);
+            //tasksList.getItems().add(params);
         }
     }
 

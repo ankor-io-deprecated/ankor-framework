@@ -59,13 +59,6 @@ public class TaskRepository {
 
         data.getRows().addAll(animals.subList(first, last));
 
-        // XXX: What is that?
-        try {
-            Thread.sleep(300L);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-
         return data;
     }
 

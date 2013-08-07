@@ -2,12 +2,10 @@ package at.irian.ankor.fx.binding;
 
 import at.irian.ankor.ref.Ref;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.scene.control.*;
 import javafx.scene.text.Text;
+import javafx.util.converter.NumberStringConverter;
 
 /**
  * @author Thomas Spiegl
@@ -38,12 +36,19 @@ public class ValueBindingsBuilder {
 
     private Ref editableRef;
 
+    boolean hackyIntegerFlag = false;
+
     public static ValueBindingsBuilder bindValue(Ref value) {
         return new ValueBindingsBuilder().forValue(value);
     }
 
     private ValueBindingsBuilder forValue(Ref value) {
         this.valueRef = value;
+        return this;
+    }
+
+    public ValueBindingsBuilder forIntegerValue() {
+        hackyIntegerFlag = true;
         return this;
     }
 
@@ -101,7 +106,11 @@ public class ValueBindingsBuilder {
         if (text != null) {
             bind(valueRef, text, bindingContext);
         } else if (label != null) {
-            bind(valueRef, label, bindingContext);
+            if (!hackyIntegerFlag) {
+                bind(valueRef, label, bindingContext);
+            } else {
+                bindInteger(valueRef, label, bindingContext);
+            }
         } else if (button != null) {
             bind(valueRef, button, bindingContext);
         } else if (tab != null) {
@@ -150,6 +159,10 @@ public class ValueBindingsBuilder {
         new RefPropertyBinding(valueRef, createProperty(text.textProperty(), context));
     }
 
+    private static void bindInteger(final Ref valueRef, final Label label, BindingContext context) {
+        new RefPropertyBinding(valueRef, createIntegerProperty(label.textProperty(), context));
+    }
+
     private static void bind(final Ref valueRef, final Label label, BindingContext context) {
         new RefPropertyBinding(valueRef, createProperty(label.textProperty(), context));
     }
@@ -178,14 +191,21 @@ public class ValueBindingsBuilder {
         new RefPropertyBinding(valueRef, listView.itemsProperty());
     }
 
-    private static SimpleStringProperty createProperty(StringProperty property, BindingContext context) {
+    private static StringProperty createProperty(StringProperty property, BindingContext context) {
         SimpleStringProperty prop = new SimpleStringProperty();
         Bindings.bindBidirectional(prop, property);
         context.add(prop);
         return prop;
     }
 
-    private static SimpleBooleanProperty createBooleanProperty(BooleanProperty property, BindingContext context) {
+    private static IntegerProperty createIntegerProperty(StringProperty property, BindingContext context) {
+        SimpleIntegerProperty prop = new SimpleIntegerProperty();
+        Bindings.bindBidirectional(property, prop, new NumberStringConverter());
+        context.add(prop);
+        return prop;
+    }
+
+    private static BooleanProperty createBooleanProperty(BooleanProperty property, BindingContext context) {
         SimpleBooleanProperty prop = new SimpleBooleanProperty();
         Bindings.bindBidirectional(prop, property);
         prop.unbind();
