@@ -10,7 +10,7 @@
 
 <fx:root type="javafx.scene.layout.HBox" id="" alignment="CENTER_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="65.0" styleClass="task" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
   <children>
-    <CheckBox fx:id="completed" alignment="CENTER" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefWidth="45.0">
+    <CheckBox fx:id="completed" alignment="CENTER" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefWidth="45.0" onAction="#completed">
       <HBox.margin>
         <Insets />
       </HBox.margin>

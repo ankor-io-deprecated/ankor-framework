@@ -7,10 +7,12 @@ import at.irian.ankor.ref.listener.RefChangeListener;
 import at.irian.ankor.ref.listener.RefListeners;
 import at.irian.ankorman.sample2.viewmodel.task.Filter;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.util.Callback;
 
 import java.net.URL;
@@ -102,8 +104,6 @@ public class TaskListController implements Initializable {
                 return new TaskComponentListCell();
             }
         });
-
-        // TODO: Completing tasks listener
     }
 
     private void setFooterVisibility(int itemsLeft) {
@@ -150,7 +150,7 @@ public class TaskListController implements Initializable {
         modelRef.append("filter").setValue(Filter.completed.toString());
     }
 
-    private static class TaskComponentListCell extends ListCell<LinkedHashMap<String, Object>> {
+    private class TaskComponentListCell extends ListCell<LinkedHashMap<String, Object>> {
         @Override
         public void updateItem(LinkedHashMap<String, Object> item, boolean empty) {
             super.updateItem(item, empty);
@@ -158,7 +158,7 @@ public class TaskListController implements Initializable {
                 String title = (String)item.get("title");
                 boolean completed = (boolean)item.get("completed");
 
-                TaskComponentController node = new TaskComponentController();
+                TaskComponentController node = new TaskComponentController(modelRef, getIndex());
                 node.setText(title);
                 node.getCompleted().setSelected(completed);
 

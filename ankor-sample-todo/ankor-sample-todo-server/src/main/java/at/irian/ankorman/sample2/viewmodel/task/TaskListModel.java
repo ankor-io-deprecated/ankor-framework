@@ -46,6 +46,14 @@ public class TaskListModel extends ViewModelBase {
         thisRef().append("tasks").setValue(tasksData);
     }
 
+    /*
+    // XXX: Not supported. Necessary?
+    @ChangeListener(pattern="**.<TaskListModel>.tasks[:index].completed")
+    public void completeTodo(int index) {
+        LOG.info("completing task ", index);
+    }
+    */
+
     @ActionListener(name = "newTodo")
     public void newTodo(@Param("title") final String title) {
         LOG.info("Add new task to task repository");
@@ -59,6 +67,15 @@ public class TaskListModel extends ViewModelBase {
 
         // X-X-X: Difference? -> Convenience
         // itemsLeft.set(String.valueOf(currItemsLeft + 1));
+    }
+
+    @ActionListener(name = "completeTask")
+    public void completeTask(@Param("index") final int index) {
+        LOG.info("completing task {}", index);
+        Task t = tasks.get(index);
+        t.setCompleted(!t.isCompleted());
+        taskRepository.saveTask(t);
+        reloadTasks();
     }
 
     private List<Task> fetchTasksData() {
