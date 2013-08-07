@@ -22,9 +22,9 @@ import java.util.ResourceBundle;
 import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
 import static at.irian.ankorman.sample2.fxclient.App.refFactory;
 
-public class TasksController implements Initializable {
+public class TaskListController implements Initializable {
 
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TasksController.class);
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TaskListController.class);
 
     private BindingContext bindingContext = new BindingContext();
     private Ref modelRef;
@@ -158,7 +158,7 @@ public class TasksController implements Initializable {
                 String title = (String)item.get("title");
                 boolean completed = (boolean)item.get("completed");
 
-                TaskComponent node = new TaskComponent();
+                TaskComponentController node = new TaskComponentController();
                 node.setText(title);
                 node.getCompleted().setSelected(completed);
 

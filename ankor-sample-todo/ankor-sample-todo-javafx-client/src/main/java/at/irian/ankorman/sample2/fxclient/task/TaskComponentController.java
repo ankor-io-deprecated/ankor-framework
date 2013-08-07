@@ -10,12 +10,13 @@ import javafx.scene.layout.HBox;
 import java.io.IOException;
 
 // TODO: Style checkboxes according to TodoMVC
-public class TaskComponent extends HBox {
+// TODO: Show delete button on hover
+public class TaskComponentController extends HBox {
 
     @FXML public CheckBox completed;
     @FXML public Label title;
 
-    public TaskComponent() {
+    public TaskComponentController() {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("task.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
