@@ -74,4 +74,15 @@ public class TaskRepository {
     public void clearTasks() {
         tasks = getActiveTasks();
     }
+
+    public void deleteTask(Task task) {
+        int i = 0;
+        for (Task t : tasks) {
+            if (t.getId().equals(task.getId())) {
+                tasks.remove(i);
+                return;
+            }
+            i++;
+        }
+    }
 }

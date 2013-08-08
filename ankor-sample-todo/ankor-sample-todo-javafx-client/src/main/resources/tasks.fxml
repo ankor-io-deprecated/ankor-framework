@@ -16,7 +16,7 @@
       <children>
         <VBox alignment="CENTER" maxWidth="550.0" VBox.margin="$x1" VBox.vgrow="ALWAYS">
           <children>
-            <Label id="header" alignment="CENTER" text="todos" textAlignment="CENTER">
+            <Label id="heading" alignment="CENTER" text="todos" textAlignment="CENTER">
               <font>
                 <Font size="70.0" />
               </font>
@@ -45,7 +45,7 @@
                         <Label text="items left" />
                       </children>
                     </HBox>
-                    <Button fx:id="clearButton" alignment="CENTER_RIGHT" contentDisplay="CENTER" layoutY="7.0" mnemonicParsing="false" onAction="#clearTasks" prefHeight="20.0" text="Clear completed (0)" textAlignment="CENTER" visible="true" AnchorPane.rightAnchor="10.0">
+                    <Button fx:id="clearButton" alignment="CENTER_RIGHT" contentDisplay="CENTER" layoutY="7.0" mnemonicParsing="false" onAction="#clearTasks" prefHeight="20.0" text="Clear completedCheckBox (0)" textAlignment="CENTER" visible="true" AnchorPane.rightAnchor="10.0">
                       <effect>
                         <InnerShadow blurType="TWO_PASS_BOX" color="#00000033" height="1.0" radius="0.0" width="0.0" />
                       </effect>
@@ -64,8 +64,8 @@
                   <children>
                     <VBox id="todoApp" styleClass="boxShadow" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                       <children>
-                        <Pane id="pane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="15.0" />
-                        <HBox alignment="CENTER_LEFT" maxHeight="65.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="65.0" style="-fx-background-color: rgba(0, 0, 0, 0.02);" styleClass="task">
+                        <Pane id="pane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="15.0" visible="true" />
+                        <HBox id="header" alignment="CENTER_LEFT" maxHeight="65.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="65.0" style="">
                           <children>
                             <CheckBox fx:id="toggleAll" alignment="CENTER" mnemonicParsing="false" onAction="#toggleAll" prefWidth="45.0" />
                             <TextField fx:id="newTodo" onAction="#newTodo" promptText="What needs to be done?" HBox.hgrow="ALWAYS">

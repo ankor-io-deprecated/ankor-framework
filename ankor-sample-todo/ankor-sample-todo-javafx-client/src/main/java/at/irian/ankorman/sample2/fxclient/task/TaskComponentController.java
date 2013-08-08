@@ -6,21 +6,23 @@ import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.AnchorPane;
 
 import java.io.IOException;
 import java.util.HashMap;
 
 // TODO: Style checkboxes according to TodoMVC
 // TODO: Show delete button on hover
-public class TaskComponentController extends HBox {
+public class TaskComponentController extends AnchorPane {
 
     private Ref modelRef;
     private int index;
 
-    @FXML public CheckBox completed;
+    @FXML public CheckBox completedCheckBox;
+    @FXML public Button deleteButton;
     @FXML public Label title;
 
 
@@ -39,12 +41,17 @@ public class TaskComponentController extends HBox {
     }
 
     @FXML
-    public void completed(ActionEvent actionEvent) {
-        //modelRef.append(String.format("tasks[%s].completed", index)).setValue(completed.isSelected());
-
+    public void complete(ActionEvent actionEvent) {
         HashMap params = new HashMap<String, Object>();
         params.put("index", index);
         modelRef.fireAction(new Action("toggleTask", params));
+    }
+
+    @FXML
+    public void delete(ActionEvent actionEvent) {
+        HashMap params = new HashMap<String, Object>();
+        params.put("index", index);
+        modelRef.fireAction(new Action("deleteTask", params));
     }
 
     public StringProperty textProperty() {
@@ -59,11 +66,19 @@ public class TaskComponentController extends HBox {
         textProperty().set(value);
     }
 
-    public CheckBox getCompleted() {
-        return completed;
+    public CheckBox getCompletedCheckBox() {
+        return completedCheckBox;
     }
 
-    public void setCompleted(CheckBox completed) {
-        this.completed = completed;
+    public void setCompletedCheckBox(CheckBox completedCheckBox) {
+        this.completedCheckBox = completedCheckBox;
+    }
+
+    public Button getDeleteButton() {
+        return deleteButton;
+    }
+
+    public void setDeleteButton(Button deleteButton) {
+        this.deleteButton = deleteButton;
     }
 }

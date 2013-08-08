@@ -19,7 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
+import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bind;
 import static at.irian.ankorman.sample2.fxclient.App.refFactory;
 
 public class TaskListController implements Initializable {
@@ -45,6 +45,8 @@ public class TaskListController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         modelRef = refFactory().rootRef().append("model");
+
+        // TODO: @ActionListener syntax
         RefListeners.addPropChangeListener(modelRef, new RefChangeListener() {
             @Override
             public void processChange(Ref changedProperty) {
@@ -57,8 +59,33 @@ public class TaskListController implements Initializable {
     }
 
     public void initialize() {
-        bindValue(modelRef.append("tasks"))
-                .toList(tasksList)
+        bind(modelRef.append("tasks"))
+                .toItemsProperty(tasksList.itemsProperty())
+                .createWithin(bindingContext);
+
+        bind(modelRef.append("toggleAll"))
+                .toBooleanProperty(toggleAll.selectedProperty())
+                .createWithin(bindingContext);
+
+        bind(modelRef.append("itemsLeft"))
+                .toStringProperty(todoCountNum.textProperty())
+                .forIntegerValue()
+                .createWithin(bindingContext);
+
+        bind(modelRef.append("itemsCompleteText"))
+                .toStringProperty(clearButton.textProperty())
+                .createWithin(bindingContext);
+
+        bind(modelRef.append("clearButtonVisibility"))
+                .toBooleanProperty(clearButton.visibleProperty())
+                .createWithin(bindingContext);
+
+        bind(modelRef.append("footerVisibility"))
+                .toBooleanProperty(footerTop.visibleProperty())
+                .createWithin(bindingContext);
+
+        bind(modelRef.append("footerVisibility"))
+                .toBooleanProperty(footerBottom.visibleProperty())
                 .createWithin(bindingContext);
 
         tasksList.setCellFactory(new Callback<ListView, ListCell>() {
@@ -67,30 +94,6 @@ public class TaskListController implements Initializable {
                 return new TaskComponentListCell();
             }
         });
-
-        bindValue(modelRef.append("toggleAll"))
-                .toCheckBox(toggleAll)
-                .createWithin(bindingContext);
-
-        bindValue(modelRef.append("itemsLeft"))
-                .forIntegerValue()
-                .toLabel(todoCountNum)
-                .createWithin(bindingContext);
-
-        bindValue(modelRef.append("itemsCompleteText"))
-                .toButton(clearButton)
-                .withVisibility(modelRef.append("clearButtonVisibility"))
-                .createWithin(bindingContext);
-
-        bindValue(null)
-                .toNode(footerTop)
-                .withVisibility(modelRef.append("footerVisibility"))
-                .createWithin(bindingContext);
-
-        bindValue(null)
-                .toNode(footerBottom)
-                .withVisibility(modelRef.append("footerVisibility"))
-                .createWithin(bindingContext);
 
         setupFilterButtonStyle();
     }
@@ -127,6 +130,7 @@ public class TaskListController implements Initializable {
         modelRef.fireAction(new Action("clearTasks"));
     }
 
+    // XXX: There's no good way to do this in the viewmodel
     private void setupFilterButtonStyle() {
         filterButtons.add(filterAll);
         filterButtons.add(filterActive);
@@ -170,7 +174,7 @@ public class TaskListController implements Initializable {
 
                 TaskComponentController node = new TaskComponentController(modelRef, getIndex());
                 node.setText(title);
-                node.getCompleted().setSelected(completed);
+                node.getCompletedCheckBox().setSelected(completed);
 
                 setGraphic(node);
             }

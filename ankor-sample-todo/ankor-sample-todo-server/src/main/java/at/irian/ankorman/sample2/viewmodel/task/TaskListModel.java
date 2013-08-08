@@ -41,7 +41,7 @@ public class TaskListModel extends ViewModelBase {
         this.tasks = fetchTasksData();
 
         this.itemsLeft.set(taskRepository.getActiveTasks().size());
-        this.updateFooterVisibility(); // XXX: Maybe a hook so methods are triggered by set?
+        this.updateFooterVisibility();
 
         this.itemsComplete.set(taskRepository.getCompletedTasks().size());
         this.updateClearButton();
@@ -99,6 +99,17 @@ public class TaskListModel extends ViewModelBase {
             toggleAll.set(false);
         }
         taskRepository.saveTask(task);
+    }
+
+    @ActionListener
+    public void deleteTask(@Param("index") final int index) {
+        LOG.info("Deleting task {}", index);
+
+        Task task = tasks.get(index);
+        taskRepository.deleteTask(task);
+
+        itemsLeft.set(taskRepository.getActiveTasks().size());
+        itemsComplete.set(taskRepository.getCompletedTasks().size());
     }
 
     @ActionListener

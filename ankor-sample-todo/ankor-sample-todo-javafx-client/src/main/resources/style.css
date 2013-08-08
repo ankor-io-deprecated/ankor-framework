@@ -5,7 +5,7 @@
     -fx-background-color: #eaeaea;
 }
 
-#header {
+#heading {
     -fx-font-family: Helvetica, Arial, sans-serif;
     -fx-font-weight: bold;
     -fx-font-size: 70pt;
@@ -58,10 +58,11 @@
     -fx-effect: dropshadow(two-pass-box, rgba(0, 0, 0, 0.15), 25, 0, 0, 15);
 }
 
-.task {
+#header {
+    -fx-background-color: rgba(0, 0, 0, 0.02);
 }
 
-.task .text-field, .task .label {
+.task .text-field, .task .label, #header .text-field {
     -fx-font-family: Helvetica, Arial, sans-serif;
     -fx-text-fill: #4d4d4d;
     -fx-background-color: transparent;
@@ -132,4 +133,22 @@
 
 .list-cell:empty {
     visibility:hidden;
+}
+
+.deleteButton {
+    -fx-font-size: 22pt;
+    -fx-text-fill: #a88a8a;
+    -fx-background-color: transparent;
+    visibility: hidden;
+}
+
+.task:hover .deleteButton {
+    visibility: visible;
+}
+
+.deleteButton:hover {
+    -fx-scale-x: 1.3;
+    -fx-scale-y: 1.3;
+    -fx-scale-z: 1.3;
+    -fx-effect: dropshadow(one-pass-box, rgba(199, 107, 107, 0.8), 10, 0, 0, 0);
 }

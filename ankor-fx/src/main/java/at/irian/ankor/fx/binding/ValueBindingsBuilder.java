@@ -3,7 +3,7 @@ package at.irian.ankor.fx.binding;
 import at.irian.ankor.ref.Ref;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
-import javafx.scene.Node;
+import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.text.Text;
 import javafx.util.converter.NumberStringConverter;
@@ -12,16 +12,13 @@ import javafx.util.converter.NumberStringConverter;
  * @author Thomas Spiegl
  */
 public class ValueBindingsBuilder {
-
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(BindingsBuilder.class);
 
+    private StringProperty stringProperty;
+    private BooleanProperty booleanProperty;
+    private ObjectProperty<ObservableList> itemsProperty;
+
     private Ref valueRef;
-
-    private Node node;
-
-    private Text text;
-
-    private Label label;
 
     private Button button;
 
@@ -33,15 +30,7 @@ public class ValueBindingsBuilder {
 
     private ComboBox comboBox;
 
-    private CheckBox checkBox;
-
-    private TableView tableView;
-
-    private ListView listView;
-
     private Ref editableRef;
-
-    private Ref visibleRef;
 
     // XXX: Need better solution for this
     private boolean hackyIntegerFlag = false;
@@ -50,8 +39,30 @@ public class ValueBindingsBuilder {
         return new ValueBindingsBuilder().forValue(value);
     }
 
+    /*
+     * Shortcut for bindValue
+     */
+    public static ValueBindingsBuilder bind(Ref value) {
+        return bindValue(value);
+    }
+
     private ValueBindingsBuilder forValue(Ref value) {
         this.valueRef = value;
+        return this;
+    }
+
+    public ValueBindingsBuilder toBooleanProperty(BooleanProperty booleanProperty) {
+        this.booleanProperty = booleanProperty;
+        return this;
+    }
+
+    public ValueBindingsBuilder toStringProperty(StringProperty stringProperty) {
+        this.stringProperty = stringProperty;
+        return this;
+    }
+
+    public ValueBindingsBuilder toItemsProperty(ObjectProperty<ObservableList> itemsProperty) {
+        this.itemsProperty = itemsProperty;
         return this;
     }
 
@@ -61,55 +72,42 @@ public class ValueBindingsBuilder {
     }
 
     public ValueBindingsBuilder toText(Text text) {
-        this.node = text;
-        this.text = text;
+        this.stringProperty = text.textProperty();
         return this;
     }
 
     public ValueBindingsBuilder toLabel(Label label) {
-        this.node = label;
-        this.label = label;
+        this.stringProperty = label.textProperty();
         return this;
     }
 
     public ValueBindingsBuilder toCheckBox(CheckBox checkBox) {
-        this.node = checkBox;
-        this.checkBox = checkBox;
+        this.booleanProperty = checkBox.selectedProperty();
         return this;
     }
 
     public ValueBindingsBuilder toButton(Button button) {
-        this.node = button;
         this.button = button;
         return this;
     }
 
     public ValueBindingsBuilder toInput(TextInputControl inputControl) {
-        this.node = inputControl;
         this.inputControl = inputControl;
         return this;
     }
 
     public ValueBindingsBuilder toInput(ComboBox comboBox) {
-        this.node = comboBox;
         this.comboBox = comboBox;
         return this;
     }
 
     public ValueBindingsBuilder toTable(TableView tableView) {
-        this.node = tableView;
-        this.tableView = tableView;
+        this.itemsProperty = tableView.itemsProperty();
         return this;
     }
 
     public ValueBindingsBuilder toList(ListView listView) {
-        this.node = listView;
-        this.listView = listView;
-        return this;
-    }
-
-    public ValueBindingsBuilder toNode(Node node) {
-        this.node = node;
+        this.itemsProperty = listView.itemsProperty();
         return this;
     }
 
@@ -128,30 +126,22 @@ public class ValueBindingsBuilder {
         return this;
     }
 
-    public ValueBindingsBuilder withVisibility(Ref visibleRef) {
-        this.visibleRef = visibleRef;
-        return this;
-    }
-
     public void createWithin(BindingContext bindingContext) {
-        if (node != null && visibleRef != null) {
-            bindVisible(visibleRef, node, bindingContext);
-        }
-
-        if (text != null) {
-            bind(valueRef, text, bindingContext);
-        } else if (label != null) {
+        if (itemsProperty != null) {
+            bind(valueRef, itemsProperty);
+        } else if (stringProperty != null) {
             if (!hackyIntegerFlag) {
-                bind(valueRef, label, bindingContext);
+                bind(valueRef, stringProperty, bindingContext);
             } else {
-                bindInteger(valueRef, label, bindingContext);
+                bindInteger(valueRef, stringProperty, bindingContext);
             }
+        } else if (booleanProperty != null) {
+            bind(valueRef, booleanProperty, bindingContext);
+
         } else if (button != null) {
             bind(valueRef, button, bindingContext);
         } else if (tab != null) {
             bind(valueRef, tab, bindingContext);
-        } else if (checkBox != null) {
-            bind(valueRef, checkBox, bindingContext);
         } else if (comboBox != null) {
             if (itemsRef == null) {
                 throw new IllegalStateException("Illegal Binding, missing itemsRef " + this);
@@ -162,11 +152,6 @@ public class ValueBindingsBuilder {
             if (editableRef != null) {
                 bindEditable(editableRef, inputControl, bindingContext);
             }
-        } else if (tableView != null) {
-            bind(valueRef, tableView);
-        } else if (listView != null) {
-            bind(valueRef, listView);
-        } else if (node != null && visibleRef != null) {
         } else {
             throw new IllegalStateException("Illegal Binding " + this);
         }
@@ -176,10 +161,9 @@ public class ValueBindingsBuilder {
     public String toString() {
         final StringBuilder sb = new StringBuilder("BindingsBuilder{");
         sb.append("valueRef=").append(valueRef);
-        sb.append(", text=").append(text);
-        sb.append(", itemsRef=").append(itemsRef);
-        sb.append(", inputControl=").append(inputControl);
-        sb.append(", comboBox=").append(comboBox);
+        sb.append(", itemsProperty=").append(itemsProperty);
+        sb.append(", stringProperty=").append(stringProperty);
+        sb.append(", booleanProperty=").append(booleanProperty);
         sb.append('}');
         return sb.toString();
     }
@@ -187,58 +171,53 @@ public class ValueBindingsBuilder {
 
     // static utils
 
+    private static void bind(Ref valueRef, ObjectProperty<ObservableList> property) {
+        new RefPropertyBinding(valueRef, property);
+    }
+
+    private static void bind(Ref valueRef, StringProperty property, BindingContext context) {
+        new RefPropertyBinding(valueRef, createStringProperty(property, context));
+    }
+
+    private static void bind(Ref valueRef, BooleanProperty property, BindingContext context) {
+        new RefPropertyBinding(valueRef, createBooleanProperty(property, context));
+    }
+
     private static void bind(final Ref valueRef, final Ref itemsRef, final ComboBox comboBox) {
         //noinspection unchecked
         new RefPropertyBinding(valueRef, comboBox.valueProperty());
         new RefPropertyBinding(itemsRef, comboBox.itemsProperty());
     }
 
-    private static void bind(final Ref valueRef, final Text text, BindingContext context) {
-        new RefPropertyBinding(valueRef, createProperty(text.textProperty(), context));
-    }
-
-    private static void bindInteger(final Ref valueRef, final Label label, BindingContext context) {
-        new RefPropertyBinding(valueRef, createIntegerProperty(label.textProperty(), context));
-    }
-
-    private static void bind(final Ref valueRef, final Label label, BindingContext context) {
-        new RefPropertyBinding(valueRef, createProperty(label.textProperty(), context));
+    private static void bindInteger(final Ref valueRef, final StringProperty property, BindingContext context) {
+        new RefPropertyBinding(valueRef, createIntegerProperty(property, context));
     }
 
     private static void bind(final Ref valueRef, final Button button, BindingContext context) {
-        new RefPropertyBinding(valueRef, createProperty(button.textProperty(), context));
+        new RefPropertyBinding(valueRef, createStringProperty(button.textProperty(), context));
     }
 
     private static void bind(final Ref valueRef, final Tab tab, BindingContext context) {
-        new RefPropertyBinding(valueRef, createProperty(tab.textProperty(), context));
+        new RefPropertyBinding(valueRef, createStringProperty(tab.textProperty(), context));
     }
 
     private static void bind(final Ref valueRef, final TextInputControl control, BindingContext context) {
-        new RefPropertyBinding(valueRef, createProperty(control.textProperty(), context));
-    }
-
-    private static void bind(final Ref valueRef, final CheckBox control, BindingContext context) {
-        new RefPropertyBinding(valueRef, createBooleanProperty(control.selectedProperty(), context));
+        new RefPropertyBinding(valueRef, createStringProperty(control.textProperty(), context));
     }
 
     private static void bindEditable(Ref valueRef, TextInputControl control, BindingContext context) {
         new RefPropertyBinding(valueRef, createBooleanProperty(control.editableProperty(), context));
     }
 
-    private static void bindVisible(Ref visibleRef, Node node, BindingContext context) {
-        new RefPropertyBinding(visibleRef, createBooleanProperty(node.visibleProperty(), context));
-    }
-
-    private static void bind(Ref valueRef, TableView tableView) {
-        new RefPropertyBinding(valueRef, tableView.itemsProperty());
-    }
-
-    private static void bind(Ref valueRef, ListView listView) {
-        new RefPropertyBinding(valueRef, listView.itemsProperty());
-    }
-
-    private static StringProperty createProperty(StringProperty property, BindingContext context) {
+    private static StringProperty createStringProperty(StringProperty property, BindingContext context) {
         SimpleStringProperty prop = new SimpleStringProperty();
+        Bindings.bindBidirectional(prop, property);
+        context.add(prop);
+        return prop;
+    }
+
+    private static BooleanProperty createBooleanProperty(BooleanProperty property, BindingContext context) {
+        SimpleBooleanProperty prop = new SimpleBooleanProperty();
         Bindings.bindBidirectional(prop, property);
         context.add(prop);
         return prop;
@@ -247,14 +226,6 @@ public class ValueBindingsBuilder {
     private static IntegerProperty createIntegerProperty(StringProperty property, BindingContext context) {
         SimpleIntegerProperty prop = new SimpleIntegerProperty();
         Bindings.bindBidirectional(property, prop, new NumberStringConverter());
-        context.add(prop);
-        return prop;
-    }
-
-    private static BooleanProperty createBooleanProperty(BooleanProperty property, BindingContext context) {
-        SimpleBooleanProperty prop = new SimpleBooleanProperty();
-        Bindings.bindBidirectional(prop, property);
-        prop.unbind();
         context.add(prop);
         return prop;
     }
