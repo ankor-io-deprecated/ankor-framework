@@ -9,6 +9,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.text.Text;
 
+import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bind;
 import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
 
 /**
@@ -36,11 +37,13 @@ public class AnimalDetailTabController extends BaseTabController {
         Ref selItemsRef = modelRef.append("selectItems");
 
         bindValue(getTabRef().append("name"))
-                .toTabText(tab)
+                .toStringProperty(tab.textProperty())
                 .createWithin(bindingContext);
         bindValue(animalRef.append("name"))
                 .toInput(name)
-                .withEditable(modelRef.append("editable"))
+                .createWithin(bindingContext);
+        bindValue(modelRef.append("editable"))
+                .toBooleanProperty(name.editableProperty())
                 .createWithin(bindingContext);
         bindValue(modelRef.append("nameStatus"))
                 .toText(nameStatus)

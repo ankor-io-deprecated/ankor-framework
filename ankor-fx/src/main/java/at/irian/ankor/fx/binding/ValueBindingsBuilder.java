@@ -14,23 +14,18 @@ import javafx.util.converter.NumberStringConverter;
 public class ValueBindingsBuilder {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(BindingsBuilder.class);
 
+    // XXX: Using properties instead of UI components makes this builder much more applicable
     private StringProperty stringProperty;
     private BooleanProperty booleanProperty;
     private ObjectProperty<ObservableList> itemsProperty;
 
     private Ref valueRef;
 
-    private Button button;
-
-    private Tab tab;
-
     private Ref itemsRef;
 
     private TextInputControl inputControl;
 
     private ComboBox comboBox;
-
-    private Ref editableRef;
 
     // XXX: Need better solution for this
     private boolean hackyIntegerFlag = false;
@@ -39,9 +34,7 @@ public class ValueBindingsBuilder {
         return new ValueBindingsBuilder().forValue(value);
     }
 
-    /*
-     * Shortcut for bindValue
-     */
+    // Shortcut
     public static ValueBindingsBuilder bind(Ref value) {
         return bindValue(value);
     }
@@ -71,6 +64,23 @@ public class ValueBindingsBuilder {
         return this;
     }
 
+    public ValueBindingsBuilder toInput(TextInputControl inputControl) {
+        this.inputControl = inputControl;
+        return this;
+    }
+
+    public ValueBindingsBuilder toInput(ComboBox comboBox) {
+        this.comboBox = comboBox;
+        return this;
+    }
+
+    public ValueBindingsBuilder withSelectItems(Ref itemsRef) {
+        this.itemsRef = itemsRef;
+        return this;
+    }
+
+    // Convenience methods
+
     public ValueBindingsBuilder toText(Text text) {
         this.stringProperty = text.textProperty();
         return this;
@@ -87,17 +97,7 @@ public class ValueBindingsBuilder {
     }
 
     public ValueBindingsBuilder toButton(Button button) {
-        this.button = button;
-        return this;
-    }
-
-    public ValueBindingsBuilder toInput(TextInputControl inputControl) {
-        this.inputControl = inputControl;
-        return this;
-    }
-
-    public ValueBindingsBuilder toInput(ComboBox comboBox) {
-        this.comboBox = comboBox;
+        this.stringProperty = button.textProperty();
         return this;
     }
 
@@ -108,21 +108,6 @@ public class ValueBindingsBuilder {
 
     public ValueBindingsBuilder toList(ListView listView) {
         this.itemsProperty = listView.itemsProperty();
-        return this;
-    }
-
-    public ValueBindingsBuilder toTabText(Tab tab) {
-        this.tab = tab;
-        return this;
-    }
-
-    public ValueBindingsBuilder withSelectItems(Ref itemsRef) {
-        this.itemsRef = itemsRef;
-        return this;
-    }
-
-    public ValueBindingsBuilder withEditable(Ref editableRef) {
-        this.editableRef = editableRef;
         return this;
     }
 
@@ -137,11 +122,6 @@ public class ValueBindingsBuilder {
             }
         } else if (booleanProperty != null) {
             bind(valueRef, booleanProperty, bindingContext);
-
-        } else if (button != null) {
-            bind(valueRef, button, bindingContext);
-        } else if (tab != null) {
-            bind(valueRef, tab, bindingContext);
         } else if (comboBox != null) {
             if (itemsRef == null) {
                 throw new IllegalStateException("Illegal Binding, missing itemsRef " + this);
@@ -149,9 +129,6 @@ public class ValueBindingsBuilder {
             bind(valueRef, itemsRef, comboBox);
         } else if (inputControl != null) {
             bind(valueRef, inputControl, bindingContext);
-            if (editableRef != null) {
-                bindEditable(editableRef, inputControl, bindingContext);
-            }
         } else {
             throw new IllegalStateException("Illegal Binding " + this);
         }
@@ -193,20 +170,8 @@ public class ValueBindingsBuilder {
         new RefPropertyBinding(valueRef, createIntegerProperty(property, context));
     }
 
-    private static void bind(final Ref valueRef, final Button button, BindingContext context) {
-        new RefPropertyBinding(valueRef, createStringProperty(button.textProperty(), context));
-    }
-
-    private static void bind(final Ref valueRef, final Tab tab, BindingContext context) {
-        new RefPropertyBinding(valueRef, createStringProperty(tab.textProperty(), context));
-    }
-
     private static void bind(final Ref valueRef, final TextInputControl control, BindingContext context) {
         new RefPropertyBinding(valueRef, createStringProperty(control.textProperty(), context));
-    }
-
-    private static void bindEditable(Ref valueRef, TextInputControl control, BindingContext context) {
-        new RefPropertyBinding(valueRef, createBooleanProperty(control.editableProperty(), context));
     }
 
     private static StringProperty createStringProperty(StringProperty property, BindingContext context) {
@@ -223,6 +188,7 @@ public class ValueBindingsBuilder {
         return prop;
     }
 
+    // Note that this uses a NumberStringConverter!
     private static IntegerProperty createIntegerProperty(StringProperty property, BindingContext context) {
         SimpleIntegerProperty prop = new SimpleIntegerProperty();
         Bindings.bindBidirectional(property, prop, new NumberStringConverter());
