@@ -44,7 +44,7 @@ public class TaskComponentController extends HBox {
 
         HashMap params = new HashMap<String, Object>();
         params.put("index", index);
-        modelRef.fireAction(new Action("completeTask", params));
+        modelRef.fireAction(new Action("toggleTask", params));
     }
 
     public StringProperty textProperty() {

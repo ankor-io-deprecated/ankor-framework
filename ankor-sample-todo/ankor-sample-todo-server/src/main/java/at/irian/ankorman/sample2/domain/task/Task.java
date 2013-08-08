@@ -5,7 +5,7 @@ import java.util.UUID;
 // TODO: Resolve ambivalent naming: Task <-> Todo
 public class Task {
     private String id;
-    private String title = "";
+    private String title;
     private boolean completed = false;
 
     public Task(String title) {
@@ -41,22 +41,5 @@ public class Task {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Task task = (Task) o;
-
-        if (!id.equals(task.id)) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        return id.hashCode();
     }
 }

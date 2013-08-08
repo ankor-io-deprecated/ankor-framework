@@ -90,10 +90,9 @@
 }
 
 #clearButton {
-    -fx-background-color: transparent;
+    -fx-background-color: rgba(0, 0, 0, 0.1);
     -fx-border: none;
     -fx-font-size: 11pt;
-    -fx-background-color: rgba(0, 0, 0, 0.1);
     -fx-padding: 4 10 2 10;
 }
 

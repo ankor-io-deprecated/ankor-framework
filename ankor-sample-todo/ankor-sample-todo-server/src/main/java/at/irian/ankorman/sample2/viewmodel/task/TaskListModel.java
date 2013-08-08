@@ -30,6 +30,8 @@ public class TaskListModel extends ViewModelBase {
     private ViewModelProperty<String> itemsCompleteText;
     private ViewModelProperty<Boolean> clearButtonVisibility;
 
+    private ViewModelProperty<Boolean> toggleAll;
+
     public TaskListModel(Ref viewModelRef, TaskRepository taskRepository) {
         super(viewModelRef);
 
@@ -43,22 +45,25 @@ public class TaskListModel extends ViewModelBase {
 
         this.itemsComplete.set(taskRepository.getCompletedTasks().size());
         this.updateClearButton();
+
+        toggleAll.set(false);
     }
 
     @ChangeListener(pattern = {
             "**.<TaskListModel>.itemsLeft",
             "**.<TaskListModel>.itemsComplete",
-            "**.<TaskListModel>.filter"
-    })
+            "**.<TaskListModel>.filter" })
     public void reloadTasks() {
         LOG.info("reloading tasks");
         List<Task> tasksData = fetchTasksData();
         thisRef().append("tasks").setValue(tasksData);
     }
 
-    @ChangeListener(pattern="**.<TaskListModel>.itemsLeft")
+    @ChangeListener(pattern = {
+            "**.<TaskListModel>.itemsLeft",
+            "**.<TaskListModel>.itemsComplete" })
     public void updateFooterVisibility() {
-        footerVisibility.set(tasks.size() != 0);
+        footerVisibility.set(taskRepository.getTasks().size() != 0);
     }
 
     @ChangeListener(pattern="**.<TaskListModel>.itemsComplete")
@@ -79,7 +84,7 @@ public class TaskListModel extends ViewModelBase {
     }
 
     @ActionListener
-    public void completeTask(@Param("index") final int index) {
+    public void toggleTask(@Param("index") final int index) {
         LOG.info("Completing task {}", index);
 
         Task task = tasks.get(index);
@@ -91,8 +96,21 @@ public class TaskListModel extends ViewModelBase {
             task.setCompleted(false);
             itemsLeft.set(itemsLeft.get() + 1);
             itemsComplete.set(itemsComplete.get() - 1);
+            toggleAll.set(false);
         }
         taskRepository.saveTask(task);
+    }
+
+    @ActionListener
+    public void toggleAll() {
+        //toggleAll.set(!toggleAll.get());
+
+        for (Task t : taskRepository.getTasks()) {
+            t.setCompleted(toggleAll.get());
+            taskRepository.saveTask(t);
+        }
+        itemsComplete.set(taskRepository.getCompletedTasks().size());
+        itemsLeft.set(taskRepository.getActiveTasks().size());
     }
 
     @ActionListener
@@ -101,6 +119,7 @@ public class TaskListModel extends ViewModelBase {
 
         taskRepository.clearTasks();
         itemsComplete.set(0);
+        toggleAll.set(false);
     }
 
     /*
@@ -170,5 +189,13 @@ public class TaskListModel extends ViewModelBase {
 
     public void setClearButtonVisibility(ViewModelProperty<Boolean> clearButtonVisibility) {
         this.clearButtonVisibility = clearButtonVisibility;
+    }
+
+    public ViewModelProperty<Boolean> getToggleAll() {
+        return toggleAll;
+    }
+
+    public void setToggleAll(ViewModelProperty<Boolean> toggleAll) {
+        this.toggleAll = toggleAll;
     }
 }

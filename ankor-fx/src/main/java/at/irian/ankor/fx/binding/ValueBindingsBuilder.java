@@ -33,6 +33,8 @@ public class ValueBindingsBuilder {
 
     private ComboBox comboBox;
 
+    private CheckBox checkBox;
+
     private TableView tableView;
 
     private ListView listView;
@@ -67,6 +69,12 @@ public class ValueBindingsBuilder {
     public ValueBindingsBuilder toLabel(Label label) {
         this.node = label;
         this.label = label;
+        return this;
+    }
+
+    public ValueBindingsBuilder toCheckBox(CheckBox checkBox) {
+        this.node = checkBox;
+        this.checkBox = checkBox;
         return this;
     }
 
@@ -142,6 +150,8 @@ public class ValueBindingsBuilder {
             bind(valueRef, button, bindingContext);
         } else if (tab != null) {
             bind(valueRef, tab, bindingContext);
+        } else if (checkBox != null) {
+            bind(valueRef, checkBox, bindingContext);
         } else if (comboBox != null) {
             if (itemsRef == null) {
                 throw new IllegalStateException("Illegal Binding, missing itemsRef " + this);
@@ -205,6 +215,10 @@ public class ValueBindingsBuilder {
 
     private static void bind(final Ref valueRef, final TextInputControl control, BindingContext context) {
         new RefPropertyBinding(valueRef, createProperty(control.textProperty(), context));
+    }
+
+    private static void bind(final Ref valueRef, final CheckBox control, BindingContext context) {
+        new RefPropertyBinding(valueRef, createBooleanProperty(control.selectedProperty(), context));
     }
 
     private static void bindEditable(Ref valueRef, TextInputControl control, BindingContext context) {

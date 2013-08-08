@@ -15,7 +15,7 @@ public class TaskRepository {
 
         int i = 0;
         for (Task t : tasks) {
-            if (t.equals(task)) {
+            if (t.getId().equals(task.getId())) {
                 tasks.set(i, new Task(task));
                 return;
             }
@@ -72,6 +72,6 @@ public class TaskRepository {
     }
 
     public void clearTasks() {
-        tasks.removeAll(getCompletedTasks());
+        tasks = getActiveTasks();
     }
 }

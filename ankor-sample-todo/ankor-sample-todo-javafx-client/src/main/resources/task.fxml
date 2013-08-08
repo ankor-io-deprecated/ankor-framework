@@ -15,7 +15,7 @@
         <Insets />
       </HBox.margin>
     </CheckBox>
-    <Label fx:id="title" maxWidth="-Infinity" text="Some task" wrapText="true" HBox.hgrow="ALWAYS">
+    <Label fx:id="title" maxWidth="-Infinity" text="Some task" wrapText="false" HBox.hgrow="ALWAYS">
       <HBox.margin>
         <Insets left="16.0" right="16.0" top="3.0" />
       </HBox.margin>

@@ -23,13 +23,13 @@ import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
 import static at.irian.ankorman.sample2.fxclient.App.refFactory;
 
 public class TaskListController implements Initializable {
-
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TaskListController.class);
 
     private BindingContext bindingContext = new BindingContext();
     private Ref modelRef;
 
     @FXML public ListView tasksList;
+    @FXML public CheckBox toggleAll;
     @FXML public TextField newTodo;
     @FXML public Label todoCountNum;
     @FXML public Button clearButton;
@@ -67,6 +67,10 @@ public class TaskListController implements Initializable {
                 return new TaskComponentListCell();
             }
         });
+
+        bindValue(modelRef.append("toggleAll"))
+                .toCheckBox(toggleAll)
+                .createWithin(bindingContext);
 
         bindValue(modelRef.append("itemsLeft"))
                 .forIntegerValue()
@@ -150,6 +154,10 @@ public class TaskListController implements Initializable {
             case active: filterActive.setStyle("-fx-font-weight: bold;"); break;
             case completed: filterCompleted.setStyle("-fx-font-weight: bold;"); break;
         }
+    }
+
+    public void toggleAll(ActionEvent actionEvent) {
+        modelRef.fireAction(new Action("toggleAll"));
     }
 
     private class TaskComponentListCell extends ListCell<LinkedHashMap<String, Object>> {
