@@ -7,12 +7,10 @@ import at.irian.ankor.ref.listener.RefChangeListener;
 import at.irian.ankor.ref.listener.RefListeners;
 import at.irian.ankorman.sample2.viewmodel.task.Filter;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
 import javafx.util.Callback;
 
 import java.net.URL;
@@ -34,7 +32,7 @@ public class TaskListController implements Initializable {
     @FXML public ListView tasksList;
     @FXML public TextField newTodo;
     @FXML public Label todoCountNum;
-    @FXML public Button clearCompleted;
+    @FXML public Button clearButton;
 
     @FXML public Button filterAll;
     @FXML public Button filterActive;
@@ -46,7 +44,7 @@ public class TaskListController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        this.modelRef = refFactory().rootRef().append("model");
+        modelRef = refFactory().rootRef().append("model");
         RefListeners.addPropChangeListener(modelRef, new RefChangeListener() {
             @Override
             public void processChange(Ref changedProperty) {
@@ -59,44 +57,9 @@ public class TaskListController implements Initializable {
     }
 
     public void initialize() {
-        filterButtons.add(filterAll);
-        filterButtons.add(filterActive);
-        filterButtons.add(filterCompleted);
-
         bindValue(modelRef.append("tasks"))
                 .toList(tasksList)
                 .createWithin(bindingContext);
-
-
-        bindValue(modelRef.append("itemsLeft"))
-                .forIntegerValue()
-                .toLabel(todoCountNum)
-                .createWithin(bindingContext);
-
-        int itemsLeft = modelRef.append("itemsLeft").getValue();
-        setFooterVisibility(itemsLeft);
-
-        // XXX: Is there a better way to do this?
-        RefListeners.addPropChangeListener(modelRef.append("itemsLeft"), new RefChangeListener() {
-            @Override
-            public void processChange(Ref changedProperty) {
-                int itemsLeft = changedProperty.getValue();
-                setFooterVisibility(itemsLeft);
-            }
-        });
-
-        String filterValue = modelRef.append("filter").getValue();
-        Filter filterEnum = Filter.valueOf(filterValue);
-        setFilterButtonStyle(filterEnum);
-
-        RefListeners.addPropChangeListener(modelRef.append("filter"), new RefChangeListener() {
-            @Override
-            public void processChange(Ref changedProperty) {
-                String prop = changedProperty.getValue();
-                Filter filterEnum = Filter.valueOf(prop);
-                setFilterButtonStyle(filterEnum);
-            }
-        });
 
         tasksList.setCellFactory(new Callback<ListView, ListCell>() {
             @Override
@@ -104,22 +67,28 @@ public class TaskListController implements Initializable {
                 return new TaskComponentListCell();
             }
         });
-    }
 
-    private void setFooterVisibility(int itemsLeft) {
-        footerTop.setVisible(itemsLeft != 0);
-        footerBottom.setVisible(itemsLeft != 0);
-    }
+        bindValue(modelRef.append("itemsLeft"))
+                .forIntegerValue()
+                .toLabel(todoCountNum)
+                .createWithin(bindingContext);
 
-    private void setFilterButtonStyle(Filter filter) {
-        for (Button b : filterButtons) {
-            b.setStyle("-fx-font-weight: normal;");
-        }
-        switch (filter) {
-            case all: filterAll.setStyle("-fx-font-weight: bold;"); break;
-            case active: filterActive.setStyle("-fx-font-weight: bold;"); break;
-            case completed: filterCompleted.setStyle("-fx-font-weight: bold;"); break;
-        }
+        bindValue(modelRef.append("itemsCompleteText"))
+                .toButton(clearButton)
+                .withVisibility(modelRef.append("clearButtonVisibility"))
+                .createWithin(bindingContext);
+
+        bindValue(null)
+                .toNode(footerTop)
+                .withVisibility(modelRef.append("footerVisibility"))
+                .createWithin(bindingContext);
+
+        bindValue(null)
+                .toNode(footerBottom)
+                .withVisibility(modelRef.append("footerVisibility"))
+                .createWithin(bindingContext);
+
+        setupFilterButtonStyle();
     }
 
     @FXML
@@ -128,9 +97,8 @@ public class TaskListController implements Initializable {
 
             LinkedHashMap<String, Object> params = new LinkedHashMap<>();
             params.put("title", newTodo.getText());
-            params.put("completed", false);
 
-            modelRef.fireAction(new Action("newTodo", params));
+            modelRef.fireAction(new Action("newTask", params));
             newTodo.clear();
         }
     }
@@ -148,6 +116,40 @@ public class TaskListController implements Initializable {
     @FXML
     public void displayCompleted(ActionEvent actionEvent) {
         modelRef.append("filter").setValue(Filter.completed.toString());
+    }
+
+    @FXML
+    public void clearTasks(ActionEvent actionEvent) {
+        modelRef.fireAction(new Action("clearTasks"));
+    }
+
+    private void setupFilterButtonStyle() {
+        filterButtons.add(filterAll);
+        filterButtons.add(filterActive);
+        filterButtons.add(filterCompleted);
+
+        String filter = modelRef.append("filter").getValue();
+        updateFilterButtonStyle(filter);
+
+        RefListeners.addPropChangeListener(modelRef.append("filter"), new RefChangeListener() {
+            @Override
+            public void processChange(Ref changedProperty) {
+                String prop = changedProperty.getValue();
+                updateFilterButtonStyle(prop);
+            }
+        });
+    }
+
+    private void updateFilterButtonStyle(String filterString) {
+        Filter filter = Filter.valueOf(filterString);
+        for (Button b : filterButtons) {
+            b.setStyle("-fx-font-weight: normal;");
+        }
+        switch (filter) {
+            case all: filterAll.setStyle("-fx-font-weight: bold;"); break;
+            case active: filterActive.setStyle("-fx-font-weight: bold;"); break;
+            case completed: filterCompleted.setStyle("-fx-font-weight: bold;"); break;
+        }
     }
 
     private class TaskComponentListCell extends ListCell<LinkedHashMap<String, Object>> {

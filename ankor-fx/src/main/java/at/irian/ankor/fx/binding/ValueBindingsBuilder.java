@@ -3,6 +3,7 @@ package at.irian.ankor.fx.binding;
 import at.irian.ankor.ref.Ref;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.text.Text;
 import javafx.util.converter.NumberStringConverter;
@@ -15,6 +16,8 @@ public class ValueBindingsBuilder {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(BindingsBuilder.class);
 
     private Ref valueRef;
+
+    private Node node;
 
     private Text text;
 
@@ -36,7 +39,10 @@ public class ValueBindingsBuilder {
 
     private Ref editableRef;
 
-    boolean hackyIntegerFlag = false;
+    private Ref visibleRef;
+
+    // XXX: Need better solution for this
+    private boolean hackyIntegerFlag = false;
 
     public static ValueBindingsBuilder bindValue(Ref value) {
         return new ValueBindingsBuilder().forValue(value);
@@ -53,37 +59,49 @@ public class ValueBindingsBuilder {
     }
 
     public ValueBindingsBuilder toText(Text text) {
+        this.node = text;
         this.text = text;
         return this;
     }
 
     public ValueBindingsBuilder toLabel(Label label) {
+        this.node = label;
         this.label = label;
         return this;
     }
 
     public ValueBindingsBuilder toButton(Button button) {
+        this.node = button;
         this.button = button;
         return this;
     }
 
     public ValueBindingsBuilder toInput(TextInputControl inputControl) {
+        this.node = inputControl;
         this.inputControl = inputControl;
         return this;
     }
 
     public ValueBindingsBuilder toInput(ComboBox comboBox) {
+        this.node = comboBox;
         this.comboBox = comboBox;
         return this;
     }
 
     public ValueBindingsBuilder toTable(TableView tableView) {
+        this.node = tableView;
         this.tableView = tableView;
         return this;
     }
 
     public ValueBindingsBuilder toList(ListView listView) {
+        this.node = listView;
         this.listView = listView;
+        return this;
+    }
+
+    public ValueBindingsBuilder toNode(Node node) {
+        this.node = node;
         return this;
     }
 
@@ -102,7 +120,16 @@ public class ValueBindingsBuilder {
         return this;
     }
 
+    public ValueBindingsBuilder withVisibility(Ref visibleRef) {
+        this.visibleRef = visibleRef;
+        return this;
+    }
+
     public void createWithin(BindingContext bindingContext) {
+        if (node != null && visibleRef != null) {
+            bindVisible(visibleRef, node, bindingContext);
+        }
+
         if (text != null) {
             bind(valueRef, text, bindingContext);
         } else if (label != null) {
@@ -129,6 +156,7 @@ public class ValueBindingsBuilder {
             bind(valueRef, tableView);
         } else if (listView != null) {
             bind(valueRef, listView);
+        } else if (node != null && visibleRef != null) {
         } else {
             throw new IllegalStateException("Illegal Binding " + this);
         }
@@ -181,6 +209,10 @@ public class ValueBindingsBuilder {
 
     private static void bindEditable(Ref valueRef, TextInputControl control, BindingContext context) {
         new RefPropertyBinding(valueRef, createBooleanProperty(control.editableProperty(), context));
+    }
+
+    private static void bindVisible(Ref visibleRef, Node node, BindingContext context) {
+        new RefPropertyBinding(visibleRef, createBooleanProperty(node.visibleProperty(), context));
     }
 
     private static void bind(Ref valueRef, TableView tableView) {

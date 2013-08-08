@@ -70,4 +70,8 @@ public class TaskRepository {
         }
         return res;
     }
+
+    public void clearTasks() {
+        tasks.removeAll(getCompletedTasks());
+    }
 }
