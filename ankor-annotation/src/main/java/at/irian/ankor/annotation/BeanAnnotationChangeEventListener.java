@@ -1,9 +1,9 @@
 package at.irian.ankor.annotation;
 
-import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.change.ChangeEventListener;
 import at.irian.ankor.path.PathSyntax;
+import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.match.RefMatcher;
 
 import java.lang.annotation.Annotation;
@@ -18,35 +18,30 @@ public class BeanAnnotationChangeEventListener extends ChangeEventListener {
 
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(BeanAnnotationChangeEventListener.class);
 
-    private final BeanResolver beanResolver;
+    private final Object bean;
     private final PathSyntax pathSyntax;
     private final List<ChangeTarget> changeTargets;
 
-    public BeanAnnotationChangeEventListener(BeanResolver beanResolver, PathSyntax pathSyntax) {
+    public BeanAnnotationChangeEventListener(Object bean, String pathPrefix, PathSyntax pathSyntax) {
         super(null); // always global
-        this.beanResolver = beanResolver;
+        this.bean = bean;
         this.pathSyntax = pathSyntax;
-        this.changeTargets = scan(beanResolver);
+        this.changeTargets = scan(pathPrefix);
     }
 
-    private List<ChangeTarget> scan(BeanResolver beanResolver) {
+    private List<ChangeTarget> scan(String pathPrefix) {
         List<ChangeTarget> result = new ArrayList<ChangeTarget>();
-        for (String beanName : beanResolver.getKnownBeanNames()) {
-            Object bean = beanResolver.resolveByName(beanName);
-            Class<?> beanType = bean.getClass();
-            for (Method method : beanType.getMethods()) {
-                for (Annotation methodAnnotation : method.getDeclaredAnnotations()) {
-                    if (methodAnnotation instanceof ChangeListener) {
-                        ChangeListener changeListenerAnnot = (ChangeListener) methodAnnotation;
-                        result.add(new ChangeTarget(beanName, method, changeListenerAnnot.pattern()));
-                    }
+        Class<?> beanType = bean.getClass();
+        for (Method method : beanType.getMethods()) {
+            for (Annotation methodAnnotation : method.getDeclaredAnnotations()) {
+                if (methodAnnotation instanceof ChangeListener) {
+                    ChangeListener changeListenerAnnotation = (ChangeListener) methodAnnotation;
+                    result.add(new ChangeTarget(method, pathPrefix, changeListenerAnnotation.pattern()));
                 }
             }
         }
         return result;
     }
-
-
 
     @Override
     public void process(ChangeEvent event) {
@@ -56,10 +51,13 @@ public class BeanAnnotationChangeEventListener extends ChangeEventListener {
                 RefMatcher matcher = new RefMatcher(pathSyntax, pattern);
                 RefMatcher.Result result = matcher.match(event.getChangedProperty());
                 if (result.isMatch()) {
-                    Object bean = beanResolver.resolveByName(target.getBeanName());
                     Method method = target.getMethod();
                     try {
-                        method.invoke(bean, result.getWatchedRefs().toArray());
+                        if (target.isPassChangeProperty()) {
+                            method.invoke(bean, event.getChangedProperty());
+                        } else {
+                            method.invoke(bean);
+                        }
                     } catch (Exception e) {
                         throw new RuntimeException(String.format("Error invoking change listener method %s on bean %s",
                                                                  method,
@@ -72,18 +70,21 @@ public class BeanAnnotationChangeEventListener extends ChangeEventListener {
     }
 
     static class ChangeTarget {
-        private final String beanName;
         private final Method method;
+        private boolean passChangeProperty;
         private final String[] patterns;
 
-        public ChangeTarget(String beanName, Method method, String[] patterns) {
-            this.beanName = beanName;
+        public ChangeTarget(Method method, String pathPrefix, String[] patterns) {
             this.method = method;
+            if (method.getParameterTypes().length == 1 && method.getParameterTypes()[0].isAssignableFrom(Ref.class)) {
+                passChangeProperty = true;
+            }
+            if (pathPrefix != null) {
+                for (int i = 0; i < patterns.length; i++) {
+                    patterns[i] = pathPrefix + "." + patterns[i];
+                }
+            }
             this.patterns = patterns;
-        }
-
-        String getBeanName() {
-            return beanName;
         }
 
         Method getMethod() {
@@ -92,6 +93,10 @@ public class BeanAnnotationChangeEventListener extends ChangeEventListener {
 
         String[] getPatterns() {
             return patterns;
+        }
+
+        boolean isPassChangeProperty() {
+            return passChangeProperty;
         }
     }
 }

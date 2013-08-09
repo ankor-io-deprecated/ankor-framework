@@ -1,5 +1,6 @@
 package at.irian.ankorman.sample1.fxclient;
 
+import at.irian.ankor.fx.controller.FXControllerChangeListener;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.session.ModelRootFactory;
@@ -146,19 +147,20 @@ public class App extends javafx.application.Application {
     private void createClientSystem(String client, String server) {
 
         SocketMessageLoop.Host clientHost = parseHost(client);
+
         SocketAnkorSystemStarter appBuilder = new SocketAnkorSystemStarter()
                 .withModelRootFactory(new MyModelRootFactory())
                 .withLocalHost(clientHost)
+                .withGlobalEventListener(new FXControllerChangeListener())
                 .withServerHost(parseHost(server));
 
         refFactory = appBuilder.createAndStartClientSystem();
+
     }
 
     public static RefFactory refFactory() {
         return refFactory;
     }
-
-
 
     private static class MyModelRootFactory implements ModelRootFactory {
         @Override

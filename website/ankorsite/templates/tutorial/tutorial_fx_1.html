@@ -35,7 +35,7 @@
  */
 public class Boot {
 
-    public static void main(String... args) throws ClassNotFoundException {
+    public static void main(String... args) {
         new PhonecatServer().startServer(); // start server thread
         new PhonecatClient().startClient(); // start client thread
     }
@@ -79,6 +79,7 @@ public class PhonecatServer {
  * Start Client AnkorSystem and launch JavaFX UI
  */
 public class PhonecatClient extends javafx.application.Application {
+
     public void startClient() {
         // Setup local AnkorSystem and connect to remote AnkorServer
         SocketAnkorSystemStarter appBuilder = new SocketAnkorSystemStarter()
@@ -104,9 +105,9 @@ public class PhonecatClient extends javafx.application.Application {
                 <li>implements UI Behaviour (ChangeListener, ActionListener),</li>
                 <li>and uses services to access underlying application or domain objects (in our example it's the PhoneRepository).</li>
             </ul>
-            <p class="alert alert-info">Remember, the View Model is always part of the server implementation.
-            Just the data part of it, the View Model Data, will be synchronized with the Client. On Client side
-                the data is bound to UI Components.</p>
+            <p class="alert alert-info">The View Model is always part of the server implementation.
+            Just the data part of it, the View Model Data (VMD), will be synchronized with the Client to be bound to. On Client side
+                the VMD is bound to UI Components.</p>
             <p>We'll explain how the client side binding works later on. For now let's take a closer look at the View Model
             implementation.</p>
             <ul class="nav nav-tabs">
