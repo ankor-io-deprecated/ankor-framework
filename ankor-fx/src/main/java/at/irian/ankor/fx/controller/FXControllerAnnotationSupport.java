@@ -28,9 +28,9 @@ public class FXControllerAnnotationSupport {
         return INSTANCE;
     }
 
-    public void registerChangeListener(Object controller, Ref listenToModelRef) {
+    public void registerChangeListener(Object controller, Ref watchedProperty) {
         controllers.put(controller,
-                new BeanAnnotationChangeEventListener(controller, listenToModelRef.path(), SimpleELPathSyntax.getInstance()));
+                new BeanAnnotationChangeEventListener(controller, watchedProperty.path(), SimpleELPathSyntax.getInstance()));
     }
 
     public void registerChangeListeners(Object controller) {

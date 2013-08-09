@@ -46,6 +46,7 @@ public class AnimalDetailTabController extends BaseTabController {
                 .withEditable(modelRef.append("editable"))
                 .withFloodControlDelay(500L)
                 .createWithin(bindingContext);
+
         bindValue(modelRef.append("nameStatus"))
                 .toText(nameStatus)
                 .createWithin(bindingContext);
