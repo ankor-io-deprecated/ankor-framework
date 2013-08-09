@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Ankor.js Test</title>
+        <script src="js/require/require.js"></script>
+        <script src="js/ejs/ejs_production.js"></script>
+        <link rel="stylesheet" type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.css">
+    </head>
+    <body>
+        <p>
+            <button id="newSearchTab">New Search Tab</button>
+            <button id="newDetailTab">New Detail Tab</button>
+        </p>
+        <p>
+            <div id="tabs">
+                <ul></ul>
+            </div>
+        </p>
+        <p>
+            User: <span id="userName"></span>
+        </p>
+        <p>
+            Server says: <span id="serverStatus"></span>
+        </p>
+
+        <script>
+            require.config({
+                baseUrl: "js",
+                paths: {
+                    "text": "require/text",
+                    "jquery": "//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min",
+                    "jquery-ui": "//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min"
+                }
+            });
+            require(["example/main"]);
+        </script>
+    </body>
+</html>

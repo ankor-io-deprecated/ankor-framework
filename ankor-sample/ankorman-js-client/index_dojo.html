@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Ankor.js Test</title>
+        <!--<script>
+            dojoConfig = {
+                packages: [
+                    {
+                        name: "ankor",
+                        location: "/ankorTest/js/ankor"
+                    }
+                ]
+            };
+        </script>
+        <script src="//ajax.googleapis.com/ajax/libs/dojo/1.9.1/dojo/dojo.js"></script>-->
+        <script src=""
+    </head>
+    <body>
+        <script>
+            require([
+                "ankor"//,
+                //"ankor/utils/UtilsDojo",
+                //"ankor/transport/Test"
+            ], function(AnkorSystem, AnkorDojoUtils, AnkorTransportTest) {
+                console.log(ankor);
+                /*
+                var ankorSystem = new AnkorSystem({
+                    modelId: null,
+                    utils: new AnkorDojoUtils(),
+                    transport: new AnkorTransportTest()
+                });
+                console.log(ankorSystem);
+                */
+            });
+        </script>
+    </body>
+</html>
