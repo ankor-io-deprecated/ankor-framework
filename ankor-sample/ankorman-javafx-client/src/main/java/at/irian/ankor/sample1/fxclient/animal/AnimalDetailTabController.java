@@ -36,18 +36,13 @@ public class AnimalDetailTabController extends BaseTabController {
         Ref selItemsRef = modelRef.append("selectItems");
 
         bindValue(getTabRef().append("name"))
-                .toStringProperty(tab.textProperty())
+                .toProperty(tab.textProperty())
                 .createWithin(bindingContext);
         bindValue(animalRef.append("name"))
                 .toInput(name)
-<<<<<<< HEAD:ankor-sample/ankorman-javafx-client/src/main/java/at/irian/ankor/sample1/fxclient/animal/AnimalDetailTabController.java
                 .createWithin(bindingContext);
         bindValue(modelRef.append("editable"))
-                .toBooleanProperty(name.editableProperty())
-=======
-                .withEditable(modelRef.append("editable"))
-                .withFloodControlDelay(500L)
->>>>>>> master:ankor-sample/ankorman-javafx-client/src/main/java/at/irian/ankorman/sample1/fxclient/animal/AnimalDetailTabController.java
+                .toProperty(name.editableProperty())
                 .createWithin(bindingContext);
         bindValue(modelRef.append("nameStatus"))
                 .toText(nameStatus)
@@ -55,12 +50,10 @@ public class AnimalDetailTabController extends BaseTabController {
         bindValue(animalRef.append("type"))
                 .toInput(type)
                 .withSelectItems(selItemsRef.append("types"))
-                .withEditable(modelRef.append("editable"))
                 .createWithin(bindingContext);
         bindValue(animalRef.append("family"))
                 .toInput(family)
                 .withSelectItems(selItemsRef.append("families"))
-                .withEditable(modelRef.append("editable"))
                 .createWithin(bindingContext);
 
         name.requestFocus();

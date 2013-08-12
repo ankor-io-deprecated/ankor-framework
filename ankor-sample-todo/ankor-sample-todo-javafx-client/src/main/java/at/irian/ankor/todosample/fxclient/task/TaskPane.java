@@ -94,7 +94,7 @@ public class TaskPane extends AnchorPane {
             HashMap params = new HashMap<String, Object>();
             params.put("index", index);
             params.put("title", title.getText());
-            modelRef.fireAction(new Action("editTask", params));
+            modelRef.fire(new Action("editTask", params));
             oldTitle = title.getText();
         }
     }
@@ -103,14 +103,14 @@ public class TaskPane extends AnchorPane {
     public void complete(ActionEvent actionEvent) {
         HashMap params = new HashMap<String, Object>();
         params.put("index", index);
-        modelRef.fireAction(new Action("toggleTask", params));
+        modelRef.fire(new Action("toggleTask", params));
     }
 
     @FXML
     public void delete(ActionEvent actionEvent) {
         HashMap params = new HashMap<String, Object>();
         params.put("index", index);
-        modelRef.fireAction(new Action("deleteTask", params));
+        modelRef.fire(new Action("deleteTask", params));
     }
 
     public StringProperty textProperty() {

@@ -51,7 +51,7 @@ public class TaskListController implements Initializable {
             }
         });
 
-        refFactory().rootRef().fireAction(new Action("init"));
+        refFactory().rootRef().fire(new Action("init"));
 
     }
 
@@ -116,19 +116,19 @@ public class TaskListController implements Initializable {
             LinkedHashMap<String, Object> params = new LinkedHashMap<>();
             params.put("title", newTodo.getText());
 
-            modelRef.fireAction(new Action("newTask", params));
+            modelRef.fire(new Action("newTask", params));
             newTodo.clear();
         }
     }
 
     @FXML
     public void clearTasks(ActionEvent actionEvent) {
-        modelRef.fireAction(new Action("clearTasks"));
+        modelRef.fire(new Action("clearTasks"));
     }
 
     @FXML
     public void toggleAll(ActionEvent actionEvent) {
-        modelRef.fireAction(new Action("toggleAll"));
+        modelRef.fire(new Action("toggleAll"));
     }
 
     private class TaskComponentListCell extends ListCell<LinkedHashMap<String, Object>> {
