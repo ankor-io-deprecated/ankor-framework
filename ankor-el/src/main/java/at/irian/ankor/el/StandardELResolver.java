@@ -8,7 +8,10 @@ import javax.el.*;
 class StandardELResolver extends CompositeELResolver {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(StandardELResolver.class);
 
-    public StandardELResolver() {
+    public StandardELResolver(ELResolver... additionalResolvers) {
+        for (ELResolver additionalResolver : additionalResolvers) {
+            add(additionalResolver);
+        }
         add(new MapELResolver());
         add(new ArrayELResolver());
         add(new ListELResolver());

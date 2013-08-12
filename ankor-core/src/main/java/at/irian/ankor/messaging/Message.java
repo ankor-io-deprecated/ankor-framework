@@ -39,4 +39,9 @@ public abstract class Message {
                "messageId='" + messageId + '\'' +
                "}";
     }
+
+
+    public abstract boolean isAppropriateListener(MessageListener listener);
+
+    public abstract void processBy(MessageListener listener);
 }

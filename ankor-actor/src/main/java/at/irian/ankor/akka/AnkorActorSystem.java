@@ -47,4 +47,7 @@ public class AnkorActorSystem {
         actorSystem.shutdown();
     }
 
+    public ActorSystem getActorSystem() {
+        return actorSystem;
+    }
 }

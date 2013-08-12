@@ -63,4 +63,19 @@ public class ChangeMessage extends Message {
                ", change=" + change +
                "}";
     }
+
+    @Override
+    public boolean isAppropriateListener(MessageListener listener) {
+        return listener instanceof Listener;
+    }
+
+    @Override
+    public void processBy(MessageListener listener) {
+        ((Listener)listener).onChangeMessage(this);
+    }
+
+    public interface Listener extends MessageListener {
+        void onChangeMessage(ChangeMessage msg);
+    }
+
 }

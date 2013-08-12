@@ -2,13 +2,14 @@ package at.irian.ankor.sample1.viewmodel.animal;
 
 import at.irian.ankor.annotation.ActionListener;
 import at.irian.ankor.annotation.ChangeListener;
+import at.irian.ankor.delay.FloodControl;
+import at.irian.ankor.messaging.AnkorIgnore;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.viewmodel.ViewModelBase;
 import at.irian.ankor.viewmodel.ViewModelProperty;
 import at.irian.ankor.sample1.domain.animal.Animal;
 import at.irian.ankor.sample1.server.AnimalRepository;
 import at.irian.ankor.sample1.viewmodel.TabNameCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
 * @author Thomas Spiegl
@@ -17,11 +18,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class AnimalSearchModel extends ViewModelBase {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalSearchModel.class);
 
-    @JsonIgnore
+    @AnkorIgnore
     private final ViewModelProperty<String> tabName;
 
-    @JsonIgnore
+    @AnkorIgnore
     private final AnimalRepository animalRepository;
+
+    @AnkorIgnore
+    private final FloodControl reloadFloodControl;
 
     private AnimalSearchFilter filter;
 
@@ -38,6 +42,7 @@ public class AnimalSearchModel extends ViewModelBase {
         this.filter = new AnimalSearchFilter();
         this.selectItems = selectItems;
         this.animals = new Data<>(new Paginator(0, 5));
+        this.reloadFloodControl = new FloodControl(viewModelRef, 500L);
     }
 
     public AnimalSearchFilter getFilter() {
@@ -63,16 +68,22 @@ public class AnimalSearchModel extends ViewModelBase {
     @ChangeListener(pattern = {"**.<AnimalSearchModel>.filter.**",
                                "**.<AnimalSearchModel>.animals.paginator.**"})
     public void reloadAnimals() {
-        // TODO how to load data async and update the animals ref?
-        LOG.info("RELOADING animals ...");
-        Paginator paginator = getAnimals().getPaginator();
-        paginator.reset();
-        Data<Animal> animals = animalRepository.searchAnimals(filter, paginator.getFirst(), paginator.getMaxResults());
+        reloadFloodControl.control(new Runnable() {
+            @Override
+            public void run() {
+                LOG.info("RELOADING animals ...");
+                Paginator paginator = getAnimals().getPaginator();
+                paginator.reset();
+                Data<Animal> animals = animalRepository.searchAnimals(filter,
+                                                                      paginator.getFirst(),
+                                                                      paginator.getMaxResults());
 
-        thisRef().append("animals").setValue(animals);
+                thisRef().append("animals").setValue(animals);
 
-        LOG.info("... finished RELOADING");
-        thisRef().root().append("serverStatus").setValue("");
+                LOG.info("... finished RELOADING");
+                thisRef().root().append("serverStatus").setValue("");
+            }
+        });
     }
 
     @ChangeListener(pattern = "**.<AnimalSearchModel>.filter.name")

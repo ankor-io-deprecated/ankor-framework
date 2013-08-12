@@ -1,5 +1,7 @@
-package at.irian.ankor.messaging;
+package at.irian.ankor.socket;
 
+import at.irian.ankor.messaging.AbstractMessageLoop;
+import at.irian.ankor.messaging.MessageMapper;
 import at.irian.ankor.session.RemoteSystem;
 
 import java.io.*;
@@ -17,15 +19,18 @@ public class SocketMessageLoop<S> extends AbstractMessageLoop<S> {
 
     private final int localPort;
     private final Map<String, Host> remoteSystems = new HashMap<String, Host>();
-    private ServerSocket serverSocket;
+    private ServerSocket listenSocket;
 
     public SocketMessageLoop(Host localHost, MessageMapper<S> messageMapper) {
         super(localHost.getId(), messageMapper);
         this.localPort = localHost.getPort();
     }
 
-    public void addRemoteSystem(Host remoteHost) {
-        remoteSystems.put(remoteHost.getId(), remoteHost);
+    public synchronized void addRemoteSystem(Host remoteHost) {
+        if (remoteSystems.containsKey(remoteHost.getId())) {
+            throw new IllegalStateException("Remote system " + remoteHost + " already connected");
+        }
+        remoteSystems.put(remoteHost.getId(), remoteHost);        //todo   connect timeout and cleanup
     }
 
     @Override
@@ -60,13 +65,13 @@ public class SocketMessageLoop<S> extends AbstractMessageLoop<S> {
     protected S receive() throws InterruptedException {
         Socket accept = null;
         try {
-            accept = serverSocket.accept();
+            accept = listenSocket.accept();
             InputStreamReader inReader = new InputStreamReader(accept.getInputStream(), "UTF-8");
             BufferedReader reader = new BufferedReader(inReader);
             //noinspection unchecked
             return (S)reader.readLine();
         } catch (IOException e) {
-            throw new RuntimeException("Error reading message from " + serverSocket);
+            throw new RuntimeException("Error reading message from " + listenSocket);
         } finally {
             if (accept != null) {
                 try {
@@ -84,7 +89,7 @@ public class SocketMessageLoop<S> extends AbstractMessageLoop<S> {
     @Override
     public void start(boolean daemon) {
         try {
-            serverSocket = new ServerSocket(localPort);
+            listenSocket = new ServerSocket(localPort);
         } catch (IOException e) {
             throw new IllegalStateException("Cannot open local server socket");
         }
@@ -97,7 +102,7 @@ public class SocketMessageLoop<S> extends AbstractMessageLoop<S> {
         super.stop();
 
         try {
-            serverSocket.close();
+            listenSocket.close();
         } catch (IOException e) {
             throw new IllegalStateException("Cannot close local server socket");
         }
@@ -126,17 +131,17 @@ public class SocketMessageLoop<S> extends AbstractMessageLoop<S> {
             return id;
         }
 
-        private String getHostName() {
+        public String getHostName() {
             return hostName;
         }
 
-        private int getPort() {
+        public int getPort() {
             return port;
         }
 
         @Override
         public String toString() {
-            return hostName + ":" + port;
+            return id + "@" + hostName + ":" + port;
         }
     }
 

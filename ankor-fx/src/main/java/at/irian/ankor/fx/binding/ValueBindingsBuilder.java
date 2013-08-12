@@ -24,6 +24,8 @@ public class ValueBindingsBuilder {
     // XXX: Need better solution for this?
     private boolean hackyIntegerFlag = false;
 
+    private Long floodControlDelay;
+
     public static ValueBindingsBuilder bindValue(Ref value) {
         return new ValueBindingsBuilder().forValue(value);
     }
@@ -108,6 +110,11 @@ public class ValueBindingsBuilder {
         return this;
     }
 
+    public ValueBindingsBuilder withFloodControlDelay(Long delayMillis) {
+        this.floodControlDelay = delayMillis;
+        return this;
+    }
+
     public void createWithin(BindingContext bindingContext) {
         if (property != null) {
             if (!hackyIntegerFlag) {
@@ -115,8 +122,6 @@ public class ValueBindingsBuilder {
             } else {
                 bindInteger(valueRef, property, bindingContext);
             }
-
-        // No longer needed
         } else if (comboBox != null) {
             if (itemsRef == null) {
                 throw new IllegalStateException("Illegal Binding, missing itemsRef " + this);

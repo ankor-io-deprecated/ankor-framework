@@ -9,10 +9,12 @@ import at.irian.ankor.ref.listener.RefListeners;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.text.Text;
 
 import java.net.URL;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
@@ -38,6 +40,7 @@ public class MainController implements Initializable {
 
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Ref rootRef = refFactory().rootRef();
+        final Ref tabsRef = rootRef.append("tabs");
 
         RefListeners.addPropChangeListener(rootRef, new RefChangeListener() {
             @Override
@@ -51,33 +54,52 @@ public class MainController implements Initializable {
                 bindValue(rootRef.append("serverStatus"))
                         .toText(serverStatus)
                         .createWithin(bindingContext);
+
+                Map<String,?> tabs = tabsRef.getValue();
+                for (String tabId : tabs.keySet()) {
+                    Ref tabRef = tabsRef.append(tabId);
+                    showTab(tabRef);
+                }
+
             }
         });
 
-        final Ref tabsRef = rootRef.append("tabs");
         addTreeChangeListener(tabsRef, new RefChangeListener() {
             @Override
             public void processChange(Ref changedProperty) {
                 if (changedProperty.parent().equals(tabsRef)) {
-                    Ref typeRef = changedProperty.append("type");
-                    Ref tabIdRef = changedProperty.append("id");
-                    TabType tabType = TabType.valueOf((String) typeRef.getValue());
-                    String tabId = tabIdRef.getValue();
-                    new TabLoader(tabType, tabId).showTab(tabPane);
+                    String tabId = changedProperty.propertyName();
+                    if (changedProperty.getValue() == null) {
+                        for (Tab tab : tabPane.getTabs()) {
+                            if (tab.getUserData().equals(tabId)) {
+                                tabPane.getTabs().remove(tab);
+                                break;
+                            }
+                        }
+                    } else {
+                        showTab(changedProperty);
+                    }
                 }
             }
         });
 
-        rootRef.fireAction(new Action("init"));
+        rootRef.fire(new Action("init"));
+    }
+
+    private void showTab(Ref tabRef) {
+        String tabId = tabRef.propertyName();
+        Ref typeRef = tabRef.append("type");
+        TabType tabType = TabType.valueOf((String) typeRef.getValue());
+        new TabLoader(tabType, tabId).showTab(tabPane);
     }
 
     public void openAnimalSearchTab(@SuppressWarnings("UnusedParameters") ActionEvent actionEvent) {
         Ref tabsRef = refFactory().rootRef().append("tabs");
-        tabsRef.fireAction(new ActionBuilder().withName(animalSearchTab.getActionName()).create());
+        tabsRef.fire(new ActionBuilder().withName(animalSearchTab.getActionName()).create());
     }
 
     public void openAnimalDetailTab(@SuppressWarnings("UnusedParameters") ActionEvent actionEvent) {
         Ref tabsRef = refFactory().rootRef().append("tabs");
-        tabsRef.fireAction(new ActionBuilder().withName(animalDetailTab.getActionName()).create());
+        tabsRef.fire(new ActionBuilder().withName(animalDetailTab.getActionName()).create());
     }
 }

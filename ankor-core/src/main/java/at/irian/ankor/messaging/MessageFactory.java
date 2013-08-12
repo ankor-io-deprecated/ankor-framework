@@ -26,4 +26,8 @@ public class MessageFactory {
         return new ChangeMessage(systemName, modelContext.getId(), messageIdGenerator.create(), changedPropertyPath, change);
     }
 
+    public Message createGlobalActionMessage(Action action) {
+        return new ActionMessage(systemName, null, messageIdGenerator.create(), null, action);
+    }
+
 }

@@ -69,4 +69,19 @@ public class ActionMessage extends Message {
                ", action=" + action +
                '}';
     }
+
+
+    @Override
+    public boolean isAppropriateListener(MessageListener listener) {
+        return listener instanceof Listener;
+    }
+
+    @Override
+    public void processBy(MessageListener listener) {
+        ((Listener)listener).onActionMessage(this);
+    }
+
+    public interface Listener extends MessageListener {
+        void onActionMessage(ActionMessage msg);
+    }
 }

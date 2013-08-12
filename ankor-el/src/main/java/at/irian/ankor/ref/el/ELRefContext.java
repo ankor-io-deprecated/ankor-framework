@@ -1,8 +1,8 @@
 package at.irian.ankor.ref.el;
 
 import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.delay.Scheduler;
 import at.irian.ankor.el.ELSupport;
-import at.irian.ankor.el.StandardELContext;
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.path.PathSyntax;
 import at.irian.ankor.path.el.SimpleELPathSyntax;
@@ -12,6 +12,7 @@ import at.irian.ankor.ref.impl.RefContextImplementor;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
 import com.typesafe.config.Config;
 
+import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 import java.util.List;
 
@@ -21,34 +22,37 @@ import java.util.List;
 public class ELRefContext implements RefContext, RefContextImplementor {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ELRefContext.class);
 
-    private final ExpressionFactory expressionFactory;
-    private final StandardELContext elContext;
+    private final ELSupport elSupport;
     private final String modelRootVarName;
     private final ModelContext modelContext;
     private final List<ViewModelPostProcessor> viewModelPostProcessors;
+    private final ELRefFactory refFactory;
+    private final Scheduler scheduler;
 
     ELRefContext(ELSupport elSupport,
                  Config config,
                  ModelContext modelContext,
-                 List<ViewModelPostProcessor> viewModelPostProcessors) {
-        this.viewModelPostProcessors = viewModelPostProcessors;
-        this.expressionFactory = elSupport.getExpressionFactory();
-        this.elContext = elSupport.getELContextFor(refFactory());
-        this.modelContext = modelContext;
+                 List<ViewModelPostProcessor> viewModelPostProcessors,
+                 Scheduler scheduler) {
+        this.elSupport = elSupport;
+        this.scheduler = scheduler;
         this.modelRootVarName = config.getString("ankor.variable-names.modelRoot");
+        this.modelContext = modelContext;
+        this.viewModelPostProcessors = viewModelPostProcessors;
+        this.refFactory = new ELRefFactory(this);
     }
 
     @Override
     public RefFactory refFactory() {
-        return new ELRefFactory(this);
+        return refFactory;
     }
 
     ExpressionFactory getExpressionFactory() {
-        return expressionFactory;
+        return elSupport.getExpressionFactory();
     }
 
-    public StandardELContext getElContext() {
-        return elContext;
+    ELContext createELContext() {
+        return elSupport.getELContextFor(refFactory());
     }
 
     @Override
@@ -73,5 +77,10 @@ public class ELRefContext implements RefContext, RefContextImplementor {
     @Override
     public ModelContext modelContext() {
         return modelContext;
+    }
+
+    @Override
+    public Scheduler scheduler() {
+        return scheduler;
     }
 }

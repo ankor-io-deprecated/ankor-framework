@@ -5,7 +5,9 @@ import at.irian.ankor.action.ActionEvent;
 import at.irian.ankor.base.Wrapper;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.change.ChangeEvent;
+import at.irian.ankor.change.ChangeRequestEvent;
 import at.irian.ankor.change.OldValuesAwareChangeEvent;
+import at.irian.ankor.event.ModelEvent;
 import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.event.PropertyWatcher;
 import at.irian.ankor.path.PathSyntax;
@@ -45,7 +47,7 @@ public abstract class RefBase implements Ref {
             oldValue = null;
         }
 
-        // remember old value of the watched properties
+        // remember old values of the watched properties
         Map<Ref, Object> oldWatchedValues = getOldWatchedValues();
 
         Object newValue = change.getNewValue();
@@ -66,7 +68,7 @@ public abstract class RefBase implements Ref {
 
     private Map<Ref, Object> getOldWatchedValues() {
         Map<Ref, Object> result = new HashMap<Ref, Object>();
-        for (ModelEventListener listener : context().eventListeners()) {
+        for (ModelEventListener listener : context().modelContext().getEventListeners()) {
             if (listener instanceof PropertyWatcher) {
                 Ref watchedProperty = ((PropertyWatcher) listener).getWatchedProperty();
                 if (watchedProperty != null && !(result.containsKey(watchedProperty))) {
@@ -245,11 +247,19 @@ public abstract class RefBase implements Ref {
         return parent.ancestor(ancestorPropertyName);
     }
 
+    @Override
+    public void fire(Action action) {
+        fire(new ActionEvent(this, action));
+    }
 
     @Override
-    public void fireAction(Action action) {
-        ActionEvent actionEvent = new ActionEvent(this, action);
-        context().modelContext().getEventDispatcher().dispatch(actionEvent);
+    public void fire(ModelEvent event) {
+        context().modelContext().getEventDispatcher().dispatch(event);
+    }
+
+    @Override
+    public void requestChangeTo(Object newValue) {
+        fire(new ChangeRequestEvent(this, newValue));
     }
 
     @Override

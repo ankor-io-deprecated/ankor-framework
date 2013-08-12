@@ -50,8 +50,4 @@ public class Tab<T> extends ViewModelBase {
         return type;
     }
 
-    public void close() {
-        thisRef().setValue(null);
-    }
-
 }

@@ -1,0 +1,21 @@
+<div class="well well-small">
+    <div class="row">
+        <span class="span6">
+            {% include "tutorial/tutorial_fx_breadcrumbs.html" %}
+        </span>
+        <span class="span2">
+            {% include "tutorial/tutorial_fx_pagination.html" %}
+        </span>
+    </div>
+</div>
+<a onclick="$('#instructions').toggle()"><i class="icon-hand-right"></i>&nbsp;Workspace Instructions</a>
+<div id="instructions" style="display:none">
+<pre class="prettyprint">
+// Checkout tutorial step
+git checkout -f fx-step-{{step}}
+// Switch to boot module
+cd boot
+// Start the application
+mvn install exec:java</pre>
+<p>If you experience problems, please check the <a href="/tutorials/fx/0">Bootstraping</a> section of this tutorial.</p>
+</div>

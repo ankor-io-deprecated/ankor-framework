@@ -22,7 +22,7 @@ public class RemoteEventListener implements ModelEventListener {
 
         Action action = event.getAction();
         if (action != null) {
-            event.getSourceProperty().fireAction(action);
+            event.getSourceProperty().fire(action);
         }
 
         Change change = event.getChange();

@@ -39,7 +39,7 @@ public class ELRefFactory implements RefFactory {
     }
 
     private static ValueExpression createValueExpressionFor(ELRefContext ref2Context, String path) {
-        return ref2Context.getExpressionFactory().createValueExpression(ref2Context.getElContext(),
+        return ref2Context.getExpressionFactory().createValueExpression(ref2Context.createELContext(),
                                                                         ELUtils.pathToExpr(path),
                                                                         Object.class);
     }

@@ -40,9 +40,14 @@ public class AnimalDetailTabController extends BaseTabController {
                 .createWithin(bindingContext);
         bindValue(animalRef.append("name"))
                 .toInput(name)
+<<<<<<< HEAD:ankor-sample/ankorman-javafx-client/src/main/java/at/irian/ankor/sample1/fxclient/animal/AnimalDetailTabController.java
                 .createWithin(bindingContext);
         bindValue(modelRef.append("editable"))
                 .toBooleanProperty(name.editableProperty())
+=======
+                .withEditable(modelRef.append("editable"))
+                .withFloodControlDelay(500L)
+>>>>>>> master:ankor-sample/ankorman-javafx-client/src/main/java/at/irian/ankorman/sample1/fxclient/animal/AnimalDetailTabController.java
                 .createWithin(bindingContext);
         bindValue(modelRef.append("nameStatus"))
                 .toText(nameStatus)
@@ -50,10 +55,12 @@ public class AnimalDetailTabController extends BaseTabController {
         bindValue(animalRef.append("type"))
                 .toInput(type)
                 .withSelectItems(selItemsRef.append("types"))
+                .withEditable(modelRef.append("editable"))
                 .createWithin(bindingContext);
         bindValue(animalRef.append("family"))
                 .toInput(family)
                 .withSelectItems(selItemsRef.append("families"))
+                .withEditable(modelRef.append("editable"))
                 .createWithin(bindingContext);
 
         name.requestFocus();
@@ -61,7 +68,7 @@ public class AnimalDetailTabController extends BaseTabController {
 
     @FXML
     protected void save(@SuppressWarnings("UnusedParameters") ActionEvent event) {
-        getTabRef().append("model").fireAction(new Action("save"));
+        getTabRef().append("model").fire(new Action("save"));
     }
 
 }

@@ -46,23 +46,18 @@ public abstract class MessageBus<S> implements MessageSenderProvider {
     }
 
     public void receiveMessage(Message msg) {
-        if (msg instanceof ActionMessage) {
-            for (MessageListener messageListener : messageListeners) {
+        boolean handled = false;
+        for (MessageListener messageListener : messageListeners) {
+            if (msg.isAppropriateListener(messageListener)) {
+                handled = true;
                 try {
-                    messageListener.onActionMessage((ActionMessage) msg);
+                    msg.processBy(messageListener);
                 } catch (Exception e) {
-                    LOG.error("ActionMessageListener " + messageListener + " failed on message " + msg, e);
+                    LOG.error("MessageListener " + messageListener + " failed on message " + msg, e);
                 }
             }
-        } else if (msg instanceof ChangeMessage) {
-            for (MessageListener messageListener : messageListeners) {
-                try {
-                    messageListener.onChangeMessage((ChangeMessage) msg);
-                } catch (Exception e) {
-                    LOG.error("ChangeMessageListener " + messageListener + " failed on message " + msg, e);
-                }
-            }
-        } else {
+        }
+        if (!handled) {
             throw new IllegalArgumentException("Unsupported message type " + msg.getClass());
         }
     }

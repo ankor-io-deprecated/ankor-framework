@@ -1,7 +1,5 @@
 package at.irian.ankor.fx.binding;
 
-import at.irian.ankor.ref.Ref;
-
 /**
  * @author Thomas Spiegl
  */

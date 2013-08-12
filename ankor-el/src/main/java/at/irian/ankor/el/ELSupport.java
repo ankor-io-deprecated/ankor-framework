@@ -2,6 +2,7 @@ package at.irian.ankor.el;
 
 import at.irian.ankor.ref.RefFactory;
 
+import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 
 /**
@@ -11,5 +12,5 @@ public interface ELSupport {
 
     ExpressionFactory getExpressionFactory();
 
-    StandardELContext getELContextFor(RefFactory refFactory);
+    ELContext getELContextFor(RefFactory refFactory);
 }

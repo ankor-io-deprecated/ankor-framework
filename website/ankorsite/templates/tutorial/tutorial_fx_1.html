@@ -10,13 +10,155 @@
         {% include "tutorial/tutorial_fx_menu.html" %}
     </div><!--/span-->
     <div class="span9">
-        <ul class="breadcrumb">
-            {% include "tutorial/tutorial_fx_breadcrumbs.html" %}
-            <li><a href="/tutorials/fx/1">1 - TBD</a></li>
+        {% include "tutorial/tutorial_fx_head.html" with tutorial_title='First Application' %}
+
+        <h3>The Application</h3>
+        <p>Let's start with a simple Ankor Application. A JavaFX Client connects to our Ankor Server and displays
+            a list of phone models. We'll explain how to setup the application, write the first
+            View Model and bind the model to your UI components.</p>
+        {% load staticfiles %}
+        <img src="{% static 'images/tutorial/fx-step-1-1.png' %}"  width="50%" height="50%" >
+
+        <h3>Boot the Application</h3>
+        <p>The initial load of both client and server is done by a Boot class.
+            See the following code snippets for details.</p>
+        <ul class="nav nav-tabs">
+            <li class="active" ><a href="#tab1_1" data-toggle="tab">Boot.class</a></li>
+            <li><a href="#tab1_2" data-toggle="tab">PhonecatServer.class</a></li>
+            <li><a href="#tab1_3" data-toggle="tab">PhonecatClient.class</a></li>
         </ul>
-        {% include "tutorial/tutorial_fx_pagination.html" %}
-        <p>&nbsp;</p>
-    </div><!--/span-->
+        <div class="tab-content">
+            <div class="tab-pane active" id="tab1_1">
+        <pre class="prettyprint">
+/**
+ * Utility to start JavaFX Client and Ankor Server
+ */
+public class Boot {
+
+    public static void main(String... args) throws ClassNotFoundException {
+        new PhonecatServer().startServer(); // start server thread
+        new PhonecatClient().startClient(); // start client thread
+    }
+}
+        </pre>
+            </div>
+            <div class="tab-pane" id="tab1_2">
+<pre class="prettyprint">
+/**
+ * Start Ankor Server
+ */
+public class PhonecatServer {
+
+    // A simple repository which we load Phone Models from
+    private PhoneRepository phoneRepository;
+
+    public void startServer() {
+        phoneRepository = new PhoneRepository();
+
+        // Start the AnkorServer
+        new SocketAnkorSystemStarter()
+                .withModelRootFactory(new MyModelRootFactory())
+                .withLocalHost(new SocketMessageLoop.Host("server", "localhost", 9090))
+                .createAndStartServerSystem(false);
+    }
+
+    /**
+     * Factory to create our Phonecat specific ModelRoot instance
+     */
+    private class MyModelRootFactory implements ModelRootFactory {
+        public Object createModelRoot(Ref rootRef) {
+            return new ModelRoot(rootRef, phoneRepository);
+        }
+    }
+}
+</pre>
+            </div>
+            <div class="tab-pane" id="tab1_3">
+        <pre class="prettyprint">
+/**
+ * Start Client AnkorSystem and launch JavaFX UI
+ */
+public class PhonecatClient extends javafx.application.Application {
+    public void startClient() {
+        // Setup local AnkorSystem and connect to remote AnkorServer
+        SocketAnkorSystemStarter appBuilder = new SocketAnkorSystemStarter()
+                .withModelRootFactory(new MyModelRootFactory())
+                .withLocalHost(new SocketMessageLoop.Host("client", "localhost", 9091))
+                .withServerHost(new SocketMessageLoop.Host("server", "localhost", 9090));
+        // Store the RefFactory to static instance variable
+        // Use the RefFactory to get access to View Model Data
+        REF_FACTORY = appBuilder.createAndStartClientSystem();
+        launch(); // Launch JavaFX client
+    }
+
+    private static RefFactory REF_FACTORY;
+
+}
+        </pre>
+            </div>
+            <p>To run the application type <code>mvn install exec:java</code> in boot directory.</p>
+
+            <h3>View Model</h3>
+            <ul>
+                <li>represents the UI state (Data: domain objects, value objects),</li>
+                <li>implements UI Behaviour (ChangeListener, ActionListener),</li>
+                <li>and uses services to access underlying application or domain objects (in our example it's the PhoneRepository).</li>
+            </ul>
+            <p class="alert alert-info">Remember, the View Model is always part of the server implementation.
+            Just the data part of it, the View Model Data, will be synchronized with the Client. On Client side
+                the data is bound to UI Components.</p>
+            <p>We'll explain how the client side binding works later on. For now let's take a closer look at the View Model
+            implementation.</p>
+            <ul class="nav nav-tabs">
+                <li class="active" ><a href="#tab2_1" data-toggle="tab">ModelRoot.class</a></li>
+                <li><a href="#tab2_2" data-toggle="tab">SearchPhoneModel.class</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="tab2_1">
+            <pre class="prettyprint">
+/**
+ * Model Root of our Phonecat Application. Will be created by MyModelRootFactory
+ */
+public class ModelRoot extends ViewModelBase {
+
+    private SearchPhoneModel searchPhoneModel;
+
+    /**
+     * ModelRoot will be created by the MyModelRootFactory.
+     * @param viewModelRef The Reference of the ModelRoot
+     * @param phoneRepository The PhoneRepository has the basic read operations for Phone Models
+     */
+    public ModelRoot(Ref viewModelRef, PhoneRepository phoneRepository) {
+        super(viewModelRef);
+        this.searchPhoneModel = new SearchPhoneModel(viewModelRef.append("searchPhoneModel"), phoneRepository);
+    }
+
+    /**
+     * Getter to get access to the Phone Model via javax.el
+     */
+    public SearchPhoneModel getSearchPhoneModel() {
+        return searchPhoneModel;
+    }
+}
+            </pre>
+                </div>
+            </div>
+
+
+
+            <p>
+                The ModelRoot is created by the ModelRootFactory (see PhonecatServer.class). The
+                Factory method <code>createModelRoot(Ref rootRef)</code> will be called on first access to
+                the View Model Root by the AnkorSystem. The ModelRoot constructor as 2 arguments
+                <ul>
+                    <li>Ref: Representing this View Model. We'll explain this concept later on.</li>
+                    <li>PhoneRepository: Provides access to our phone store.</li>
+                </ul>
+            </p>
+            <p></p>
+
+        </div><!--/tab-content-->
+    </div><!--/span9-->
 </div><!--/row-->
 
 {% endblock %}
