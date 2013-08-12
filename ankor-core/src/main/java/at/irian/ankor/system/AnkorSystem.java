@@ -23,6 +23,7 @@ public class AnkorSystem {
     private final MessageFactory messageFactory;
     private final MessageBus messageBus;
     private final RefContextFactory refContextFactory;
+    private final ModelContextManager modelContextManager;
     private final SessionManager sessionManager;
     private final MessageListener messageListener;
 
@@ -30,11 +31,13 @@ public class AnkorSystem {
                           MessageFactory messageFactory,
                           MessageBus messageBus,
                           RefContextFactory refContextFactory,
-                          ModelContextManager modelContextManager, SessionManager sessionManager) {
+                          ModelContextManager modelContextManager,
+                          SessionManager sessionManager) {
         this.systemName = systemName;
         this.messageFactory = messageFactory;
         this.messageBus = messageBus;
         this.refContextFactory = refContextFactory;
+        this.modelContextManager = modelContextManager;
         this.sessionManager = sessionManager;
         this.messageListener = new DefaultMessageListener(modelContextManager, sessionManager);
     }
@@ -58,6 +61,10 @@ public class AnkorSystem {
 
     public SessionManager getSessionManager() {
         return sessionManager;
+    }
+
+    public ModelContextManager getModelContextManager() {
+        return modelContextManager;
     }
 
     @Override

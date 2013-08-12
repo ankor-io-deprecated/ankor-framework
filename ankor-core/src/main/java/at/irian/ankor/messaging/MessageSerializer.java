@@ -5,5 +5,4 @@ package at.irian.ankor.messaging;
  */
 public interface MessageSerializer<T> {
     T serialize(Message msg);
-
 }
