@@ -80,15 +80,29 @@
     -fx-underline: true;
 }
 
-#filters .button {
+#filters .toggle-button {
+    -fx-text-fill: #83756f;
     -fx-background-color: transparent;
-    -fx-border: none;
     -fx-padding: 0 5;
 }
 
-#filters .button:focused {
-    -fx-color: none;
+#filters .toggle-button:selected {
+    -fx-font-weight: bold;
 }
+
+.radio-button {
+    -fx-text-fill: #83756f;
+    -fx-padding: 0;
+}
+
+.radio-button .radio, .radio-button .dot {
+    -fx-background-color: transparent;
+}
+
+.radio-button:selected {
+    -fx-font-weight: bold;
+}
+
 
 #clearButton {
     -fx-background-color: rgba(0, 0, 0, 0.1);
@@ -118,6 +132,7 @@
 }
 
 .list-cell {
+    -fx-height: 65;
     -fx-padding: 0 0 0 0;
     -fx-margin: -1 0 0 -1;
     -fx-background-color: transparent;
@@ -151,4 +166,29 @@
     -fx-scale-y: 1.3;
     -fx-scale-z: 1.3;
     -fx-effect: dropshadow(one-pass-box, rgba(199, 107, 107, 0.8), 10, 0, 0, 0);
+}
+
+#toggleAll {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-font-size: 28px;
+    -fx-text-fill: #d9d9d9;
+}
+
+#toggleAll:selected {
+    -fx-text-fill: #737373;
+}
+
+.completed-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-line-height: 43px; /* 40 + a couple of pixels visual adjustment */
+    -fx-font-size: 20px;
+    -fx-text-fill: #d9d9d9;
+    /*-fx-effect: dropshadow(one-pass-box, #bfbfbf, 1, 0, 0, -1);*/
+}
+
+.completed-button:selected {
+    -fx-text-fill: #85ada7;
+    /*-fx-effect: dropshadow(one-pass-box, #669991, 1, 0, 0, 1);*/
 }

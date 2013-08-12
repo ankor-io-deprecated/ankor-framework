@@ -14,20 +14,14 @@ import javafx.util.converter.NumberStringConverter;
 public class ValueBindingsBuilder {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(BindingsBuilder.class);
 
-    // XXX: Using properties instead of UI components makes this builder much more applicable
-    private StringProperty stringProperty;
-    private BooleanProperty booleanProperty;
-    private ObjectProperty<ObservableList> itemsProperty;
-
+    private Property property;
     private Ref valueRef;
 
     private Ref itemsRef;
-
     private TextInputControl inputControl;
-
     private ComboBox comboBox;
 
-    // XXX: Need better solution for this
+    // XXX: Need better solution for this?
     private boolean hackyIntegerFlag = false;
 
     public static ValueBindingsBuilder bindValue(Ref value) {
@@ -44,18 +38,8 @@ public class ValueBindingsBuilder {
         return this;
     }
 
-    public ValueBindingsBuilder toBooleanProperty(BooleanProperty booleanProperty) {
-        this.booleanProperty = booleanProperty;
-        return this;
-    }
-
-    public ValueBindingsBuilder toStringProperty(StringProperty stringProperty) {
-        this.stringProperty = stringProperty;
-        return this;
-    }
-
-    public ValueBindingsBuilder toItemsProperty(ObjectProperty<ObservableList> itemsProperty) {
-        this.itemsProperty = itemsProperty;
+    public ValueBindingsBuilder toProperty(Property<?> property) {
+        this.property = property;
         return this;
     }
 
@@ -64,64 +48,75 @@ public class ValueBindingsBuilder {
         return this;
     }
 
+    @Deprecated
     public ValueBindingsBuilder toInput(TextInputControl inputControl) {
         this.inputControl = inputControl;
         return this;
     }
 
+    @Deprecated
     public ValueBindingsBuilder toInput(ComboBox comboBox) {
         this.comboBox = comboBox;
         return this;
     }
 
+    @Deprecated
     public ValueBindingsBuilder withSelectItems(Ref itemsRef) {
         this.itemsRef = itemsRef;
         return this;
     }
 
-    // Convenience methods
-
+    @Deprecated
     public ValueBindingsBuilder toText(Text text) {
-        this.stringProperty = text.textProperty();
+        this.property = text.textProperty();
         return this;
     }
 
+    @Deprecated
+    public ValueBindingsBuilder toTabText(Tab tab) {
+        this.property = tab.textProperty();
+        return this;
+    }
+
+    @Deprecated
     public ValueBindingsBuilder toLabel(Label label) {
-        this.stringProperty = label.textProperty();
+        this.property = label.textProperty();
         return this;
     }
 
+    @Deprecated
     public ValueBindingsBuilder toCheckBox(CheckBox checkBox) {
-        this.booleanProperty = checkBox.selectedProperty();
+        this.property = checkBox.selectedProperty();
         return this;
     }
 
+    @Deprecated
     public ValueBindingsBuilder toButton(Button button) {
-        this.stringProperty = button.textProperty();
+        this.property = button.textProperty();
         return this;
     }
 
+    @Deprecated
     public ValueBindingsBuilder toTable(TableView tableView) {
-        this.itemsProperty = tableView.itemsProperty();
+        this.property = tableView.itemsProperty();
         return this;
     }
 
+    @Deprecated
     public ValueBindingsBuilder toList(ListView listView) {
-        this.itemsProperty = listView.itemsProperty();
+        this.property = listView.itemsProperty();
         return this;
     }
 
     public void createWithin(BindingContext bindingContext) {
-        if (itemsProperty != null) {
-            bind(valueRef, itemsProperty);
-        } else if (stringProperty != null) {
+        if (property != null) {
             if (!hackyIntegerFlag) {
-                bind(valueRef, stringProperty, bindingContext);
+                bind(valueRef, property, bindingContext);
             } else {
-                bindInteger(valueRef, stringProperty, bindingContext);
+                bindInteger(valueRef, property, bindingContext);
             }
-        } else if (booleanProperty != null) {
-            bind(valueRef, booleanProperty, bindingContext);
+
+        // No longer needed
         } else if (comboBox != null) {
             if (itemsRef == null) {
                 throw new IllegalStateException("Illegal Binding, missing itemsRef " + this);
@@ -138,9 +133,7 @@ public class ValueBindingsBuilder {
     public String toString() {
         final StringBuilder sb = new StringBuilder("BindingsBuilder{");
         sb.append("valueRef=").append(valueRef);
-        sb.append(", itemsProperty=").append(itemsProperty);
-        sb.append(", stringProperty=").append(stringProperty);
-        sb.append(", booleanProperty=").append(booleanProperty);
+        sb.append(", property=").append(property);
         sb.append('}');
         return sb.toString();
     }
@@ -148,16 +141,9 @@ public class ValueBindingsBuilder {
 
     // static utils
 
-    private static void bind(Ref valueRef, ObjectProperty<ObservableList> property) {
+    private static void bind(Ref valueRef, Property property, BindingContext context) {
+        context.add(property);
         new RefPropertyBinding(valueRef, property);
-    }
-
-    private static void bind(Ref valueRef, StringProperty property, BindingContext context) {
-        new RefPropertyBinding(valueRef, createStringProperty(property, context));
-    }
-
-    private static void bind(Ref valueRef, BooleanProperty property, BindingContext context) {
-        new RefPropertyBinding(valueRef, createBooleanProperty(property, context));
     }
 
     private static void bind(final Ref valueRef, final Ref itemsRef, final ComboBox comboBox) {
@@ -166,7 +152,7 @@ public class ValueBindingsBuilder {
         new RefPropertyBinding(itemsRef, comboBox.itemsProperty());
     }
 
-    private static void bindInteger(final Ref valueRef, final StringProperty property, BindingContext context) {
+    private static void bindInteger(final Ref valueRef, final Property property, BindingContext context) {
         new RefPropertyBinding(valueRef, createIntegerProperty(property, context));
     }
 
@@ -181,15 +167,8 @@ public class ValueBindingsBuilder {
         return prop;
     }
 
-    private static BooleanProperty createBooleanProperty(BooleanProperty property, BindingContext context) {
-        SimpleBooleanProperty prop = new SimpleBooleanProperty();
-        Bindings.bindBidirectional(prop, property);
-        context.add(prop);
-        return prop;
-    }
-
     // Note that this uses a NumberStringConverter!
-    private static IntegerProperty createIntegerProperty(StringProperty property, BindingContext context) {
+    private static IntegerProperty createIntegerProperty(Property property, BindingContext context) {
         SimpleIntegerProperty prop = new SimpleIntegerProperty();
         Bindings.bindBidirectional(property, prop, new NumberStringConverter());
         context.add(prop);

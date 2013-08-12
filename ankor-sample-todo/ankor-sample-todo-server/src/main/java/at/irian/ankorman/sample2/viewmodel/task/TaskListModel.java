@@ -5,10 +5,12 @@ import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.annotation.Param;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.viewmodel.ViewModelBase;
+import at.irian.ankor.viewmodel.ViewModelMapBase;
 import at.irian.ankor.viewmodel.ViewModelProperty;
 import at.irian.ankorman.sample2.domain.task.Task;
 import at.irian.ankorman.sample2.server.TaskRepository;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import javafx.beans.property.MapPropertyBase;
 
 import java.util.List;
 
@@ -19,23 +21,31 @@ public class TaskListModel extends ViewModelBase {
     private final TaskRepository taskRepository;
 
     private List<Task> tasks;
+    ViewModelMapBase<String, Task> test;
 
-    private ViewModelProperty<String> filter; // XXX: Not possible to use enum type Filter -> type errors again
+    private ViewModelProperty<String> filter;
 
-    // XXX: Maybe annotation to indicate that this property will be initialized by ViewModelBase?
     private ViewModelProperty<Integer> itemsLeft;
     private ViewModelProperty<Boolean> footerVisibility;
 
+    @JsonIgnore
     private ViewModelProperty<Integer> itemsComplete;
     private ViewModelProperty<String> itemsCompleteText;
     private ViewModelProperty<Boolean> clearButtonVisibility;
 
     private ViewModelProperty<Boolean> toggleAll;
 
+    private ViewModelProperty<Boolean> filterAllSelected;
+    private ViewModelProperty<Boolean> filterActiveSelected;
+    private ViewModelProperty<Boolean> filterCompletedSelected;
+
     public TaskListModel(Ref viewModelRef, TaskRepository taskRepository) {
         super(viewModelRef);
 
         this.filter.set(Filter.all.toString()); // this.filter = new ViewModelProperty<>(viewModelRef, "filter", Filter.all.toString());
+        this.filterAllSelected.set(true);
+        this.filterActiveSelected.set(false);
+        this.filterCompletedSelected.set(false);
 
         this.taskRepository = taskRepository;
         this.tasks = fetchTasksData();
@@ -52,9 +62,20 @@ public class TaskListModel extends ViewModelBase {
     @ChangeListener(pattern = {
             "**.<TaskListModel>.itemsLeft",
             "**.<TaskListModel>.itemsComplete",
-            "**.<TaskListModel>.filter" })
+            "**.<TaskListModel>.filterAllSelected",
+            "**.<TaskListModel>.filterActiveSelected",
+            "**.<TaskListModel>.filterCompletedSelected" })
     public void reloadTasks() {
         LOG.info("reloading tasks");
+
+        if (filterAllSelected.get()) {
+            filter.set(Filter.all.toString());
+        } else if (filterActiveSelected.get()) {
+            filter.set(Filter.active.toString());
+        } else if (filterCompletedSelected.get()) {
+            filter.set(Filter.completed.toString());
+        }
+
         List<Task> tasksData = fetchTasksData();
         thisRef().append("tasks").setValue(tasksData);
     }
@@ -79,8 +100,8 @@ public class TaskListModel extends ViewModelBase {
         Task task = new Task(title);
         taskRepository.saveTask(task);
 
-        // X-X-X: Setting values to refs here causes (sometimes!?) exceptions -> should be fixed in newer ankor commit
         itemsLeft.set(itemsLeft.get() + 1);
+        toggleAll.set(false);
     }
 
     @ActionListener
@@ -92,6 +113,7 @@ public class TaskListModel extends ViewModelBase {
             task.setCompleted(true);
             itemsLeft.set(itemsLeft.get() - 1);
             itemsComplete.set(itemsComplete.get() + 1);
+            toggleAll.set(itemsLeft.get() == 0);
         } else {
             task.setCompleted(false);
             itemsLeft.set(itemsLeft.get() + 1);
@@ -208,5 +230,29 @@ public class TaskListModel extends ViewModelBase {
 
     public void setToggleAll(ViewModelProperty<Boolean> toggleAll) {
         this.toggleAll = toggleAll;
+    }
+
+    public ViewModelProperty<Boolean> getFilterAllSelected() {
+        return filterAllSelected;
+    }
+
+    public void setFilterAllSelected(ViewModelProperty<Boolean> filterAllSelected) {
+        this.filterAllSelected = filterAllSelected;
+    }
+
+    public ViewModelProperty<Boolean> getFilterActiveSelected() {
+        return filterActiveSelected;
+    }
+
+    public void setFilterActiveSelected(ViewModelProperty<Boolean> filterActiveSelected) {
+        this.filterActiveSelected = filterActiveSelected;
+    }
+
+    public ViewModelProperty<Boolean> getFilterCompletedSelected() {
+        return filterCompletedSelected;
+    }
+
+    public void setFilterCompletedSelected(ViewModelProperty<Boolean> filterCompletedSelected) {
+        this.filterCompletedSelected = filterCompletedSelected;
     }
 }

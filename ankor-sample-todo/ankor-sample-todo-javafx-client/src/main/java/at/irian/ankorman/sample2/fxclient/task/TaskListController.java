@@ -5,7 +5,6 @@ import at.irian.ankor.fx.binding.BindingContext;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.listener.RefChangeListener;
 import at.irian.ankor.ref.listener.RefListeners;
-import at.irian.ankorman.sample2.viewmodel.task.Filter;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -14,9 +13,9 @@ import javafx.scene.control.*;
 import javafx.util.Callback;
 
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bind;
@@ -29,15 +28,15 @@ public class TaskListController implements Initializable {
     private Ref modelRef;
 
     @FXML public ListView tasksList;
-    @FXML public CheckBox toggleAll;
+    @FXML public ToggleButton toggleAll;
     @FXML public TextField newTodo;
     @FXML public Label todoCountNum;
     @FXML public Button clearButton;
 
-    @FXML public Button filterAll;
-    @FXML public Button filterActive;
-    @FXML public Button filterCompleted;
-    private List<Button> filterButtons = new ArrayList<Button>();
+    @FXML public ToggleButton filterAll;
+    @FXML public ToggleButton filterActive;
+    @FXML public ToggleButton filterCompleted;
+    @FXML public ToggleGroup filterTG;
 
     @FXML public Node footerTop;
     @FXML public Node footerBottom;
@@ -60,32 +59,48 @@ public class TaskListController implements Initializable {
 
     public void initialize() {
         bind(modelRef.append("tasks"))
-                .toItemsProperty(tasksList.itemsProperty())
+                .toProperty(tasksList.itemsProperty())
                 .createWithin(bindingContext);
 
         bind(modelRef.append("toggleAll"))
-                .toBooleanProperty(toggleAll.selectedProperty())
+                .toProperty(toggleAll.selectedProperty())
                 .createWithin(bindingContext);
 
         bind(modelRef.append("itemsLeft"))
-                .toStringProperty(todoCountNum.textProperty())
+                .toProperty(todoCountNum.textProperty())
                 .forIntegerValue()
                 .createWithin(bindingContext);
 
         bind(modelRef.append("itemsCompleteText"))
-                .toStringProperty(clearButton.textProperty())
+                .toProperty(clearButton.textProperty())
                 .createWithin(bindingContext);
 
         bind(modelRef.append("clearButtonVisibility"))
-                .toBooleanProperty(clearButton.visibleProperty())
+                .toProperty(clearButton.visibleProperty())
                 .createWithin(bindingContext);
 
         bind(modelRef.append("footerVisibility"))
-                .toBooleanProperty(footerTop.visibleProperty())
+                .toProperty(footerTop.visibleProperty())
                 .createWithin(bindingContext);
 
         bind(modelRef.append("footerVisibility"))
-                .toBooleanProperty(footerBottom.visibleProperty())
+                .toProperty(footerBottom.visibleProperty())
+                .createWithin(bindingContext);
+
+        bind(modelRef.append("footerVisibility"))
+                .toProperty(toggleAll.visibleProperty())
+                .createWithin(bindingContext);
+
+        bind(modelRef.append("filterAllSelected"))
+                .toProperty(filterAll.selectedProperty())
+                .createWithin(bindingContext);
+
+        bind(modelRef.append("filterActiveSelected"))
+                .toProperty(filterActive.selectedProperty())
+                .createWithin(bindingContext);
+
+        bind(modelRef.append("filterCompletedSelected"))
+                .toProperty(filterCompleted.selectedProperty())
                 .createWithin(bindingContext);
 
         tasksList.setCellFactory(new Callback<ListView, ListCell>() {
@@ -94,8 +109,6 @@ public class TaskListController implements Initializable {
                 return new TaskComponentListCell();
             }
         });
-
-        setupFilterButtonStyle();
     }
 
     @FXML
@@ -111,70 +124,35 @@ public class TaskListController implements Initializable {
     }
 
     @FXML
-    public void displayAll(ActionEvent actionEvent) {
-        modelRef.append("filter").setValue(Filter.all.toString());
-    }
-
-    @FXML
-    public void displayActive(ActionEvent actionEvent) {
-        modelRef.append("filter").setValue(Filter.active.toString());
-    }
-
-    @FXML
-    public void displayCompleted(ActionEvent actionEvent) {
-        modelRef.append("filter").setValue(Filter.completed.toString());
-    }
-
-    @FXML
     public void clearTasks(ActionEvent actionEvent) {
         modelRef.fireAction(new Action("clearTasks"));
     }
 
-    // XXX: There's no good way to do this in the viewmodel
-    private void setupFilterButtonStyle() {
-        filterButtons.add(filterAll);
-        filterButtons.add(filterActive);
-        filterButtons.add(filterCompleted);
-
-        String filter = modelRef.append("filter").getValue();
-        updateFilterButtonStyle(filter);
-
-        RefListeners.addPropChangeListener(modelRef.append("filter"), new RefChangeListener() {
-            @Override
-            public void processChange(Ref changedProperty) {
-                String prop = changedProperty.getValue();
-                updateFilterButtonStyle(prop);
-            }
-        });
-    }
-
-    private void updateFilterButtonStyle(String filterString) {
-        Filter filter = Filter.valueOf(filterString);
-        for (Button b : filterButtons) {
-            b.setStyle("-fx-font-weight: normal;");
-        }
-        switch (filter) {
-            case all: filterAll.setStyle("-fx-font-weight: bold;"); break;
-            case active: filterActive.setStyle("-fx-font-weight: bold;"); break;
-            case completed: filterCompleted.setStyle("-fx-font-weight: bold;"); break;
-        }
-    }
-
+    @FXML
     public void toggleAll(ActionEvent actionEvent) {
         modelRef.fireAction(new Action("toggleAll"));
     }
+
+    // XXX
+    private Map<Object, TaskPane> cache = new HashMap<Object, TaskPane>();
 
     private class TaskComponentListCell extends ListCell<LinkedHashMap<String, Object>> {
         @Override
         public void updateItem(LinkedHashMap<String, Object> item, boolean empty) {
             super.updateItem(item, empty);
             if (item != null) {
+                Object id = item.get("id");
                 String title = (String)item.get("title");
                 boolean completed = (boolean)item.get("completed");
 
-                TaskComponentController node = new TaskComponentController(modelRef, getIndex());
+                if (cache.get(id) == null) {
+                    cache.put(id, new TaskPane(modelRef));
+                }
+
+                TaskPane node = cache.get(id);
+                node.setIndex(getIndex());
                 node.setText(title);
-                node.getCompletedCheckBox().setSelected(completed);
+                node.getCompleted().setSelected(completed);
 
                 setGraphic(node);
             }

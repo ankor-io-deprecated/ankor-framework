@@ -7,28 +7,26 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
 
 import java.io.IOException;
 import java.util.HashMap;
 
-// TODO: Style checkboxes according to TodoMVC
-// TODO: Show delete button on hover
-public class TaskComponentController extends AnchorPane {
+// TODO: Text strike-through on complete
+public class TaskPane extends AnchorPane {
 
     private Ref modelRef;
-    private int index;
+    private int index = -1;
 
-    @FXML public CheckBox completedCheckBox;
+    @FXML public ToggleButton completed;
     @FXML public Button deleteButton;
     @FXML public Label title;
 
 
-    public TaskComponentController(Ref modelRef, int index) {
+    public TaskPane(Ref modelRef) {
         this.modelRef = modelRef;
-        this.index = index;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("task.fxml"));
         fxmlLoader.setRoot(this);
@@ -66,12 +64,12 @@ public class TaskComponentController extends AnchorPane {
         textProperty().set(value);
     }
 
-    public CheckBox getCompletedCheckBox() {
-        return completedCheckBox;
+    public ToggleButton getCompleted() {
+        return completed;
     }
 
-    public void setCompletedCheckBox(CheckBox completedCheckBox) {
-        this.completedCheckBox = completedCheckBox;
+    public void setCompleted(ToggleButton completed) {
+        this.completed = completed;
     }
 
     public Button getDeleteButton() {
@@ -80,5 +78,13 @@ public class TaskComponentController extends AnchorPane {
 
     public void setDeleteButton(Button deleteButton) {
         this.deleteButton = deleteButton;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
     }
 }

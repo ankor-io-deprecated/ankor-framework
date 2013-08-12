@@ -31,9 +31,13 @@
                   <children>
                     <HBox id="filters" alignment="CENTER" prefHeight="35.0" prefWidth="530.0" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                       <children>
-                        <Button fx:id="filterAll" mnemonicParsing="false" onAction="#displayAll" text="All" />
-                        <Button fx:id="filterActive" mnemonicParsing="false" onAction="#displayActive" text="Active" />
-                        <Button fx:id="filterCompleted" mnemonicParsing="false" onAction="#displayCompleted" text="Completed" />
+                        <ToggleButton fx:id="filterAll" mnemonicParsing="false" selected="true" text="All">
+                          <toggleGroup>
+                            <ToggleGroup fx:id="filterTG" />
+                          </toggleGroup>
+                        </ToggleButton>
+                        <ToggleButton fx:id="filterActive" mnemonicParsing="false" text="Active" toggleGroup="$filterTG" />
+                        <ToggleButton fx:id="filterCompleted" mnemonicParsing="false" text="Completed" toggleGroup="$filterTG" />
                       </children>
                       <padding>
                         <Insets top="2.0" />
@@ -45,7 +49,7 @@
                         <Label text="items left" />
                       </children>
                     </HBox>
-                    <Button fx:id="clearButton" alignment="CENTER_RIGHT" contentDisplay="CENTER" layoutY="7.0" mnemonicParsing="false" onAction="#clearTasks" prefHeight="20.0" text="Clear completedCheckBox (0)" textAlignment="CENTER" visible="true" AnchorPane.rightAnchor="10.0">
+                    <Button fx:id="clearButton" alignment="CENTER_RIGHT" contentDisplay="CENTER" layoutY="7.0" mnemonicParsing="false" onAction="#clearTasks" prefHeight="20.0" text="Clear completed (0)" textAlignment="CENTER" visible="true" AnchorPane.rightAnchor="10.0">
                       <effect>
                         <InnerShadow blurType="TWO_PASS_BOX" color="#00000033" height="1.0" radius="0.0" width="0.0" />
                       </effect>
@@ -67,7 +71,7 @@
                         <Pane id="pane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="15.0" visible="true" />
                         <HBox id="header" alignment="CENTER_LEFT" maxHeight="65.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="65.0" style="">
                           <children>
-                            <CheckBox fx:id="toggleAll" alignment="CENTER" mnemonicParsing="false" onAction="#toggleAll" prefWidth="45.0" />
+                            <ToggleButton fx:id="toggleAll" alignment="CENTER" minWidth="-1.0" mnemonicParsing="false" onAction="#toggleAll" prefWidth="40.0" rotate="90.0" text="»" />
                             <TextField fx:id="newTodo" onAction="#newTodo" promptText="What needs to be done?" HBox.hgrow="ALWAYS">
                               <HBox.margin>
                                 <Insets left="10.0" right="10.0" top="3.0" />
@@ -78,7 +82,7 @@
                             <Insets left="1.0" />
                           </padding>
                         </HBox>
-                        <ListView fx:id="tasksList" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                        <ListView fx:id="tasksList" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="SOMETIMES" />
                       </children>
                     </VBox>
                     <Pane id="lines" layoutX="40.0" prefHeight="208.0" prefWidth="4.0" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="16.0" />
