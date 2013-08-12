@@ -3,7 +3,6 @@ package at.irian.ankor.fx.binding;
 import at.irian.ankor.ref.Ref;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
-import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.text.Text;
 import javafx.util.converter.NumberStringConverter;
@@ -23,6 +22,7 @@ public class ValueBindingsBuilder {
 
     // XXX: Need better solution for this?
     private boolean hackyIntegerFlag = false;
+    private boolean treeBindingFlag = false;
 
     private Long floodControlDelay;
 
@@ -30,9 +30,14 @@ public class ValueBindingsBuilder {
         return new ValueBindingsBuilder().forValue(value);
     }
 
-    // Shortcut
-    public static ValueBindingsBuilder bind(Ref value) {
-        return bindValue(value);
+    public static ValueBindingsBuilder bindSubValues(Ref value) {
+        return new ValueBindingsBuilder().forSubValues(value);
+    }
+
+    private ValueBindingsBuilder forSubValues(Ref value) {
+        this.valueRef = value;
+        this.treeBindingFlag = true;
+        return this;
     }
 
     private ValueBindingsBuilder forValue(Ref value) {
@@ -118,7 +123,11 @@ public class ValueBindingsBuilder {
     public void createWithin(BindingContext bindingContext) {
         if (property != null) {
             if (!hackyIntegerFlag) {
-                bind(valueRef, property, bindingContext);
+                if (!treeBindingFlag) {
+                    bind(valueRef, property, bindingContext);
+                } else {
+                    bindTree(valueRef, property, bindingContext);
+                }
             } else {
                 bindInteger(valueRef, property, bindingContext);
             }
@@ -149,6 +158,11 @@ public class ValueBindingsBuilder {
     private static void bind(Ref valueRef, Property property, BindingContext context) {
         context.add(property);
         new RefPropertyBinding(valueRef, property);
+    }
+
+    private static void bindTree(Ref valueRef, Property property, BindingContext context) {
+        context.add(property);
+        new RefTreeBinding(valueRef, property);
     }
 
     private static void bind(final Ref valueRef, final Ref itemsRef, final ComboBox comboBox) {

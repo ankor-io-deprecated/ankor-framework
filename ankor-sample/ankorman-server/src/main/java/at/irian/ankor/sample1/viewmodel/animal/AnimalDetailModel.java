@@ -6,16 +6,9 @@ import at.irian.ankor.messaging.AnkorIgnore;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.viewmodel.ViewModelBase;
 import at.irian.ankor.viewmodel.ViewModelProperty;
-<<<<<<< HEAD:ankor-sample/ankorman-server/src/main/java/at/irian/ankor/sample1/viewmodel/animal/AnimalDetailModel.java
 import at.irian.ankor.sample1.domain.animal.Animal;
 import at.irian.ankor.sample1.server.AnimalRepository;
 import at.irian.ankor.sample1.viewmodel.TabNameCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-=======
-import at.irian.ankorman.sample1.domain.animal.Animal;
-import at.irian.ankorman.sample1.server.AnimalRepository;
-import at.irian.ankorman.sample1.viewmodel.TabNameCreator;
->>>>>>> master:ankor-sample/ankorman-server/src/main/java/at/irian/ankorman/sample1/viewmodel/animal/AnimalDetailModel.java
 
 /**
  * @author Thomas Spiegl

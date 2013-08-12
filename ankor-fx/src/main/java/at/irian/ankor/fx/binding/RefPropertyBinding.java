@@ -34,8 +34,7 @@ public class RefPropertyBinding implements RefChangeListener, javafx.beans.value
         this.property = property;
 
         setPropertyValue();
-
-        RefListeners.addPropChangeListener(this.valueRef, this);
+        setChangeListener();
 
         this.property.addListener(this);
 
@@ -57,6 +56,10 @@ public class RefPropertyBinding implements RefChangeListener, javafx.beans.value
                 setPropertyValue();
             }
         });
+    }
+
+    protected void setChangeListener() {
+        RefListeners.addPropChangeListener(this.valueRef, this);
     }
 
     private void setPropertyValue() {
@@ -110,4 +113,7 @@ public class RefPropertyBinding implements RefChangeListener, javafx.beans.value
         }
     }
 
+    protected Ref getValueRef() {
+        return valueRef;
+    }
 }

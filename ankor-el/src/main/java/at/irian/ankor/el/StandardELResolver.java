@@ -14,7 +14,7 @@ class StandardELResolver extends CompositeELResolver {
         }
         add(new MapELResolver());
         add(new ArrayELResolver());
-        add(new ListELResolver());
+        add(new FriendlyListELResolver());
         add(new ResourceBundleELResolver());
         add(new BeanELResolver());
     }

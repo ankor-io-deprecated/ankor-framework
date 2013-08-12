@@ -4,7 +4,11 @@ import at.irian.ankor.annotation.ActionListener;
 import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.annotation.Param;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.ref.listener.RefChangeListener;
+import at.irian.ankor.ref.listener.RefListeners;
 import at.irian.ankor.viewmodel.ViewModelBase;
+import at.irian.ankor.viewmodel.ViewModelListBase;
+import at.irian.ankor.viewmodel.ViewModelMapBase;
 import at.irian.ankor.viewmodel.ViewModelProperty;
 import at.irian.ankor.todosample.domain.task.Task;
 import at.irian.ankor.todosample.server.TaskRepository;
@@ -18,8 +22,8 @@ public class TaskListModel extends ViewModelBase {
     @JsonIgnore
     private final TaskRepository taskRepository;
 
-    // TODO: Create custom class for view model lists
-    private List<Task> tasks;
+    //private List<Task> tasks;
+    private ViewModelListBase<Task> tasks;
 
     private ViewModelProperty<String> filter;
 
@@ -46,7 +50,20 @@ public class TaskListModel extends ViewModelBase {
         this.filterCompletedSelected.set(false);
 
         this.taskRepository = taskRepository;
-        this.tasks = fetchTasksData();
+        this.tasks = new ViewModelListBase<Task>(viewModelRef, "tasks", fetchTasksData());
+        //this.tasks = fetchTasksData();
+
+        /* TODO
+        RefListeners.addTreeChangeListener(viewModelRef.append("tasks"), new RefChangeListener() {
+            @Override
+            public void processChange(Ref changedProperty) {
+                //To change body of implemented methods use File | Settings | File Templates.
+                if (changedProperty.propertyName().equals("completed")) {
+
+                }
+            }
+        });
+        */
 
         this.itemsLeft.set(taskRepository.getActiveTasks().size());
         this.updateFooterVisibility();
@@ -58,8 +75,6 @@ public class TaskListModel extends ViewModelBase {
     }
 
     @ChangeListener(pattern = {
-            "**.<TaskListModel>.itemsLeft",
-            "**.<TaskListModel>.itemsComplete",
             "**.<TaskListModel>.filterAllSelected",
             "**.<TaskListModel>.filterActiveSelected",
             "**.<TaskListModel>.filterCompletedSelected" })
@@ -74,8 +89,9 @@ public class TaskListModel extends ViewModelBase {
             filter.set(Filter.completed.toString());
         }
 
-        List<Task> tasksData = fetchTasksData();
-        thisRef().append("tasks").setValue(tasksData);
+        //List<Task> tasksData = fetchTasksData();
+        //thisRef().append("tasks").setValue(tasksData);
+        thisRef().append("tasks.list").setValue(tasks.getList());
     }
 
     @ChangeListener(pattern = {
@@ -97,6 +113,8 @@ public class TaskListModel extends ViewModelBase {
 
         Task task = new Task(title);
         taskRepository.saveTask(task);
+
+        tasks.add(task);
 
         itemsLeft.set(itemsLeft.get() + 1);
         toggleAll.set(false);
@@ -127,6 +145,7 @@ public class TaskListModel extends ViewModelBase {
 
         Task task = tasks.get(index);
         taskRepository.deleteTask(task);
+        tasks.remove(index);
 
         itemsLeft.set(taskRepository.getActiveTasks().size());
         itemsComplete.set(taskRepository.getCompletedTasks().size());
@@ -164,7 +183,7 @@ public class TaskListModel extends ViewModelBase {
 
     /*
     // XXX: Not supported. Necessary?
-    @ChangeListener(pattern="**.<TaskListModel>.tasks[:index].completed")
+    @ChangeListener(pattern="**.<TaskListModel>.tasks[(*)].completed")
     public void completeTodo(int index) {
         LOG.info("completing task ", index);
     }
@@ -183,11 +202,11 @@ public class TaskListModel extends ViewModelBase {
         this.itemsLeft = itemsLeft;
     }
 
-    public List<Task> getTasks() {
+    public ViewModelListBase<Task> getTasks() {
         return tasks;
     }
 
-    public void setTasks(List<Task> tasks) {
+    public void setTasks(ViewModelListBase<Task> tasks) {
         this.tasks = tasks;
     }
 

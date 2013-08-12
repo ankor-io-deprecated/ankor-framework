@@ -6,7 +6,6 @@ import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.listener.RefChangeListener;
 import at.irian.ankor.ref.listener.RefListeners;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -14,10 +13,12 @@ import javafx.scene.control.*;
 import javafx.util.Callback;
 
 import java.net.URL;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
 
-import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bind;
+import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
+import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindSubValues;
 import static at.irian.ankor.todosample.fxclient.App.refFactory;
 
 public class TaskListController implements Initializable {
@@ -57,48 +58,48 @@ public class TaskListController implements Initializable {
     }
 
     public void initialize() {
-        bind(modelRef.append("tasks"))
+        bindSubValues(modelRef.append("tasks.list"))
                 .toProperty(tasksList.itemsProperty())
                 .createWithin(bindingContext);
 
-        bind(modelRef.append("toggleAll"))
+        bindValue(modelRef.append("toggleAll"))
                 .toProperty(toggleAll.selectedProperty())
                 .createWithin(bindingContext);
 
-        bind(modelRef.append("itemsLeft"))
+        bindValue(modelRef.append("itemsLeft"))
                 .toProperty(todoCountNum.textProperty())
                 .forIntegerValue()
                 .createWithin(bindingContext);
 
-        bind(modelRef.append("itemsCompleteText"))
+        bindValue(modelRef.append("itemsCompleteText"))
                 .toProperty(clearButton.textProperty())
                 .createWithin(bindingContext);
 
-        bind(modelRef.append("clearButtonVisibility"))
+        bindValue(modelRef.append("clearButtonVisibility"))
                 .toProperty(clearButton.visibleProperty())
                 .createWithin(bindingContext);
 
-        bind(modelRef.append("footerVisibility"))
+        bindValue(modelRef.append("footerVisibility"))
                 .toProperty(footerTop.visibleProperty())
                 .createWithin(bindingContext);
 
-        bind(modelRef.append("footerVisibility"))
+        bindValue(modelRef.append("footerVisibility"))
                 .toProperty(footerBottom.visibleProperty())
                 .createWithin(bindingContext);
 
-        bind(modelRef.append("footerVisibility"))
+        bindValue(modelRef.append("footerVisibility"))
                 .toProperty(toggleAll.visibleProperty())
                 .createWithin(bindingContext);
 
-        bind(modelRef.append("filterAllSelected"))
+        bindValue(modelRef.append("filterAllSelected"))
                 .toProperty(filterAll.selectedProperty())
                 .createWithin(bindingContext);
 
-        bind(modelRef.append("filterActiveSelected"))
+        bindValue(modelRef.append("filterActiveSelected"))
                 .toProperty(filterActive.selectedProperty())
                 .createWithin(bindingContext);
 
-        bind(modelRef.append("filterCompletedSelected"))
+        bindValue(modelRef.append("filterCompletedSelected"))
                 .toProperty(filterCompleted.selectedProperty())
                 .createWithin(bindingContext);
 
@@ -133,33 +134,35 @@ public class TaskListController implements Initializable {
     }
 
     // XXX: Tune performance using a cache but produces glitches
-    // HashMap<Object, TaskPane> cache = new HashMap<Object, TaskPane>();
+    HashMap<Object, TaskPane> cache = new HashMap<Object, TaskPane>();
 
     private class TaskComponentListCell extends ListCell<LinkedHashMap<String, Object>> {
 
         @Override
         public void updateItem(LinkedHashMap<String, Object> item, boolean empty) {
-            super.updateItem(item, empty);
-            if (item != null && !empty) {
+            super.updateItem(item, item == null);
+            if (item != null) {
                 String title = (String)item.get("title");
                 boolean completed = (boolean)item.get("completed");
 
+                /*
                 if (getGraphic() == null) {
                     setGraphic(new TaskPane(modelRef));
                 }
                 TaskPane node = (TaskPane) getGraphic();
+                */
 
-                /*
                 if (cache.get(getIndex()) == null) {
                     cache.put(getIndex(), new TaskPane(modelRef));
                 }
                 TaskPane node = cache.get(getIndex());
                 setGraphic(node);
-                */
 
                 node.setIndex(getIndex());
                 node.setText(title);
                 node.getCompleted().setSelected(completed);
+            } else {
+                setGraphic(null);
             }
         }
     }

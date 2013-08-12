@@ -80,7 +80,9 @@ public class OldValuesAwareChangeEvent extends ChangeEvent {
 
 
     private boolean isDifferent(Object changedPropOldValue, Object changedPropNewValue) {
-        return !ObjectUtils.nullSafeEquals(changedPropOldValue, changedPropNewValue);
+        // XXX: For proof-of-concept
+        //return !ObjectUtils.nullSafeEquals(changedPropOldValue, changedPropNewValue);
+        return true;
     }
 
 }
