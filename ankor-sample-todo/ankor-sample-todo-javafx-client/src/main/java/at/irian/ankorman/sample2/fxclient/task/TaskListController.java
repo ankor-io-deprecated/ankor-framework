@@ -146,8 +146,6 @@ public class TaskListController implements Initializable {
                     setGraphic(new TaskPane(modelRef));
                 }
 
-                // TODO: editable
-                // TODO: add strike-through style class
                 TaskPane node = (TaskPane) this.getGraphic();
                 node.setIndex(getIndex());
                 node.setText(title);
