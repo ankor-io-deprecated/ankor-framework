@@ -7,12 +7,14 @@ import at.irian.ankor.ref.listener.RefChangeListener;
 import at.irian.ankor.ref.listener.RefListeners;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.util.Callback;
 
 import java.net.URL;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
 
@@ -131,25 +133,34 @@ public class TaskListController implements Initializable {
         modelRef.fire(new Action("toggleAll"));
     }
 
+    // XXX: Tune performance using a cache but produces glitches
+    // HashMap<Object, TaskPane> cache = new HashMap<Object, TaskPane>();
+
     private class TaskComponentListCell extends ListCell<LinkedHashMap<String, Object>> {
+
         @Override
         public void updateItem(LinkedHashMap<String, Object> item, boolean empty) {
             super.updateItem(item, empty);
-            if (item != null) {
-                Object id = item.get("id");
+            if (item != null && !empty) {
                 String title = (String)item.get("title");
                 boolean completed = (boolean)item.get("completed");
 
                 if (getGraphic() == null) {
                     setGraphic(new TaskPane(modelRef));
                 }
+                TaskPane node = (TaskPane) getGraphic();
 
-                TaskPane node = (TaskPane) this.getGraphic();
+                /*
+                if (cache.get(getIndex()) == null) {
+                    cache.put(getIndex(), new TaskPane(modelRef));
+                }
+                TaskPane node = cache.get(getIndex());
+                setGraphic(node);
+                */
+
                 node.setIndex(getIndex());
                 node.setText(title);
                 node.getCompleted().setSelected(completed);
-
-                setGraphic(node);
             }
         }
     }
