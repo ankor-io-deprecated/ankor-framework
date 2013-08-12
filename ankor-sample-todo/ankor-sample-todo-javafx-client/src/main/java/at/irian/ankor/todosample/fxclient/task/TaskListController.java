@@ -6,15 +6,14 @@ import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.listener.RefChangeListener;
 import at.irian.ankor.ref.listener.RefListeners;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.util.Callback;
 
 import java.net.URL;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
 
@@ -33,10 +32,10 @@ public class TaskListController implements Initializable {
     @FXML public Label todoCountNum;
     @FXML public Button clearButton;
 
-    @FXML public ToggleButton filterAll;
-    @FXML public ToggleButton filterActive;
-    @FXML public ToggleButton filterCompleted;
-    @FXML public ToggleGroup filterTG;
+    @FXML public RadioButton filterAll;
+    @FXML public RadioButton filterActive;
+    @FXML public RadioButton filterCompleted;
+    @FXML public ToggleGroup filterToggleGroup;
 
     @FXML public Node footerTop;
     @FXML public Node footerBottom;

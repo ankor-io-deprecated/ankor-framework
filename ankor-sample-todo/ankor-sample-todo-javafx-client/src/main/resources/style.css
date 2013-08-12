@@ -92,11 +92,11 @@
 
 .radio-button {
     -fx-text-fill: #83756f;
-    -fx-padding: 0;
 }
 
 .radio-button .radio, .radio-button .dot {
     -fx-background-color: transparent;
+    -fx-padding: 0;
 }
 
 .radio-button:selected {

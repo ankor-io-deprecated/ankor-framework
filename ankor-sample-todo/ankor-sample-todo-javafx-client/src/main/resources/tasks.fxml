@@ -14,7 +14,7 @@
   <children>
     <VBox alignment="TOP_CENTER" prefWidth="550.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <children>
-        <VBox alignment="CENTER" maxWidth="550.0" VBox.margin="$x1" VBox.vgrow="ALWAYS">
+        <VBox alignment="CENTER" maxWidth="550.0" VBox.vgrow="ALWAYS">
           <children>
             <Label id="heading" alignment="CENTER" text="todos" textAlignment="CENTER">
               <font>
@@ -29,18 +29,18 @@
                 <Pane id="bigShadow" style="-fx-background-color: #fff;" styleClass="bigShadow" GridPane.columnIndex="0" GridPane.rowIndex="0" />
                 <AnchorPane id="footer" fx:id="footerBottom" prefHeight="30.0" styleClass="boxShadow, paper" visible="true" GridPane.columnIndex="0" GridPane.rowIndex="2">
                   <children>
-                    <HBox id="filters" alignment="CENTER" prefHeight="35.0" prefWidth="530.0" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <HBox id="filters" alignment="CENTER" prefHeight="35.0" prefWidth="530.0" spacing="5.0" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                       <children>
-                        <ToggleButton fx:id="filterAll" mnemonicParsing="false" selected="true" text="All">
+                        <RadioButton fx:id="filterAll" mnemonicParsing="false" selected="true" text="All">
                           <toggleGroup>
-                            <ToggleGroup fx:id="filterTG" />
+                            <ToggleGroup fx:id="filterToggleGroup" />
                           </toggleGroup>
-                        </ToggleButton>
-                        <ToggleButton fx:id="filterActive" mnemonicParsing="false" text="Active" toggleGroup="$filterTG" />
-                        <ToggleButton fx:id="filterCompleted" mnemonicParsing="false" text="Completed" toggleGroup="$filterTG" />
+                        </RadioButton>
+                        <RadioButton fx:id="filterActive" mnemonicParsing="false" text="Active" toggleGroup="$filterToggleGroup" HBox.hgrow="NEVER" />
+                        <RadioButton fx:id="filterCompleted" mnemonicParsing="false" text="Completed" toggleGroup="$filterToggleGroup" />
                       </children>
                       <padding>
-                        <Insets top="2.0" />
+                        <Insets />
                       </padding>
                     </HBox>
                     <HBox id="todoCount" alignment="CENTER_LEFT" prefHeight="35.0" spacing="5.0" visible="true" AnchorPane.leftAnchor="10.0">
@@ -97,9 +97,6 @@
                 <RowConstraints maxHeight="3.0" minHeight="3.0" prefHeight="3.0" vgrow="NEVER" />
                 <RowConstraints maxHeight="35.0" minHeight="35.0" prefHeight="35.0" vgrow="NEVER" />
               </rowConstraints>
-              <VBox.margin>
-                <Insets fx:id="x1" />
-              </VBox.margin>
             </GridPane>
             <VBox id="info" prefHeight="147.0" prefWidth="600.0" spacing="12.0">
               <children>
