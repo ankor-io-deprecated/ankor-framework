@@ -9,14 +9,14 @@
 <?import javafx.scene.paint.*?>
 
 <fx:root type="javafx.scene.layout.AnchorPane" prefWidth="500.0" styleClass="task" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
-  <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="65.0" prefWidth="-1.0">
+  <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="65.0" prefWidth="-1.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
     <children>
       <ToggleButton fx:id="completed" mnemonicParsing="false" onAction="#complete" prefWidth="40.0" selected="false" styleClass="completed-button" text="✔" />
-      <Label fx:id="title" maxWidth="-Infinity" text="Some task" wrapText="false" HBox.hgrow="ALWAYS">
+      <TextField fx:id="title" disable="false" editable="false" minHeight="-Infinity" prefHeight="65.0" prefWidth="-1.0" text="Some task" HBox.hgrow="ALWAYS">
         <HBox.margin>
-          <Insets left="16.0" right="16.0" top="3.0" />
+          <Insets left="10.0" right="10.0" />
         </HBox.margin>
-      </Label>
+      </TextField>
     </children>
   </HBox>
   <Button fx:id="deleteButton" contentDisplay="LEFT" mnemonicParsing="false" onAction="#delete" styleClass="deleteButton" text="✖" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />

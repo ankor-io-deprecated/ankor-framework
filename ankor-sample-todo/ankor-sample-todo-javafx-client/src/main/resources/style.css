@@ -62,7 +62,7 @@
     -fx-background-color: rgba(0, 0, 0, 0.02);
 }
 
-.task .text-field, .task .label, #header .text-field {
+.task .text-field, #header .text-field {
     -fx-font-family: Helvetica, Arial, sans-serif;
     -fx-text-fill: #4d4d4d;
     -fx-background-color: transparent;
@@ -192,3 +192,11 @@
     -fx-text-fill: #85ada7;
     /*-fx-effect: dropshadow(one-pass-box, #669991, 1, 0, 0, 1);*/
 }
+
+.default .text {
+    -fx-strikethrough: false;
+}
+.strike-through .text {
+    -fx-strikethrough: true;
+}
+

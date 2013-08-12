@@ -135,6 +135,15 @@ public class TaskListModel extends ViewModelBase {
     }
 
     @ActionListener
+    public void editTask(@Param("index") final int index, @Param("title") final String title) {
+        LOG.info("Editing task {}", index);
+
+        Task task = tasks.get(index);
+        task.setTitle(title);
+        taskRepository.saveTask(task);
+    }
+
+    @ActionListener
     public void toggleAll() {
         //toggleAll.set(!toggleAll.get());
 
