@@ -2,7 +2,6 @@ package at.irian.ankorman.sample2.domain.task;
 
 import java.util.UUID;
 
-// TODO: Resolve ambivalent naming: Task <-> Todo
 public class Task {
     private String id;
     private String title;

@@ -133,9 +133,6 @@ public class TaskListController implements Initializable {
         modelRef.fireAction(new Action("toggleAll"));
     }
 
-    // XXX
-    private Map<Object, TaskPane> cache = new HashMap<Object, TaskPane>();
-
     private class TaskComponentListCell extends ListCell<LinkedHashMap<String, Object>> {
         @Override
         public void updateItem(LinkedHashMap<String, Object> item, boolean empty) {
@@ -145,11 +142,13 @@ public class TaskListController implements Initializable {
                 String title = (String)item.get("title");
                 boolean completed = (boolean)item.get("completed");
 
-                if (cache.get(id) == null) {
-                    cache.put(id, new TaskPane(modelRef));
+                if (getGraphic() == null) {
+                    setGraphic(new TaskPane(modelRef));
                 }
 
-                TaskPane node = cache.get(id);
+                // TODO: editable
+                // TODO: add strike-through style class
+                TaskPane node = (TaskPane) this.getGraphic();
                 node.setIndex(getIndex());
                 node.setText(title);
                 node.getCompleted().setSelected(completed);

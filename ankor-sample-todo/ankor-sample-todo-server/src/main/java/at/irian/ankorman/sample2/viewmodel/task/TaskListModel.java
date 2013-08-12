@@ -20,8 +20,8 @@ public class TaskListModel extends ViewModelBase {
     @JsonIgnore
     private final TaskRepository taskRepository;
 
+    // TODO: Create custom class for view model lists
     private List<Task> tasks;
-    ViewModelMapBase<String, Task> test;
 
     private ViewModelProperty<String> filter;
 
@@ -90,7 +90,7 @@ public class TaskListModel extends ViewModelBase {
     @ChangeListener(pattern="**.<TaskListModel>.itemsComplete")
     public void updateClearButton() {
         clearButtonVisibility.set(itemsComplete.get() != 0);
-        itemsCompleteText.set(String.format("Clear completed (%d)", itemsComplete.get())); // XXX: i18n?
+        itemsCompleteText.set(String.format("Clear completed (%d)", itemsComplete.get()));
     }
 
     @ActionListener

@@ -14,7 +14,6 @@ import javafx.scene.layout.AnchorPane;
 import java.io.IOException;
 import java.util.HashMap;
 
-// TODO: Text strike-through on complete
 public class TaskPane extends AnchorPane {
 
     private Ref modelRef;
