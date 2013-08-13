@@ -141,7 +141,7 @@ public class TaskListController implements Initializable {
         @Override
         public void updateItem(LinkedHashMap<String, Object> item, boolean empty) {
             super.updateItem(item, item == null);
-            if (item != null) {
+            if (!isEmpty()) {
                 String title = (String)item.get("title");
                 boolean completed = (boolean)item.get("completed");
 
