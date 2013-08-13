@@ -2,6 +2,7 @@ package at.irian.ankor.viewmodel;
 
 import at.irian.ankor.ref.Ref;
 import javafx.beans.property.ListPropertyBase;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.*;
 
@@ -61,27 +62,27 @@ public class ViewModelListBase<T> extends ViewModelBase {
     }
 
     public boolean remove(Object o) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        throw new NotImplementedException();
     }
 
     public boolean containsAll(Collection<?> c) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        throw new NotImplementedException();
     }
 
     public boolean addAll(Collection<? extends T> c) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        throw new NotImplementedException();
     }
 
     public boolean addAll(int index, Collection<? extends T> c) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        throw new NotImplementedException();
     }
 
     public boolean removeAll(Collection<?> c) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        throw new NotImplementedException();
     }
 
     public boolean retainAll(Collection<?> c) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        throw new NotImplementedException();
     }
 
     public void clear() {
@@ -98,7 +99,7 @@ public class ViewModelListBase<T> extends ViewModelBase {
     }
 
     public void add(int index, T element) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new NotImplementedException();
     }
 
     public T remove(int index) {
@@ -131,7 +132,7 @@ public class ViewModelListBase<T> extends ViewModelBase {
     }
 
     public List<T> subList(int fromIndex, int toIndex) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        throw new NotImplementedException();
     }
 
     public List<T> getList() {
