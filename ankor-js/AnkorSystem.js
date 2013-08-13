@@ -16,6 +16,7 @@ define([
             throw new Error("AnkorSystem missing transport");
         }
         else {
+            this.transport.ankorSystem = this;
             this.transport.setMessageHandler(utils.hitch(this, "processIncomingMessage"));
         }
     };
@@ -104,7 +105,6 @@ define([
     AnkorSystem.prototype.processIncomingMessage = function(message) {
         var ref = this.getRef(message.property);
         ref.setValue(message.value, true);
-
     };
 
     return AnkorSystem;

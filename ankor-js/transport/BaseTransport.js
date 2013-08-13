@@ -1,9 +1,9 @@
 define(function() {
-    var messageCounter = 0;
-
     var BaseTransport = function() {
+        this.ankorSystem = null;
         this.outgoingMessages = [];
         this.messageHandler = null;
+        this.messageCounter = 0;
     };
 
     BaseTransport.prototype.setMessageHandler = function(messageHandler) {
@@ -11,7 +11,7 @@ define(function() {
     };
 
     BaseTransport.prototype.sendMessage = function(message) {
-        message.messageId = message.senderId + "#" + messageCounter++;
+        message.messageId = message.senderId + "#" + this.messageCounter++;
         this.outgoingMessages.push(message);
     };
 

@@ -57,7 +57,7 @@ public class ViewModelJsonMessageMapper implements MessageMapper<String>,
         mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
         mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
 
-        mapper.configure(JsonGenerator.Feature.QUOTE_FIELD_NAMES, false);
+        mapper.configure(JsonGenerator.Feature.QUOTE_FIELD_NAMES, true);
 
         mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
 

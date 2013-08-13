@@ -1,17 +1,18 @@
 define([
     "jquery",
     "ankor/AnkorSystem",
-    "ankor/transport/TestTransport",
+    "ankor/transport/HttpPollingTransport",
     "./AnimalDetailTab",
     "./AnimalSearchTab",
     "jquery-ui", //Require only, no reference needed
     "ankor/adapters/JQueryAdapter" //Require only, no reference needed
-], function($, AnkorSystem, TestTransport, AnimalDetailTab, AnimalSearchTab) {
+], function($, AnkorSystem, HttpPollingTransport, AnimalDetailTab, AnimalSearchTab) {
     //Setup AnkorSystem
     var ankorSystem = new AnkorSystem({
-        modelId: null,
-        transport: new TestTransport()
+        modelId: "collabTest",
+        transport: new HttpPollingTransport("/ankor")
     });
+    window.ankorSystem = ankorSystem;
 
     //Setup main UI
     var rootRef = ankorSystem.getRef("root");
@@ -26,8 +27,8 @@ define([
         });
 
         //Bind userName and serverStatus
-        $("#userName").ankorBindInnerHTML(rootRef.append("userName"))
-        $("#serverStatus").ankorBindInnerHTML(rootRef.append("serverStatus"))
+        $("#userName").ankorBindInnerHTML(rootRef.append("userName"));
+        $("#serverStatus").ankorBindInnerHTML(rootRef.append("serverStatus"));
 
         //Initialize tabs
         $("#tabs").tabs();
