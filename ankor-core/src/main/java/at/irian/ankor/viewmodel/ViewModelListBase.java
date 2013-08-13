@@ -1,7 +1,6 @@
 package at.irian.ankor.viewmodel;
 
 import at.irian.ankor.ref.Ref;
-import javafx.beans.property.ListPropertyBase;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.*;
@@ -54,7 +53,12 @@ public class ViewModelListBase<T> extends ViewModelBase {
     }
 
     public boolean remove(Object o) {
-        throw new NotImplementedException();
+        int index = indexOf(o);
+        boolean containsElement = (index >= 0);
+        if (containsElement) {
+            remove(index);
+        }
+        return containsElement;
     }
 
     public boolean containsAll(Collection<?> c) {
@@ -86,30 +90,66 @@ public class ViewModelListBase<T> extends ViewModelBase {
     }
 
     public T set(int index, T element) {
+        T oldValue = get(index);
         listRef(index).setValue(element);
-        return list.set(index, element);
+        return oldValue;
     }
 
+    /**
+     * Starting from index, shifts all elements of the list to the left (closer to 0),
+     * while informing the client about the changes.
+     *
+     * The last element of the list will be set to null, while the element at index will be be removed from the list.
+     * Note that this will not shift the entire list like a typical shift functions.
+     *
+     * @param index The index from which to start the shift.
+     *              The element on this position will be removed from the collection.
+     */
+    private void shiftLeft(int index) {
+        int i;
+        for(i = index; i < size() - 1; i++) {
+            listRef(i).setValue(get(i + 1));
+        }
+
+        listRef(i).setValue(null);
+        list.remove(list.size()-1);
+    }
+
+    /**
+     * Starting from index + 1, shifts all elements of the list to the right (away from 0),
+     * while informing the client about the changes.
+     *
+     * The element at index and the element at index + 1 will be identical after the shift.
+     * Note that this will not shift the entire List like typical shift functions.
+     *
+     * @param index The index from which to start the shift.
+     *              The element on this position and the next will be identical after the shift.
+     */
+    private void shiftRight(int index) {
+        list.add((T) new Object());
+
+        int i;
+        for(i = size() - 1; i > index; i--) {
+            listRef(i).setValue(this.get(i - 1));
+        }
+    }
+
+
     public void add(int index, T element) {
-        throw new NotImplementedException();
+        shiftRight(index);
+        listRef(index).setValue(element);
     }
 
     public T remove(int index) {
         T toRemove = get(index);
-
-        int i;
-        for(i = index; i < list.size()-1; i++) {
-            listRef(i).setValue(this.get(i+1));
-        }
-        listRef(i).setValue(null);
-        list.remove(list.size()-1);
-
+        shiftLeft(index);
         return toRemove;
     }
 
     public int indexOf(Object o) {
         return list.indexOf(o);
     }
+
     public int lastIndexOf(Object o) {
         return list.lastIndexOf(o);
     }
