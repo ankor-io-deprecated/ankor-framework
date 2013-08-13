@@ -10,12 +10,9 @@ public class ViewModelListBase<T> extends ViewModelBase {
 
     protected List<T> list;
 
-    private int nonNullSize = 0;
-
     public ViewModelListBase(Ref viewModelRef, String name, List<T> list) {
         super(viewModelRef.append(name));
         this.list = new ArrayList<T>(list);
-        this.nonNullSize = list.size();
     }
 
     private Ref listRef() {
@@ -51,13 +48,8 @@ public class ViewModelListBase<T> extends ViewModelBase {
     }
 
     public boolean add(T t) {
-        if (nonNullSize == list.size()) {
-            list.add((T) new Object());
-        }
-        listRef(nonNullSize).setValue(t);
-        if (t != null) {
-            nonNullSize++;
-        }
+        list.add((T) new Object());
+        listRef(size() - 1).setValue(t);
         return true;
     }
 
@@ -110,8 +102,7 @@ public class ViewModelListBase<T> extends ViewModelBase {
             listRef(i).setValue(this.get(i+1));
         }
         listRef(i).setValue(null);
-
-        nonNullSize--;
+        list.remove(list.size()-1);
 
         return toRemove;
     }
