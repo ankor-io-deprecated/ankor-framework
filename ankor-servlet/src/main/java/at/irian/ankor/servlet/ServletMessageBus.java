@@ -67,10 +67,8 @@ public class ServletMessageBus extends MessageBus<String> {
 
     public List<Message> getAndClearPendingMessagesFor(String remoteSystemId) {
         synchronized (pendingClientMessages) {
-            List<Message> messages = pendingClientMessages.get(new SimpleRemoteSystem(remoteSystemId));
-            List<Message> result = messages != null ? new ArrayList<Message>(messages) : Collections.<Message>emptyList();
-            pendingClientMessages.clear();
-            return result;
+            List<Message> messages = pendingClientMessages.remove(new SimpleRemoteSystem(remoteSystemId));
+            return messages != null ? messages : Collections.<Message>emptyList();
         }
     }
 }
