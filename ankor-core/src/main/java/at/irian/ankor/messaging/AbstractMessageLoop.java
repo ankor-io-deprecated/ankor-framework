@@ -43,7 +43,7 @@ public abstract class AbstractMessageLoop<S> implements MessageLoop<S> {
                 while (!interrupted) {
                     try {
                         S msg = receive();
-                        LOG.debug("{} receives {}", systemName, msg);
+                        LOG.trace("{} receives {}", systemName, msg);
                         messageBus.receiveSerializedMessage(msg);
                     } catch (InterruptedException e) {
                         interrupted = true;
