@@ -11,7 +11,7 @@
 <fx:root type="javafx.scene.layout.AnchorPane" prefHeight="65.0" prefWidth="500.0" styleClass="task" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
   <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="-1.0" prefWidth="-1.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
     <children>
-      <ToggleButton fx:id="completed" mnemonicParsing="false" onAction="#complete" prefWidth="40.0" selected="false" styleClass="completed-button" text="✔" />
+      <ToggleButton fx:id="completed" onAction="#complete" mnemonicParsing="false" prefWidth="40.0" selected="false" styleClass="completed-button" text="✔" />
       <TextField fx:id="title" disable="false" editable="false" minHeight="-Infinity" prefHeight="65.0" prefWidth="-1.0" text="Some task" HBox.hgrow="ALWAYS">
         <HBox.margin>
           <Insets left="10.0" right="10.0" />

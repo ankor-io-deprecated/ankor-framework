@@ -17,8 +17,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
 
-import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
 import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindSubValues;
+import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
 import static at.irian.ankor.todosample.fxclient.App.refFactory;
 
 public class TaskListController implements Initializable {
@@ -59,7 +59,7 @@ public class TaskListController implements Initializable {
 
     public void initialize() {
         // XXX: tree change listener is needed
-        bindSubValues(modelRef.append("tasks.list"))
+        bindSubValues(modelRef.append("tasks"))
                 .toProperty(tasksList.itemsProperty())
                 .createWithin(bindingContext);
 
@@ -134,34 +134,29 @@ public class TaskListController implements Initializable {
         modelRef.fire(new Action("toggleAll"));
     }
 
-    // XXX: Tune performance using a cache, produces glitches
     HashMap<Object, TaskPane> cache = new HashMap<Object, TaskPane>();
-
     private class TaskComponentListCell extends ListCell<LinkedHashMap<String, Object>> {
 
         @Override
         public void updateItem(LinkedHashMap<String, Object> item, boolean empty) {
             super.updateItem(item, item == null);
-            if (!isEmpty()) {
+            if (item != null) {
+                //Object id = item.get("id");
+                int index = getIndex();
                 String title = (String)item.get("title");
                 boolean completed = (boolean)item.get("completed");
 
-                /*
-                if (getGraphic() == null) {
-                    setGraphic(new TaskPane(modelRef));
+                // XXX: Memory Leak
+                if (cache.get(index) == null) {
+                    cache.put(index, new TaskPane(modelRef));
                 }
-                TaskPane node = (TaskPane) getGraphic();
-                */
+                TaskPane node = cache.get(index);
 
-                if (cache.get(getIndex()) == null) {
-                    cache.put(getIndex(), new TaskPane(modelRef));
-                }
-                TaskPane node = cache.get(getIndex());
-                setGraphic(node);
-
-                node.setIndex(getIndex());
                 node.setText(title);
-                node.getCompleted().setSelected(completed);
+                node.setSelected(completed);
+                node.setIndex(index);
+
+                setGraphic(node);
             } else {
                 // XXX: Client must know how to handle null values
                 setGraphic(null);

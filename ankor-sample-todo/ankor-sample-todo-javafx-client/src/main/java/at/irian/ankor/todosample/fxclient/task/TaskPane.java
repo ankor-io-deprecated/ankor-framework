@@ -149,4 +149,12 @@ public class TaskPane extends AnchorPane {
     public void setIndex(int index) {
         this.index = index;
     }
+
+    public void setSelected(boolean selected) {
+        this.completed.setSelected(selected);
+    }
+
+    public boolean isSelected() {
+        return this.completed.isSelected();
+    }
 }
