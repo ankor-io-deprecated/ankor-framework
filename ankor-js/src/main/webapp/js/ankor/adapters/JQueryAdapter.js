@@ -26,7 +26,7 @@ define([
             keyTimer = setTimeout(function() {
                 keyTimer = null;
                 updateValue();
-            }, 1000);
+            }, 200);
         });
         return ref.addPropChangeListener(function() {
             element.val(ref.getValue());

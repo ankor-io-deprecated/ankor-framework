@@ -9,7 +9,7 @@ define([
 
         this.endpoint = endpoint;
         this.inFlight = null;
-        this.sendTimer = setTimeout(utils.hitch(this, "processOutgoingMessages"), 1000);
+        this.sendTimer = setTimeout(utils.hitch(this, "processOutgoingMessages"), 100);
     };
     HttpPollingTransport.prototype = new BaseTransport();
 
@@ -75,7 +75,7 @@ define([
                 }
             }
             this.inFlight = null;
-            this.sendTimer = setTimeout(utils.hitch(this, "processOutgoingMessages"), 1000);
+            this.sendTimer = setTimeout(utils.hitch(this, "processOutgoingMessages"), 100);
         }));
     };
 
