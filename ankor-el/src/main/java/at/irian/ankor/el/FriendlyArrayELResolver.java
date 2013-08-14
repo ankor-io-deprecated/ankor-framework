@@ -1,37 +1,35 @@
 package at.irian.ankor.el;
 
+import javax.el.ArrayELResolver;
 import javax.el.ELContext;
-import javax.el.ListELResolver;
 import javax.el.PropertyNotFoundException;
-import javax.el.PropertyNotWritableException;
-import java.util.List;
+import java.lang.reflect.Array;
 
 /**
- * Like a ListELResolver but will not throw a <code>PropertyNotFoundException</code>
+ * Like a ArrayELResolver but will not throw a <code>PropertyNotFoundException</code>
  * when setting out of upper bounds indices. It will instead fill the intermediate fields with null.
  *
- * @see ListELResolver
+ * @see ArrayELResolver
  * @see java.util.List
  */
-public class FriendlyListELResolver extends ListELResolver {
+public class FriendlyArrayELResolver extends ArrayELResolver {
 
     @Override
     public Class<?> getType(ELContext context,
-                            Object base,
-                            Object property) {
+                         Object base,
+                         Object property) {
 
         if (context == null) {
             throw new NullPointerException();
         }
 
-        if (base != null && base instanceof List) {
+        if (base != null && base.getClass().isArray()) {
             context.setPropertyResolved(true);
-            List list = (List) base;
-            int index = toInteger(property);
+            int index = toInteger (property);
             if (index < 0) {
                 throw new PropertyNotFoundException();
             }
-            return Object.class;
+            return base.getClass().getComponentType();
         }
         return null;
     }
@@ -46,32 +44,26 @@ public class FriendlyListELResolver extends ListELResolver {
             throw new NullPointerException();
         }
 
-        if (base != null && base instanceof List) {
+        if (base != null && base.getClass().isArray()) {
             context.setPropertyResolved(true);
-            List list = (List) base;
-            int index = toInteger(property);
-            int size = list.size();
-            try {
-                while (size <= index) {
-                    list.add(null);
-                    size++;
-                }
-                list.set(index, val);
-            } catch (UnsupportedOperationException ex) {
-                throw new PropertyNotWritableException();
-            } catch (IndexOutOfBoundsException ex) {
-                throw ex;
-            } catch (ClassCastException ex) {
-                throw ex;
-            } catch (NullPointerException ex) {
-                throw ex;
-            } catch (IllegalArgumentException ex) {
-                throw ex;
+            Class<?> type = base.getClass().getComponentType();
+            if (val != null && ! type.isAssignableFrom(val.getClass())) {
+                throw new ClassCastException();
             }
+            int index = toInteger (property);
+            if (index < 0) {
+                throw new PropertyNotFoundException();
+            }
+            int size = Array.getLength(base);
+            while (size <= index) {
+                Array.set(base, size++, null);
+            }
+            Array.set(base, index, val);
         }
     }
 
     private int toInteger(Object p) {
+
         if (p instanceof Integer) {
             return ((Integer) p).intValue();
         }
