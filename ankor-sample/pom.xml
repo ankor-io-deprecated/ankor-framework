@@ -12,7 +12,6 @@
         <module>ankorman-server</module>
         <module>ankorman-javafx-client</module>
         <module>ankorman-js-client</module>
-        <module>ankorman-servlet-server</module>
     </modules>
 
     <properties>
@@ -41,6 +40,12 @@
                 <version>${project.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>at.irian.ankor</groupId>
+                <artifactId>ankor-js</artifactId>
+                <version>${project.version}</version>
+                <type>war</type>
+            </dependency>
 
             <dependency>
                 <groupId>junit</groupId>

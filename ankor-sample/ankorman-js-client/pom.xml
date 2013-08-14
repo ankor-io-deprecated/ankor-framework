@@ -21,6 +21,13 @@
         </dependency>
 
         <dependency>
+            <groupId>at.irian.ankor</groupId>
+            <artifactId>ankor-js</artifactId>
+            <type>war</type>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
             <groupId>at.irian.ankorman</groupId>
             <artifactId>ankorman-server</artifactId>
             <scope>compile</scope>
