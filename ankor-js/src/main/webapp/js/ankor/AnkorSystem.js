@@ -1,24 +1,26 @@
 define([
-    "./Ref",
-    "./utils"
-], function(Ref, utils) {
+    "./Ref"
+], function(Ref) {
     var listenerCounter = 0;
 
     var AnkorSystem = function(options) {
-        this.senderId = utils.uuid();
-        this.modelId = options.modelId || utils.uuid();
+        if (!options.utils) {
+            throw new Error("AnkorSystem missing utils");
+        }
+        if (!options.transport) {
+            throw new Error("AnkorSystem missing transport");
+        }
+
+        this.debug = options.debug || false;
+        this.utils = options.utils;
+        this.senderId = this.utils.uuid();
+        this.modelId = options.modelId || this.utils.uuid();
         this.transport = options.transport;
         this.model = {};
         this.propListeners = {};
         this.treeListeners = {};
 
-        if (!this.transport) {
-            throw new Error("AnkorSystem missing transport");
-        }
-        else {
-            this.transport.ankorSystem = this;
-            this.transport.setMessageHandler(utils.hitch(this, "processIncomingMessage"));
-        }
+        this.transport.init(this);
     };
 
     AnkorSystem.prototype.getRef = function(path) {
@@ -43,7 +45,7 @@ define([
         var listenerId = "#" + listenerCounter++;
         listeners[path].listeners[listenerId] = cb;
         return {
-            remove: utils.hitch(this, function() {
+            remove: this.utils.hitch(this, function() {
                 delete listeners[path].listeners[listenerId];
             })
         };

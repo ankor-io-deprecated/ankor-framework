@@ -29,17 +29,32 @@ define([
             }, 200);
         });
         return ref.addPropChangeListener(function() {
-            element.val(ref.getValue());
+            //Using continuation for setting value so that e.g. ankorBindSelectItems has the chance to create the select options first, before the value is then selected
+            setTimeout(function() {
+                element.val(ref.getValue());
+            }, 0);
         });
     };
-    jquery.fn.ankorBindSelectItems = function(ref) {
+    jquery.fn.ankorBindSelectItems = function(ref, options) {
         var element = this.first();
         var select = element.get(0);
+
+        var emptyOption = false;
+        if (options && options.emptyOption != undefined) {
+            emptyOption = options.emptyOption;
+        }
+
         return ref.addPropChangeListener(function() {
             while (select.length > 0) {
                 select.remove(0);
             }
             var selectItems = ref.getValue();
+            if (emptyOption) {
+                var option = document.createElement("option");
+                option.text = "";
+                option.value = "";
+                select.add(option);
+            }
             for (var i = 0, selectItem; (selectItem = selectItems[i]); i++) {
                 var option = document.createElement("option");
                 option.text = selectItem;

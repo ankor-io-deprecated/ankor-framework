@@ -2,16 +2,23 @@ define([
     "./BaseTransport",
     "../messages/ActionMessage",
     "../messages/ChangeMessage",
-    "../utils"
-], function(BaseTransport, ActionMessage, ChangeMessage, utils) {
-    var HttpPollingTransport = function(endpoint) {
+], function(BaseTransport, ActionMessage, ChangeMessage) {
+    var HttpPollingTransport = function(endpoint, options) {
         BaseTransport.call(this);
 
         this.endpoint = endpoint;
         this.inFlight = null;
-        this.sendTimer = setTimeout(utils.hitch(this, "processOutgoingMessages"), 100);
+        this.pollingInterval = 100;
+        if (options && options.pollingInterval != undefined) {
+            this.pollingInterval = options.pollingInterval;
+        }
     };
     HttpPollingTransport.prototype = new BaseTransport();
+
+    HttpPollingTransport.prototype.init = function(ankorSystem) {
+        BaseTransport.prototype.init(ankorSystem);
+        this.sendTimer = setTimeout(this.utils.hitch(this, "processOutgoingMessages"), this.pollingInterval);
+    };
 
     HttpPollingTransport.prototype.sendMessage = function(message) {
         BaseTransport.prototype.sendMessage.call(this, message);
@@ -25,18 +32,6 @@ define([
         clearTimeout(this.sendTimer);
         this.inFlight = this.outgoingMessages;
         this.outgoingMessages = [];
-
-        //Add fake message if there's no outgoing message
-        if (this.inFlight.length == 0) {
-            var messageId = this.ankorSystem.senderId + "#" + this.messageCounter++;
-            var message = new ActionMessage(this.ankorSystem.senderId, this.ankorSystem.modelId, messageId, "", "poll");
-            this.inFlight.push(message);
-        }
-        else {
-            for (var i = 0, message; (message = this.inFlight[i]); i++) {
-                console.log("OUT", message);
-            }
-        }
 
         //Build JSON of messages
         var jsonMessages = [];
@@ -59,23 +54,32 @@ define([
         }
 
         //Ajax request
-        utils.xhrPost(this.endpoint, {
-            messages: utils.jsonStringify(jsonMessages)
-        }, utils.hitch(this, function(err, messages) {
+        this.utils.xhrPost(this.endpoint, {
+            clientId: this.ankorSystem.senderId,
+            messages: this.utils.jsonStringify(jsonMessages)
+        }, this.utils.hitch(this, function(err, response) {
+            try {
+                var messages = this.utils.jsonParse(response);
+            }
+            catch (e) {
+                err = e;
+            }
             if (err) {
+                if (this.ankorSystem.debug) {
+                    console.log("Ankor HttpPollingTransport Error", err);
+                }
                 this.outgoingMessages = this.inFlight.concat(this.outgoingMessages);
             }
             else {
                 for (var i = 0, message; (message = messages[i]); i++) {
                     if (message.change != undefined) {
                         var messageObject = new ChangeMessage(message.senderId, message.modelId, message.messageId, message.property, message.change.newValue);
-                        console.log("IN", messageObject);
                         this.processIncomingMessage(messageObject);
                     }
                 }
             }
             this.inFlight = null;
-            this.sendTimer = setTimeout(utils.hitch(this, "processOutgoingMessages"), 100);
+            this.sendTimer = setTimeout(this.utils.hitch(this, "processOutgoingMessages"), this.pollingInterval);
         }));
     };
 

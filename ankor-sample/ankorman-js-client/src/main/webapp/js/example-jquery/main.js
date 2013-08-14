@@ -2,17 +2,20 @@ define([
     "jquery",
     "ankor/AnkorSystem",
     "ankor/transport/HttpPollingTransport",
+    "ankor/utils/jQueryUtils",
     "./AnimalDetailTab",
     "./AnimalSearchTab",
     "jquery-ui", //Require only, no reference needed
     "ankor/adapters/JQueryAdapter" //Require only, no reference needed
-], function($, AnkorSystem, HttpPollingTransport, AnimalDetailTab, AnimalSearchTab) {
+], function($, AnkorSystem, HttpPollingTransport, jQueryUtils, AnimalDetailTab, AnimalSearchTab) {
     //Setup AnkorSystem
     var ankorSystem = new AnkorSystem({
+        debug: true,
         modelId: "collabTest",
-        transport: new HttpPollingTransport("/ankor")
+        transport: new HttpPollingTransport("/ankor"),
+        utils: new jQueryUtils($)
     });
-    window.ankorSystem = ankorSystem;
+    window.ankorSystem = ankorSystem; //Make reference to ankor system globally available -> for debugging only
 
     //Setup main UI
     var rootRef = ankorSystem.getRef("root");
@@ -55,6 +58,4 @@ define([
 
     //Send Ankor Init Message
     rootRef.fire("init");
-
-    console.log(ankorSystem);
 });

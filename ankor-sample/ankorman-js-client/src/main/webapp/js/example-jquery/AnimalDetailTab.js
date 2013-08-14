@@ -25,9 +25,13 @@ define([
         var body = $("#tabs #tab-" + tab.id);
         body.find("input.name").ankorBindInputValue(ref.append("model.animal.name"));
         body.find("span.nameStatus").ankorBindInnerHTML(ref.append("model.nameStatus"));
-        body.find("select.type").ankorBindSelectItems(ref.append("model.selectItems.types"));
+        body.find("select.type").ankorBindSelectItems(ref.append("model.selectItems.types"), {
+            emptyOption: true
+        });
         body.find("select.type").ankorBindInputValue(ref.append("model.animal.type"));
-        body.find("select.family").ankorBindSelectItems(ref.append("model.selectItems.families"));
+        body.find("select.family").ankorBindSelectItems(ref.append("model.selectItems.families"), {
+            emptyOption: true
+        });
         body.find("select.family").ankorBindInputValue(ref.append("model.animal.family"));
         body.find("button").click(function() {
             ref.append("model").fire("save");

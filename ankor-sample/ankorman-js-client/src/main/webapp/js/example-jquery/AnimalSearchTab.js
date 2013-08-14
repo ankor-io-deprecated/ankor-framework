@@ -24,9 +24,13 @@ define([
         //Bind tab body fields
         var body = $("#tabs #tab-" + tab.id);
         body.find("input.name").ankorBindInputValue(ref.append("model.filter.name"));
-        body.find("select.type").ankorBindSelectItems(ref.append("model.selectItems.types"));
+        body.find("select.type").ankorBindSelectItems(ref.append("model.selectItems.types"), {
+            emptyOption: true
+        });
         body.find("select.type").ankorBindInputValue(ref.append("model.filter.type"));
-        body.find("select.family").ankorBindSelectItems(ref.append("model.selectItems.families"));
+        body.find("select.family").ankorBindSelectItems(ref.append("model.selectItems.families"), {
+            emptyOption: true
+        });
         body.find("select.family").ankorBindInputValue(ref.append("model.filter.family"));
         body.find("button.previous").click(function() {
             ref.append("model.animals.paginator").fire("previous");
