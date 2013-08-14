@@ -21,6 +21,10 @@ public abstract class ViewModelBase {
         return viewModelRef;
     }
 
+    protected Ref thisRef(String property) {
+        return viewModelRef.append(property);
+    }
+
     private void initialize(Ref viewModelRef) {
         for (ViewModelPostProcessor viewModelPostProcessor : viewModelRef.context().viewModelPostProcessors()) {
             viewModelPostProcessor.postProcess(this, viewModelRef);

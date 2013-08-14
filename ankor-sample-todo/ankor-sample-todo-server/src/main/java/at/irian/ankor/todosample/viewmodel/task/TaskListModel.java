@@ -3,53 +3,52 @@ package at.irian.ankor.todosample.viewmodel.task;
 import at.irian.ankor.annotation.ActionListener;
 import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.annotation.Param;
+import at.irian.ankor.messaging.AnkorIgnore;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.ref.listener.RefChangeListener;
-import at.irian.ankor.ref.listener.RefListeners;
-import at.irian.ankor.viewmodel.ViewModelBase;
-import at.irian.ankor.viewmodel.ViewModelListBase;
-import at.irian.ankor.viewmodel.ViewModelMapBase;
-import at.irian.ankor.viewmodel.ViewModelProperty;
 import at.irian.ankor.todosample.domain.task.Task;
 import at.irian.ankor.todosample.server.TaskRepository;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import at.irian.ankor.viewmodel.ViewModelBase;
+import at.irian.ankor.viewmodel.ViewModelListBase;
 
 import java.util.List;
 
 public class TaskListModel extends ViewModelBase {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TaskListModel.class);
 
-    @JsonIgnore
+    @AnkorIgnore
     private final TaskRepository taskRepository;
 
     private ViewModelListBase<Task> tasks;
 
-    private ViewModelProperty<String> filter;
+    @AnkorIgnore
+    private String filter;
 
-    private ViewModelProperty<Integer> itemsLeft;
-    private ViewModelProperty<Boolean> footerVisibility;
+    private Integer itemsLeft;
+    private Boolean footerVisibility;
 
-    @JsonIgnore
-    private ViewModelProperty<Integer> itemsComplete;
-    private ViewModelProperty<String> itemsCompleteText;
-    private ViewModelProperty<Boolean> clearButtonVisibility;
+    @AnkorIgnore
+    private Integer itemsComplete;
+    private String itemsCompleteText;
 
-    private ViewModelProperty<Boolean> toggleAll;
+    private Boolean clearButtonVisibility;
 
-    private ViewModelProperty<Boolean> filterAllSelected;
-    private ViewModelProperty<Boolean> filterActiveSelected;
-    private ViewModelProperty<Boolean> filterCompletedSelected;
+    private Boolean toggleAll;
+
+    private Boolean filterAllSelected;
+    private Boolean filterActiveSelected;
+    private Boolean filterCompletedSelected;
 
     public TaskListModel(Ref viewModelRef, TaskRepository taskRepository) {
         super(viewModelRef);
 
-        this.filter.set(Filter.all.toString()); // this.filter = new ViewModelProperty<>(viewModelRef, "filter", Filter.all.toString());
-        this.filterAllSelected.set(true);
-        this.filterActiveSelected.set(false);
-        this.filterCompletedSelected.set(false);
-
         this.taskRepository = taskRepository;
-        this.tasks = new ViewModelListBase<Task>(viewModelRef, "tasks", fetchTasksData());
+
+        filter = Filter.all.toString();
+        filterAllSelected = (true);
+        filterActiveSelected = (false);
+        filterCompletedSelected = (false);
+
+        tasks = new ViewModelListBase<Task>(viewModelRef, "tasks", fetchTasksData());
 
         /* TODO
         RefListeners.addTreeChangeListener(viewModelRef.append("tasks"), new RefChangeListener() {
@@ -63,13 +62,14 @@ public class TaskListModel extends ViewModelBase {
         });
         */
 
-        this.itemsLeft.set(taskRepository.getActiveTasks().size());
-        this.updateFooterVisibility();
+        itemsLeft = taskRepository.getActiveTasks().size();
+        footerVisibility = taskRepository.getTasks().size() != 0;
 
-        this.itemsComplete.set(taskRepository.getCompletedTasks().size());
-        this.updateClearButton();
+        itemsComplete = (taskRepository.getCompletedTasks().size());
+        clearButtonVisibility = (itemsComplete != 0);
+        itemsCompleteText = (String.format("Clear completed (%d)", itemsComplete));
 
-        toggleAll.set(false);
+        toggleAll = (false);
     }
 
     @ChangeListener(pattern = {
@@ -79,28 +79,28 @@ public class TaskListModel extends ViewModelBase {
     public void reloadTasks() {
         LOG.info("reloading tasks");
 
-        if (filterAllSelected.get()) {
-            filter.set(Filter.all.toString());
-        } else if (filterActiveSelected.get()) {
-            filter.set(Filter.active.toString());
-        } else if (filterCompletedSelected.get()) {
-            filter.set(Filter.completed.toString());
+        if (filterAllSelected) {
+            filter = Filter.all.toString();
+        } else if (filterActiveSelected) {
+            filter = Filter.active.toString();
+        } else if (filterCompletedSelected) {
+            filter = Filter.completed.toString();
         }
 
-        thisRef().append("tasks.list").setValue(fetchTasksData());
+        thisRef("tasks.list").setValue(fetchTasksData());
     }
 
     @ChangeListener(pattern = {
             "**.<TaskListModel>.itemsLeft",
             "**.<TaskListModel>.itemsComplete" })
     public void updateFooterVisibility() {
-        footerVisibility.set(taskRepository.getTasks().size() != 0);
+        thisRef("footerVisibility").setValue(taskRepository.getTasks().size() != 0);
     }
 
     @ChangeListener(pattern="**.<TaskListModel>.itemsComplete")
     public void updateClearButton() {
-        clearButtonVisibility.set(itemsComplete.get() != 0);
-        itemsCompleteText.set(String.format("Clear completed (%d)", itemsComplete.get()));
+        thisRef("clearButtonVisibility").setValue(itemsComplete != 0);
+        thisRef("itemsCompleteText").setValue(String.format("Clear completed (%d)", itemsComplete));
     }
 
     @ActionListener
@@ -112,8 +112,8 @@ public class TaskListModel extends ViewModelBase {
 
         tasks.add(task);
 
-        itemsLeft.set(itemsLeft.get() + 1);
-        toggleAll.set(false);
+        thisRef("itemsLeft").setValue(itemsLeft + 1);
+        thisRef("toggleAll").setValue(false);
     }
 
     @ActionListener
@@ -123,14 +123,14 @@ public class TaskListModel extends ViewModelBase {
         Task task = tasks.get(index);
         if (!task.isCompleted()) {
             task.setCompleted(true);
-            itemsLeft.set(itemsLeft.get() - 1);
-            itemsComplete.set(itemsComplete.get() + 1);
-            toggleAll.set(itemsLeft.get() == 0);
+            thisRef("itemsLeft").setValue(itemsLeft - 1);
+            thisRef("itemsComplete").setValue(itemsComplete + 1);
+            thisRef("toggleAll").setValue(itemsLeft == 0);
         } else {
             task.setCompleted(false);
-            itemsLeft.set(itemsLeft.get() + 1);
-            itemsComplete.set(itemsComplete.get() - 1);
-            toggleAll.set(false);
+            thisRef("itemsLeft").setValue(itemsLeft + 1);
+            thisRef("itemsComplete").setValue(itemsComplete - 1);
+            thisRef("toggleAll").setValue(false);
         }
         taskRepository.saveTask(task);
         tasks.set(index, task);
@@ -144,8 +144,8 @@ public class TaskListModel extends ViewModelBase {
         taskRepository.deleteTask(task);
         tasks.remove(index);
 
-        itemsLeft.set(taskRepository.getActiveTasks().size());
-        itemsComplete.set(taskRepository.getCompletedTasks().size());
+        thisRef("itemsLeft").setValue(taskRepository.getActiveTasks().size());
+        thisRef("itemsComplete").setValue(taskRepository.getCompletedTasks().size());
     }
 
     @ActionListener
@@ -162,12 +162,12 @@ public class TaskListModel extends ViewModelBase {
     public void toggleAll() {
         int i = 0;
         for (Task t : taskRepository.getTasks()) {
-            t.setCompleted(toggleAll.get());
+            t.setCompleted(toggleAll);
             taskRepository.saveTask(t);
-            tasks.set(i++, t);
         }
-        itemsComplete.set(taskRepository.getCompletedTasks().size());
-        itemsLeft.set(taskRepository.getActiveTasks().size());
+        thisRef().append("tasks.list").setValue(fetchTasksData());
+        thisRef("itemsComplete").setValue(taskRepository.getCompletedTasks().size());
+        thisRef("itemsLeft").setValue(taskRepository.getActiveTasks().size());
     }
 
     @ActionListener
@@ -176,8 +176,8 @@ public class TaskListModel extends ViewModelBase {
 
         taskRepository.clearTasks();
         thisRef().append("tasks.list").setValue(fetchTasksData());
-        itemsComplete.set(0);
-        toggleAll.set(false);
+        thisRef("itemsComplete").setValue(0);
+        thisRef("toggleAll").setValue(false);
     }
 
     /*
@@ -189,15 +189,15 @@ public class TaskListModel extends ViewModelBase {
     */
 
     private List<Task> fetchTasksData() {
-        Filter filterEnum = Filter.valueOf(filter.get());
+        Filter filterEnum = Filter.valueOf(filter);
         return taskRepository.filterTasks(filterEnum);
     }
 
-    public ViewModelProperty<Integer> getItemsLeft() {
+    public Integer getItemsLeft() {
         return itemsLeft;
     }
 
-    public void setItemsLeft(ViewModelProperty<Integer> itemsLeft) {
+    public void setItemsLeft(Integer itemsLeft) {
         this.itemsLeft = itemsLeft;
     }
 
@@ -209,75 +209,75 @@ public class TaskListModel extends ViewModelBase {
         this.tasks = tasks;
     }
 
-    public ViewModelProperty<String> getFilter() {
+    public String getFilter() {
         return filter;
     }
 
-    public void setFilter(ViewModelProperty<String> filter) {
+    public void setFilter(String filter) {
         this.filter = filter;
     }
 
-    public ViewModelProperty<Boolean> getFooterVisibility() {
+    public Boolean getFooterVisibility() {
         return footerVisibility;
     }
 
-    public void setFooterVisibility(ViewModelProperty<Boolean> footerVisibility) {
+    public void setFooterVisibility(Boolean footerVisibility) {
         this.footerVisibility = footerVisibility;
     }
 
-    public ViewModelProperty<Integer> getItemsComplete() {
+    public Integer getItemsComplete() {
         return itemsComplete;
     }
 
-    public void setItemsComplete(ViewModelProperty<Integer> itemsComplete) {
+    public void setItemsComplete(Integer itemsComplete) {
         this.itemsComplete = itemsComplete;
     }
 
-    public ViewModelProperty<String> getItemsCompleteText() {
+    public String getItemsCompleteText() {
         return itemsCompleteText;
     }
 
-    public void setItemsCompleteText(ViewModelProperty<String> itemsCompleteText) {
+    public void setItemsCompleteText(String itemsCompleteText) {
         this.itemsCompleteText = itemsCompleteText;
     }
 
-    public ViewModelProperty<Boolean> getClearButtonVisibility() {
+    public Boolean getClearButtonVisibility() {
         return clearButtonVisibility;
     }
 
-    public void setClearButtonVisibility(ViewModelProperty<Boolean> clearButtonVisibility) {
+    public void setClearButtonVisibility(Boolean clearButtonVisibility) {
         this.clearButtonVisibility = clearButtonVisibility;
     }
 
-    public ViewModelProperty<Boolean> getToggleAll() {
+    public Boolean getToggleAll() {
         return toggleAll;
     }
 
-    public void setToggleAll(ViewModelProperty<Boolean> toggleAll) {
+    public void setToggleAll(Boolean toggleAll) {
         this.toggleAll = toggleAll;
     }
 
-    public ViewModelProperty<Boolean> getFilterAllSelected() {
+    public Boolean getFilterAllSelected() {
         return filterAllSelected;
     }
 
-    public void setFilterAllSelected(ViewModelProperty<Boolean> filterAllSelected) {
+    public void setFilterAllSelected(Boolean filterAllSelected) {
         this.filterAllSelected = filterAllSelected;
     }
 
-    public ViewModelProperty<Boolean> getFilterActiveSelected() {
+    public Boolean getFilterActiveSelected() {
         return filterActiveSelected;
     }
 
-    public void setFilterActiveSelected(ViewModelProperty<Boolean> filterActiveSelected) {
+    public void setFilterActiveSelected(Boolean filterActiveSelected) {
         this.filterActiveSelected = filterActiveSelected;
     }
 
-    public ViewModelProperty<Boolean> getFilterCompletedSelected() {
+    public Boolean getFilterCompletedSelected() {
         return filterCompletedSelected;
     }
 
-    public void setFilterCompletedSelected(ViewModelProperty<Boolean> filterCompletedSelected) {
+    public void setFilterCompletedSelected(Boolean filterCompletedSelected) {
         this.filterCompletedSelected = filterCompletedSelected;
     }
 }
