@@ -103,6 +103,11 @@ public class AnkorSystemBuilder {
         return this;
     }
 
+    public AnkorSystemBuilder withModelContextId(String modelContextId) {
+        this.modelContextId = modelContextId;
+        return this;
+    }
+
     public AnkorSystem createServer() {
 
         String systemName = getServerSystemName();

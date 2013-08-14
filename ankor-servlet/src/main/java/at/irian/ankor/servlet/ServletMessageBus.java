@@ -8,6 +8,8 @@ import at.irian.ankor.session.RemoteSystem;
 import at.irian.ankor.session.SimpleRemoteSystem;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * @author Manfred Geiler
@@ -15,13 +17,13 @@ import java.util.*;
 public class ServletMessageBus extends MessageBus<String> {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ServletMessageBus.class);
 
-    private final Map<RemoteSystem, List<Message>> pendingClientMessages;
+    private final Map<RemoteSystem, Queue<Message>> clientOutQueues;
     private final ViewModelJsonMessageMapper messageMapper;
 
     public ServletMessageBus(ViewModelJsonMessageMapper messageMapper) {
         super(messageMapper, messageMapper);
         this.messageMapper = messageMapper;
-        this.pendingClientMessages = new HashMap<RemoteSystem, List<Message>>();
+        this.clientOutQueues = new ConcurrentHashMap<RemoteSystem, Queue<Message>>();
     }
 
     public ViewModelJsonMessageMapper getMessageMapper() {
@@ -30,9 +32,7 @@ public class ServletMessageBus extends MessageBus<String> {
 
     @Override
     public Collection<? extends RemoteSystem> getKnownRemoteSystems() {
-        synchronized (pendingClientMessages) {
-            return new HashSet<RemoteSystem>(pendingClientMessages.keySet());
-        }
+        return Collections.unmodifiableCollection(clientOutQueues.keySet());
     }
 
     @Override
@@ -40,16 +40,23 @@ public class ServletMessageBus extends MessageBus<String> {
         return new MessageSender() {
             @Override
             public void sendMessage(Message msg) {
-                synchronized (pendingClientMessages) {
-                    List<Message> pendingMessages = pendingClientMessages.get(remoteSystem);
-                    if (pendingMessages == null) {
-                        pendingMessages = new ArrayList<Message>();
-                        pendingClientMessages.put(remoteSystem, pendingMessages);
-                    }
-                    pendingMessages.add(msg);
-                }
+                getOutQueueFor(remoteSystem).add(msg);
             }
         };
+    }
+
+    private Queue<Message> getOutQueueFor(RemoteSystem remoteSystem) {
+        Queue<Message> outQueue = clientOutQueues.get(remoteSystem);
+        if (outQueue == null) {
+            synchronized (clientOutQueues) {
+                outQueue = clientOutQueues.get(remoteSystem);
+                if (outQueue == null) {
+                    outQueue = new LinkedBlockingQueue<Message>();
+                    clientOutQueues.put(remoteSystem, outQueue);
+                }
+            }
+        }
+        return outQueue;
     }
 
     @Override
@@ -65,10 +72,21 @@ public class ServletMessageBus extends MessageBus<String> {
         }
     }
 
-    public List<Message> getAndClearPendingMessagesFor(String remoteSystemId) {
-        synchronized (pendingClientMessages) {
-            List<Message> messages = pendingClientMessages.remove(new SimpleRemoteSystem(remoteSystemId));
-            return messages != null ? messages : Collections.<Message>emptyList();
+    public Collection<Message> getPendingMessagesFor(String remoteSystemId) {
+        List<Message> messages = null;
+
+        Queue<Message> queue = clientOutQueues.get(new SimpleRemoteSystem(remoteSystemId));
+        if (queue != null) {
+            Message poll = queue.poll();
+            while (poll != null) {
+                if (messages == null) {
+                    messages = new ArrayList<Message>();
+                }
+                messages.add(poll);
+                poll = queue.poll();
+            }
         }
+
+        return messages != null ? messages : Collections.<Message>emptyList();
     }
 }

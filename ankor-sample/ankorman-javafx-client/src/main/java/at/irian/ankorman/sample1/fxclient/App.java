@@ -1,16 +1,23 @@
 package at.irian.ankorman.sample1.fxclient;
 
 import at.irian.ankor.fx.controller.FXControllerChangeListener;
+import at.irian.ankor.http.ClientHttpMessageLoop;
+import at.irian.ankor.http.ServerHost;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.session.ModelRootFactory;
+import at.irian.ankor.session.SingletonSessionManager;
 import at.irian.ankor.socket.SocketAnkorSystemStarter;
 import at.irian.ankor.socket.SocketMessageLoop;
+import at.irian.ankor.system.AnkorSystem;
+import at.irian.ankor.system.AnkorSystemBuilder;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.Map;
 
 import static java.util.regex.Matcher.quoteReplacement;
@@ -31,7 +38,8 @@ public class App extends javafx.application.Application {
         clientServer,
         client,
         server,
-        manyClients
+        manyClients,
+        httpClient
     }
 
     public static void main(String[] args) {
@@ -105,17 +113,27 @@ public class App extends javafx.application.Application {
                 client = DEFAULT_CLIENT;
             }
             createClientSystem(client, server);
-
-            primaryStage.setTitle("Ankor FX Sample");
-            Pane myPane = FXMLLoader.load(getClass().getClassLoader().getResource("main.fxml"));
-
-            Scene myScene = new Scene(myPane);
-            myScene.getStylesheets().add("style.css");
-            primaryStage.setScene(myScene);
-            primaryStage.show();
+            startFXClient(primaryStage);
+        } else if (mode == Mode.httpClient) {
+            String client = params.get("client");
+            if (client == null) {
+                client = DEFAULT_CLIENT;
+            }
+            createHttpClientSystem(client, server);
+            startFXClient(primaryStage);
         } else {
             stop();
         }
+    }
+
+    private void startFXClient(Stage primaryStage) throws IOException {
+        primaryStage.setTitle("Ankor FX Sample");
+        Pane myPane = FXMLLoader.load(getClass().getClassLoader().getResource("main.fxml"));
+
+        Scene myScene = new Scene(myPane);
+        myScene.getStylesheets().add("style.css");
+        primaryStage.setScene(myScene);
+        primaryStage.show();
     }
 
     private String replaceVars(String s) {
@@ -175,4 +193,31 @@ public class App extends javafx.application.Application {
             }
         }
     }
+
+
+    private void createHttpClientSystem(String client, String server) {
+
+        String clientId = client.indexOf('@') >= 0 ? client.split("@")[0] : client;
+
+        String serverId = server.split("@")[0];
+        String serverUrl = server.split("@")[1];
+
+        ClientHttpMessageLoop clientMessageLoop = new ClientHttpMessageLoop(client, new ServerHost(serverId, serverUrl));
+
+        AnkorSystem clientSystem = new AnkorSystemBuilder()
+                .withName(clientId)
+                .withGlobalEventListener(new FXControllerChangeListener())
+                .withMessageBus(clientMessageLoop.getMessageBus())
+                .withModelContextId("collabTest")
+                .createClient();
+
+        // start
+        clientSystem.start();
+        clientMessageLoop.start(true);
+
+        RefContext clientRefContext = ((SingletonSessionManager)clientSystem.getSessionManager()).getSession().getRefContext();
+        refFactory = clientRefContext.refFactory();
+    }
+
+
 }

@@ -14,9 +14,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * @author Manfred Geiler
@@ -40,61 +42,27 @@ public class AnkorServlet extends HttpServlet {
         // receive messages
         String serializedMessages = req.getParameter("messages");
         Message[] messages = messageMapper.deserializeArray(serializedMessages);
-        String clientId = null;
-        Set<String> modelIds = new HashSet<String>();
+        String clientId = req.getParameter("clientId");
+        Set<String> requestModelIds = new HashSet<String>();
         for (Message message : messages) {
             if (clientId == null) {
                 clientId = message.getSenderId();
             } else if (!clientId.equals(message.getSenderId())) {
                 throw new IllegalStateException("Different client ids in one request?!");
             }
-            modelIds.add(message.getModelId());
+            requestModelIds.add(message.getModelId());
+            LOG.debug("received: {}", message);
             messageBus.receiveMessage(message);
         }
 
         // send (response) messages
         if (clientId != null) {
 
-            // queue special event for signalling that server finished the event processing
-            final Set<String> finishedModelRequests = new HashSet<String>(modelIds);
-            for (final String modelId : modelIds) {
-
-                ModelContext modelContext = ankorSystem.getModelContextManager().getOrCreate(modelId);
-                final EventListeners eventListeners = modelContext.getEventListeners();
-                eventListeners.add(new RequestFinishedEvent.Listener() {
-                    @Override
-                    public boolean isDiscardable() {
-                        return false;
-                    }
-
-                    @Override
-                    public void processRequestFinished(RequestFinishedEvent requestFinishedEvent) {
-                        synchronized (finishedModelRequests) {
-                            finishedModelRequests.remove(modelId);
-                            finishedModelRequests.notifyAll();
-                        }
-                        eventListeners.remove(this);
-                    }
-                });
-
-                Ref rootRef = ankorSystem.getRefContextFactory().createRefContextFor(modelContext).refFactory().rootRef();
-                modelContext.getEventDispatcher().dispatch(new RequestFinishedEvent(rootRef));
-            }
-
-            //noinspection SynchronizationOnLocalVariableOrMethodParameter
-            synchronized (finishedModelRequests) {
-                while (!finishedModelRequests.isEmpty()) {
-                    try {
-                        LOG.info("Waiting for finished events for models {}", finishedModelRequests);
-                        finishedModelRequests.wait();
-                    } catch (InterruptedException e) {
-                        Thread.interrupted();
-                    }
-                }
-            }
+            // wait for incoming messages being processed
+            waitForMessagesProcessed(requestModelIds);
 
             // send all response messages
-            List<Message> pendingMessages = messageBus.getAndClearPendingMessagesFor(clientId);
+            Collection<Message> pendingMessages = messageBus.getPendingMessagesFor(clientId);
             Message[] messagesToSend = pendingMessages.toArray(new Message[pendingMessages.size()]);
             String responseMessages = messageMapper.serializeArray(messagesToSend);
             resp.setCharacterEncoding("UTF-8");
@@ -103,6 +71,54 @@ public class AnkorServlet extends HttpServlet {
             writer.flush();
         }
 
+    }
+
+    private void waitForMessagesProcessed(Set<String> requestedModelIds) {
+
+        if (requestedModelIds.isEmpty()) {
+            return;
+        }
+
+        // queue special event for signalling that server finished the event processing for each model
+        final BlockingQueue<String> finishedModelRequests = new LinkedBlockingQueue<String>();
+        for (final String modelId : requestedModelIds) {
+
+            ModelContext modelContext = ankorSystem.getModelContextManager().getOrCreate(modelId);
+            final EventListeners eventListeners = modelContext.getEventListeners();
+            eventListeners.add(new RequestFinishedEvent.Listener() {
+                @Override
+                public boolean isDiscardable() {
+                    return false;
+                }
+
+                @Override
+                public void processRequestFinished(RequestFinishedEvent requestFinishedEvent) {
+                    finishedModelRequests.add(modelId);
+                    eventListeners.remove(this);
+                }
+            });
+
+            Ref rootRef = ankorSystem.getRefContextFactory().createRefContextFor(modelContext).refFactory().rootRef();
+            modelContext.getEventDispatcher().dispatch(new RequestFinishedEvent(rootRef));
+        }
+
+        boolean interrupted = false;
+
+        Set<String> outstandingModelIds = new HashSet<String>(requestedModelIds);
+        while (!outstandingModelIds.isEmpty()) {
+            try {
+                String finishedModelId = finishedModelRequests.take();
+                if (!outstandingModelIds.remove(finishedModelId)) {
+                    throw new IllegalStateException("not waiting for " + finishedModelId);
+                }
+            } catch (InterruptedException e) {
+                interrupted = true;
+            }
+        }
+
+        if (interrupted) {
+            Thread.currentThread().interrupt();
+        }
     }
 
 }
