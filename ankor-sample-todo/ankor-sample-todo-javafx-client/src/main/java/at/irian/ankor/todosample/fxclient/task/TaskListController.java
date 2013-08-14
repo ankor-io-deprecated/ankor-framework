@@ -58,6 +58,7 @@ public class TaskListController implements Initializable {
     }
 
     public void initialize() {
+        // XXX: tree change listener is needed
         bindSubValues(modelRef.append("tasks.list"))
                 .toProperty(tasksList.itemsProperty())
                 .createWithin(bindingContext);
@@ -133,7 +134,7 @@ public class TaskListController implements Initializable {
         modelRef.fire(new Action("toggleAll"));
     }
 
-    // XXX: Tune performance using a cache but produces glitches
+    // XXX: Tune performance using a cache, produces glitches
     HashMap<Object, TaskPane> cache = new HashMap<Object, TaskPane>();
 
     private class TaskComponentListCell extends ListCell<LinkedHashMap<String, Object>> {
@@ -162,6 +163,7 @@ public class TaskListController implements Initializable {
                 node.setText(title);
                 node.getCompleted().setSelected(completed);
             } else {
+                // XXX: Client must know how to handle null values
                 setGraphic(null);
             }
         }
