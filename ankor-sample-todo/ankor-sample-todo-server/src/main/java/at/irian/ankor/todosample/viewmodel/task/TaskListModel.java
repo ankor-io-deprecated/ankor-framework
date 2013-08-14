@@ -22,7 +22,6 @@ public class TaskListModel extends ViewModelBase {
     @JsonIgnore
     private final TaskRepository taskRepository;
 
-    //private List<Task> tasks;
     private ViewModelListBase<Task> tasks;
 
     private ViewModelProperty<String> filter;
@@ -51,7 +50,6 @@ public class TaskListModel extends ViewModelBase {
 
         this.taskRepository = taskRepository;
         this.tasks = new ViewModelListBase<Task>(viewModelRef, "tasks", fetchTasksData());
-        //this.tasks = fetchTasksData();
 
         /* TODO
         RefListeners.addTreeChangeListener(viewModelRef.append("tasks"), new RefChangeListener() {
@@ -89,9 +87,7 @@ public class TaskListModel extends ViewModelBase {
             filter.set(Filter.completed.toString());
         }
 
-        //List<Task> tasksData = fetchTasksData();
-        //thisRef().append("tasks").setValue(tasksData);
-        thisRef().append("tasks.list").setValue(tasks.getList());
+        thisRef().append("tasks.list").setValue(fetchTasksData());
     }
 
     @ChangeListener(pattern = {
@@ -137,6 +133,7 @@ public class TaskListModel extends ViewModelBase {
             toggleAll.set(false);
         }
         taskRepository.saveTask(task);
+        tasks.set(index, task);
     }
 
     @ActionListener
@@ -158,15 +155,16 @@ public class TaskListModel extends ViewModelBase {
         Task task = tasks.get(index);
         task.setTitle(title);
         taskRepository.saveTask(task);
+        tasks.set(index, task);
     }
 
     @ActionListener
     public void toggleAll() {
-        //toggleAll.set(!toggleAll.get());
-
+        int i = 0;
         for (Task t : taskRepository.getTasks()) {
             t.setCompleted(toggleAll.get());
             taskRepository.saveTask(t);
+            tasks.set(i++, t);
         }
         itemsComplete.set(taskRepository.getCompletedTasks().size());
         itemsLeft.set(taskRepository.getActiveTasks().size());
@@ -177,6 +175,7 @@ public class TaskListModel extends ViewModelBase {
         LOG.info("Clearing completed tasks");
 
         taskRepository.clearTasks();
+        thisRef().append("tasks.list").setValue(fetchTasksData());
         itemsComplete.set(0);
         toggleAll.set(false);
     }
