@@ -9,11 +9,29 @@
     </parent>
 
     <artifactId>ankorman-js-client</artifactId>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
     <name>AnkorMan Sample App - JavaScript Client</name>
 
     <dependencies>
 
+        <dependency>
+            <groupId>at.irian.ankor</groupId>
+            <artifactId>ankor-servlet</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>at.irian.ankorman</groupId>
+            <artifactId>ankorman-server</artifactId>
+            <scope>compile</scope>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>runtime</scope>
+        </dependency>
 
     </dependencies>
 
