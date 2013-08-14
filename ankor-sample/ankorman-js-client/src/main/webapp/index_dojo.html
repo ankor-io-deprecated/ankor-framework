@@ -2,36 +2,51 @@
 <html>
     <head>
         <title>Ankor.js Test</title>
-        <!--<script>
+        <link rel="stylesheet" type="text/css" href="//ajax.googleapis.com/ajax/libs/dojo/1.9.1/dijit/themes/claro/claro.css">
+        <link rel="stylesheet" type="text/css" href="css/example-dojo.css">
+        <script>
             dojoConfig = {
                 packages: [
                     {
                         name: "ankor",
-                        location: "/ankorTest/js/ankor"
+                        location: "/js/ankor"
+                    },
+                    {
+                        name: "example-dojo",
+                        location: "/js/example-dojo"
                     }
                 ]
             };
         </script>
-        <script src="//ajax.googleapis.com/ajax/libs/dojo/1.9.1/dojo/dojo.js"></script>-->
-        <script src=""
+        <script src="//ajax.googleapis.com/ajax/libs/dojo/1.9.1/dojo/dojo.js"></script>
     </head>
-    <body>
+    <body class="claro">
+        <div data-dojo-type="dijit/layout/LayoutContainer" id="layoutContainer">
+            <div data-dojo-type="dijit/MenuBar" data-dojo-props="region:'top'" id="navMenu">
+                <div data-dojo-type="dijit/PopupMenuBarItem">
+                    <span>Animal</span>
+                    <div data-dojo-type="dijit/DropDownMenu" id="animalMenu">
+                        <div data-dojo-type="dijit/MenuItem">Animal Search</div>
+                        <div data-dojo-type="dijit/MenuItem">New Animal</div>
+                    </div>
+                </div>
+            </div>
+            <div data-dojo-type="dijit/layout/TabContainer" data-dojo-props="region:'center'">
+                <div data-dojo-type="dijit/layout/ContentPane" title="My first tab" data-dojo-props="selected:true">
+                    Lorem ipsum and all around...
+                </div>
+            </div>
+            <div data-dojo-type="dijit/MenuBar" data-dojo-props="region:'bottom'" id="statusBar">
+                <div data-dojo-type="dijit/MenuBarItem">
+                    User:
+                </div>
+                <div data-dojo-type="dijit/MenuBarItem">
+                    Server says:
+                </div>
+            </div>
+        </div>
         <script>
-            require([
-                "ankor"//,
-                //"ankor/utils/UtilsDojo",
-                //"ankor/transport/Test"
-            ], function(AnkorSystem, AnkorDojoUtils, AnkorTransportTest) {
-                console.log(ankor);
-                /*
-                var ankorSystem = new AnkorSystem({
-                    modelId: null,
-                    utils: new AnkorDojoUtils(),
-                    transport: new AnkorTransportTest()
-                });
-                console.log(ankorSystem);
-                */
-            });
+            require(["example-dojo/main"]);
         </script>
     </body>
 </html>
