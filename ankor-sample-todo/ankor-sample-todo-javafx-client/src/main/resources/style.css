@@ -137,6 +137,12 @@
     -fx-border-style: dotted;
 }
 
+.scroll-pane {
+    -fx-border: none;
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+}
+
 .list-cell {
     -fx-height: 65;
     -fx-padding: 0 0 0 0;

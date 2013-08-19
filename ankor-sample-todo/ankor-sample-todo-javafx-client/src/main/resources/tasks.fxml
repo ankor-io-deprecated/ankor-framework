@@ -82,7 +82,11 @@
                             <Insets left="1.0" />
                           </padding>
                         </HBox>
-                        <VBox id="taskList" fx:id="tasksList" prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS" />
+                        <ScrollPane cache="false" fitToHeight="false" fitToWidth="false" hbarPolicy="NEVER" mouseTransparent="false" pannable="false" pickOnBounds="false" prefHeight="270.0" prefWidth="548.0" style="" vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS">
+                          <content>
+                            <VBox id="taskList" fx:id="tasksList" prefHeight="270.0" prefWidth="548.0" />
+                          </content>
+                        </ScrollPane>
                       </children>
                     </VBox>
                     <Pane id="lines" layoutX="40.0" prefHeight="208.0" prefWidth="4.0" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="16.0" />
