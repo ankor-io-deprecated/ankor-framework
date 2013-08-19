@@ -131,6 +131,12 @@
     -fx-background-color: transparent;
 }
 
+.task {
+    -fx-border-width: 0 0 1 0;
+    -fx-border-color: #ccc;
+    -fx-border-style: dotted;
+}
+
 .list-cell {
     -fx-height: 65;
     -fx-padding: 0 0 0 0;

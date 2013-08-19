@@ -82,7 +82,7 @@
                             <Insets left="1.0" />
                           </padding>
                         </HBox>
-                        <ListView fx:id="tasksList" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="SOMETIMES" />
+                        <VBox id="taskList" fx:id="tasksList" prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS" />
                       </children>
                     </VBox>
                     <Pane id="lines" layoutX="40.0" prefHeight="208.0" prefWidth="4.0" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="16.0" />
