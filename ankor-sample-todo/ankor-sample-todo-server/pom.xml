@@ -3,14 +3,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>at.irian.ankorman</groupId>
+        <groupId>at.irian.ankor</groupId>
         <artifactId>ankor-sample-todo</artifactId>
         <version>0-SNAPSHOT</version>
     </parent>
 
     <artifactId>ankor-sample-todo-server</artifactId>
     <packaging>jar</packaging>
-    <name>AnkorMan Sample App - Server</name>
+    <name>Ankor Todo Sample App - Server</name>
 
     <dependencies>
 
