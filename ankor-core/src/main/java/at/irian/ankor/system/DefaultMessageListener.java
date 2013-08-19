@@ -11,6 +11,7 @@ import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.session.RemoteSystem;
 import at.irian.ankor.session.Session;
 import at.irian.ankor.session.SessionManager;
+import at.irian.ankor.session.SimpleRemoteSystem;
 
 import static at.irian.ankor.system.RemoteEvent.createActionEvent;
 import static at.irian.ankor.system.RemoteEvent.createChangeEvent;
@@ -69,17 +70,4 @@ public class DefaultMessageListener implements ActionMessage.Listener, ChangeMes
     }
 
 
-    private static class SimpleRemoteSystem implements RemoteSystem {
-
-        private final String id;
-
-        private SimpleRemoteSystem(String id) {
-            this.id = id;
-        }
-
-        @Override
-        public String getId() {
-            return id;
-        }
-    }
 }

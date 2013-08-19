@@ -9,6 +9,7 @@ import at.irian.ankor.delay.SimpleScheduler;
 import at.irian.ankor.delay.TaskRequestEventListener;
 import at.irian.ankor.event.ArrayListEventListeners;
 import at.irian.ankor.event.EventListeners;
+import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.event.dispatch.EventDispatcherFactory;
 import at.irian.ankor.event.dispatch.SynchronisedEventDispatcherFactory;
 import at.irian.ankor.messaging.*;
@@ -41,12 +42,14 @@ public class AnkorSystemBuilder {
     private EventDispatcherFactory eventDispatcherFactory;
     private String modelContextId;
     private Scheduler scheduler;
-    private EventListeners globalEventListeners;
+    private EventListeners defaultGlobalEventListeners;
     private ModelContextFactory modelContextFactory;
 
     private ModelRootFactory modelRootFactory;
     private BeanResolver beanResolver;
     private MessageBus messageBus;
+
+    private List<ModelEventListener> customGlobalEventListeners;
 
     public AnkorSystemBuilder() {
         this.systemName = null;
@@ -56,7 +59,7 @@ public class AnkorSystemBuilder {
         this.eventDispatcherFactory = null;
         this.modelContextId = null;
         this.scheduler = null;
-        this.globalEventListeners = null;
+        this.customGlobalEventListeners = new ArrayList<ModelEventListener>();
         this.modelContextFactory = null;
     }
 
@@ -90,6 +93,20 @@ public class AnkorSystemBuilder {
         return this;
     }
 
+    public AnkorSystemBuilder withGlobalEventListener(ModelEventListener globalEventListener) {
+        customGlobalEventListeners.add(globalEventListener);
+        return this;
+    }
+
+    public AnkorSystemBuilder withGlobalEventListeners(List<ModelEventListener> globalEventListeners) {
+        customGlobalEventListeners.addAll(globalEventListeners);
+        return this;
+    }
+
+    public AnkorSystemBuilder withModelContextId(String modelContextId) {
+        this.modelContextId = modelContextId;
+        return this;
+    }
 
     public AnkorSystem createServer() {
 
@@ -168,7 +185,7 @@ public class AnkorSystemBuilder {
 
 
 
-    private EventListeners createDefaultGLobalEventListeners(MessageFactory messageFactory,
+    private EventListeners createDefaultGlobalEventListeners(MessageFactory messageFactory,
                                                              SessionManager sessionManager) {
 
         EventListeners eventListeners = new ArrayListEventListeners();
@@ -291,10 +308,18 @@ public class AnkorSystemBuilder {
         return eventDispatcherFactory;
     }
 
-    private EventListeners getGlobalEventListeners(MessageFactory messageFactory, SessionManager sessionManager) {
-        if (globalEventListeners == null) {
-            globalEventListeners = createDefaultGLobalEventListeners(messageFactory, sessionManager);
+    public EventListeners getGlobalEventListeners(MessageFactory messageFactory, SessionManager sessionManager) {
+        EventListeners globalEventListeners;
+        if (defaultGlobalEventListeners == null) {
+            globalEventListeners = createDefaultGlobalEventListeners(messageFactory, sessionManager);
+        } else {
+            globalEventListeners = defaultGlobalEventListeners;
         }
+
+        for (ModelEventListener customGlobalEventListener : customGlobalEventListeners) {
+            globalEventListeners.add(customGlobalEventListener);
+        }
+
         return globalEventListeners;
     }
 

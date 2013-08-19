@@ -2,6 +2,8 @@ package at.irian.ankor.messaging.json.viewmodel;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.messaging.Message;
+import at.irian.ankor.messaging.MessageArrayDeserializer;
+import at.irian.ankor.messaging.MessageArraySerializer;
 import at.irian.ankor.messaging.MessageMapper;
 import at.irian.ankor.messaging.json.common.ActionDeserializer;
 import at.irian.ankor.messaging.json.common.ActionSerializer;
@@ -17,14 +19,19 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * MessageMapper that can map server-side strongly typed(!) view model objects to json and vice versa.
  *
  * @author Manfred Geiler
  */
-public class ViewModelJsonMessageMapper implements MessageMapper<String> {
+public class ViewModelJsonMessageMapper implements MessageMapper<String>,
+                                                   MessageArraySerializer<String>,
+                                                   MessageArrayDeserializer<String> {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ViewModelJsonMessageMapper.class);
+
+    private static final Class<? extends Message[]> MESSAGE_ARRAY_TYPE = (new Message[0]).getClass();
 
     private ObjectMapper mapper;
 
@@ -50,7 +57,7 @@ public class ViewModelJsonMessageMapper implements MessageMapper<String> {
         mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
         mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
 
-        mapper.configure(JsonGenerator.Feature.QUOTE_FIELD_NAMES, false);
+        mapper.configure(JsonGenerator.Feature.QUOTE_FIELD_NAMES, true);
 
         mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
 
@@ -75,4 +82,22 @@ public class ViewModelJsonMessageMapper implements MessageMapper<String> {
         }
     }
 
+
+    @Override
+    public String serializeArray(Message[] messages) {
+        try {
+            return mapper.writeValueAsString(messages);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Cannot serialize " + Arrays.toString(messages), e);
+        }
+    }
+
+    @Override
+    public Message[] deserializeArray(String serializedMessages) {
+        try {
+            return mapper.readValue(serializedMessages, MESSAGE_ARRAY_TYPE);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Cannot deserialize " + serializedMessages, e);
+        }
+    }
 }

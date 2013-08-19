@@ -46,17 +46,11 @@ public class TabLoader {
         final FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource(tabType.getFxmlResource()));
         loader.setControllerFactory(new Callback<Class<?>, Object>() {
             @Override
-            public Object call(Class<?> aClass) {
+            public Object call(Class<?> controllerClass) {
                 try {
-                    return aClass.getConstructor(String.class).newInstance(tabId);
-                } catch (NoSuchMethodException e) {
-                    throw new IllegalStateException("Cannot load tab for " + aClass.getName() + ": Constructor(String tabId) not found");
-                } catch (InvocationTargetException e) {
-                    throw new IllegalStateException("InvocationTargetException for " + aClass.getName());
-                } catch (InstantiationException e) {
-                    throw new IllegalStateException("InstantiationException for " + aClass.getName());
-                } catch (IllegalAccessException e) {
-                    throw new IllegalStateException("IllegalAccessException for " + aClass.getName());
+                    return controllerClass.getConstructor(String.class).newInstance(tabId);
+                } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+                    throw new IllegalStateException("Cannot load controller", e);
                 }
             }
         });

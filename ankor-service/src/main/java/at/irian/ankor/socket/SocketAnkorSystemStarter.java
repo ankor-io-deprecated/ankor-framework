@@ -3,6 +3,7 @@ package at.irian.ankor.socket;
 import at.irian.ankor.akka.AnkorActorSystem;
 import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.delay.AkkaScheduler;
+import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.event.dispatch.AkkaEventDispatcherFactory;
 import at.irian.ankor.messaging.json.simpletree.SimpleTreeJsonMessageMapper;
 import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
@@ -45,6 +46,8 @@ public class SocketAnkorSystemStarter {
 
     private ModelRootFactory modelRootFactory;
 
+    private ModelEventListener globalEventListener;
+
     public SocketAnkorSystemStarter withModelRootFactory(ModelRootFactory modelRootFactory) {
         this.modelRootFactory = modelRootFactory;
         return this;
@@ -62,6 +65,11 @@ public class SocketAnkorSystemStarter {
 
     public SocketAnkorSystemStarter withServerHost(SocketMessageLoop.Host host) {
         this.serverHost = host;
+        return this;
+    }
+
+    public SocketAnkorSystemStarter withGlobalEventListener(ModelEventListener globalEventListener) {
+        this.globalEventListener = globalEventListener;
         return this;
     }
 
@@ -99,6 +107,7 @@ public class SocketAnkorSystemStarter {
                 .withMessageBus(serverMessageLoop.getMessageBus())
 //              .withDispatcherFactory(new SynchronisedEventDispatcherFactory())
                 .withDispatcherFactory(new AkkaEventDispatcherFactory(ankorActorSystem))
+                .withGlobalEventListener(globalEventListener)
                 .withScheduler(new AkkaScheduler(ankorActorSystem))
                 .createServer();
 
@@ -115,10 +124,12 @@ public class SocketAnkorSystemStarter {
         SocketMessageLoop<String> clientMessageLoop = new ClientSocketMessageLoop<String>(client, new SimpleTreeJsonMessageMapper(),
                                                                                      getServerHost(),
                                                                                      builder.getClientMessageFactory());
+        builder.withGlobalEventListener(globalEventListener);
 
         AnkorSystem clientSystem = builder
                 .withMessageBus(clientMessageLoop.getMessageBus())
                 .createClient();
+
 
         // start
         clientSystem.start();

@@ -11,9 +11,9 @@ import java.util.List;
 public abstract class MessageBus<S> implements MessageSenderProvider {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(MessageBus.class);
 
-    private final MessageSerializer<S> messageSerializer;
-    private final MessageDeserializer<S> messageDeserializer;
-    private final List<MessageListener> messageListeners = new ArrayList<MessageListener>();
+    protected final MessageSerializer<S> messageSerializer;
+    protected final MessageDeserializer<S> messageDeserializer;
+    protected final List<MessageListener> messageListeners = new ArrayList<MessageListener>();
 
     @SuppressWarnings("UnusedDeclaration")
     protected MessageBus(MessageSerializer<S> messageSerializer, MessageDeserializer<S> messageDeserializer) {

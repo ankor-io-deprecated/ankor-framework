@@ -59,8 +59,8 @@ exports.AnkorService = class AnkorService extends ContextDepending
             animal: @ankorSystem.TYPE("Animal")
         })
 
-        @ankorSystem.onAction("init", bind(@onInit, @))
-        @ankorSystem.onChange("/*", bind(@onChange), @)
+        #@ankorSystem.onAction("init", bind(@onInit, @))
+        #@ankorSystem.onChange("/*", bind(@onChange), @)
 
     onInit: (action, context, cb) ->
         context.model.set("userName", "Hello, World!")

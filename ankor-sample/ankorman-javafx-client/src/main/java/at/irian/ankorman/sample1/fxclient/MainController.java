@@ -2,10 +2,9 @@ package at.irian.ankorman.sample1.fxclient;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionBuilder;
+import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.fx.binding.BindingContext;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.ref.listener.RefChangeListener;
-import at.irian.ankor.ref.listener.RefListeners;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -18,7 +17,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
-import static at.irian.ankor.ref.listener.RefListeners.addTreeChangeListener;
+import static at.irian.ankor.fx.controller.FXControllerAnnotationSupport.annotationSupport;
 import static at.irian.ankorman.sample1.fxclient.App.refFactory;
 import static at.irian.ankorman.sample1.fxclient.TabType.animalDetailTab;
 import static at.irian.ankorman.sample1.fxclient.TabType.animalSearchTab;
@@ -38,52 +37,50 @@ public class MainController implements Initializable {
 
     private BindingContext bindingContext = new BindingContext();
 
+    public MainController() {
+        annotationSupport().registerChangeListeners(this);
+    }
+
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        Ref rootRef = refFactory().rootRef();
-        final Ref tabsRef = rootRef.append("tabs");
+        refFactory().rootRef().fire(new Action("init"));
+    }
 
-        RefListeners.addPropChangeListener(rootRef, new RefChangeListener() {
-            @Override
-            public void processChange(Ref changedProperty) {
-                Ref rootRef = refFactory().rootRef();
-
-                bindValue(rootRef.append("userName"))
-                        .toText(userName)
-                        .createWithin(bindingContext);
-
-                bindValue(rootRef.append("serverStatus"))
-                        .toText(serverStatus)
-                        .createWithin(bindingContext);
-
-                Map<String, ?> tabs = tabsRef.getValue();
-                for (String tabId : tabs.keySet()) {
-                    Ref tabRef = tabsRef.append(tabId);
-                    showTab(tabRef);
-                }
-
-            }
-        });
-
-        addTreeChangeListener(tabsRef, new RefChangeListener() {
-            @Override
-            public void processChange(Ref changedProperty) {
-                if (changedProperty.parent().equals(tabsRef)) {
-                    String tabId = changedProperty.propertyName();
-                    if (changedProperty.getValue() == null) {
-                        for (Tab tab : tabPane.getTabs()) {
-                            if (tab.getUserData().equals(tabId)) {
-                                tabPane.getTabs().remove(tab);
-                                break;
-                            }
-                        }
-                    } else {
-                        showTab(changedProperty);
+    @ChangeListener(pattern = "root.tabs.*")
+    public void tabsRefChanged(Ref changedProperty) {
+        final Ref tabsRef = refFactory().rootRef().append("tabs");
+        if (changedProperty.parent().equals(tabsRef)) {
+            String tabId = changedProperty.propertyName();
+            if (changedProperty.getValue() == null) {
+                for (Tab tab : tabPane.getTabs()) {
+                    if (tab.getUserData().equals(tabId)) {
+                        tabPane.getTabs().remove(tab);
+                        break;
                     }
                 }
+            } else {
+                showTab(changedProperty);
             }
-        });
+        }
+    }
 
-        rootRef.fire(new Action("init"));
+    @ChangeListener(pattern = "root")
+    public void rootRefChanged() {
+        Ref rootRef = refFactory().rootRef();
+        Ref tabsRef = rootRef.append("tabs");
+
+        bindValue(rootRef.append("userName"))
+                .toText(userName)
+                .createWithin(bindingContext);
+
+        bindValue(rootRef.append("serverStatus"))
+                .toText(serverStatus)
+                .createWithin(bindingContext);
+
+        Map<String,?> tabs = tabsRef.getValue();
+        for (String tabId : tabs.keySet()) {
+            Ref tabRef = tabsRef.append(tabId);
+            showTab(tabRef);
+        }
     }
 
     private void showTab(Ref tabRef) {

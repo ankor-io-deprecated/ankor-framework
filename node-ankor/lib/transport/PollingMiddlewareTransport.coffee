@@ -36,49 +36,28 @@ exports.PollingMiddlewareTransport = class PollingMiddlewareTransport
             if req.method != "POST" or req.url != @path
                 return next()
 
-            contextId = null
-            context = null
-            messages = null
-            responseMessages = null
+            @contextResolver(req, (err, contextId) =>
+                try
+                    if err
+                        throw err
 
-            async.series([
-                #Parse messages
-                (cb) =>
-                    err = null
-                    try
-                        messages = @mapper.decodeMessages(req.body.messages)
-                    catch mappingError
-                        err = mappingError
-                    cb(err)
+                    #Get context
+                    context = @ankorSystem.contextRegistry.getContext(contextId)
 
-                #Resolve context id
-                (cb) =>
-                    @contextResolver(req, (err, resolvedContextId) =>
-                        if not err
-                            contextId = resolvedContextId
-                        cb(err)
-                    )
+                    #Handle incoming messages
+                    incomingMessages = @mapper.decodeMessages(req.body.messages)
+                    context.incomingMessageQueue.queue(incomingMessages)
 
-                #Load context
-                (cb) =>
-                    @ankorSystem.store.load(contextId, (err, loadedContext) ->
-                        if not err
-                            context = loadedContext
-                        cb(err)
-                    )
+                    #Prepare outgoing messages
+                    outgoingMessages = context.outgoingMessageQueue.dequeue()
+                    encodedOutgoingMessages = @mapper.encodeMessages(outgoingMessages)
 
-                #Process messages
-                (cb) =>
-                    context.incomingMessages = context.incomingMessages.concat(messages)
-                    context.processIncomingMessages(cb)
+                catch catchedError
+                    err = catchedError
 
-                #Encode response and save context
-                (cb) =>
-                    responseMessages = @mapper.encodeMessages(context.outgoingMessages)
-                    context.outgoingMessages = []
-                    context.save(cb)
+                    if outgoingMessages
+                        context.outgoingMessageQueue.requeue(outgoingMessages)
 
-            ], (err) =>
                 if err
                     res.statusCode = 500
                     res.end(JSON.stringify({
@@ -89,6 +68,6 @@ exports.PollingMiddlewareTransport = class PollingMiddlewareTransport
                 else
                     res.end(JSON.stringify({
                         contextId: contextId,
-                        messages: responseMessages
+                        messages: encodedOutgoingMessages
                     }))
             )
