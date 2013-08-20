@@ -1,4 +1,4 @@
-<li class="<% if (completed) { %> completed <% } else if (editing) { %> editing <% } %>">
+<li id="task-<%= id %>" class="<% if (completed) { %> completed <% } %>">
     <div class="view">
         <input class="toggle" type="checkbox" <% if (completed) { %> checked <% } %>>
         <label><%= title %></label>
