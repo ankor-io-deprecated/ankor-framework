@@ -31,6 +31,7 @@ public class TaskListController implements Initializable {
     @FXML public ToggleButton toggleAll;
     @FXML public TextField newTodo;
     @FXML public Label todoCountNum;
+    @FXML public Label todoCountText;
     @FXML public Button clearButton;
 
     @FXML public RadioButton filterAll;
@@ -72,6 +73,10 @@ public class TaskListController implements Initializable {
         bindValue(modelRef.append("itemsLeft"))
                 .toProperty(todoCountNum.textProperty())
                 .forIntegerValue()
+                .createWithin(bindingContext);
+
+        bindValue(modelRef.append("itemsLeftText"))
+                .toProperty(todoCountText.textProperty())
                 .createWithin(bindingContext);
 
         bindValue(modelRef.append("itemsCompleteText"))

@@ -20,16 +20,14 @@ public class TaskListModel extends ViewModelBase {
 
     private List<Task> tasks;
 
-    @AnkorIgnore
     private String filter;
 
     private Integer itemsLeft;
+    private String itemsLeftText;
     private Boolean footerVisibility;
 
-    @AnkorIgnore
     private Integer itemsComplete;
     private String itemsCompleteText;
-
     private Boolean clearButtonVisibility;
 
     private Boolean toggleAll;
@@ -51,11 +49,12 @@ public class TaskListModel extends ViewModelBase {
         tasks = new ArrayList<Task>(fetchTasksData());
 
         itemsLeft = taskRepository.getActiveTasks().size();
+        itemsLeftText = (itemsLeftText(itemsLeft));
         footerVisibility = taskRepository.getTasks().size() != 0;
 
         itemsComplete = (taskRepository.getCompletedTasks().size());
+        itemsCompleteText = (itemsCompleteText(itemsComplete));
         clearButtonVisibility = (itemsComplete != 0);
-        itemsCompleteText = (String.format("Clear completed (%d)", itemsComplete));
 
         toggleAll = (false);
 
@@ -118,10 +117,29 @@ public class TaskListModel extends ViewModelBase {
         thisRef("footerVisibility").setValue(taskRepository.getTasks().size() != 0);
     }
 
+    private String itemsLeftText(int itemsLeft) {
+        String text;
+        if (itemsLeft == 1) {
+            text = "item left";
+        } else {
+            text = "items left";
+        }
+        return text;
+    }
+
+    @ChangeListener(pattern="**.<TaskListModel>.itemsLeft")
+    public void itemsLeftChanged() {
+        thisRef("itemsLeftText").setValue(itemsLeftText(itemsLeft));
+    }
+
+    private String itemsCompleteText(int itemsComplete) {
+        return String.format("Clear completed (%d)", itemsComplete);
+    }
+
     @ChangeListener(pattern="**.<TaskListModel>.itemsComplete")
     public void updateClearButton() {
         thisRef("clearButtonVisibility").setValue(itemsComplete != 0);
-        thisRef("itemsCompleteText").setValue(String.format("Clear completed (%d)", itemsComplete));
+        thisRef("itemsCompleteText").setValue(itemsCompleteText(itemsComplete));
     }
 
     @ActionListener
@@ -304,5 +322,13 @@ public class TaskListModel extends ViewModelBase {
 
     public void setFilterCompletedSelected(Boolean filterCompletedSelected) {
         this.filterCompletedSelected = filterCompletedSelected;
+    }
+
+    public String getItemsLeftText() {
+        return itemsLeftText;
+    }
+
+    public void setItemsLeftText(String itemsLeftText) {
+        this.itemsLeftText = itemsLeftText;
     }
 }

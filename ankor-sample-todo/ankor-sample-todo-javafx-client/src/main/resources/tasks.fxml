@@ -46,7 +46,7 @@
                     <HBox id="todoCount" alignment="CENTER_LEFT" prefHeight="35.0" spacing="5.0" visible="true" AnchorPane.leftAnchor="10.0">
                       <children>
                         <Label fx:id="todoCountNum" style="-fx-font-weight: bold;" text="0" />
-                        <Label text="items left" />
+                        <Label fx:id="todoCountText" text="items left" />
                       </children>
                     </HBox>
                     <Button fx:id="clearButton" alignment="CENTER_RIGHT" contentDisplay="CENTER" layoutY="7.0" mnemonicParsing="false" onAction="#clearTasks" prefHeight="20.0" text="Clear completed (0)" textAlignment="CENTER" visible="true" AnchorPane.rightAnchor="10.0">
