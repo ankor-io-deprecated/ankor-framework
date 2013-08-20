@@ -1,13 +1,26 @@
 <!doctype html>
-<html>
-    <head>
-        <title>Ankorman Sample1 JS Clients</title>
-    </head>
-    <body>
-        <ul>
-            <li>
-                <a href="index_jquery.html">jQuery Sample</a>
-            </li>
-        </ul>
-    </body>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>Template • TodoMVC</title>
+		<link rel="stylesheet" href="css/base.css">
+		<!-- CSS overrides - remove if you don't need it -->
+		<link rel="stylesheet" href="css/app.css">
+	</head>
+	<body>
+        <div id="app"></div>
+        <script src="js/require/require.js"></script>
+        <script src="js/ejs/ejs_production.js"></script>
+        <script>
+            require.config({
+                baseUrl: "js",
+                paths: {
+                    "text": "require/text",
+                    "jquery": "//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min"
+                }
+            });
+            require(["sample-todo/main"]);
+        </script>
+	</body>
 </html>

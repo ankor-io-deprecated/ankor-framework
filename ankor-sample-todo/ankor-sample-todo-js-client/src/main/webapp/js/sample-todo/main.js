@@ -1,34 +1,30 @@
 define([
+    "jquery",
     "ankor/AnkorSystem",
     "ankor/transport/HttpPollingTransport",
-    "ankor/utils/DojoUtils",
-    "dojo/parser",
-    "dijit/layout/LayoutContainer", //Includes only below here
-    "dijit/layout/TabContainer",
-    "dijit/layout/ContentPane",
-    "dijit/MenuBar",
-    "dijit/PopupMenuBarItem",
-    "dijit/DropDownMenu",
-    "dijit/MenuItem",
-    "dijit/MenuBarItem"
-], function(AnkorSystem, HttpPollingTransport, DojoUtils, parser) {
+    "ankor/utils/jQueryUtils",
+    "./TaskList",
+    "./Task",
+    "ankor/adapters/JQueryAdapter" //Require only, no reference needed
+], function($, AnkorSystem, HttpPollingTransport, jQueryUtils, TaskList, Task) {
     //Setup AnkorSystem
     var ankorSystem = new AnkorSystem({
         debug: true,
         modelId: "collabTest",
         transport: new HttpPollingTransport("/ankor"),
-        utils: new DojoUtils()
+        utils: new jQueryUtils($)
     });
+
     window.ankorSystem = ankorSystem; //Make reference to ankor system globally available -> for debugging only
 
-    //Init Dojo
-    parser.parse();
-
-    //Setup main UI
     var rootRef = ankorSystem.getRef("root");
-    var tabsRef = rootRef.append("tabs");
     rootRef.addPropChangeListener(function() {
-        /*//Connect new tab buttons
+        new TaskList(rootRef.append("model"));
+    });
+    rootRef.fire("init");
+
+        /*
+        //Connect new tab buttons
         $("#newSearchTab").click(function() {
             tabsRef.fire("createAnimalSearchTab");
         });
@@ -60,9 +56,7 @@ define([
                     }
                 }
             }
-        });*/
-    });
-
-    //Send Ankor Init Message
-    rootRef.fire("init");
+        });
+        */
 });
+
