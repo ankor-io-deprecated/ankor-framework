@@ -1,8 +1,9 @@
 define([
     "jquery",
+    "ejs",
     "text!./templates/TaskList.html",
     "text!./templates/Task.html"
-], function($, template, taskTemplate) {
+], function($, EJS, template, taskTemplate) {
     template = new EJS({
         text: template
     });
@@ -13,7 +14,7 @@ define([
 
     var TaskList = function(modelRef) {
 
-        // Hacky little helpers
+        // Helpers
         $.fn.addOrRemoveClass = function(clazz, isSelected) {
             var fun = isSelected ? $.fn.addClass : $.fn.removeClass;
             fun.call(this, clazz);
@@ -23,6 +24,7 @@ define([
             $.fn.addOrRemoveClass.call(this, "selected", isSelected);
         };
 
+        // XXX: A more general approach to bindings
         $.fn.ankorBind = function(fun, ref) {
             var element = this.first();
             return ref.addPropChangeListener(function() {
@@ -33,8 +35,6 @@ define([
                 }
             });
         }
-
-        // var modelVal = modelRef.getValue(); // TODO: is this necessary?
 
         $("#app").html(template.render({}));
 

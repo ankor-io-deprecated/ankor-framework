@@ -11,13 +11,18 @@
 	<body>
         <div id="app"></div>
         <script src="js/require/require.js"></script>
-        <script src="js/ejs/ejs_production.js"></script>
         <script>
             require.config({
                 baseUrl: "js",
                 paths: {
                     "text": "require/text",
-                    "jquery": "//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min"
+                    "jquery": "//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min",
+                    "ejs": "ejs/ejs_production"
+                },
+                shim: {
+                    ejs: {
+                        exports: "EJS"
+                    }
                 }
             });
             require(["sample-todo/main"]);
