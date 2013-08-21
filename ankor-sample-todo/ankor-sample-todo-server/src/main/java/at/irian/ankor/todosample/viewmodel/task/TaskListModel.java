@@ -36,6 +36,8 @@ public class TaskListModel extends ViewModelBase {
     private Boolean filterActiveSelected;
     private Boolean filterCompletedSelected;
 
+    private Integer editing;
+
     public TaskListModel(Ref viewModelRef, TaskRepository taskRepository) {
         super(viewModelRef);
 
@@ -57,6 +59,8 @@ public class TaskListModel extends ViewModelBase {
         clearButtonVisibility = (itemsComplete != 0);
 
         toggleAll = (false);
+
+        editing = -1;
 
         /*
         RefListeners.addTreeChangeListener(tasksRef(), new RefChangeListener() {
@@ -93,23 +97,30 @@ public class TaskListModel extends ViewModelBase {
         return thisRef("tasks").appendIdx(index);
     }
 
+    @ChangeListener(pattern = "root.model.filter")
+    public void doSomething() {
+        LOG.info("reloading tasks");
+
+        thisRef("filterAllSelected").setValue(filter.equals("all"));
+        thisRef("filterActiveSelected").setValue(filter.equals("active"));
+        thisRef("filterCompletedSelected").setValue(filter.equals("completed"));
+        tasksRef().setValue(fetchTasksData());
+    }
+
     @ChangeListener(pattern = {
             "**.<TaskListModel>.filterAllSelected",
             "**.<TaskListModel>.filterActiveSelected",
             "**.<TaskListModel>.filterCompletedSelected" })
     public void reloadTasks() {
-        LOG.info("reloading tasks");
-
         if (filterAllSelected) {
-            filter = Filter.all.toString();
+            thisRef("filter").setValue(Filter.all.toString());
         } else if (filterActiveSelected) {
-            filter = Filter.active.toString();
+            thisRef("filter").setValue(Filter.active.toString());
         } else if (filterCompletedSelected) {
-            filter = Filter.completed.toString();
+            thisRef("filter").setValue(Filter.completed.toString());
         }
-
-        tasksRef().setValue(fetchTasksData());
     }
+
     @ChangeListener(pattern = {
             "**.<TaskListModel>.itemsLeft",
             "**.<TaskListModel>.itemsComplete" })
@@ -162,13 +173,11 @@ public class TaskListModel extends ViewModelBase {
         Task task = tasks.get(index);
         if (!task.isCompleted()) {
             task.setCompleted(true);
-            //tasksRef(index).append("completed").setValue(true);
             thisRef("itemsLeft").setValue(itemsLeft - 1);
             thisRef("itemsComplete").setValue(itemsComplete + 1);
             thisRef("toggleAll").setValue(itemsLeft == 0);
         } else {
             task.setCompleted(false);
-            //tasksRef(index).append("completed").setValue(false);
             thisRef("itemsLeft").setValue(itemsLeft + 1);
             thisRef("itemsComplete").setValue(itemsComplete - 1);
             thisRef("toggleAll").setValue(false);
@@ -196,9 +205,10 @@ public class TaskListModel extends ViewModelBase {
         LOG.info("Editing task {}", index);
 
         Task task = tasks.get(index);
-        // XXX: It's really easy to forget the append("title") here.
         tasksRef(index).append("title").setValue(title);
         taskRepository.saveTask(task);
+
+        thisRef("editing").setValue(-1);
     }
 
     @ActionListener
@@ -330,5 +340,13 @@ public class TaskListModel extends ViewModelBase {
 
     public void setItemsLeftText(String itemsLeftText) {
         this.itemsLeftText = itemsLeftText;
+    }
+
+    public Integer getEditing() {
+        return editing;
+    }
+
+    public void setEditing(Integer editing) {
+        this.editing = editing;
     }
 }

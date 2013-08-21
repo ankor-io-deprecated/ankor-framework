@@ -1,6 +1,6 @@
 define([
     "jquery",
-    "ankor/AnkorSystem",
+    "ankor/AnkorSystem", // XXX: For testing
     "ankor/transport/HttpPollingTransport",
     "ankor/utils/jQueryUtils",
     "./TaskList",
