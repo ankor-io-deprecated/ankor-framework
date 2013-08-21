@@ -4,9 +4,8 @@ define([
     "ankor/transport/HttpPollingTransport",
     "ankor/utils/jQueryUtils",
     "./TaskList",
-    "./Task",
     "ankor/adapters/JQueryAdapter" //Require only, no reference needed
-], function($, AnkorSystem, HttpPollingTransport, jQueryUtils, TaskList, Task) {
+], function($, AnkorSystem, HttpPollingTransport, jQueryUtils, TaskList) {
     //Setup AnkorSystem
     var ankorSystem = new AnkorSystem({
         debug: true,
