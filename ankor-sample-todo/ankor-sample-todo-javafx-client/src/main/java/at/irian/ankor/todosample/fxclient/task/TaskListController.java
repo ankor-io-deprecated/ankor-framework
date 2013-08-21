@@ -1,27 +1,22 @@
 package at.irian.ankor.todosample.fxclient.task;
 
 import at.irian.ankor.action.Action;
+import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.fx.binding.BindingContext;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.ref.listener.RefChangeListener;
-import at.irian.ankor.ref.listener.RefListeners;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 
-import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
-import static at.irian.ankor.todosample.fxclient.App.refFactory;
 
-public class TaskListController implements Initializable {
+public class TaskListController extends AnkorController {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TaskListController.class);
 
     private BindingContext bindingContext = new BindingContext();
@@ -42,29 +37,14 @@ public class TaskListController implements Initializable {
     @FXML public Node footerTop;
     @FXML public Node footerBottom;
 
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        modelRef = refFactory().rootRef().append("model");
-
-        // TODO: @ActionListener syntax
-        RefListeners.addPropChangeListener(modelRef, new RefChangeListener() {
-            @Override
-            public void processChange(Ref changedProperty) {
-                initialize();
-            }
-        });
-
-        refFactory().rootRef().fire(new Action("init"));
+    @ChangeListener(pattern = "root.model.tasks")
+    public void renderTasks(Ref changedProperty) {
+        List<LinkedHashMap<String, Object>> tasks = changedProperty.getValue();
+        Platform.runLater(new TaskLoader(tasks));
     }
 
-    public void initialize() {
-        RefListeners.addPropChangeListener(modelRef.append("tasks"), new RefChangeListener() {
-            @Override
-            public void processChange(Ref changedProperty) {
-                List<LinkedHashMap<String, Object>> tasks = changedProperty.getValue();
-                Platform.runLater(new TaskLoader(tasks));
-            }
-        });
+    public void initialize(Ref modelRef) {
+        this.modelRef = modelRef;
 
         bindValue(modelRef.append("toggleAll"))
                 .toProperty(toggleAll.selectedProperty())
