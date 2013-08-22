@@ -14,6 +14,7 @@ import at.irian.ankor.system.AnkorSystem;
 import at.irian.ankor.system.AnkorSystemBuilder;
 import at.irian.ankor.todosample.server.TaskRepository;
 import at.irian.ankor.todosample.viewmodel.ModelRoot;
+import javafx.application.HostServices;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
@@ -35,6 +36,7 @@ public class App extends javafx.application.Application {
     private static final int NUMBER_OF_CLIENTS = 3;
 
     private static RefFactory refFactory;
+    private static HostServices services;
 
     private enum Mode {
         clientServer,
@@ -48,8 +50,14 @@ public class App extends javafx.application.Application {
         launch(args);
     }
 
+    public static HostServices getServices() {
+        return services;
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
+
+        services = getHostServices();
 
         Map<String,String> params = getParameters().getNamed();
 

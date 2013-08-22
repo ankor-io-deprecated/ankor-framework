@@ -4,6 +4,7 @@ import at.irian.ankor.action.Action;
 import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.fx.binding.BindingContext;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.todosample.fxclient.App;
 import at.irian.ankor.todosample.viewmodel.task.TaskModel;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -113,6 +114,16 @@ public class TaskListController extends AnkorController {
     @FXML
     public void toggleAll(ActionEvent actionEvent) {
         modelRef.fire(new Action("toggleAll"));
+    }
+
+    @FXML
+    public void openIRIAN(ActionEvent actionEvent) {
+        App.getServices().showDocument("http://www.irian.at");
+    }
+
+    @FXML
+    public void openTodoMVC(ActionEvent actionEvent) {
+        App.getServices().showDocument("http://todomvc.com/");
     }
 
     private BindingContext listContext = new BindingContext();
