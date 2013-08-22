@@ -18,7 +18,7 @@ public class TaskListModel extends ViewModelBase {
     @AnkorIgnore
     private final TaskRepository taskRepository;
 
-    private List<Task> tasks;
+    private List<TaskModel> tasks;
 
     private String filter;
 
@@ -48,7 +48,7 @@ public class TaskListModel extends ViewModelBase {
         filterActiveSelected = (false);
         filterCompletedSelected = (false);
 
-        tasks = new ArrayList<Task>(fetchTasksData());
+        tasks = new ArrayList<TaskModel>(fetchTasksData());
 
         itemsLeft = taskRepository.getActiveTasks().size();
         itemsLeftText = (itemsLeftText(itemsLeft));
@@ -170,20 +170,18 @@ public class TaskListModel extends ViewModelBase {
     public void toggleTask(@Param("index") final int index) {
         LOG.info("Completing task {}", index);
 
-        Task task = tasks.get(index);
-        if (!task.isCompleted()) {
-            task.setCompleted(true);
+        TaskModel model = tasks.get(index);
+        if (model.getTask().isCompleted()) {
             thisRef("itemsLeft").setValue(itemsLeft - 1);
             thisRef("itemsComplete").setValue(itemsComplete + 1);
             thisRef("toggleAll").setValue(itemsLeft == 0);
         } else {
-            task.setCompleted(false);
             thisRef("itemsLeft").setValue(itemsLeft + 1);
             thisRef("itemsComplete").setValue(itemsComplete - 1);
             thisRef("toggleAll").setValue(false);
         }
 
-        taskRepository.saveTask(task);
+        taskRepository.saveTask(model.getTask());
         tasksRef().setValue(fetchTasksData());
     }
 
@@ -191,7 +189,7 @@ public class TaskListModel extends ViewModelBase {
     public void deleteTask(@Param("index") final int index) {
         LOG.info("Deleting task {}", index);
 
-        Task task = tasks.get(index);
+        Task task = tasks.get(index).getTask();
         taskRepository.deleteTask(task);
 
         tasksRef().setValue(fetchTasksData());
@@ -204,7 +202,7 @@ public class TaskListModel extends ViewModelBase {
     public void editTask(@Param("index") final int index, @Param("title") final String title) {
         LOG.info("Editing task {}", index);
 
-        Task task = tasks.get(index);
+        Task task = tasks.get(index).getTask();
         tasksRef(index).append("title").setValue(title);
         taskRepository.saveTask(task);
 
@@ -241,9 +239,17 @@ public class TaskListModel extends ViewModelBase {
     }
     */
 
-    private List<Task> fetchTasksData() {
+    private List<TaskModel> fetchTasksData() {
         Filter filterEnum = Filter.valueOf(filter);
-        return taskRepository.filterTasks(filterEnum);
+        List<Task> tasks = taskRepository.filterTasks(filterEnum);
+        List<TaskModel> res = new ArrayList<TaskModel>(tasks.size());
+
+        int i = 0;
+        for (Task t : tasks) {
+            TaskModel model = new TaskModel(t, i++);
+            res.add(model);
+        }
+        return res;
     }
 
     public Integer getItemsLeft() {
@@ -254,11 +260,11 @@ public class TaskListModel extends ViewModelBase {
         this.itemsLeft = itemsLeft;
     }
 
-    public List<Task> getTasks() {
+    public List<TaskModel> getTasks() {
         return tasks;
     }
 
-    public void setTasks(List<Task> tasks) {
+    public void setTasks(List<TaskModel> tasks) {
         this.tasks = tasks;
     }
 

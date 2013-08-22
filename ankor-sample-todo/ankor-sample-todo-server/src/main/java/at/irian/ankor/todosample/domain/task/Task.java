@@ -7,6 +7,8 @@ public class Task {
     private String title;
     private boolean completed = false;
 
+    public Task() {}
+
     public Task(String title) {
         this.id = UUID.randomUUID().toString();
         this.title = title;

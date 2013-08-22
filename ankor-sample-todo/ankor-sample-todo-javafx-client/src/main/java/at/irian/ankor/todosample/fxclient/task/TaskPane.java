@@ -2,7 +2,9 @@ package at.irian.ankor.todosample.fxclient.task;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.todosample.viewmodel.task.TaskModel;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -24,7 +26,7 @@ import java.util.HashMap;
 public class TaskPane extends AnchorPane {
 
     private Ref modelRef;
-    private int index = -1;
+    private TaskModel model;
 
     @FXML public ToggleButton completed;
     @FXML public Button deleteButton;
@@ -32,8 +34,9 @@ public class TaskPane extends AnchorPane {
 
     private String oldTitle = "";
 
-    public TaskPane(Ref modelRef) {
+    public TaskPane(Ref modelRef, TaskModel model) {
         this.modelRef = modelRef;
+        this.model = model;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("task.fxml"));
         fxmlLoader.setRoot(this);
@@ -92,7 +95,7 @@ public class TaskPane extends AnchorPane {
     private void edit() {
         if (!title.getText().equals(oldTitle)) {
             HashMap params = new HashMap<String, Object>();
-            params.put("index", index);
+            params.put("index", model.getIndex());
             params.put("title", title.getText());
             modelRef.fire(new Action("editTask", params));
             oldTitle = title.getText();
@@ -102,19 +105,23 @@ public class TaskPane extends AnchorPane {
     @FXML
     public void complete(ActionEvent actionEvent) {
         HashMap params = new HashMap<String, Object>();
-        params.put("index", index);
+        params.put("index", model.getIndex());
         modelRef.fire(new Action("toggleTask", params));
     }
 
     @FXML
     public void delete(ActionEvent actionEvent) {
         HashMap params = new HashMap<String, Object>();
-        params.put("index", index);
+        params.put("index", model.getIndex());
         modelRef.fire(new Action("deleteTask", params));
     }
 
     public StringProperty textProperty() {
         return title.textProperty();
+    }
+
+    public BooleanProperty selectedPrperty() {
+        return completed.selectedProperty();
     }
 
     public String getText() {
@@ -126,35 +133,19 @@ public class TaskPane extends AnchorPane {
         textProperty().set(value);
     }
 
-    public ToggleButton getCompleted() {
-        return completed;
-    }
-
-    public void setCompleted(ToggleButton completed) {
-        this.completed = completed;
-    }
-
-    public Button getDeleteButton() {
-        return deleteButton;
-    }
-
-    public void setDeleteButton(Button deleteButton) {
-        this.deleteButton = deleteButton;
-    }
-
-    public int getIndex() {
-        return index;
-    }
-
-    public void setIndex(int index) {
-        this.index = index;
-    }
-
     public void setSelected(boolean selected) {
         this.completed.setSelected(selected);
     }
 
     public boolean isSelected() {
         return this.completed.isSelected();
+    }
+
+    public TaskModel getModel() {
+        return model;
+    }
+
+    public void setModel(TaskModel model) {
+        this.model = model;
     }
 }

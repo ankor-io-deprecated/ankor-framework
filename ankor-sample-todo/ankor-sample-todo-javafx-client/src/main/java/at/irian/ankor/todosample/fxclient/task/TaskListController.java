@@ -4,6 +4,7 @@ import at.irian.ankor.action.Action;
 import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.fx.binding.BindingContext;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.todosample.viewmodel.task.TaskModel;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -114,6 +115,8 @@ public class TaskListController extends AnkorController {
         modelRef.fire(new Action("toggleAll"));
     }
 
+    private BindingContext listContext = new BindingContext();
+
     private class TaskLoader implements Runnable {
 
         List<LinkedHashMap<String, Object>> tasks;
@@ -121,14 +124,25 @@ public class TaskListController extends AnkorController {
 
         @Override
         public void run() {
+            listContext.unbind();
+            listContext = new BindingContext();
+
             tasksList.getChildren().clear();
 
-            int i = 0;
             for (LinkedHashMap<String, Object> task : tasks) {
-                TaskPane node = new TaskPane(modelRef);
-                node.setIndex(i++);
-                node.setText((String)task.get("title"));
-                node.setSelected((boolean)task.get("completed"));
+                TaskModel model = new TaskModel(task);
+                TaskPane node = new TaskPane(modelRef, model);
+
+                Ref itemRef = modelRef.append("tasks").appendIdx(model.getIndex());
+
+                bindValue(itemRef.append("title"))
+                        .toProperty(node.textProperty())
+                        .createWithin(listContext);
+
+                bindValue(itemRef.append("completed"))
+                        .toProperty(node.selectedPrperty())
+                        .createWithin(listContext);
+
                 tasksList.getChildren().add(node);
             }
         }
