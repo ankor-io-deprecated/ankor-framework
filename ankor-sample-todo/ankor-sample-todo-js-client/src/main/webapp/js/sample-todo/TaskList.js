@@ -153,7 +153,10 @@ define([
                             .on("click", function() {
                                 modelRef.fire({
                                     name: 'toggleTask',
-                                    params: { index: index }
+                                    params: {
+                                        completed: $(this).prop('checked'),
+                                        index: index
+                                    }
                                 })
                             })
                             .ankorBindProp("checked", listRef(index).append("completed")));

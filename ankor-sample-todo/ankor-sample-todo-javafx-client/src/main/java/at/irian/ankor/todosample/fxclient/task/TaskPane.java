@@ -34,9 +34,8 @@ public class TaskPane extends AnchorPane {
 
     private String oldTitle = "";
 
-    public TaskPane(Ref modelRef, TaskModel model) {
+    public TaskPane(Ref modelRef) {
         this.modelRef = modelRef;
-        this.model = model;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("task.fxml"));
         fxmlLoader.setRoot(this);
@@ -106,6 +105,7 @@ public class TaskPane extends AnchorPane {
     public void complete(ActionEvent actionEvent) {
         HashMap params = new HashMap<String, Object>();
         params.put("index", model.getIndex());
+        params.put("completed", completed.isSelected());
         modelRef.fire(new Action("toggleTask", params));
     }
 
@@ -147,5 +147,7 @@ public class TaskPane extends AnchorPane {
 
     public void setModel(TaskModel model) {
         this.model = model;
+        setText(model.getTitle());
+        setSelected(model.isCompleted());
     }
 }

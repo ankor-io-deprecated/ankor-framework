@@ -137,11 +137,13 @@ public class TaskListModel extends ViewModelBase {
     }
 
     @ActionListener
-    public void toggleTask(@Param("index") final int index) {
+    public void toggleTask(@Param("index") final int index, @Param("completed") final boolean completed) {
         LOG.info("Completing task {}", index);
 
+        tasksRef(index).append("completed").setValue(completed);
+
         TaskModel model = tasks.get(index);
-        if (model.getTask().isCompleted()) {
+        if (completed) {
             thisRef("itemsLeft").setValue(itemsLeft - 1);
             thisRef("itemsComplete").setValue(itemsComplete + 1);
             thisRef("toggleAll").setValue(itemsLeft == 0);
@@ -199,14 +201,6 @@ public class TaskListModel extends ViewModelBase {
         thisRef("toggleAll").setValue(false);
     }
 
-    /*
-    // XXX: Not supported. Necessary?
-    @ChangeListener(pattern="**.<TaskListModel>.tasks[(*)].completed")
-    public void completeTodo(int index) {
-        LOG.info("completing task ", index);
-    }
-    */
-
     private List<TaskModel> fetchTasksData() {
         Filter filterEnum = Filter.valueOf(filter);
         List<Task> tasks = taskRepository.filterTasks(filterEnum);
@@ -217,6 +211,7 @@ public class TaskListModel extends ViewModelBase {
             TaskModel model = new TaskModel(t, i++);
             res.add(model);
         }
+
         return res;
     }
 

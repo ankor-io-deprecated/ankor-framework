@@ -4,6 +4,8 @@ import at.irian.ankor.action.Action;
 import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.fx.binding.BindingContext;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.ref.listener.RefChangeListener;
+import at.irian.ankor.ref.listener.RefListeners;
 import at.irian.ankor.todosample.fxclient.App;
 import at.irian.ankor.todosample.viewmodel.task.TaskModel;
 import javafx.application.Platform;
@@ -13,6 +15,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -92,6 +95,26 @@ public class TaskListController extends AnkorController {
         bindValue(modelRef.append("filterCompletedSelected"))
                 .toProperty(filterCompleted.selectedProperty())
                 .createWithin(bindingContext);
+
+        // XXX: Much better performance than bindValue
+        RefListeners.addTreeChangeListener(modelRef.append("tasks"), new RefChangeListener() {
+            @Override
+            public void processChange(Ref changedProperty) {
+                String name = changedProperty.propertyName();
+
+                if (name.equals("title") || name.equals("completed")) {
+
+                    int index = changedProperty.parent().append("index").getValue();
+                    TaskPane node = (TaskPane) tasksList.getChildren().get(index);
+
+                    if (name.equals("title")) {
+                        node.setText(changedProperty.<String>getValue());
+                    } else if (name.equals("completed")) {
+                        node.setSelected(changedProperty.<Boolean>getValue());
+                    }
+                }
+            }
+        });
     }
 
     @FXML
@@ -126,7 +149,7 @@ public class TaskListController extends AnkorController {
         App.getServices().showDocument("http://todomvc.com/");
     }
 
-    private BindingContext listContext = new BindingContext();
+    private HashMap<Integer, TaskPane> cache = new HashMap<Integer, TaskPane>();
 
     private class TaskLoader implements Runnable {
 
@@ -135,24 +158,30 @@ public class TaskListController extends AnkorController {
 
         @Override
         public void run() {
-            listContext.unbind();
-            listContext = new BindingContext();
-
             tasksList.getChildren().clear();
 
             for (LinkedHashMap<String, Object> task : tasks) {
                 TaskModel model = new TaskModel(task);
-                TaskPane node = new TaskPane(modelRef, model);
+
+                int index = model.getIndex();
+
+                TaskPane node;
+                if (cache.get(index) == null) {
+                    cache.put(index, new TaskPane(modelRef));
+                }
+                node = cache.get(index);
+                node.setModel(model);
 
                 Ref itemRef = modelRef.append("tasks").appendIdx(model.getIndex());
 
-                bindValue(itemRef.append("title"))
-                        .toProperty(node.textProperty())
-                        .createWithin(listContext);
-
-                bindValue(itemRef.append("completed"))
-                        .toProperty(node.selectedPrperty())
-                        .createWithin(listContext);
+                // bindValue(itemRef.append("title"))
+                //         .toProperty(node.textProperty())
+                //         .createWithin(listContext);
+                //
+                // bindValue(itemRef.append("completed"))
+                //         .toProperty(node.selectedPrperty())
+                //         .createWithin(listContext);
+                //
 
                 tasksList.getChildren().add(node);
             }
