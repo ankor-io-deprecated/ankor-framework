@@ -115,6 +115,8 @@ public class TaskListController extends AnkorController {
                 }
             }
         });
+
+        renderTasks(modelRef.append("tasks"));
     }
 
     @FXML
