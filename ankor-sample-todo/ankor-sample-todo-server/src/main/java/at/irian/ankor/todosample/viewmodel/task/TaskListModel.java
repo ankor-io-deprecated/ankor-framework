@@ -36,8 +36,6 @@ public class TaskListModel extends ViewModelBase {
     private Boolean filterActiveSelected;
     private Boolean filterCompletedSelected;
 
-    private Integer editing;
-
     public TaskListModel(Ref viewModelRef, TaskRepository taskRepository) {
         super(viewModelRef);
 
@@ -59,34 +57,6 @@ public class TaskListModel extends ViewModelBase {
         clearButtonVisibility = (itemsComplete != 0);
 
         toggleAll = (false);
-
-        editing = -1;
-
-        /*
-        RefListeners.addTreeChangeListener(tasksRef(), new RefChangeListener() {
-            @Override
-            public void processChange(Ref changedProperty) {
-                if (changedProperty.propertyName().equals("completed")) {
-                    Task task = changedProperty.parent().getValue();
-                    int index = tasks.indexOf(task);
-
-                    LOG.info("Completing task {}", index);
-
-                    boolean isCompleted = changedProperty.getValue();
-                    if (isCompleted) {
-                        thisRef("itemsLeft").setValue(itemsLeft - 1);
-                        thisRef("itemsComplete").setValue(itemsComplete + 1);
-                        thisRef("toggleAll").setValue(itemsLeft == 0);
-                    } else {
-                        thisRef("itemsLeft").setValue(itemsLeft + 1);
-                        thisRef("itemsComplete").setValue(itemsComplete - 1);
-                        thisRef("toggleAll").setValue(false);
-                    }
-                    TaskListModel.this.taskRepository.saveTask(task);
-                }
-            }
-        });
-        */
     }
 
     private Ref tasksRef() {
@@ -205,8 +175,6 @@ public class TaskListModel extends ViewModelBase {
         Task task = tasks.get(index).getTask();
         tasksRef(index).append("title").setValue(title);
         taskRepository.saveTask(task);
-
-        thisRef("editing").setValue(-1);
     }
 
     @ActionListener
@@ -346,13 +314,5 @@ public class TaskListModel extends ViewModelBase {
 
     public void setItemsLeftText(String itemsLeftText) {
         this.itemsLeftText = itemsLeftText;
-    }
-
-    public Integer getEditing() {
-        return editing;
-    }
-
-    public void setEditing(Integer editing) {
-        this.editing = editing;
     }
 }

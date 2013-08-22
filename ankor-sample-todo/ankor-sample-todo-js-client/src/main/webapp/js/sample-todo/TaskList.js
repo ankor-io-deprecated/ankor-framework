@@ -18,7 +18,6 @@ define([
 
         // Proposed additional adapters
 
-        // XXX: Needs better name
         $.fn.ankorBind1 = function(functionName, ref) {
             var element = this.first();
 
@@ -27,8 +26,15 @@ define([
             });
         };
 
-        // XXX: Needs better name
         $.fn.ankorBind2 = function(functionName, propertyName, ref) {
+            var element = this.first();
+
+            return ref.addPropChangeListener(function(ref) {
+                $.fn[functionName].call(element, propertyName, ref.getValue());
+            });
+        };
+
+        $.fn.ankorBindValue = function(functionName, propertyName, ref) {
             var element = this.first();
 
             element.on("change", function() {
@@ -50,15 +56,15 @@ define([
         };
 
         $.fn.ankorBindProp = function(propertyName, ref) {
-            return $.fn.ankorBind2.call(this, "prop", propertyName, ref);
+            return $.fn.ankorBindValue.call(this, "prop", propertyName, ref);
         };
 
         $.fn.ankorBindAttr = function(propertyName, ref) {
-            return $.fn.ankorBind2.call(this, "attr", propertyName, ref);
+            return $.fn.ankorBindValue.call(this, "attr", propertyName, ref);
         };
 
         $.fn.ankorBindData = function(propertyName, ref) {
-            return $.fn.ankorBind2.call(this, "data", propertyName, ref);
+            return $.fn.ankorBindValue.call(this, "data", propertyName, ref);
         };
 
         $.fn.ankorBindToggle = function(ref) {
@@ -69,7 +75,7 @@ define([
             return $.fn.ankorBind2.call(this, "toggleClass", clazz, ref);
         }
 
-        $("#app").html(template.render({}));
+        $("#app").html(template.render());
 
         $('#todo-count > strong').ankorBindText(modelRef.append("itemsLeft"));
         $('#todo-count > span').ankorBindText(modelRef.append("itemsLeftText"));
@@ -94,83 +100,6 @@ define([
             .on('click', function() { modelRef.fire("toggleAll") })
             .ankorBindProp("checked", modelRef.append("toggleAll"));
 
-        modelRef.append("editing").addPropChangeListener(function(ref) {
-            $('#todo-list > li').removeClass("editing");
-
-            var index = ref.getValue();
-            if (index >= 0) {
-                $('#todo-list > li').eq(index).addClass('editing').find('.edit').focus().select();
-            }
-        });
-
-        var bindingContext = []
-        modelRef.append("tasks").addPropChangeListener(function(ref) {
-            //Cleanup
-            var $todoList = $('#todo-list').empty(); // removes event handlers
-            for (var i = 0, listener; (listener = bindingContext[i]); i++) {
-                listener.remove();
-            }
-            bindingContext = [];
-
-            var listRef = function(index) {
-                return ref.appendIndex(index);
-            }
-
-            var tasks = ref.getValue();
-            tasks.forEach
-            for (var i = 0, task; (task = tasks[i]); i++) {
-                // XXX: Task view ?
-                $todoList.append(taskTemplate.render(task));
-
-                var $task = $('#task-'+task.id);
-
-                bindingContext.push(
-                    $task.find('label')
-                        .ankorBindText(listRef(i).append("title")));
-
-                bindingContext.push(
-                    $task.find('.edit')
-                        .ankorBindText(listRef(i).append("title")));
-
-                (function(index) {
-                    $task.find('.toggle').on("click", function() {
-                        modelRef.fire({
-                            name: 'toggleTask',
-                            params: { index: index }
-                        });
-                    });
-
-                    $task.find('.destroy').on("click", function() {
-                        modelRef.fire({
-                            name: 'deleteTask',
-                            params: { index: index }
-                        });
-                    });
-
-                    $task.on("dblclick", function() {
-                        modelRef.append("editing").setValue(index);
-                    });
-
-                    $task.find('.edit')
-                        .on('focusout', function() {
-                            modelRef.append("editing").setValue(-1);
-                        })
-                        .on('keyup', function(e) {
-                            var title = $(e.currentTarget).val();
-                            if (e.keyCode === ENTER_KEY) {
-                                modelRef.fire({
-                                    name: "editTask",
-                                    params: {
-                                        index: index,
-                                        title: title
-                                    }
-                                });
-                                modelRef.append("editing").setValue(-1);
-                            }
-                        });
-                })(i);
-            }
-        });
         $("#new-todo").on('keyup', function(e) {
             var title = $(e.currentTarget).val();
             if (e.keyCode === ENTER_KEY &&  title != "") {
@@ -187,6 +116,83 @@ define([
         $clearCompleted.on("click", function(e) {
             modelRef.fire("clearTasks");
         });
+
+        var bindingContext = []
+        modelRef.append("tasks").addPropChangeListener(function(ref) {
+            //Cleanup
+            var $todoList = $('#todo-list').empty(); // removes event handlers
+            for (var i = 0, listener; (listener = bindingContext[i]); i++) {
+                listener.remove();
+            }
+            bindingContext = [];
+
+            function listRef(index) {
+                return ref.appendIndex(index);
+            }
+
+            // Render tasks
+            console.log("render tasks");
+            var tasks = ref.getValue();
+            for (var i = 0, model; (model = tasks[i]); i++) {
+                (function(model) {
+                    var index = model.index;
+
+                    $todoList.append(taskTemplate.render(model));
+                    var $task = $('#todo-list > li').eq(index);
+
+                    bindingContext.push(
+                        $task.find('label')
+                            .ankorBindText(listRef(index).append("title")));
+
+                    bindingContext.push(
+                        $task.find('.edit')
+                            .ankorBind1("val", listRef(index).append("title")));
+
+                    bindingContext.push(
+                        $task.find('.toggle')
+                            .on("click", function() {
+                                modelRef.fire({
+                                    name: 'toggleTask',
+                                    params: { index: index }
+                                })
+                            })
+                            .ankorBindProp("checked", listRef(index).append("completed")));
+
+                    bindingContext.push(
+                        $task.on("dblclick", function() {
+                            listRef(index).append("editing").setValue(true);
+                            $task.find('.edit').focus().select();
+                        })
+                        .ankorBindToggleClass("editing", listRef(index).append("editing")));
+
+                    $task.find('.destroy').on("click", function() {
+                        modelRef.fire({
+                            name: 'deleteTask',
+                            params: { index: index }
+                        });
+                    });
+
+                    $task.find('.edit')
+                        .on('focusout', function() {
+                            listRef(index).append("editing").setValue(false);
+                        })
+                        .on('keyup', function(e) {
+                            var title = $(e.currentTarget).val();
+                            if (e.keyCode === ENTER_KEY) {
+                                modelRef.fire({
+                                    name: "editTask",
+                                    params: {
+                                        index: index,
+                                        title: title
+                                    }
+                                });
+                                listRef(index).append("editing").setValue(false);
+                            }
+                        });
+                })(model);
+            }
+        });
+
     };
 
     return TaskList;
