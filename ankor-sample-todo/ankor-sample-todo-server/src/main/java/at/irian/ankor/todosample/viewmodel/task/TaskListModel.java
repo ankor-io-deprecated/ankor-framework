@@ -78,9 +78,9 @@ public class TaskListModel extends ViewModelBase {
     }
 
     @ChangeListener(pattern = {
-            "**.<TaskListModel>.filterAllSelected",
-            "**.<TaskListModel>.filterActiveSelected",
-            "**.<TaskListModel>.filterCompletedSelected" })
+            "root.model.filterAllSelected",
+            "root.model.filterActiveSelected",
+            "root.model.filterCompletedSelected" })
     public void reloadTasks() {
         if (filterAllSelected) {
             thisRef("filter").setValue(Filter.all.toString());
@@ -92,8 +92,8 @@ public class TaskListModel extends ViewModelBase {
     }
 
     @ChangeListener(pattern = {
-            "**.<TaskListModel>.itemsLeft",
-            "**.<TaskListModel>.itemsComplete" })
+            "root.model.itemsLeft",
+            "root.model.itemsComplete" })
     public void updateFooterVisibility() {
         thisRef("footerVisibility").setValue(taskRepository.getTasks().size() != 0);
     }
@@ -108,7 +108,7 @@ public class TaskListModel extends ViewModelBase {
         return text;
     }
 
-    @ChangeListener(pattern="**.<TaskListModel>.itemsLeft")
+    @ChangeListener(pattern="root.model.itemsLeft")
     public void itemsLeftChanged() {
         thisRef("itemsLeftText").setValue(itemsLeftText(itemsLeft));
     }
@@ -117,7 +117,7 @@ public class TaskListModel extends ViewModelBase {
         return String.format("Clear completed (%d)", itemsComplete);
     }
 
-    @ChangeListener(pattern="**.<TaskListModel>.itemsComplete")
+    @ChangeListener(pattern="root.model.itemsComplete")
     public void updateClearButton() {
         thisRef("clearButtonVisibility").setValue(itemsComplete != 0);
         thisRef("itemsCompleteText").setValue(itemsCompleteText(itemsComplete));
