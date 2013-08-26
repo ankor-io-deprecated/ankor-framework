@@ -1,6 +1,7 @@
 package at.irian.ankor.fx.binding;
 
 import at.irian.ankor.delay.FloodControl;
+import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.listener.RefChangeListener;
 import at.irian.ankor.ref.listener.RefListeners;
@@ -104,7 +105,7 @@ public class RefPropertyBinding implements RefChangeListener, javafx.beans.value
         } else {
             // we do not have exclusive access to the model here...
             // ... therefore we must not set the Ref value directly:
-            valueRef.requestChangeTo(newValue);
+            AnkorPatterns.changeValueLater(valueRef, newValue);
         }
     }
 

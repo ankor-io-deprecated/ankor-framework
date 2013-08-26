@@ -1,6 +1,7 @@
 package at.irian.ankor.system;
 
 import at.irian.ankor.action.RemoteAction;
+import at.irian.ankor.change.Change;
 import at.irian.ankor.change.RemoteChange;
 import at.irian.ankor.event.ModelEvent;
 import at.irian.ankor.event.ModelEventListener;
@@ -40,8 +41,8 @@ public class RemoteEvent extends ModelEvent {
         this.action = action;
     }
 
-    public static RemoteEvent createChangeEvent(Session session, Ref changedProperty, Object newValue) {
-        return new RemoteEvent(changedProperty, new RemoteChange(session, newValue));
+    public static RemoteEvent createChangeEvent(Session session, Ref changedProperty, Change change) {
+        return new RemoteEvent(changedProperty, RemoteChange.from(change, session));
     }
 
     public static RemoteEvent createActionEvent(Session session, Ref actionProperty, String actionName, Map<String, Object> actionParams) {

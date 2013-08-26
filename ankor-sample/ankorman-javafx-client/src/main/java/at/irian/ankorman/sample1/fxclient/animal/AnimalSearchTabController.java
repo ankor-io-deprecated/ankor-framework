@@ -2,6 +2,7 @@ package at.irian.ankorman.sample1.fxclient.animal;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.fx.binding.ClickAction;
+import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorman.sample1.fxclient.BaseTabController;
 import javafx.event.EventHandler;
@@ -124,7 +125,7 @@ public class AnimalSearchTabController extends BaseTabController {
                     public void handle(TableColumn.CellEditEvent<Map, String> t) {
                         int rowNum = t.getTablePosition().getRow();
                         Ref rowNameRef = getTabRef().append(String.format("model.animals.rows[%d].name", rowNum));
-                        rowNameRef.requestChangeTo(t.getNewValue());
+                        AnkorPatterns.changeValueLater(rowNameRef, t.getNewValue());
                     }
                 });
 

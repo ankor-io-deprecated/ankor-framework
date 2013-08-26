@@ -80,7 +80,7 @@ public class ArrayListEventListeners implements EventListeners {
     public void cleanup() {
         List<ModelEventListener> removeList = null;
         for (ModelEventListener listener : this.listeners) {
-            if (listener.isDiscardable()) {
+            if (listener != null && listener.isDiscardable()) {  // yes, the CopyOnWriteArrayList actually may return nulls!
                 if (removeList == null) {
                     removeList = new ArrayList<ModelEventListener>();
                 }

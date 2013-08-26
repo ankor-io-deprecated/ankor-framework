@@ -1,6 +1,7 @@
 package at.irian.ankorman.sample1.fxclient;
 
 import at.irian.ankor.fx.binding.BindingContext;
+import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
 import javafx.application.Platform;
 import javafx.event.Event;
@@ -44,7 +45,7 @@ public abstract class BaseTabController implements Initializable {
             @Override
             public void handle(Event event) {
                 bindingContext.unbind();
-                getTabRef().requestChangeTo(null);
+                AnkorPatterns.deleteItemLater(refFactory().ref("root.tabs"), tabId);
             }
         });
         Platform.runLater(new Runnable() {

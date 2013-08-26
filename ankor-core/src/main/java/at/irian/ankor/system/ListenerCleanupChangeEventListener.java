@@ -29,7 +29,7 @@ public class ListenerCleanupChangeEventListener extends ChangeEventListener {
     @Override
     public void process(ChangeEvent event) {
         Change change = event.getChange();
-        if (change.getNewValue() == null) {
+        if (change.getValue() == null) {
             eventListeners.cleanup();
         }
     }

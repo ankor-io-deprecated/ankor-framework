@@ -10,6 +10,7 @@ import at.irian.ankor.messaging.json.common.ActionSerializer;
 import at.irian.ankor.messaging.json.common.MessageDeserializer;
 import at.irian.ankor.viewmodel.ViewModelProperty;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -60,6 +61,8 @@ public class ViewModelJsonMessageMapper implements MessageMapper<String>,
         mapper.configure(JsonGenerator.Feature.QUOTE_FIELD_NAMES, true);
 
         mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
         //mapper.enableDefaultTypingAsProperty(ObjectMapper.DefaultTyping.JAVA_LANG_OBJECT, "@javaType");
     }

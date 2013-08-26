@@ -106,7 +106,12 @@ public interface Ref {
 
     void fire(Action action);
 
+    @Deprecated
     void fire(ModelEvent event);
 
-    void requestChangeTo(Object newValue);
+    void delete(Object key);
+
+    void delete(int idx);
+
+    void insert(int idx, Object value);
 }

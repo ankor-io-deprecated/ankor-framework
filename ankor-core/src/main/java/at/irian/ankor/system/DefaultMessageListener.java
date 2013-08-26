@@ -60,7 +60,7 @@ public class DefaultMessageListener implements ActionMessage.Listener, ChangeMes
         RefContext refContext = session.getRefContext();
         Ref changedProperty = refContext.refFactory().ref(message.getProperty());
 
-        RemoteEvent event = createChangeEvent(session, changedProperty, message.getChange().getNewValue());
+        RemoteEvent event = createChangeEvent(session, changedProperty, message.getChange());
         modelContext.getEventDispatcher().dispatch(event);
     }
 

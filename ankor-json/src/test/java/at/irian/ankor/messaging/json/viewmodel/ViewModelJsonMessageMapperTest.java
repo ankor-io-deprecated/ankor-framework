@@ -73,7 +73,7 @@ public class ViewModelJsonMessageMapperTest {
 
     @Test
     public void testChange() throws Exception {
-        Message msg = messageFactory.createChangeMessage(modelContext, "root.test1", new Change("new-value"));
+        Message msg = messageFactory.createChangeMessage(modelContext, "root.test1", Change.valueChange("new-value"));
         String json = msgMapper.serialize(msg);
         LOG.info("JSON: {}", json);
 
@@ -87,7 +87,7 @@ public class ViewModelJsonMessageMapperTest {
 
     @Test
     public void testChangeRoot() throws Exception {
-        Message msg = messageFactory.createChangeMessage(modelContext, "root", new Change("new-value"));
+        Message msg = messageFactory.createChangeMessage(modelContext, "root", Change.valueChange("new-value"));
         String json = msgMapper.serialize(msg);
         LOG.info("JSON: {}", json);
 

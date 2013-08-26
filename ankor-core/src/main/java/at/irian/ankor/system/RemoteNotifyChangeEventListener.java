@@ -71,7 +71,7 @@ public class RemoteNotifyChangeEventListener extends ChangeEventListener impleme
         ModelContext modelContext = refContext.modelContext();
         Message message = messageFactory.createChangeMessage(modelContext,
                                                              refContext.refFactory().rootRef().path(),
-                                                             new Change(modelContext.getModelRoot()));
+                                                             Change.valueChange(modelContext.getModelRoot()));
         session.getMessageSender().sendMessage(message);
     }
 }
