@@ -11,17 +11,22 @@ import at.irian.ankor.todosample.viewmodel.task.TaskModel;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 
+import java.net.URL;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
+import static at.irian.ankor.fx.controller.FXControllerAnnotationSupport.annotationSupport;
+import static at.irian.ankor.todosample.fxclient.App.refFactory;
 
-public class TaskListController extends AnkorController {
+public class TaskListController implements Initializable {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TaskListController.class);
 
     private BindingContext bindingContext = new BindingContext();
@@ -42,10 +47,22 @@ public class TaskListController extends AnkorController {
     @FXML public Node footerTop;
     @FXML public Node footerBottom;
 
-    @ChangeListener(pattern = "root.model.tasks")
-    public void renderTasks(Ref changedProperty) {
-        List<LinkedHashMap<String, Object>> tasks = changedProperty.getValue();
-        Platform.runLater(new TaskLoader(tasks));
+    public TaskListController() {
+        annotationSupport().registerChangeListeners(this);
+    }
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+
+        // XXX: Annotation syntax not supported
+        RefListeners.addPropChangeListener(refFactory().rootRef().append("model"), new RefChangeListener() {
+            @Override
+            public void processChange(Ref changedProperty) {
+                initialize(refFactory().rootRef().append("model"));
+            }
+        });
+
+        refFactory().rootRef().fire(new Action("init"));
     }
 
     public void initialize(Ref modelRef) {
@@ -119,6 +136,12 @@ public class TaskListController extends AnkorController {
         renderTasks(modelRef.append("tasks"));
     }
 
+    @ChangeListener(pattern = "root.model.tasks")
+    public void renderTasks(Ref changedProperty) {
+        List<LinkedHashMap<String, Object>> tasks = changedProperty.getValue();
+        Platform.runLater(new TaskLoader(tasks));
+    }
+
     @FXML
     public void newTodo(ActionEvent actionEvent) {
         if (!newTodo.getText().equals("")) {
@@ -174,14 +197,13 @@ public class TaskListController extends AnkorController {
                 node = cache.get(index);
                 node.setModel(model);
 
-                Ref itemRef = modelRef.append("tasks").appendIdx(model.getIndex());
-
+                // Ref itemRef = modelRef.append("tasks").appendIdx(model.getIndex());
                 // bindValue(itemRef.append("title"))
                 //         .toProperty(node.textProperty())
                 //         .createWithin(listContext);
                 //
                 // bindValue(itemRef.append("completed"))
-                //         .toProperty(node.selectedPrperty())
+                //         .toProperty(node.selectedProperty())
                 //         .createWithin(listContext);
                 //
 
