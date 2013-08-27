@@ -1,5 +1,6 @@
 package at.irian.ankor.fx.binding.property;
 
+import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.listener.RefChangeListener;
 import at.irian.ankor.ref.listener.RefListeners;
@@ -29,6 +30,6 @@ public class ViewModelProperty<T> extends SimpleObjectProperty<T> implements Ref
 
     @Override
     public void set(T v) {
-        ref.requestChangeTo(v);
+        AnkorPatterns.changeValueLater(ref, v);
     }
 }

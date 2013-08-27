@@ -9,6 +9,7 @@ import at.irian.ankor.ref.Ref;
 /**
  * @author Manfred Geiler
  */
+@SuppressWarnings("UnusedDeclaration")
 public final class AnkorPatterns {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnkorPatterns.class);
 

@@ -6,6 +6,7 @@ import at.irian.ankor.context.ModelContextManager;
 import at.irian.ankor.messaging.ActionMessage;
 import at.irian.ankor.messaging.ChangeMessage;
 import at.irian.ankor.messaging.Message;
+import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.session.*;
@@ -51,7 +52,7 @@ public class DefaultMessageListener implements ActionMessage.Listener, ChangeMes
         if (actionProperty.isRoot() && actionProperty.getValue() == null) {
             // this model root does not yet exist
             Object modelRoot = modelRootFactory.createModelRoot(actionProperty);
-            actionProperty.requestChangeTo(modelRoot);
+            AnkorPatterns.changeValueLater(actionProperty, modelRoot);
         }
 
         Action action = message.getAction();

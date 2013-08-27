@@ -247,7 +247,7 @@ public abstract class RefBase implements Ref, RefImplementor {
 
     @Override
     public Ref root() {
-        return refFactory().rootRef();
+        return refFactory().rootRef();  // todo  get custom root
     }
 
     @Override
