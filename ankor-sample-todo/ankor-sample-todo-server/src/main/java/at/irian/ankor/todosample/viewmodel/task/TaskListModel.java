@@ -60,6 +60,23 @@ public class TaskListModel extends ViewModelBase {
 
         toggleAll = (false);
 
+        /*
+         * Suggestion:
+         *
+         * @ChangeListener(pattern = "root.model.tasks[*].completed)
+         * public void completeTask(int index) { ... }
+         *
+         * for maps:
+         *
+         * @ChangeListener(pattern = "root.model.someMap.*.someAttribute)
+         * public void func1(Object key) { ... }
+         *
+         * for nested maps/lists
+         *
+         * @ChangeListener(pattern = "root.model.someMap.*.innerMap.*.someAttribute)
+         * public void func2(Object key1, Object key2) { ... }
+         *
+         */
         RefListeners.addTreeChangeListener(tasksRef(), new RefChangeListener() {
             @Override
             public void processChange(Ref changedProperty) {
@@ -87,7 +104,7 @@ public class TaskListModel extends ViewModelBase {
     }
 
     @ChangeListener(pattern = "root.model.filter")
-    public void doSomething() {
+    public void filterChanged() {
         LOG.info("reloading tasks");
 
         thisRef("filterAllSelected").setValue(filter.equals("all"));
@@ -130,6 +147,7 @@ public class TaskListModel extends ViewModelBase {
     @ChangeListener(pattern="root.model.itemsLeft")
     public void itemsLeftChanged() {
         thisRef("itemsLeftText").setValue(itemsLeftText(itemsLeft));
+        thisRef("toggleAll").setValue(itemsLeft == 0);
     }
 
     private String itemsCompleteText(int itemsComplete) {
@@ -148,30 +166,14 @@ public class TaskListModel extends ViewModelBase {
 
         Task task = new Task(title);
         taskRepository.saveTask(task);
+        thisRef("itemsLeft").setValue(taskRepository.getActiveTasks().size()); // XXX: incValue?
 
-        updateTasksData();
+        if (!Filter.valueOf(filter).equals(Filter.completed)) {
+            int index = tasks.size();
+            TaskModel model = new TaskModel(task);
+            tasksRef().insert(index, model);
+        }
     }
-
-    // @ActionListener
-    // public void toggleTask(@Param("index") final int index, @Param("completed") final boolean completed) {
-    //     LOG.info("Completing task {}", index);
-
-    //     tasksRef(index).append("completed").setValue(completed);
-
-    //     TaskModel model = tasks.get(index);
-    //     if (completed) {
-    //         thisRef("itemsLeft").setValue(itemsLeft - 1);
-    //         thisRef("itemsComplete").setValue(itemsComplete + 1);
-    //         thisRef("toggleAll").setValue(itemsLeft == 0);
-    //     } else {
-    //         thisRef("itemsLeft").setValue(itemsLeft + 1);
-    //         thisRef("itemsComplete").setValue(itemsComplete - 1);
-    //         thisRef("toggleAll").setValue(false);
-    //     }
-
-    //     taskRepository.saveTask(model.getTask());
-    //     tasksRef().setValue(updateTasksData());
-    // }
 
     @ActionListener
     public void deleteTask(@Param("index") final int index) {
@@ -179,18 +181,11 @@ public class TaskListModel extends ViewModelBase {
 
         Task task = tasks.get(index).getTask();
         taskRepository.deleteTask(task);
+        thisRef("itemsLeft").setValue(taskRepository.getActiveTasks().size());
+        thisRef("itemsComplete").setValue(taskRepository.getCompletedTasks().size());
 
-        updateTasksData();
+        tasksRef().delete(index);
     }
-
-    // @ActionListener
-    // public void editTask(@Param("index") final int index, @Param("title") final String title) {
-    //     LOG.info("Editing task {}", index);
-
-    //     Task task = tasks.get(index).getTask();
-    //     tasksRef(index).append("title").setValue(title);
-    //     taskRepository.saveTask(task);
-    // }
 
     @ActionListener
     public void toggleAll() {
@@ -219,7 +214,7 @@ public class TaskListModel extends ViewModelBase {
 
         int i = 0;
         for (Task t : tasks) {
-            TaskModel model = new TaskModel(t, i++);
+            TaskModel model = new TaskModel(t);
             res.add(model);
         }
 
@@ -230,7 +225,6 @@ public class TaskListModel extends ViewModelBase {
         tasksRef().setValue(fetchTasksData());
         thisRef("itemsLeft").setValue(taskRepository.getActiveTasks().size());
         thisRef("itemsComplete").setValue(taskRepository.getCompletedTasks().size());
-        thisRef("toggleAll").setValue(itemsLeft == 0);
     }
 
     public Integer getItemsLeft() {

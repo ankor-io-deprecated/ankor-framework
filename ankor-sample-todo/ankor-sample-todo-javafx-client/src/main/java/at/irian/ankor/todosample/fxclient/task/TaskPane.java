@@ -29,6 +29,7 @@ public class TaskPane extends AnchorPane {
 
     private Ref itemRef;
     private TaskModel model;
+    private int index;
 
     @FXML public ToggleButton completedButton;
     @FXML public Button deleteButton;
@@ -95,27 +96,18 @@ public class TaskPane extends AnchorPane {
         });
     }
 
-    public void setModel(TaskModel model) {
+    private void setIndex(int index) {
+        this.index = index;
+    }
+
+    private void setModel(TaskModel model) {
         this.model = model;
-
-        helper.unbindBidirectional(textProperty());
-        title.unbindBidirectional(helper);
-        completed.unbindBidirectional(selectedPrperty());
-
-        title = new ViewModelProperty<>(itemRef, "title");
-        completed = new ViewModelProperty<>(itemRef, "completed");
-        helper = new SimpleStringProperty();
-
-        helper.bindBidirectional(title);
-
-        textProperty().bindBidirectional(helper);
-        selectedPrperty().bindBidirectional(completed);
     }
 
     @FXML
     public void delete(ActionEvent actionEvent) {
         HashMap params = new HashMap<String, Object>();
-        params.put("index", model.getIndex());
+        params.put("index", index);
         itemRef.root().append("model").fire(new Action("deleteTask", params));
     }
 
@@ -145,5 +137,23 @@ public class TaskPane extends AnchorPane {
 
     public TaskModel getModel() {
         return model;
+    }
+
+    public void updateContent(TaskModel model, int index) {
+        setIndex(index);
+        setModel(model);
+
+        helper.unbindBidirectional(textProperty());
+        title.unbindBidirectional(helper);
+        completed.unbindBidirectional(selectedPrperty());
+
+        title = new ViewModelProperty<>(itemRef, "title");
+        completed = new ViewModelProperty<>(itemRef, "completed");
+        helper = new SimpleStringProperty();
+
+        helper.bindBidirectional(title);
+
+        textProperty().bindBidirectional(helper);
+        selectedPrperty().bindBidirectional(completed);
     }
 }
