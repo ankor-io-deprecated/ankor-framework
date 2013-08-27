@@ -184,7 +184,7 @@ public class TaskListModel extends ViewModelBase {
         thisRef("itemsLeft").setValue(taskRepository.getActiveTasks().size());
         thisRef("itemsComplete").setValue(taskRepository.getCompletedTasks().size());
 
-        tasksRef().delete(index);
+        tasksRef(index).delete();
     }
 
     @ActionListener

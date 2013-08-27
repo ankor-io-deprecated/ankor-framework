@@ -104,7 +104,7 @@ public class ViewModelListBase<T> extends ViewModelBase {
 
     public T remove(int index) {
         T toRemove = get(index);
-        listRef().delete(index);
+        listRef(index).delete();
         return toRemove;
     }
 
