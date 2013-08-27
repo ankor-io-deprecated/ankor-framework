@@ -9,6 +9,7 @@ import at.irian.ankor.messaging.MessageMapper;
 import at.irian.ankor.messaging.json.common.ActionDeserializer;
 import at.irian.ankor.messaging.json.common.ActionSerializer;
 import at.irian.ankor.messaging.json.common.MessageDeserializer;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.Version;
@@ -57,6 +58,8 @@ public class SimpleTreeJsonMessageMapper implements MessageMapper<String>,
         mapper.configure(JsonGenerator.Feature.QUOTE_FIELD_NAMES, false);
 
         mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
         //mapper.enableDefaultTypingAsProperty(ObjectMapper.DefaultTyping.JAVA_LANG_OBJECT, "@javaType");
     }

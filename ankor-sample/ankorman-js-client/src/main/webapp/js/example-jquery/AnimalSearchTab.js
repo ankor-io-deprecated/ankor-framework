@@ -13,7 +13,7 @@ define([
         $("#tabs ul").append("<li class='" + tab.id + "'><a href='#tab-" + tab.id + "'><span></span></a><a href='#' class='close'>x</a></li>");
         $("#tabs ul li." + tab.id + " span").ankorBindInnerHTML(ref.append("name"));
         $("#tabs ul li." + tab.id + " a.close").click(function() {
-            ref.setValue(null);
+            ref.del();
         });
 
         //Create tab body

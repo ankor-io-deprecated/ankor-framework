@@ -42,7 +42,7 @@ public class OldValuesAwareChangeEvent extends ChangeEvent {
         Ref watchedProperty = changeEventListener.getWatchedProperty();
 
         Object changedPropOldValue = getOldChangedValue();
-        Object changedPropNewValue = getChange().getNewValue();
+        Object changedPropNewValue = getChange().getValue();
         if (watchedProperty == null) {
             // this is a global listener
             // invoke listener if the CHANGED property has actually changed it's value

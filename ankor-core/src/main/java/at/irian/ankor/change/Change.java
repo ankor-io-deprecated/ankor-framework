@@ -5,45 +5,87 @@ package at.irian.ankor.change;
  */
 public class Change {
 
-    private Object newValue;
+    private ChangeType type;
+    private Object key;
+    private Object value;
 
     /**
      * for deserialization only
      */
     protected Change() {}
 
-    public Change(Object newValue) {
-        this.newValue = newValue;
+    protected Change(ChangeType type, Object key, Object value) {
+        this.type = type;
+        this.key = key;
+        this.value = value;
     }
 
-    public Object getNewValue() {
-        return newValue;
+
+    public static Change valueChange(Object newValue) {
+        return new Change(ChangeType.new_value, null, newValue);
     }
 
+    public static Change insertChange(int idx, Object newValue) {
+        return new Change(ChangeType.insert, idx, newValue);
+    }
+
+    public static Change deleteChange(Object key) {
+        return new Change(ChangeType.delete, key, null);
+    }
+
+
+    public ChangeType getType() {
+        return type;
+    }
+
+    public Object getKey() {
+        return key;
+    }
+
+    public Object getValue() {
+        return value;
+    }
+
+    @SuppressWarnings("RedundantIfStatement")
     @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof Change)) {
             return false;
         }
 
         Change change = (Change) o;
 
-        return !(newValue != null ? !newValue.equals(change.newValue) : change.newValue != null);
+        if (key != null ? !key.equals(change.key) : change.key != null) {
+            return false;
+        }
+        if (type != change.type) {
+            return false;
+        }
+        if (value != null ? !value.equals(change.value) : change.value != null) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return newValue != null ? newValue.hashCode() : 0;
+        int result = type.hashCode();
+        result = 31 * result + (key != null ? key.hashCode() : 0);
+        result = 31 * result + (value != null ? value.hashCode() : 0);
+        return result;
     }
 
     @Override
     public String toString() {
         return "Change{" +
-               "newValue=" + newValue +
-               '}';
+               "type=" + type +
+               ", key=" + key +
+               ", value=" + value +
+               "}";
     }
 
 

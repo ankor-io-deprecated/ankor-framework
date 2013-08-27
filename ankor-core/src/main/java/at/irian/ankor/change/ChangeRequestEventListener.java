@@ -2,6 +2,7 @@ package at.irian.ankor.change;
 
 import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.ref.impl.RefImplementor;
 
 /**
  * @author Manfred Geiler
@@ -11,8 +12,8 @@ public class ChangeRequestEventListener implements ModelEventListener {
 
     public void processChangeRequest(ChangeRequestEvent changeRequestEvent) {
         Ref propertyToChange = changeRequestEvent.getPropertyToChange();
-        Object newValue = changeRequestEvent.getNewValue();
-        propertyToChange.setValue(newValue);
+        Change change = changeRequestEvent.getChange();
+        ((RefImplementor)propertyToChange).apply(change);
     }
 
     @Override

@@ -5,7 +5,7 @@ import at.irian.ankor.action.ActionEvent;
 import at.irian.ankor.base.Wrapper;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.change.ChangeEvent;
-import at.irian.ankor.change.ChangeRequestEvent;
+import at.irian.ankor.change.ChangeType;
 import at.irian.ankor.change.OldValuesAwareChangeEvent;
 import at.irian.ankor.event.ModelEvent;
 import at.irian.ankor.event.ModelEventListener;
@@ -15,13 +15,15 @@ import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefFactory;
 
 import java.lang.reflect.Constructor;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * @author Manfred Geiler
  */
-public abstract class RefBase implements Ref {
+public abstract class RefBase implements Ref, RefImplementor {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RefBase.class);
 
     private final RefContextImplementor refContext;
@@ -30,13 +32,27 @@ public abstract class RefBase implements Ref {
         this.refContext = refContext;
     }
 
-    @SuppressWarnings("SimplifiableIfStatement")
     @Override
     public void setValue(final Object newValue) {
-        apply(new Change(newValue));
+        apply(Change.valueChange(newValue));
     }
 
+    @Override
+    public void delete(Object key) {
+        apply(Change.deleteChange(key));
+    }
 
+    @Override
+    public void delete() {
+        ((RefImplementor)parent()).apply(Change.deleteChange(propertyName()));
+    }
+
+    @Override
+    public void insert(int idx, Object value) {
+        apply(Change.insertChange(idx, value));
+    }
+
+    @Override
     public void apply(Change change) {
 
         // remember old value of the referenced property
@@ -50,8 +66,31 @@ public abstract class RefBase implements Ref {
         // remember old values of the watched properties
         Map<Ref, Object> oldWatchedValues = getOldWatchedValues();
 
-        Object newValue = change.getNewValue();
+        ChangeType changeType = change.getType();
+        switch(changeType) {
+            case new_value:
+                handleNewValueChange(change.getValue());
+                break;
 
+            case insert:
+                handleInsertChange(oldValue, (Number)change.getKey(), change.getValue());
+                break;
+
+            case delete:
+                handleDeleteChange(oldValue, change.getKey());
+                break;
+
+            default:
+                throw new IllegalArgumentException("Unsupported change type " + changeType);
+        }
+
+        // fire change event
+        ChangeEvent changeEvent
+                = new OldValuesAwareChangeEvent(this, change, oldValue, oldWatchedValues);
+        context().modelContext().getEventDispatcher().dispatch(changeEvent);
+    }
+
+    private void handleNewValueChange(Object newValue) {
         Class<?> type = getType();
         if (Wrapper.class.isAssignableFrom(type)) {
             Object newValueUnwrapped = unwrapIfNecessary(newValue);
@@ -59,11 +98,35 @@ public abstract class RefBase implements Ref {
         } else {
             internalSetValue(newValue);
         }
+    }
 
-        // fire change event
-        ChangeEvent changeEvent
-                = new OldValuesAwareChangeEvent(this, change, oldValue, oldWatchedValues);
-        context().modelContext().getEventDispatcher().dispatch(changeEvent);
+    @SuppressWarnings("unchecked")
+    private void handleInsertChange(Object listOrArray, Number key, Object value) {
+        if (listOrArray instanceof List) {
+            ((List)listOrArray).add(key.intValue(), value);
+        } else if (listOrArray.getClass().isArray()) {
+            //todo:  optimize by means of array copy operation...
+            List list = Arrays.asList(listOrArray);
+            list.add(key.intValue(), value);
+            internalSetValue(list.toArray());
+        } else {
+            throw new IllegalArgumentException("list/array of type " + listOrArray.getClass().getName());
+        }
+    }
+
+    private void handleDeleteChange(Object listOrArrayOrMap, Object key) {
+        if (listOrArrayOrMap instanceof List) {
+            ((List) listOrArrayOrMap).remove(((Number) key).intValue());
+        } else if (listOrArrayOrMap.getClass().isArray()) {
+            //todo:  optimize by means of array copy operation...
+            List list = Arrays.asList(listOrArrayOrMap);
+            list.remove(((Number)key).intValue());
+            internalSetValue(list.toArray());
+        } else if (listOrArrayOrMap instanceof Map) {
+            ((Map) listOrArrayOrMap).remove(key);
+        } else {
+            throw new IllegalArgumentException("list/array/map of type " + listOrArrayOrMap.getClass().getName());
+        }
     }
 
     private Map<Ref, Object> getOldWatchedValues() {
@@ -264,17 +327,12 @@ public abstract class RefBase implements Ref {
 
     @Override
     public void fire(Action action) {
-        fire(new ActionEvent(this, action));
+        context().modelContext().getEventDispatcher().dispatch(new ActionEvent(this, action));
     }
 
     @Override
     public void fire(ModelEvent event) {
         context().modelContext().getEventDispatcher().dispatch(event);
-    }
-
-    @Override
-    public void requestChangeTo(Object newValue) {
-        fire(new ChangeRequestEvent(this, newValue));
     }
 
     @Override

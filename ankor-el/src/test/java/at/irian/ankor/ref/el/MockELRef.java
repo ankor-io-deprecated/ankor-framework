@@ -35,6 +35,21 @@ public class MockELRef implements Ref {
         this.propertyValue = value;
     }
 
+    @Override
+    public void delete(Object key) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void insert(int idx, Object value) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void delete() {
+        throw new UnsupportedOperationException();
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getValue() {
@@ -151,8 +166,4 @@ public class MockELRef implements Ref {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void requestChangeTo(Object newValue) {
-        throw new UnsupportedOperationException();
-    }
 }
