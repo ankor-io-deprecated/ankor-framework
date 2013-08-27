@@ -5,6 +5,11 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.*;
 
+/**
+ * A utility class to make it more intuitive to work with lists and Ankor.
+ *
+ * Currently the "list" property has to be referenced to add ChangeListeners on the list
+ */
 public class ViewModelListBase<T> extends ViewModelBase {
 
     protected List<T> list;
@@ -19,7 +24,7 @@ public class ViewModelListBase<T> extends ViewModelBase {
     }
 
     private Ref listRef(int i) {
-        return listRef().appendIdx(i);
+        return listRef().appendIndex(i);
     }
 
     public int size() {
