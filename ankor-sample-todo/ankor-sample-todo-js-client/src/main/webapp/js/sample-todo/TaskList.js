@@ -86,6 +86,9 @@ define([
         var $clearCompleted = $('#clear-completed');
         $clearCompleted.ankorBindText(modelRef.append("itemsCompleteText"));
         $clearCompleted.ankorBindToggle(modelRef.append("clearButtonVisibility"));
+        $clearCompleted.on("click", function(e) {
+            modelRef.fire("clearTasks");
+        });
 
         $('#filter-all')
             .on('click', function() { modelRef.append("filter").setValue("all"); })
@@ -103,26 +106,21 @@ define([
         $("#new-todo").on('keyup', function(e) {
             var title = $(e.currentTarget).val();
             if (e.keyCode === ENTER_KEY &&  title != "") {
+                $(e.currentTarget).val('');
                 modelRef.fire({
                     name: "newTask",
-                    params: {
-                        title: title
-                    }
+                    params: { title: title }
                 });
-                $(e.currentTarget).val('');
             }
-        });
-
-        $clearCompleted.on("click", function(e) {
-            modelRef.fire("clearTasks");
         });
 
         var bindingContext = []
         modelRef.append("tasks").addPropChangeListener(function(ref) {
-            //Cleanup
-            var $todoList = $('#todo-list').empty(); // removes event handlers
+
+            // Cleanup
+            var $todoList = $('#todo-list').empty(); // removes jquery event handlers
             for (var i = 0, listener; (listener = bindingContext[i]); i++) {
-                listener.remove();
+                listener.remove(); // remove ankor event handlers
             }
             bindingContext = [];
 
@@ -131,9 +129,9 @@ define([
             }
 
             // Render tasks
-            console.log("render tasks");
             var tasks = ref.getValue();
             for (var i = 0, model; (model = tasks[i]); i++) {
+                model.index = i;
                 (function(model) {
                     var index = model.index;
 
@@ -141,56 +139,50 @@ define([
                     var $task = $('#todo-list > li').eq(index);
 
                     bindingContext.push(
-                        $task.find('label')
+                        $task
+                            .find('label')
                             .ankorBindText(listRef(index).append("title")));
 
                     bindingContext.push(
-                        $task.find('.edit')
+                        $task
+                            .find('.edit')
                             .ankorBind1("val", listRef(index).append("title")));
 
                     bindingContext.push(
-                        $task.find('.toggle')
-                            .on("click", function() {
-                                modelRef.fire({
-                                    name: 'toggleTask',
-                                    params: {
-                                        completed: $(this).prop('checked'),
-                                        index: index
-                                    }
-                                })
-                            })
+                        $task
+                            .find('.toggle')
                             .ankorBindProp("checked", listRef(index).append("completed")));
 
                     bindingContext.push(
-                        $task.on("dblclick", function() {
-                            listRef(index).append("editing").setValue(true);
-                            $task.find('.edit').focus().select();
-                        })
-                        .ankorBindToggleClass("editing", listRef(index).append("editing")));
+                        $task
+                            .on("dblclick", function() {
+                                listRef(index).append("editing").setValue(true);
+                                $task.find('.edit').focus().select();
+                            })
+                            .ankorBindToggleClass("editing", listRef(index).append("editing")));
 
-                    $task.find('.destroy').on("click", function() {
-                        modelRef.fire({
-                            name: 'deleteTask',
-                            params: { index: index }
-                        });
-                    });
-
-                    $task.find('.edit')
-                        .on('focusout', function() {
-                            listRef(index).append("editing").setValue(false);
-                        })
-                        .on('keyup', function(e) {
-                            var title = $(e.currentTarget).val();
-                            if (e.keyCode === ENTER_KEY) {
-                                modelRef.fire({
-                                    name: "editTask",
-                                    params: {
-                                        index: index,
-                                        title: title
-                                    }
-                                });
+                    bindingContext.push(
+                        $task
+                            .find('.edit')
+                            .on('focusout', function() {
                                 listRef(index).append("editing").setValue(false);
-                            }
+                            })
+                            .on('keyup', function(e) {
+                                //var title = $(e.currentTarget).val();
+                                if (e.keyCode === ENTER_KEY) {
+                                    //listRef(index).append("title").setValue(title);
+                                    listRef(index).append("editing").setValue(false);
+                                }
+                            })
+                            .ankorBindInputValue(listRef(index).append("title")));
+
+                    $task
+                        .find('.destroy')
+                        .on("click", function() {
+                            modelRef.fire({
+                                name: 'deleteTask',
+                                params: { index: index }
+                            });
                         });
                 })(model);
             }
