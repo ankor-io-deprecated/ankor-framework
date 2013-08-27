@@ -10,7 +10,6 @@ import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.ref.impl.RefContextImplementor;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
-import com.typesafe.config.Config;
 
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
@@ -23,20 +22,17 @@ public class ELRefContext implements RefContext, RefContextImplementor {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ELRefContext.class);
 
     private final ELSupport elSupport;
-    private final String modelRootVarName;
     private final ModelContext modelContext;
     private final List<ViewModelPostProcessor> viewModelPostProcessors;
     private final ELRefFactory refFactory;
     private final Scheduler scheduler;
 
     ELRefContext(ELSupport elSupport,
-                 Config config,
                  ModelContext modelContext,
                  List<ViewModelPostProcessor> viewModelPostProcessors,
                  Scheduler scheduler) {
         this.elSupport = elSupport;
         this.scheduler = scheduler;
-        this.modelRootVarName = config.getString("ankor.variable-names.modelRoot");
         this.modelContext = modelContext;
         this.viewModelPostProcessors = viewModelPostProcessors;
         this.refFactory = new ELRefFactory(this);
@@ -58,10 +54,6 @@ public class ELRefContext implements RefContext, RefContextImplementor {
     @Override
     public EventListeners eventListeners() {
         return modelContext.getEventListeners();
-    }
-
-    String getModelRootVarName() {
-        return modelRootVarName;
     }
 
     @Override

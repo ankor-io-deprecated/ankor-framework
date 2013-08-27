@@ -13,6 +13,7 @@ import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.event.dispatch.EventDispatcherFactory;
 import at.irian.ankor.event.dispatch.SynchronisedEventDispatcherFactory;
 import at.irian.ankor.messaging.*;
+import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.ref.el.ELRefContextFactory;
@@ -22,10 +23,7 @@ import at.irian.ankor.viewmodel.ViewModelPropertyFieldsInitializer;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Manfred Geiler
@@ -114,15 +112,15 @@ public class AnkorSystemBuilder {
         MessageBus messageBus = getMessageBus();
         EventDispatcherFactory eventDispatcherFactory = getEventDispatcherFactory();
 
-        RefContextFactory refContextFactory = new ELRefContextFactory(config,
-                                                                      getServerBeanResolver(),
+        RefContextFactory refContextFactory = new ELRefContextFactory(getServerBeanResolver(),
                                                                       getServerViewModelPostProcessors(),
-                                                                      getScheduler());
+                                                                      getScheduler(),
+                                                                      getServerModelRootFactory());
 
         MessageFactory messageFactory = getServerMessageFactory();
 
-        SessionFactory sessionFactory = new ServerSessionFactory(getServerModelRootFactory(),
-                                                                 refContextFactory,
+        SessionFactory sessionFactory = new ServerSessionFactory(
+                refContextFactory,
                                                                  eventDispatcherFactory,
                                                                  messageBus);
         SessionManager sessionManager = new DefaultSessionManager(sessionFactory);
@@ -135,15 +133,11 @@ public class AnkorSystemBuilder {
 
         return new AnkorSystem(systemName, messageFactory, messageBus, refContextFactory,
                                modelContextManager,
-                               sessionManager);
+                               sessionManager, modelRootFactory);
     }
 
 
     public AnkorSystem createClient() {
-
-        if (modelRootFactory != null) {
-            throw new IllegalStateException("custom modelRootFactory not supported for client system");
-        }
 
         if (viewModelPostProcessors != null) {
             throw new IllegalStateException("viewModelPostProcessors not supported for client system");
@@ -152,10 +146,10 @@ public class AnkorSystemBuilder {
         String systemName = getClientSystemName();
         MessageBus messageBus = getMessageBus();
 
-        RefContextFactory refContextFactory = new ELRefContextFactory(config,
-                                                                      getClientBeanResolver(),
+        RefContextFactory refContextFactory = new ELRefContextFactory(getClientBeanResolver(),
                                                                       null,
-                                                                      getScheduler());
+                                                                      getScheduler(),
+                                                                      getClientModelRootFactory());
 
         MessageFactory messageFactory = getClientMessageFactory();
 
@@ -180,7 +174,7 @@ public class AnkorSystemBuilder {
 
         return new AnkorSystem(systemName, messageFactory, messageBus, refContextFactory,
                                modelContextManager,
-                               sessionManager);
+                               sessionManager, modelRootFactory);
     }
 
 
@@ -266,6 +260,23 @@ public class AnkorSystemBuilder {
         return modelRootFactory;
     }
 
+    private ModelRootFactory getClientModelRootFactory() {
+        if (modelRootFactory != null) {
+            throw new IllegalStateException("custom modelRootFactory not supported for client");
+        }
+        return new ModelRootFactory() {
+            @Override
+            public Set<String> getKnownRootNames() {
+                return Collections.singleton("root");
+            }
+
+            @Override
+            public Object createModelRoot(Ref rootRef) {
+                return new HashMap<String, Object>();
+            }
+        };
+    }
+
     private MessageBus getMessageBus() {
         if (messageBus == null) {
             throw new IllegalStateException("messageBus not set");
@@ -326,7 +337,8 @@ public class AnkorSystemBuilder {
     private ModelContextFactory getModelContextFactory(EventDispatcherFactory eventDispatcherFactory,
                                                        EventListeners globalEventListeners) {
         if (modelContextFactory == null) {
-            modelContextFactory = new DefaultModelContextFactory(eventDispatcherFactory, globalEventListeners);
+            modelContextFactory = new DefaultModelContextFactory(eventDispatcherFactory,
+                                                                 globalEventListeners);
         }
         return modelContextFactory;
     }

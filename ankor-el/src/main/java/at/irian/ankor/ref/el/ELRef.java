@@ -62,7 +62,7 @@ public class ELRef extends RefBase {
 
     @Override
     public boolean isRoot() {
-        return path().equals(context().getModelRootVarName());
+        return !context().pathSyntax().isHasParent(path());
     }
 
     @Override

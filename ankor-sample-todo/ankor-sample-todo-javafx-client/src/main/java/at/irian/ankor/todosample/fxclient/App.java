@@ -21,7 +21,9 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 import static java.util.regex.Matcher.quoteReplacement;
 
@@ -191,6 +193,11 @@ public class App extends javafx.application.Application {
     }
 
     private static class MyModelRootFactory implements ModelRootFactory {
+        @Override
+        public Set<String> getKnownRootNames() {
+            return Collections.singleton("root");
+        }
+
         @Override
         public Object createModelRoot(Ref rootRef) {
             return new ModelRoot(rootRef, new TaskRepository());

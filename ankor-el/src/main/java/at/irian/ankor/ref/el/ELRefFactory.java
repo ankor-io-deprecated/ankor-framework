@@ -20,7 +20,7 @@ public class ELRefFactory implements RefFactory {
 
     @Override
     public Ref rootRef() {
-        return root(refContext);
+        return ref(refContext, "root"); //todo  deprecated
     }
 
     @Override
@@ -29,19 +29,15 @@ public class ELRefFactory implements RefFactory {
     }
 
 
-    private static Ref root(ELRefContext refContext) {
-        return ref(refContext, refContext.getModelRootVarName());
+    private static Ref ref(ELRefContext elRefContext, String path) {
+        ValueExpression ve = createValueExpressionFor(elRefContext, path);
+        return new ELRef(elRefContext, ve);
     }
 
-    private static Ref ref(ELRefContext ref2Context, String path) {
-        ValueExpression ve = createValueExpressionFor(ref2Context, path);
-        return new ELRef(ref2Context, ve);
-    }
-
-    private static ValueExpression createValueExpressionFor(ELRefContext ref2Context, String path) {
-        return ref2Context.getExpressionFactory().createValueExpression(ref2Context.createELContext(),
-                                                                        ELUtils.pathToExpr(path),
-                                                                        Object.class);
+    private static ValueExpression createValueExpressionFor(ELRefContext elRefContext, String path) {
+        return elRefContext.getExpressionFactory().createValueExpression(elRefContext.createELContext(),
+                                                                         ELUtils.pathToExpr(path),
+                                                                         Object.class);
     }
 
 

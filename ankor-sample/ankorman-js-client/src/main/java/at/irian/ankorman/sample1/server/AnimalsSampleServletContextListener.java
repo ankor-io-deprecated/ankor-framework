@@ -8,16 +8,17 @@ import at.irian.ankorman.sample1.viewmodel.ModelRoot;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
 
 /**
  * @author Manfred Geiler
  */
-public class Sample1ServletContextListener extends AnkorServletContextListener {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(Sample1ServletContextListener.class);
+public class AnimalsSampleServletContextListener extends AnkorServletContextListener {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalsSampleServletContextListener.class);
 
     @Override
     protected String getName() {
-        return "sample1-servlet-server";
+        return "animals-sample-servlet-server";
     }
 
     @Override
@@ -38,6 +39,12 @@ public class Sample1ServletContextListener extends AnkorServletContextListener {
     @Override
     protected ModelRootFactory getModelRootFactory() {
         return new ModelRootFactory() {
+
+            @Override
+            public Set<String> getKnownRootNames() {
+                return Collections.singleton("root");
+            }
+
             @Override
             public Object createModelRoot(Ref rootRef) {
                 return new ModelRoot(rootRef, new AnimalRepository());

@@ -20,7 +20,9 @@ public class DefaultModelContextFactory implements ModelContextFactory {
 
     @Override
     public ModelContext createModelContext(String modelContextId) {
-        return DefaultModelContext.create(eventDispatcherFactory, modelContextId, null, globalEventListeners);
+        return DefaultModelContext.create(eventDispatcherFactory,
+                                          modelContextId,
+                                          globalEventListeners);
     }
 
 }

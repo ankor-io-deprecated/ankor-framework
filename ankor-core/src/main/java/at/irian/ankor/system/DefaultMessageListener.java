@@ -8,10 +8,7 @@ import at.irian.ankor.messaging.ChangeMessage;
 import at.irian.ankor.messaging.Message;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
-import at.irian.ankor.session.RemoteSystem;
-import at.irian.ankor.session.Session;
-import at.irian.ankor.session.SessionManager;
-import at.irian.ankor.session.SimpleRemoteSystem;
+import at.irian.ankor.session.*;
 
 import static at.irian.ankor.system.RemoteEvent.createActionEvent;
 import static at.irian.ankor.system.RemoteEvent.createChangeEvent;
@@ -27,10 +24,14 @@ public class DefaultMessageListener implements ActionMessage.Listener, ChangeMes
 
     private final ModelContextManager modelContextManager;
     private final SessionManager sessionManager;
+    private final ModelRootFactory modelRootFactory;
 
-    DefaultMessageListener(ModelContextManager modelContextManager, SessionManager sessionManager) {
+    DefaultMessageListener(ModelContextManager modelContextManager,
+                           SessionManager sessionManager,
+                           ModelRootFactory modelRootFactory) {
         this.modelContextManager = modelContextManager;
         this.sessionManager = sessionManager;
+        this.modelRootFactory = modelRootFactory;
     }
 
     @Override
@@ -46,6 +47,12 @@ public class DefaultMessageListener implements ActionMessage.Listener, ChangeMes
 
         RefContext refContext = session.getRefContext();
         Ref actionProperty = refContext.refFactory().ref(message.getProperty());
+
+        if (actionProperty.isRoot() && actionProperty.getValue() == null) {
+            // this model root does not yet exist
+            Object modelRoot = modelRootFactory.createModelRoot(actionProperty);
+            actionProperty.requestChangeTo(modelRoot);
+        }
 
         Action action = message.getAction();
         RemoteEvent event = createActionEvent(session, actionProperty, action.getName(), action.getParams());

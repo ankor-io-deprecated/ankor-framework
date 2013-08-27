@@ -12,16 +12,13 @@ import at.irian.ankor.ref.RefContextFactory;
 public class ServerSessionFactory implements SessionFactory {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ServerSessionFactory.class);
 
-    private final ModelRootFactory modelRootFactory;
     private final RefContextFactory refContextFactory;
     private final EventDispatcherFactory eventDispatcherFactory;
     private final MessageSenderProvider messageSenderProvider;
 
-    public ServerSessionFactory(ModelRootFactory modelRootFactory,
-                                RefContextFactory refContextFactory,
+    public ServerSessionFactory(RefContextFactory refContextFactory,
                                 EventDispatcherFactory eventDispatcherFactory,
                                 MessageSenderProvider messageSenderProvider) {
-        this.modelRootFactory = modelRootFactory;
         this.refContextFactory = refContextFactory;
         this.eventDispatcherFactory = eventDispatcherFactory;
         this.messageSenderProvider = messageSenderProvider;
@@ -33,7 +30,7 @@ public class ServerSessionFactory implements SessionFactory {
     @Override
     public ServerSession create(ModelContext modelContext, RemoteSystem remoteSystem) {
         RefContext refContext = refContextFactory.createRefContextFor(modelContext);
-        return new ServerSession(modelContext, refContext, modelRootFactory,
+        return new ServerSession(modelContext, refContext,
                                  messageSenderProvider.getMessageSenderFor(remoteSystem));
     }
 

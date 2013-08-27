@@ -33,12 +33,12 @@ public class ViewModelJsonMessageMapperTest {
             }
 
             @Override
-            public Object getModelRoot() {
+            public Object getModelRoot(String rootName) {
                 return null;
             }
 
             @Override
-            public void setModelRoot(Object modelRoot) {
+            public void setModelRoot(String rootName, Object modelRoot) {
             }
 
             @Override

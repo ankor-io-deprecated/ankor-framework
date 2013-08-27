@@ -8,9 +8,7 @@ import at.irian.ankor.context.ModelContext;
 import at.irian.ankor.messaging.Message;
 import at.irian.ankor.messaging.MessageFactory;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.session.Session;
-import at.irian.ankor.session.SessionInitEvent;
 import at.irian.ankor.session.SessionManager;
 
 import java.util.Collection;
@@ -21,7 +19,7 @@ import java.util.Collection;
  *
  * @author Manfred Geiler
  */
-public class RemoteNotifyChangeEventListener extends ChangeEventListener implements SessionInitEvent.Listener {
+public class RemoteNotifyChangeEventListener extends ChangeEventListener {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RemoteNotifyChangeEventListener.class);
 
     private final MessageFactory messageFactory;
@@ -64,14 +62,4 @@ public class RemoteNotifyChangeEventListener extends ChangeEventListener impleme
 
     }
 
-    @Override
-    public void processModelInit(SessionInitEvent event) {
-        Session session = event.getSession();
-        RefContext refContext = session.getRefContext();
-        ModelContext modelContext = refContext.modelContext();
-        Message message = messageFactory.createChangeMessage(modelContext,
-                                                             refContext.refFactory().rootRef().path(),
-                                                             new Change(modelContext.getModelRoot()));
-        session.getMessageSender().sendMessage(message);
-    }
 }

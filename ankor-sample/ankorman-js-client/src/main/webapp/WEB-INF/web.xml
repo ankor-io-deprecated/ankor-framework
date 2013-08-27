@@ -6,7 +6,7 @@
          version="2.5">
 
     <listener>
-        <listener-class>at.irian.ankorman.sample1.server.Sample1ServletContextListener</listener-class>
+        <listener-class>at.irian.ankorman.sample1.server.AnimalsSampleServletContextListener</listener-class>
     </listener>
 
     <servlet>

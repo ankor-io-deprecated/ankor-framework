@@ -8,6 +8,7 @@ import at.irian.ankor.todosample.viewmodel.ModelRoot;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
 
 /**
  * @author Manfred Geiler
@@ -38,6 +39,12 @@ public class TodoSampleServletContextListener extends AnkorServletContextListene
     @Override
     protected ModelRootFactory getModelRootFactory() {
         return new ModelRootFactory() {
+
+            @Override
+            public Set<String> getKnownRootNames() {
+                return Collections.singleton("root");
+            }
+
             @Override
             public Object createModelRoot(Ref rootRef) {
                 return new ModelRoot(rootRef, new TaskRepository());

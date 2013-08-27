@@ -12,9 +12,9 @@ public interface ModelContext {
 
     EventListeners getEventListeners();
 
-    Object getModelRoot();
+    Object getModelRoot(String rootName);
 
-    void setModelRoot(Object modelRoot);
+    void setModelRoot(String rootName, Object modelRoot);
 
     EventDispatcher getEventDispatcher();
 

@@ -6,6 +6,9 @@ import at.irian.ankor.event.dispatch.DispatchThreadAware;
 import at.irian.ankor.event.dispatch.EventDispatcher;
 import at.irian.ankor.event.dispatch.EventDispatcherFactory;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author Manfred Geiler
  */
@@ -15,20 +18,21 @@ class DefaultModelContext implements ModelContext, DispatchThreadAware {
     private final String id;
     private final EventListeners eventListeners;
     private EventDispatcher eventDispatcher;
-    private Object modelRoot;
+    private Map<String, Object> modelRoots;
 
     private volatile Thread dispatchThread;
 
-    DefaultModelContext(String id, EventListeners eventListeners, Object modelRoot) {
+    DefaultModelContext(String id, EventListeners eventListeners) {
         this.id = id;
         this.eventListeners = eventListeners;
-        this.modelRoot = modelRoot;
+        this.modelRoots = new HashMap<String, Object>();
     }
 
-    public static ModelContext create(EventDispatcherFactory eventDispatcherFactory, String id, Object initialModelRoot,
+    public static ModelContext create(EventDispatcherFactory eventDispatcherFactory,
+                                      String id,
                                       EventListeners globalEventListeners) {
         EventListeners eventListeners = new ArrayListEventListeners(globalEventListeners);
-        DefaultModelContext modelContext = new DefaultModelContext(id, eventListeners, initialModelRoot);
+        DefaultModelContext modelContext = new DefaultModelContext(id, eventListeners);
         modelContext.setEventDispatcher(eventDispatcherFactory.createFor(modelContext));
         return modelContext;
     }
@@ -43,13 +47,13 @@ class DefaultModelContext implements ModelContext, DispatchThreadAware {
     }
 
     @Override
-    public Object getModelRoot() {
-        return modelRoot;
+    public Object getModelRoot(String rootName) {
+        return modelRoots.get(rootName);
     }
 
     @Override
-    public void setModelRoot(Object modelRoot) {
-        this.modelRoot = modelRoot;
+    public void setModelRoot(String rootName, Object modelRoot) {
+        this.modelRoots.put(rootName, modelRoot);
     }
 
     private void setEventDispatcher(EventDispatcher eventDispatcher) {
@@ -66,7 +70,7 @@ class DefaultModelContext implements ModelContext, DispatchThreadAware {
         if (eventDispatcher != null) {
             eventDispatcher.close();
         }
-        modelRoot = null;
+        modelRoots.clear();
     }
 
     @Override
@@ -75,7 +79,6 @@ class DefaultModelContext implements ModelContext, DispatchThreadAware {
                "id='" + id + '\'' +
                '}';
     }
-
 
     @Override
     public void setCurrentDispatchThread(Thread dispatchThread) {

@@ -2,7 +2,6 @@ package at.irian.ankor.session;
 
 import at.irian.ankor.context.ModelContext;
 import at.irian.ankor.messaging.MessageSender;
-import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 
 /**
@@ -13,16 +12,13 @@ public class ServerSession implements Session {
 
     private final ModelContext modelContext;
     private final RefContext refContext;
-    private final ModelRootFactory modelRootFactory;
     private final MessageSender messageSender;
 
     public ServerSession(ModelContext modelContext,
                          RefContext refContext,
-                         ModelRootFactory modelRootFactory,
                          MessageSender messageSender) {
         this.modelContext = modelContext;
         this.refContext = refContext;
-        this.modelRootFactory = modelRootFactory;
         this.messageSender = messageSender;
     }
 
@@ -31,15 +27,6 @@ public class ServerSession implements Session {
      */
     @Override
     public void init() {
-        Ref rootRef = refContext.refFactory().rootRef();
-
-        if (modelContext.getModelRoot() == null) {
-            // todo  do we have to synchronize this?
-            Object modelRoot = modelRootFactory.createModelRoot(rootRef);
-            modelContext.setModelRoot(modelRoot);
-        }
-
-        refContext.modelContext().getEventDispatcher().dispatch(new SessionInitEvent(this));
     }
 
     @Override
