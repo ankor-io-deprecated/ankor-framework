@@ -63,4 +63,74 @@ define([
             }
         });
     };
+
+    $.fn.ankorBind1 = function(functionName, ref) {
+        var element = this.first();
+
+        return ref.addPropChangeListener(function(ref) {
+            $.fn[functionName].call(element, ref.getValue());
+        });
+    };
+
+    $.fn.ankorBind1Bidirectional = function(functionName, ref) {
+        var element = this.first();
+
+        element.on("change", function() {
+            var value = $.fn[functionName].call(element);
+            ref.setValue(value);
+        });
+
+        return ref.addPropChangeListener(function(ref) {
+            $.fn[functionName].call(element, ref.getValue());
+        });
+    };
+
+    $.fn.ankorBind2 = function(functionName, propertyName, ref) {
+        var element = this.first();
+
+        return ref.addPropChangeListener(function(ref) {
+            $.fn[functionName].call(element, propertyName, ref.getValue());
+        });
+    };
+
+    $.fn.ankorBind2Bidirectional = function(functionName, propertyName, ref) {
+        var element = this.first();
+
+        element.on("change", function() {
+            var value = $.fn[functionName].call(element, propertyName);
+            ref.setValue(value);
+        });
+
+        return ref.addPropChangeListener(function(ref) {
+            $.fn[functionName].call(element, propertyName, ref.getValue());
+        });
+    };
+
+    $.fn.ankorBindHtml = function(ref) {
+        return $.fn.ankorBind1.call(this, "html", ref);
+    };
+
+    $.fn.ankorBindText = function(ref) {
+        return $.fn.ankorBind1.call(this, "text", ref);
+    };
+
+    $.fn.ankorBindProp = function(propertyName, ref) {
+        return $.fn.ankorBind2Bidirectional.call(this, "prop", propertyName, ref);
+    };
+
+    $.fn.ankorBindAttr = function(propertyName, ref) {
+        return $.fn.ankorBind2Bidirectional.call(this, "attr", propertyName, ref);
+    };
+
+    $.fn.ankorBindData = function(propertyName, ref) {
+        return $.fn.ankorBind2Bidirectional.call(this, "data", propertyName, ref);
+    };
+
+    $.fn.ankorBindToggle = function(ref) {
+        return $.fn.ankorBind1.call(this, "toggle", ref);
+    }
+
+    $.fn.ankorBindToggleClass = function(clazz, ref) {
+        return $.fn.ankorBind2.call(this, "toggleClass", clazz, ref);
+    }
 });
