@@ -11,29 +11,35 @@ define([
             this.segments = path;
         }
         else {
-            var pathSegments = path.split(".");
-            for (var i = 0, pathSegment; (pathSegment = pathSegments[i]); i++) {
-                var keyIndex = pathSegment.indexOf("[");
-                if (keyIndex == -1) {
-                    this.segments.push({ property: pathSegment });
-                }
-                else {
-                    var propertyName = pathSegment.substr(0, keyIndex);
-                    var keys = pathSegment.substring(keyIndex + 1, pathSegment.length - 1).split("][");
+            this.segments = this._parseSegments(path);
+        }
+    };
 
-                    this.segments.push({ property: propertyName });
+    Ref.prototype._parseSegments = function(path) {
+        var segments = [];
+        var pathSegments = path.split(".");
+        for (var i = 0, pathSegment; (pathSegment = pathSegments[i]); i++) {
+            var keyIndex = pathSegment.indexOf("[");
+            if (keyIndex == -1) {
+                segments.push({ property: pathSegment });
+            }
+            else {
+                var propertyName = pathSegment.substr(0, keyIndex);
+                var keys = pathSegment.substring(keyIndex + 1, pathSegment.length - 1).split("][");
 
-                    for (var j = 0, key; (key = keys[j]); j++) {
-                        if (key.indexOf("'") != -1 || key.indexOf('"') != -1) {
-                            this.segments.push({ property: key.substring(1, key.length -1) });
-                        }
-                        else {
-                            this.segments.push({ index: parseInt(key) });
-                        }
+                segments.push({ property: propertyName });
+
+                for (var j = 0, key; (key = keys[j]); j++) {
+                    if (key.indexOf("'") != -1 || key.indexOf('"') != -1) {
+                        segments.push({ property: key.substring(1, key.length -1) });
+                    }
+                    else {
+                        segments.push({ index: parseInt(key) });
                     }
                 }
             }
         }
+        return segments;
     };
 
     Ref.prototype.path = function() {
@@ -53,7 +59,8 @@ define([
     };
 
     Ref.prototype.append = function(path) {
-        return new Ref(this.ankorSystem, this.path() + "." + path);
+        var segments = this._parseSegments(path);
+        return new Ref(this.ankorSystem, this.segments.concat(segments));
     };
 
     Ref.prototype.appendIndex = function(index) {
@@ -77,14 +84,63 @@ define([
 
     Ref.prototype.setValue = function(value, omitMessage) {
         var model = this.parent().getValue();
+        var message = new ChangeMessage(this.ankorSystem.senderId, this.ankorSystem.modelId, null, this.path(), ChangeMessage.prototype.TYPES["NEWVALUE"], null, value);
+
+        //Apply change to model
         model[this.propertyName()] = value;
-        this.ankorSystem.triggerListeners(this);
+
+        //Trigger listeners
+        this.ankorSystem.triggerListeners(this, message);
+
+        //Send message
         if (!omitMessage) {
-            var message = new ChangeMessage(this.ankorSystem.senderId, this.ankorSystem.modelId, null, this.path(), value);
             this.ankorSystem.transport.sendMessage(message);
         }
-        if (value == null) {
-            this.ankorSystem.removeListeners(this);
+    };
+
+    //Removes this ref from the parent (regardless of map or array)
+    Ref.prototype.del = function(omitMessage) {
+        var parentRef = this.parent();
+        var model = parentRef.getValue();
+        var propertyName = this.propertyName();
+        var message = new ChangeMessage(this.ankorSystem.senderId, this.ankorSystem.modelId, null, parentRef.path(), ChangeMessage.prototype.TYPES["DEL"], propertyName, null);
+
+        //Apply change to model
+        if (model instanceof Array) {
+            model.splice(propertyName, 1);
+        }
+        else {
+            delete model[propertyName];
+        }
+
+        //Trigger listeners
+        this.ankorSystem.triggerListeners(parentRef, message);
+
+        //Send message
+        if (!omitMessage) {
+            this.ankorSystem.transport.sendMessage(message);
+        }
+
+        //Cleanup listeners
+        this.ankorSystem.removeInvalidListeners(parentRef);
+    };
+
+    Ref.prototype.insert = function(index, value, omitMessage) {
+        var model = this.getValue();
+        var message = new ChangeMessage(this.ankorSystem.senderId, this.ankorSystem.modelId, null, this.path(), ChangeMessage.prototype.TYPES["INSERT"], index, value);
+        if (!(model instanceof Array)) {
+            throw new Error("Insert only works for Arrays");
+        }
+
+        //Apply change to model
+        model.splice(index, 0, value);
+
+        //Trigger listeners
+        this.ankorSystem.triggerListeners(this, message);
+
+        //Send message
+        if (!omitMessage) {
+            this.ankorSystem.transport.sendMessage(message);
         }
     };
 
@@ -102,15 +158,28 @@ define([
         else if (segment.index != undefined) {
             return segment.index;
         }
-    }
+    };
 
     Ref.prototype.equals = function(ref) {
         return this.path() == ref.path();
-    }
+    };
 
     Ref.prototype.isDescendantOf = function(ref) {
         return this.path().indexOf(ref.path()) == 0;
-    }
+    };
+
+    Ref.prototype.isValid = function() {
+        var valid = true;
+        try {
+            var value = this.getValue();
+            if (value === undefined) {
+                valid = false;
+            }
+        } catch (err) {
+            valid = false;
+        }
+        return valid;
+    };
 
     Ref.prototype.fire = function(actionName) {
         var message = new ActionMessage(this.ankorSystem.senderId, this.ankorSystem.modelId, null, this.path(), actionName);

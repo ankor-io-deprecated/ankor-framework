@@ -47,7 +47,9 @@ define([
             }
             else if (message instanceof ChangeMessage) {
                 jsonMessage.change = {
-                    newValue: message.value
+                    type: message.type,
+                    key: message.key,
+                    value: message.value
                 };
             }
             jsonMessages.push(jsonMessage);
@@ -73,7 +75,7 @@ define([
             else {
                 for (var i = 0, message; (message = messages[i]); i++) {
                     if (message.change != undefined) {
-                        var messageObject = new ChangeMessage(message.senderId, message.modelId, message.messageId, message.property, message.change.newValue);
+                        var messageObject = new ChangeMessage(message.senderId, message.modelId, message.messageId, message.property, message.change.type, message.change.key, message.change.value);
                         this.processIncomingMessage(messageObject);
                     }
                 }

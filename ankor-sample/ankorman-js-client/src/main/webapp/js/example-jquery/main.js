@@ -35,22 +35,21 @@ define([
 
         //Initialize tabs
         $("#tabs").tabs();
-        tabsRef.addTreeChangeListener(function(tabRef) {
-            if (tabRef.parent().path() == "root.tabs") {
+        tabsRef.addTreeChangeListener(function(tabRef, message) {
+            //Remove tab
+            if (tabRef.equals(tabsRef) && message.type == message.TYPES["DEL"]) {
+                $("#tabs ul li." + message.key).remove();
+                $("#tabs #tab-" + message.key).remove();
+                $("#tabs").tabs("refresh");
+            }
+            //New tab (if not already exists)
+            else if (tabRef.parent().equals(tabsRef) && $("#tabs ul li." + tabRef.propertyName()).length == 0) {
                 var tab = tabRef.getValue();
-                if (tab == null) {
-                    $("#tabs ul li." + tabRef.propertyName()).remove();
-                    $("#tabs #tab-" + tabRef.propertyName()).remove();
-                    $("#tabs").tabs("refresh");
+                if (tab.type == "animalDetailTab") {
+                    new AnimalDetailTab(tabRef);
                 }
-                else {
-                    //Create Tab
-                    if (tab.type == "animalDetailTab") {
-                        new AnimalDetailTab(tabRef);
-                    }
-                    else if (tab.type == "animalSearchTab") {
-                        new AnimalSearchTab(tabRef);
-                    }
+                else if (tab.type == "animalSearchTab") {
+                    new AnimalSearchTab(tabRef);
                 }
             }
         });

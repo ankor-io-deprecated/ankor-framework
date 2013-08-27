@@ -51,14 +51,14 @@ define([
         };
     };
 
-    AnkorSystem.prototype.triggerListeners = function(ref) {
+    AnkorSystem.prototype.triggerListeners = function(ref, message) {
         //Trigger propChangeListeners
         var path = ref.path();
         var listeners = this.propListeners[path];
         if (listeners) {
             for (var id in listeners.listeners) {
                 var listener = listeners.listeners[id];
-                listener(ref);
+                listener(ref, message);
             }
         }
 
@@ -69,7 +69,7 @@ define([
             if (listeners) {
                 for (var id in listeners.listeners) {
                     var listener = listeners.listeners[id];
-                    listener(ref);
+                    listener(ref, message);
                 }
             }
             treeRef = treeRef.parent();
@@ -80,33 +80,49 @@ define([
         var value = ref.getValue();
         if (value instanceof Array) {
             for (var i = 0; (i < value.length); i++) {
-                this.triggerListeners(ref.appendIndex(i));
+                this.triggerListeners(ref.appendIndex(i), message);
             }
         }
         else if (typeof value == "object") {
             for (var propertyName in value) {
-                this.triggerListeners(ref.append(propertyName));
+                this.triggerListeners(ref.append(propertyName), message);
             }
         }
     };
 
-    AnkorSystem.prototype.removeListeners = function(ref) {
+    //Removes all listeners that are descendants of the given ref that are no longer valid (for a ref that points nowhere)
+    AnkorSystem.prototype.removeInvalidListeners = function(ref) {
         var filterObsoleteListeners = function(listeners) {
             for (var path in listeners) {
                 var listener = listeners[path];
-                if (listener.ref.equals(ref) || listener.ref.isDescendantOf(ref)) {
+                if (listener.ref.isDescendantOf(ref) && !listener.ref.isValid()) {
                     listener.listeners = null;
                     delete listeners[path];
                 }
             }
         };
+
         filterObsoleteListeners(this.propListeners);
         filterObsoleteListeners(this.treeListeners);
     };
 
     AnkorSystem.prototype.processIncomingMessage = function(message) {
         var ref = this.getRef(message.property);
-        ref.setValue(message.value, true);
+
+        if (message.type == message.TYPES["NEWVALUE"]) {
+            ref.setValue(message.value, true);
+        }
+        else if (message.type == message.TYPES["DEL"]) {
+            if (ref.getValue() instanceof Array) {
+                ref.appendIndex(message.key).del(true);
+            }
+            else {
+                ref.append(message.key).del(true);
+            }
+        }
+        else if (message.type == message.TYPES["INSERT"]) {
+            ref.insert(message.key, message.value, true);
+        }
     };
 
     return AnkorSystem;
