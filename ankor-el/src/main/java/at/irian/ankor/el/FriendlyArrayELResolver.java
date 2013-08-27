@@ -55,6 +55,8 @@ public class FriendlyArrayELResolver extends ArrayELResolver {
                 throw new PropertyNotFoundException();
             }
             int size = Array.getLength(base);
+
+            // XXX: This is wrong! Should create a new Array when necessary and copy the old values
             while (size <= index) {
                 Array.set(base, size++, null);
             }
