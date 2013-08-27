@@ -72,7 +72,7 @@
                         <Pane id="pane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="15.0" visible="true" />
                         <HBox id="header" alignment="CENTER_LEFT" maxHeight="65.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="65.0" style="">
                           <children>
-                            <ToggleButton fx:id="toggleAll" alignment="CENTER" minWidth="-1.0" mnemonicParsing="false" onAction="#toggleAll" prefWidth="40.0" rotate="90.0" text="»" />
+                            <ToggleButton fx:id="toggleAllButton" onAction="#toggleAll" alignment="CENTER" minWidth="-1.0" mnemonicParsing="false" prefWidth="40.0" rotate="90.0" text="»" />
                             <TextField fx:id="newTodo" onAction="#newTodo" prefHeight="65.0" promptText="What needs to be done?" HBox.hgrow="ALWAYS">
                               <HBox.margin>
                                 <Insets left="10.0" right="10.0" />

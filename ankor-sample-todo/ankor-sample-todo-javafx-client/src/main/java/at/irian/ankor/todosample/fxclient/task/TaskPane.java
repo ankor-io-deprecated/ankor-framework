@@ -1,10 +1,12 @@
 package at.irian.ankor.todosample.fxclient.task;
 
 import at.irian.ankor.action.Action;
+import at.irian.ankor.fx.binding.property.ViewModelProperty;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.todosample.viewmodel.task.TaskModel;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -25,18 +27,18 @@ import java.util.HashMap;
 
 public class TaskPane extends AnchorPane {
 
-    private Ref modelRef;
+    private Ref itemRef;
     private TaskModel model;
 
-    @FXML public ToggleButton completed;
+    @FXML public ToggleButton completedButton;
     @FXML public Button deleteButton;
-    @FXML public TextField title;
+    @FXML public TextField titleTextField;
 
-    private String oldTitle = "";
+    private ViewModelProperty<String> title;
+    private ViewModelProperty<Boolean> completed;
+    private SimpleStringProperty helper = new SimpleStringProperty();
 
-    public TaskPane(Ref modelRef) {
-        this.modelRef = modelRef;
-
+    public TaskPane(Ref itemRef) {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("task.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
@@ -46,82 +48,83 @@ public class TaskPane extends AnchorPane {
             throw new RuntimeException(exception);
         }
 
-        title.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+        this.itemRef = itemRef;
+        title = new ViewModelProperty<>(itemRef, "title");
+        completed = new ViewModelProperty<>(itemRef, "completed");
+
+        titleTextField.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
                 if (event.getClickCount() > 1) {
-                    title.setEditable(true);
-                    title.selectAll();
+                    titleTextField.setEditable(true);
+                    titleTextField.selectAll();
                 }
             }
         });
 
-        title.setOnKeyReleased(new EventHandler<KeyEvent>() {
+        titleTextField.setOnKeyReleased(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
                 if (keyEvent.getCode() == KeyCode.ENTER) {
-                    title.setEditable(false);
-                    edit();
+                    titleTextField.setEditable(false);
                 }
             }
         });
 
-        title.focusedProperty().addListener(new ChangeListener<Boolean>() {
+        titleTextField.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observableValue, Boolean newValue, Boolean oldValue) {
                 if (newValue == false) {
-                    title.setEditable(false);
-                    edit();
+                    titleTextField.setEditable(false);
                 }
             }
         });
 
-        Bindings.bindBidirectional(completed.selectedProperty(), title.disableProperty());
-        completed.selectedProperty().addListener(new ChangeListener<Boolean>() {
+        Bindings.bindBidirectional(completedButton.selectedProperty(), titleTextField.disableProperty());
+        completedButton.selectedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observableValue, Boolean newValue, Boolean oldValue) {
                 if (newValue == false) {
-                    title.getStyleClass().remove("default");
-                    title.getStyleClass().add("strike-through");
+                    titleTextField.getStyleClass().remove("default");
+                    titleTextField.getStyleClass().add("strike-through");
                 } else {
-                    title.getStyleClass().remove("strike-through");
-                    title.getStyleClass().add("default");
+                    titleTextField.getStyleClass().remove("strike-through");
+                    titleTextField.getStyleClass().add("default");
                 }
             }
         });
     }
 
-    private void edit() {
-        if (!title.getText().equals(oldTitle)) {
-            HashMap params = new HashMap<String, Object>();
-            params.put("index", model.getIndex());
-            params.put("title", title.getText());
-            modelRef.fire(new Action("editTask", params));
-            oldTitle = title.getText();
-        }
-    }
+    public void setModel(TaskModel model) {
+        this.model = model;
 
-    @FXML
-    public void complete(ActionEvent actionEvent) {
-        HashMap params = new HashMap<String, Object>();
-        params.put("index", model.getIndex());
-        params.put("completed", completed.isSelected());
-        modelRef.fire(new Action("toggleTask", params));
+        helper.unbindBidirectional(textProperty());
+        title.unbindBidirectional(helper);
+        completed.unbindBidirectional(selectedPrperty());
+
+        title = new ViewModelProperty<>(itemRef, "title");
+        completed = new ViewModelProperty<>(itemRef, "completed");
+        helper = new SimpleStringProperty();
+
+        helper.bindBidirectional(title);
+
+        textProperty().bindBidirectional(helper);
+        selectedPrperty().bindBidirectional(completed);
     }
 
     @FXML
     public void delete(ActionEvent actionEvent) {
         HashMap params = new HashMap<String, Object>();
         params.put("index", model.getIndex());
-        modelRef.fire(new Action("deleteTask", params));
+        itemRef.root().append("model").fire(new Action("deleteTask", params));
     }
 
     public StringProperty textProperty() {
-        return title.textProperty();
+        return titleTextField.textProperty();
     }
 
     public BooleanProperty selectedPrperty() {
-        return completed.selectedProperty();
+        return completedButton.selectedProperty();
     }
 
     public String getText() {
@@ -129,25 +132,18 @@ public class TaskPane extends AnchorPane {
     }
 
     public void setText(String value) {
-        oldTitle = value;
         textProperty().set(value);
     }
 
     public void setSelected(boolean selected) {
-        this.completed.setSelected(selected);
+        this.completedButton.setSelected(selected);
     }
 
     public boolean isSelected() {
-        return this.completed.isSelected();
+        return this.completedButton.isSelected();
     }
 
     public TaskModel getModel() {
         return model;
-    }
-
-    public void setModel(TaskModel model) {
-        this.model = model;
-        setText(model.getTitle());
-        setSelected(model.isCompleted());
     }
 }

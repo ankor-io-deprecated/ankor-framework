@@ -3,26 +3,27 @@ package at.irian.ankor.todosample.fxclient.task;
 import at.irian.ankor.action.Action;
 import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.fx.binding.BindingContext;
+import at.irian.ankor.fx.binding.property.ViewModelIntegerProperty;
+import at.irian.ankor.fx.binding.property.ViewModelProperty;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.listener.RefChangeListener;
 import at.irian.ankor.ref.listener.RefListeners;
 import at.irian.ankor.todosample.fxclient.App;
 import at.irian.ankor.todosample.viewmodel.task.TaskModel;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import javafx.util.converter.NumberStringConverter;
 
 import java.net.URL;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
-import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
 import static at.irian.ankor.fx.controller.FXControllerAnnotationSupport.annotationSupport;
 import static at.irian.ankor.todosample.fxclient.App.refFactory;
 
@@ -33,7 +34,7 @@ public class TaskListController implements Initializable {
     private Ref modelRef;
 
     @FXML public VBox tasksList;
-    @FXML public ToggleButton toggleAll;
+    @FXML public ToggleButton toggleAllButton;
     @FXML public TextField newTodo;
     @FXML public Label todoCountNum;
     @FXML public Label todoCountText;
@@ -68,70 +69,34 @@ public class TaskListController implements Initializable {
     public void initialize(Ref modelRef) {
         this.modelRef = modelRef;
 
-        bindValue(modelRef.append("toggleAll"))
-                .toProperty(toggleAll.selectedProperty())
-                .createWithin(bindingContext);
+        ViewModelIntegerProperty itemsLeft = new ViewModelIntegerProperty(modelRef, "itemsLeft");
+        ViewModelProperty<String> itemsLeftText = new ViewModelProperty<>(modelRef, "itemsLeftText");
+        ViewModelProperty<Boolean> footerVisibility = new ViewModelProperty<>(modelRef, "footerVisibility");
+        ViewModelProperty<Boolean> toggleAll = new ViewModelProperty<>(modelRef, "toggleAll");
+        ViewModelProperty<String> itemsCompleteText = new ViewModelProperty<>(modelRef, "itemsCompleteText");
+        ViewModelProperty<Boolean> clearButtonVisibility = new ViewModelProperty<>(modelRef, "clearButtonVisibility");
+        ViewModelProperty<Boolean> filterAllSelected = new ViewModelProperty<>(modelRef, "filterAllSelected");
+        ViewModelProperty<Boolean> filterActiveSelected = new ViewModelProperty<>(modelRef, "filterActiveSelected");
+        ViewModelProperty<Boolean> filterCompletedSelected = new ViewModelProperty<>(modelRef, "filterCompletedSelected");
 
-        bindValue(modelRef.append("itemsLeft"))
-                .toProperty(todoCountNum.textProperty())
-                .forIntegerValue()
-                .createWithin(bindingContext);
+        SimpleStringProperty itemsLeftAsString = new SimpleStringProperty();
+        Bindings.bindBidirectional(itemsLeftAsString, itemsLeft, new NumberStringConverter());
 
-        bindValue(modelRef.append("itemsLeftText"))
-                .toProperty(todoCountText.textProperty())
-                .createWithin(bindingContext);
+        todoCountNum.textProperty().bind(itemsLeftAsString);
+        todoCountText.textProperty().bind(itemsLeftText);
 
-        bindValue(modelRef.append("itemsCompleteText"))
-                .toProperty(clearButton.textProperty())
-                .createWithin(bindingContext);
+        footerTop.visibleProperty().bind(footerVisibility);
+        footerBottom.visibleProperty().bind(footerVisibility);
 
-        bindValue(modelRef.append("clearButtonVisibility"))
-                .toProperty(clearButton.visibleProperty())
-                .createWithin(bindingContext);
+        toggleAllButton.visibleProperty().bind(footerVisibility);
+        toggleAllButton.selectedProperty().bindBidirectional(toggleAll);
 
-        bindValue(modelRef.append("footerVisibility"))
-                .toProperty(footerTop.visibleProperty())
-                .createWithin(bindingContext);
+        clearButton.textProperty().bind(itemsCompleteText);
+        clearButton.visibleProperty().bind(clearButtonVisibility);
 
-        bindValue(modelRef.append("footerVisibility"))
-                .toProperty(footerBottom.visibleProperty())
-                .createWithin(bindingContext);
-
-        bindValue(modelRef.append("footerVisibility"))
-                .toProperty(toggleAll.visibleProperty())
-                .createWithin(bindingContext);
-
-        bindValue(modelRef.append("filterAllSelected"))
-                .toProperty(filterAll.selectedProperty())
-                .createWithin(bindingContext);
-
-        bindValue(modelRef.append("filterActiveSelected"))
-                .toProperty(filterActive.selectedProperty())
-                .createWithin(bindingContext);
-
-        bindValue(modelRef.append("filterCompletedSelected"))
-                .toProperty(filterCompleted.selectedProperty())
-                .createWithin(bindingContext);
-
-        // XXX: Much better performance than bindValue
-        RefListeners.addTreeChangeListener(modelRef.append("tasks"), new RefChangeListener() {
-            @Override
-            public void processChange(Ref changedProperty) {
-                String name = changedProperty.propertyName();
-
-                if (name.equals("title") || name.equals("completed")) {
-
-                    int index = changedProperty.parent().append("index").getValue();
-                    TaskPane node = (TaskPane) tasksList.getChildren().get(index);
-
-                    if (name.equals("title")) {
-                        node.setText(changedProperty.<String>getValue());
-                    } else if (name.equals("completed")) {
-                        node.setSelected(changedProperty.<Boolean>getValue());
-                    }
-                }
-            }
-        });
+        filterAll.selectedProperty().bindBidirectional(filterAllSelected);
+        filterActive.selectedProperty().bindBidirectional(filterActiveSelected);
+        filterCompleted.selectedProperty().bindBidirectional(filterCompletedSelected);
 
         renderTasks(modelRef.append("tasks"));
     }
@@ -155,13 +120,13 @@ public class TaskListController implements Initializable {
     }
 
     @FXML
-    public void clearTasks(ActionEvent actionEvent) {
-        modelRef.fire(new Action("clearTasks"));
+    public void toggleAll(ActionEvent actionEvent) {
+        modelRef.fire(new Action("toggleAll"));
     }
 
     @FXML
-    public void toggleAll(ActionEvent actionEvent) {
-        modelRef.fire(new Action("toggleAll"));
+    public void clearTasks(ActionEvent actionEvent) {
+        modelRef.fire(new Action("clearTasks"));
     }
 
     @FXML
@@ -174,11 +139,11 @@ public class TaskListController implements Initializable {
         App.getServices().showDocument("http://todomvc.com/");
     }
 
-    private HashMap<Integer, TaskPane> cache = new HashMap<Integer, TaskPane>();
+    private HashMap<Integer, TaskPane> cache = new HashMap<>();
 
     private class TaskLoader implements Runnable {
 
-        List<LinkedHashMap<String, Object>> tasks;
+        private List<LinkedHashMap<String, Object>> tasks;
         public TaskLoader(List<LinkedHashMap<String, Object>> tasks) { this.tasks = tasks; }
 
         @Override
@@ -192,20 +157,11 @@ public class TaskListController implements Initializable {
 
                 TaskPane node;
                 if (cache.get(index) == null) {
-                    cache.put(index, new TaskPane(modelRef));
+                    Ref itemRef = modelRef.append("tasks").appendIdx(index);
+                    cache.put(index, new TaskPane(itemRef));
                 }
                 node = cache.get(index);
                 node.setModel(model);
-
-                // Ref itemRef = modelRef.append("tasks").appendIdx(model.getIndex());
-                // bindValue(itemRef.append("title"))
-                //         .toProperty(node.textProperty())
-                //         .createWithin(listContext);
-                //
-                // bindValue(itemRef.append("completed"))
-                //         .toProperty(node.selectedProperty())
-                //         .createWithin(listContext);
-                //
 
                 tasksList.getChildren().add(node);
             }

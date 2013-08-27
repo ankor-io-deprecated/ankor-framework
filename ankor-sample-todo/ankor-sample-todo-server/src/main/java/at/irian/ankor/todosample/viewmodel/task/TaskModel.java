@@ -6,6 +6,7 @@ import at.irian.ankor.todosample.domain.task.Task;
 import java.util.LinkedHashMap;
 
 public class TaskModel {
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TaskModel.class);
 
     @AnkorIgnore
     private Task task;

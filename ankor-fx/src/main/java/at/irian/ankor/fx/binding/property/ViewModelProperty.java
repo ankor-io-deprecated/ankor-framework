@@ -23,7 +23,6 @@ public class ViewModelProperty<T> extends SimpleObjectProperty<T> implements Ref
             @Override
             public void run() {
                 ViewModelProperty.super.set(changedProperty.<T>getValue());
-
             }
         });
     }

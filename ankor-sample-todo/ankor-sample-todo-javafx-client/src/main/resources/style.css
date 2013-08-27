@@ -180,14 +180,14 @@
     -fx-effect: dropshadow(one-pass-box, rgba(199, 107, 107, 0.8), 10, 0, 0, 0);
 }
 
-#toggleAll {
+#toggleAllButton {
     -fx-background-color: transparent;
     -fx-padding: 0;
     -fx-font-size: 28px;
     -fx-text-fill: #d9d9d9;
 }
 
-#toggleAll:selected {
+#toggleAllButton:selected {
     -fx-text-fill: #737373;
 }
 
