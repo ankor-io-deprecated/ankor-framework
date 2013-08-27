@@ -157,7 +157,7 @@ public class TaskListController implements Initializable {
 
                 TaskPane node;
                 if (cache.get(index) == null) {
-                    Ref itemRef = modelRef.append("tasks").appendIdx(index);
+                    Ref itemRef = modelRef.append("tasks").appendIndex(index);
                     cache.put(index, new TaskPane(itemRef));
                 }
                 node = cache.get(index);

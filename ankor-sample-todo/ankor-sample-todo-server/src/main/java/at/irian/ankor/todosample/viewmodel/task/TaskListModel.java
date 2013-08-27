@@ -83,7 +83,7 @@ public class TaskListModel extends ViewModelBase {
     }
 
     private Ref tasksRef(int index) {
-        return thisRef("tasks").appendIdx(index);
+        return thisRef("tasks").appendIndex(index);
     }
 
     @ChangeListener(pattern = "root.model.filter")
