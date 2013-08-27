@@ -41,18 +41,26 @@ public interface Ref {
     Ref parent();
 
     /**
-     * @param propertyOrSubPath name of a property or a valid property path (see {@link at.irian.ankor.path.PathSyntax})
-     * @return Ref to the model object this path evaluates to relative to this Ref
-     * @see at.irian.ankor.path.PathSyntax#concat(String, String)
+     * @deprecated use {@link #appendPath(String)} or the shortcut {@link #$(String)} instead
      */
+    @Deprecated
     Ref append(String propertyOrSubPath);
 
     /**
-     * @param index index
-     * @return Ref to the indexed array element of the model object of type {@link java.util.List} or an array referenced by this Ref
-     * @see at.irian.ankor.path.PathSyntax#addArrayIdx(String, int)
+     * @param propertyOrSubPath name of a property or a valid property path (see {@link at.irian.ankor.path.PathSyntax})
+     * @return Ref to the model object this path evaluates to relative to this Ref
+     * @see at.irian.ankor.path.PathSyntax#concat(String, String)
+     * @see #$(String)
      */
-    Ref appendIdx(int index);
+    Ref appendPath(String propertyOrSubPath);
+
+    /**
+     * @param index index
+     * @return Ref to the indexed element of the model object of type {@link java.util.List} or an array referenced by this Ref
+     * @see at.irian.ankor.path.PathSyntax#addArrayIdx(String, int)
+     * @see #$(int)
+     */
+    Ref appendIndex(int index);
 
     /**
      * @param literalKey literal {@link String} key
@@ -67,6 +75,16 @@ public interface Ref {
      * @see at.irian.ankor.path.PathSyntax#addPathMapKey(String, String)
      */
     Ref appendPathKey(String pathKey);
+
+    /**
+     * Shortcut synonym for {@link #appendPath(String)} and {@link #appendLiteralKey(String)}
+     */
+    Ref $(String propertyOrSubPath);
+
+    /**
+     * Shortcut synonym for {@link #appendIndex(int)}
+     */
+    Ref $(int index);
 
     /**
      * @return the full structural path of this Ref
