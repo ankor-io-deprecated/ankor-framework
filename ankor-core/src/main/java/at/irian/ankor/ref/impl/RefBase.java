@@ -43,8 +43,8 @@ public abstract class RefBase implements Ref, RefImplementor {
     }
 
     @Override
-    public void delete(int idx) {
-        apply(Change.deleteChange(idx));
+    public void delete() {
+        ((RefImplementor)parent()).apply(Change.deleteChange(propertyName()));
     }
 
     @Override

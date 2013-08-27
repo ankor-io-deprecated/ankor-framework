@@ -41,12 +41,12 @@ public class MockELRef implements Ref {
     }
 
     @Override
-    public void delete(int idx) {
+    public void insert(int idx, Object value) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void insert(int idx, Object value) {
+    public void delete() {
         throw new UnsupportedOperationException();
     }
 

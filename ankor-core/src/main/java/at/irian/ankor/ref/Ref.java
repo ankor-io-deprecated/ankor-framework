@@ -109,9 +109,9 @@ public interface Ref {
     @Deprecated
     void fire(ModelEvent event);
 
-    void delete(Object key);
+    void delete();
 
-    void delete(int idx);
+    void delete(Object keyOrIndex);
 
     void insert(int idx, Object value);
 }
