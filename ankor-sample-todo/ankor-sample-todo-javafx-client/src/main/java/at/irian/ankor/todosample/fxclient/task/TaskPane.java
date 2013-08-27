@@ -37,6 +37,7 @@ public class TaskPane extends AnchorPane {
 
     private ViewModelProperty<String> title;
     private ViewModelProperty<Boolean> completed;
+    private ViewModelProperty<Boolean> editing;
     private SimpleStringProperty helper = new SimpleStringProperty();
 
     public TaskPane(Ref itemRef) {
@@ -52,12 +53,13 @@ public class TaskPane extends AnchorPane {
         this.itemRef = itemRef;
         title = new ViewModelProperty<>(itemRef, "title");
         completed = new ViewModelProperty<>(itemRef, "completed");
+        editing = new ViewModelProperty<>(itemRef, "editing");
 
         titleTextField.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
                 if (event.getClickCount() > 1) {
-                    titleTextField.setEditable(true);
+                    setEditable(true);
                     titleTextField.selectAll();
                 }
             }
@@ -67,7 +69,7 @@ public class TaskPane extends AnchorPane {
             @Override
             public void handle(KeyEvent keyEvent) {
                 if (keyEvent.getCode() == KeyCode.ENTER) {
-                    titleTextField.setEditable(false);
+                    setEditable(false);
                 }
             }
         });
@@ -76,7 +78,7 @@ public class TaskPane extends AnchorPane {
             @Override
             public void changed(ObservableValue<? extends Boolean> observableValue, Boolean newValue, Boolean oldValue) {
                 if (newValue == false) {
-                    titleTextField.setEditable(false);
+                    setEditable(false);
                 }
             }
         });
@@ -115,8 +117,20 @@ public class TaskPane extends AnchorPane {
         return titleTextField.textProperty();
     }
 
-    public BooleanProperty selectedPrperty() {
+    public BooleanProperty selectedProperty() {
         return completedButton.selectedProperty();
+    }
+
+    public BooleanProperty editableProperty() {
+        return titleTextField.editableProperty();
+    }
+
+    public boolean isEditable() {
+        return titleTextField.isEditable();
+    }
+
+    public void setEditable(boolean editable) {
+        titleTextField.setEditable(editable);
     }
 
     public String getText() {
@@ -145,15 +159,18 @@ public class TaskPane extends AnchorPane {
 
         helper.unbindBidirectional(textProperty());
         title.unbindBidirectional(helper);
-        completed.unbindBidirectional(selectedPrperty());
+        completed.unbindBidirectional(selectedProperty());
+        editing.unbindBidirectional(editableProperty());
 
         title = new ViewModelProperty<>(itemRef, "title");
         completed = new ViewModelProperty<>(itemRef, "completed");
-        helper = new SimpleStringProperty();
+        editing = new ViewModelProperty<>(itemRef, "editing");
 
+        helper = new SimpleStringProperty();
         helper.bindBidirectional(title);
 
         textProperty().bindBidirectional(helper);
-        selectedPrperty().bindBidirectional(completed);
+        selectedProperty().bindBidirectional(completed);
+        editableProperty().bindBidirectional(editing);
     }
 }
