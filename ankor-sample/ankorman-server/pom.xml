@@ -10,7 +10,7 @@
 
     <artifactId>ankorman-server</artifactId>
     <packaging>jar</packaging>
-    <name>AnkorMan Sample App - Server</name>
+    <name>Ankor Animals Sample - Server</name>
 
     <dependencies>
 

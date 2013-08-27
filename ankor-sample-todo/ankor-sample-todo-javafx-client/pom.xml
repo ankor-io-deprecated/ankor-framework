@@ -10,7 +10,7 @@
 
     <artifactId>ankor-sample-todo-javafx-client</artifactId>
     <packaging>jar</packaging>
-    <name>Ankor Todo Sample App - JavaFX Client</name>
+    <name>Ankor Todo Sample - JavaFX Client</name>
 
     <properties>
         <javafx.version>2.2.21</javafx.version>

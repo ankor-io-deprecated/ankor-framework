@@ -10,7 +10,7 @@
 
     <artifactId>ankor-sample-todo-js-client</artifactId>
     <packaging>war</packaging>
-    <name>Ankor Todo Sample App - JavaScript Client</name>
+    <name>Ankor Todo Sample - JavaScript Client</name>
 
     <dependencies>
 

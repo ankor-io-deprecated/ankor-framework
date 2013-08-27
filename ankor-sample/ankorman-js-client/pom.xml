@@ -10,7 +10,7 @@
 
     <artifactId>ankorman-js-client</artifactId>
     <packaging>war</packaging>
-    <name>AnkorMan Sample App - JavaScript Client</name>
+    <name>Ankor Animals Sample - JavaScript Client</name>
 
     <dependencies>
 

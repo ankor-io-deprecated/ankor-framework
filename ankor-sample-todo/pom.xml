@@ -6,7 +6,7 @@
     <artifactId>ankor-sample-todo</artifactId>
     <packaging>pom</packaging>
     <version>0-SNAPSHOT</version>
-    <name>Ankor Todo Sample App - Project</name>
+    <name>Ankor Todo Sample - Project</name>
 
     <modules>
         <module>ankor-sample-todo-server</module>
@@ -90,5 +90,19 @@
         </dependency>
 
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
