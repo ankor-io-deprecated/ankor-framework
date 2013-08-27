@@ -60,23 +60,6 @@ public class TaskListModel extends ViewModelBase {
 
         toggleAll = (false);
 
-        /*
-         * Suggestion:
-         *
-         * @ChangeListener(pattern = "root.model.tasks[*].completed)
-         * public void completeTask(int index) { ... }
-         *
-         * for maps:
-         *
-         * @ChangeListener(pattern = "root.model.someMap.*.someAttribute)
-         * public void func1(Object key) { ... }
-         *
-         * for nested maps/lists
-         *
-         * @ChangeListener(pattern = "root.model.someMap.*.innerMap.*.someAttribute)
-         * public void func2(Object key1, Object key2) { ... }
-         *
-         */
         RefListeners.addTreeChangeListener(tasksRef(), new RefChangeListener() {
             @Override
             public void processChange(Ref changedProperty) {
@@ -93,14 +76,6 @@ public class TaskListModel extends ViewModelBase {
                 }
             }
         });
-    }
-
-    private Ref tasksRef() {
-        return thisRef("tasks");
-    }
-
-    private Ref tasksRef(int index) {
-        return thisRef("tasks").appendIndex(index);
     }
 
     @ChangeListener(pattern = "root.model.filter")
@@ -134,24 +109,10 @@ public class TaskListModel extends ViewModelBase {
         thisRef("footerVisibility").setValue(taskRepository.getTasks().size() != 0);
     }
 
-    private String itemsLeftText(int itemsLeft) {
-        String text;
-        if (itemsLeft == 1) {
-            text = "item left";
-        } else {
-            text = "items left";
-        }
-        return text;
-    }
-
     @ChangeListener(pattern="root.model.itemsLeft")
     public void itemsLeftChanged() {
         thisRef("itemsLeftText").setValue(itemsLeftText(itemsLeft));
         thisRef("toggleAll").setValue(itemsLeft == 0);
-    }
-
-    private String itemsCompleteText(int itemsComplete) {
-        return String.format("Clear completed (%d)", itemsComplete);
     }
 
     @ChangeListener(pattern="root.model.itemsComplete")
@@ -207,6 +168,26 @@ public class TaskListModel extends ViewModelBase {
         updateTasksData();
     }
 
+    @ChangeListener(pattern = "root.model.tasks[*].completed")
+    public void completedChanged() {
+        LOG.info("completed changed");
+    }
+
+    @ChangeListener(pattern = "root.model.tasks[*].title")
+    public void titleChanged() {
+        LOG.info("title changed");
+    }
+
+    // helper for dealing with list refs
+    private Ref tasksRef() {
+        return thisRef("tasks");
+    }
+
+    // helper for dealing with list refs
+    private Ref tasksRef(int index) {
+        return thisRef("tasks").appendIndex(index);
+    }
+
     private List<TaskModel> fetchTasksData() {
         Filter filterEnum = Filter.valueOf(filter);
         List<Task> tasks = taskRepository.filterTasks(filterEnum);
@@ -225,6 +206,20 @@ public class TaskListModel extends ViewModelBase {
         tasksRef().setValue(fetchTasksData());
         thisRef("itemsLeft").setValue(taskRepository.getActiveTasks().size());
         thisRef("itemsComplete").setValue(taskRepository.getCompletedTasks().size());
+    }
+
+    private String itemsLeftText(int itemsLeft) {
+        String text;
+        if (itemsLeft == 1) {
+            text = "item left";
+        } else {
+            text = "items left";
+        }
+        return text;
+    }
+
+    private String itemsCompleteText(int itemsComplete) {
+        return String.format("Clear completed (%d)", itemsComplete);
     }
 
     public Integer getItemsLeft() {
