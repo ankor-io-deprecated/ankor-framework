@@ -66,7 +66,12 @@ public class MockELRef implements Ref {
     }
 
     @Override
-    public Ref appendIdx(int index) {
+    public Ref appendPath(String propertyOrSubPath) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Ref appendIndex(int index) {
         throw new UnsupportedOperationException();
     }
 
@@ -77,6 +82,16 @@ public class MockELRef implements Ref {
 
     @Override
     public Ref appendPathKey(String pathKey) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Ref $(String propertyOrSubPath) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Ref $(int index) {
         throw new UnsupportedOperationException();
     }
 

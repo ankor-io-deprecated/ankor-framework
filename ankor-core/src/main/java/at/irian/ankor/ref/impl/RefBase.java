@@ -198,11 +198,16 @@ public abstract class RefBase implements Ref {
 
     @Override
     public Ref append(String propertyOrSubPath) {
+        return appendPath(propertyOrSubPath);
+    }
+
+    @Override
+    public Ref appendPath(String propertyOrSubPath) {
         return refFactory().ref(pathSyntax().concat(path(), propertyOrSubPath));
     }
 
     @Override
-    public Ref appendIdx(int index) {
+    public Ref appendIndex(int index) {
         return refFactory().ref(pathSyntax().addArrayIdx(path(), index));
     }
 
@@ -214,6 +219,16 @@ public abstract class RefBase implements Ref {
     @Override
     public Ref appendPathKey(String pathKey) {
         return refFactory().ref(pathSyntax().addPathMapKey(path(), pathKey));
+    }
+
+    @Override
+    public Ref $(String propertyOrSubPath) {
+        return appendPath(propertyOrSubPath);
+    }
+
+    @Override
+    public Ref $(int index) {
+        return appendIndex(index);
     }
 
     @Override
