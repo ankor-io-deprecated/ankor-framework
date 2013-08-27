@@ -103,7 +103,12 @@ public abstract class RefBase implements Ref, RefImplementor {
     @SuppressWarnings("unchecked")
     private void handleInsertChange(Object listOrArray, Number key, Object value) {
         if (listOrArray instanceof List) {
-            ((List)listOrArray).add(key.intValue(), value);
+            List list = (List)listOrArray;
+            if (key.intValue() == list.size()) {
+                list.add(value);
+            } else {
+                list.add(key.intValue(), value);
+            }
         } else if (listOrArray.getClass().isArray()) {
             //todo:  optimize by means of array copy operation...
             List list = Arrays.asList(listOrArray);
