@@ -1,7 +1,6 @@
 package at.irian.ankor.ref.el;
 
 import at.irian.ankor.action.Action;
-import at.irian.ankor.event.ModelEvent;
 import at.irian.ankor.path.el.SimpleELPathSyntax;
 import at.irian.ankor.ref.CollectionRef;
 import at.irian.ankor.ref.MapRef;
@@ -155,11 +154,6 @@ public class MockELRef implements Ref {
 
     @Override
     public void fire(Action action) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void fire(ModelEvent event) {
         throw new UnsupportedOperationException();
     }
 

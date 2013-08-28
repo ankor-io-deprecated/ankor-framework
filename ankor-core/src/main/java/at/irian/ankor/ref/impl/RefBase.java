@@ -7,7 +7,6 @@ import at.irian.ankor.change.Change;
 import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.change.ChangeType;
 import at.irian.ankor.change.OldValuesAwareChangeEvent;
-import at.irian.ankor.event.ModelEvent;
 import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.event.PropertyWatcher;
 import at.irian.ankor.path.PathSyntax;
@@ -391,11 +390,6 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
     @Override
     public void fire(Action action) {
         context().modelContext().getEventDispatcher().dispatch(new ActionEvent(this, action));
-    }
-
-    @Override
-    public void fire(ModelEvent event) {
-        context().modelContext().getEventDispatcher().dispatch(event);
     }
 
     @Override
