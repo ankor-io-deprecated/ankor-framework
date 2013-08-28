@@ -4,7 +4,6 @@ import at.irian.ankor.context.ModelContext;
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.messaging.Message;
 import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
-import at.irian.ankor.ref.Ref;
 import at.irian.ankor.system.AnkorSystem;
 
 import javax.servlet.ServletConfig;
@@ -98,8 +97,7 @@ public class AnkorServlet extends HttpServlet {
                 }
             });
 
-            Ref rootRef = ankorSystem.getRefContextFactory().createRefContextFor(modelContext).refFactory().rootRef();
-            modelContext.getEventDispatcher().dispatch(new RequestFinishedEvent(rootRef));
+            modelContext.getEventDispatcher().dispatch(new RequestFinishedEvent(this));
         }
 
         boolean interrupted = false;

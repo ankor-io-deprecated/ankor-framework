@@ -1,13 +1,13 @@
 package at.irian.ankor.action;
 
-import at.irian.ankor.event.ModelEvent;
 import at.irian.ankor.event.ModelEventListener;
+import at.irian.ankor.event.ModelPropertyEvent;
 import at.irian.ankor.ref.Ref;
 
 /**
  * @author Manfred Geiler
  */
-public class ActionEvent extends ModelEvent {
+public class ActionEvent extends ModelPropertyEvent {
 
     private final Action action;
 

@@ -22,17 +22,14 @@ public class ServerSession implements Session {
         this.messageSender = messageSender;
     }
 
-    /**
-     * Create the view model root
-     */
     @Override
     public void init() {
+        refContext.modelContext().getEventDispatcher().dispatch(new SessionInitEvent(this));
     }
 
     @Override
     public void close() {
     }
-
 
     @Override
     public ModelContext getModelContext() {

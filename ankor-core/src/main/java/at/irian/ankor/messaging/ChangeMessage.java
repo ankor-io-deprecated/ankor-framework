@@ -60,9 +60,11 @@ public class ChangeMessage extends Message {
     public String toString() {
         return "ChangeMessage{" +
                "messageId='" + getMessageId() + '\'' +
+               ", property='" + property + '\'' +
                ", change=" + change +
-               "}";
+               "} " + super.toString();
     }
+
 
     @Override
     public boolean isAppropriateListener(MessageListener listener) {

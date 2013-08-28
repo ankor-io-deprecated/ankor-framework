@@ -8,10 +8,14 @@ import at.irian.ankor.context.ModelContext;
 import at.irian.ankor.messaging.Message;
 import at.irian.ankor.messaging.MessageFactory;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.ref.RefContext;
+import at.irian.ankor.session.ModelRootFactory;
 import at.irian.ankor.session.Session;
+import at.irian.ankor.session.SessionInitEvent;
 import at.irian.ankor.session.SessionManager;
 
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * Global ChangeEventListener that relays locally happened {@link ChangeEvent ChangeEvents} to all remote systems
@@ -19,17 +23,20 @@ import java.util.Collection;
  *
  * @author Manfred Geiler
  */
-public class RemoteNotifyChangeEventListener extends ChangeEventListener {
+public class RemoteNotifyChangeEventListener extends ChangeEventListener implements SessionInitEvent.Listener {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RemoteNotifyChangeEventListener.class);
 
     private final MessageFactory messageFactory;
     private final SessionManager sessionManager;
+    private Set<String> rootNames;
 
     public RemoteNotifyChangeEventListener(MessageFactory messageFactory,
-                                           SessionManager sessionManager) {
+                                           SessionManager sessionManager,
+                                           ModelRootFactory modelRootFactory) {
         super(null); //global listener
         this.messageFactory = messageFactory;
         this.sessionManager = sessionManager;
+        this.rootNames = modelRootFactory.getKnownRootNames();
     }
 
     @Override
@@ -62,4 +69,22 @@ public class RemoteNotifyChangeEventListener extends ChangeEventListener {
 
     }
 
+    @Override
+    public void processSessionInit(SessionInitEvent event) {
+        Session session = event.getSession();
+        RefContext refContext = session.getRefContext();
+        ModelContext modelContext = refContext.modelContext();
+
+        for (String rootName : rootNames) {
+            Ref rootRef = refContext.refFactory().ref(rootName);
+            Object rootObj = rootRef.getValue();
+            if (rootObj != null) {
+                Message message = messageFactory.createChangeMessage(modelContext,
+                                                                     rootRef.path(),
+                                                                     Change.valueChange(rootObj));
+                session.getMessageSender().sendMessage(message);
+            }
+        }
+
+    }
 }

@@ -1,13 +1,13 @@
 package at.irian.ankor.change;
 
-import at.irian.ankor.event.ModelEvent;
 import at.irian.ankor.event.ModelEventListener;
+import at.irian.ankor.event.ModelPropertyEvent;
 import at.irian.ankor.ref.Ref;
 
 /**
  * @author Manfred Geiler
  */
-public class ChangeEvent extends ModelEvent {
+public class ChangeEvent extends ModelPropertyEvent {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ChangeEvent.class);
 
     private final Change change;

@@ -28,6 +28,7 @@ import java.util.*;
 /**
  * @author Manfred Geiler
  */
+@SuppressWarnings({"FieldCanBeLocal", "UnusedDeclaration"})
 public class AnkorSystemBuilder {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnkorSystemBuilder.class);
 
@@ -68,6 +69,11 @@ public class AnkorSystemBuilder {
 
     public AnkorSystemBuilder withModelRootFactory(ModelRootFactory modelRootFactory) {
         this.modelRootFactory = modelRootFactory;
+        return this;
+    }
+
+    public AnkorSystemBuilder withDefaultGlobalEventListeners(EventListeners defaultGlobalEventListeners) {
+        this.defaultGlobalEventListeners = defaultGlobalEventListeners;
         return this;
     }
 
@@ -112,10 +118,12 @@ public class AnkorSystemBuilder {
         MessageBus messageBus = getMessageBus();
         EventDispatcherFactory eventDispatcherFactory = getEventDispatcherFactory();
 
+        ModelRootFactory modelRootFactory = getServerModelRootFactory();
+
         RefContextFactory refContextFactory = new ELRefContextFactory(getServerBeanResolver(),
                                                                       getServerViewModelPostProcessors(),
                                                                       getScheduler(),
-                                                                      getServerModelRootFactory());
+                                                                      modelRootFactory);
 
         MessageFactory messageFactory = getServerMessageFactory();
 
@@ -125,7 +133,7 @@ public class AnkorSystemBuilder {
                                                                  messageBus);
         SessionManager sessionManager = new DefaultSessionManager(sessionFactory);
 
-        EventListeners globalEventListeners = getGlobalEventListeners(messageFactory, sessionManager);
+        EventListeners globalEventListeners = getGlobalEventListeners(messageFactory, sessionManager, modelRootFactory);
 
         ModelContextFactory modelContextFactory = getModelContextFactory(eventDispatcherFactory, globalEventListeners);
 
@@ -133,7 +141,8 @@ public class AnkorSystemBuilder {
 
         return new AnkorSystem(systemName, messageFactory, messageBus, refContextFactory,
                                modelContextManager,
-                               sessionManager, modelRootFactory);
+                               sessionManager,
+                               modelRootFactory);
     }
 
 
@@ -146,17 +155,19 @@ public class AnkorSystemBuilder {
         String systemName = getClientSystemName();
         MessageBus messageBus = getMessageBus();
 
+        ModelRootFactory modelRootFactory = getClientModelRootFactory();
+
         RefContextFactory refContextFactory = new ELRefContextFactory(getClientBeanResolver(),
                                                                       null,
                                                                       getScheduler(),
-                                                                      getClientModelRootFactory());
+                                                                      modelRootFactory);
 
         MessageFactory messageFactory = getClientMessageFactory();
 
         String modelContextId = getModelContextId();
 
         SingletonSessionManager sessionManager = new SingletonSessionManager();
-        EventListeners globalEventListeners = getGlobalEventListeners(messageFactory, sessionManager);
+        EventListeners globalEventListeners = getGlobalEventListeners(messageFactory, sessionManager, modelRootFactory);
 
         ModelContextFactory modelContextFactory = getModelContextFactory(getEventDispatcherFactory(), globalEventListeners);
 
@@ -174,13 +185,15 @@ public class AnkorSystemBuilder {
 
         return new AnkorSystem(systemName, messageFactory, messageBus, refContextFactory,
                                modelContextManager,
-                               sessionManager, modelRootFactory);
+                               sessionManager,
+                               modelRootFactory);
     }
 
 
 
     private EventListeners createDefaultGlobalEventListeners(MessageFactory messageFactory,
-                                                             SessionManager sessionManager) {
+                                                             SessionManager sessionManager,
+                                                             ModelRootFactory modelRootFactory) {
 
         EventListeners eventListeners = new ArrayListEventListeners();
 
@@ -191,7 +204,7 @@ public class AnkorSystemBuilder {
         eventListeners.add(new RemoteNotifyActionEventListener(messageFactory, sessionManager));
 
         // global change event listener for sending change events to remote partner
-        eventListeners.add(new RemoteNotifyChangeEventListener(messageFactory, sessionManager));
+        eventListeners.add(new RemoteNotifyChangeEventListener(messageFactory, sessionManager, modelRootFactory));
 
         // global change event listener for cleaning up obsolete listeners
         eventListeners.add(new ListenerCleanupChangeEventListener(eventListeners));
@@ -261,20 +274,20 @@ public class AnkorSystemBuilder {
     }
 
     private ModelRootFactory getClientModelRootFactory() {
-        if (modelRootFactory != null) {
-            throw new IllegalStateException("custom modelRootFactory not supported for client");
-        }
-        return new ModelRootFactory() {
-            @Override
-            public Set<String> getKnownRootNames() {
-                return Collections.singleton("root");
-            }
+        if (modelRootFactory == null) {
+            modelRootFactory = new ModelRootFactory() {
+                @Override
+                public Set<String> getKnownRootNames() {
+                    return Collections.singleton("root");
+                }
 
-            @Override
-            public Object createModelRoot(Ref rootRef) {
-                return new HashMap<String, Object>();
-            }
-        };
+                @Override
+                public Object createModelRoot(Ref rootRef) {
+                    throw new UnsupportedOperationException();
+                }
+            };
+        }
+        return modelRootFactory;
     }
 
     private MessageBus getMessageBus() {
@@ -319,10 +332,12 @@ public class AnkorSystemBuilder {
         return eventDispatcherFactory;
     }
 
-    public EventListeners getGlobalEventListeners(MessageFactory messageFactory, SessionManager sessionManager) {
+    public EventListeners getGlobalEventListeners(MessageFactory messageFactory,
+                                                  SessionManager sessionManager,
+                                                  ModelRootFactory modelRootFactory) {
         EventListeners globalEventListeners;
         if (defaultGlobalEventListeners == null) {
-            globalEventListeners = createDefaultGlobalEventListeners(messageFactory, sessionManager);
+            globalEventListeners = createDefaultGlobalEventListeners(messageFactory, sessionManager, modelRootFactory);
         } else {
             globalEventListeners = defaultGlobalEventListeners;
         }

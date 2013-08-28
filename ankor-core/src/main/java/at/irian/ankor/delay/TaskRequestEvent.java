@@ -2,7 +2,6 @@ package at.irian.ankor.delay;
 
 import at.irian.ankor.event.ModelEvent;
 import at.irian.ankor.event.ModelEventListener;
-import at.irian.ankor.ref.Ref;
 
 /**
  * @author Manfred Geiler
@@ -12,7 +11,7 @@ public class TaskRequestEvent extends ModelEvent {
 
     private final Runnable task;
 
-    public TaskRequestEvent(Ref source, Runnable task) {
+    public TaskRequestEvent(Object source, Runnable task) {
         super(source);
         this.task = task;
     }

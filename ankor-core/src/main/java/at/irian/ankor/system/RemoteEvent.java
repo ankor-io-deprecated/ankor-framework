@@ -3,8 +3,8 @@ package at.irian.ankor.system;
 import at.irian.ankor.action.RemoteAction;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.change.RemoteChange;
-import at.irian.ankor.event.ModelEvent;
 import at.irian.ankor.event.ModelEventListener;
+import at.irian.ankor.event.ModelPropertyEvent;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.session.Session;
 
@@ -23,7 +23,7 @@ import java.util.Map;
  *
  * @author Manfred Geiler
  */
-public class RemoteEvent extends ModelEvent {
+public class RemoteEvent extends ModelPropertyEvent {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RemoteEvent.class);
 
     private final RemoteChange change;
