@@ -19,11 +19,6 @@ public class ELRefFactory implements RefFactory {
     }
 
     @Override
-    public Ref rootRef() {
-        return ref(refContext, "root"); //todo  deprecated
-    }
-
-    @Override
     public Ref ref(String path) {
         return ref(refContext, path);
     }

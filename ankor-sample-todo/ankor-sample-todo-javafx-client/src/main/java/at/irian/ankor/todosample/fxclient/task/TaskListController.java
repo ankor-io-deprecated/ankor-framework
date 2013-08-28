@@ -22,7 +22,10 @@ import javafx.scene.layout.VBox;
 import javafx.util.converter.NumberStringConverter;
 
 import java.net.URL;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.ResourceBundle;
 
 import static at.irian.ankor.fx.controller.FXControllerAnnotationSupport.annotationSupport;
 import static at.irian.ankor.todosample.fxclient.App.refFactory;
@@ -56,14 +59,14 @@ public class TaskListController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
         // XXX: Annotation syntax not supported
-        RefListeners.addPropChangeListener(refFactory().rootRef().append("model"), new RefChangeListener() {
+        RefListeners.addPropChangeListener(refFactory().ref("root.model"), new RefChangeListener() {
             @Override
             public void processChange(Ref changedProperty) {
-                initialize(refFactory().rootRef().append("model"));
+                initialize(refFactory().ref("root.model"));
             }
         });
 
-        refFactory().rootRef().fire(new Action("init"));
+        refFactory().ref("root").fire(new Action("init"));
     }
 
     public void initialize(Ref modelRef) {

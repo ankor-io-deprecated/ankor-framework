@@ -42,12 +42,12 @@ public class MainController implements Initializable {
     }
 
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        refFactory().rootRef().fire(new Action("init"));
+        refFactory().ref("root").fire(new Action("init"));
     }
 
     @ChangeListener(pattern = "root.tabs.*")
     public void tabsRefChanged(Ref changedProperty) {
-        final Ref tabsRef = refFactory().rootRef().append("tabs");
+        final Ref tabsRef = refFactory().ref("root.tabs");
         if (changedProperty.parent().equals(tabsRef)) {
             String tabId = changedProperty.propertyName();
             if (changedProperty.getValue() == null) {
@@ -65,7 +65,7 @@ public class MainController implements Initializable {
 
     @ChangeListener(pattern = "root")
     public void rootRefChanged() {
-        Ref rootRef = refFactory().rootRef();
+        Ref rootRef = refFactory().ref("root");
         Ref tabsRef = rootRef.append("tabs");
 
         bindValue(rootRef.append("userName"))
@@ -91,12 +91,12 @@ public class MainController implements Initializable {
     }
 
     public void openAnimalSearchTab(@SuppressWarnings("UnusedParameters") ActionEvent actionEvent) {
-        Ref tabsRef = refFactory().rootRef().append("tabs");
+        Ref tabsRef = refFactory().ref("root.tabs");
         tabsRef.fire(new ActionBuilder().withName(animalSearchTab.getActionName()).create());
     }
 
     public void openAnimalDetailTab(@SuppressWarnings("UnusedParameters") ActionEvent actionEvent) {
-        Ref tabsRef = refFactory().rootRef().append("tabs");
+        Ref tabsRef = refFactory().ref("root").append("tabs");
         tabsRef.fire(new ActionBuilder().withName(animalDetailTab.getActionName()).create());
     }
 }

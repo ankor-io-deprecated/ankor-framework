@@ -32,8 +32,7 @@ public abstract class BaseTabController implements Initializable {
     }
 
     public Ref getTabRef() {
-        Ref rootRef = refFactory().rootRef();
-        return rootRef.append(String.format("tabs.%s", tabId));
+        return refFactory().ref(String.format("root.tabs.%s", tabId));
     }
 
     @Override
