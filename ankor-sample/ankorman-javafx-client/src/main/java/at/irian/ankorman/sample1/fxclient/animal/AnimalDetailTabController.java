@@ -34,30 +34,30 @@ public class AnimalDetailTabController extends BaseTabController {
     }
 
     public void initialize() {
-        Ref modelRef = getTabRef().append("model");
-        Ref animalRef = modelRef.append("animal");
-        Ref selItemsRef = modelRef.append("selectItems");
+        Ref modelRef = getTabRef().appendPath("model");
+        Ref animalRef = modelRef.appendPath("animal");
+        Ref selItemsRef = modelRef.appendPath("selectItems");
 
-        bindValue(getTabRef().append("name"))
+        bindValue(getTabRef().appendPath("name"))
                 .toProperty(tab.textProperty())
                 .createWithin(bindingContext);
-        bindValue(animalRef.append("name"))
+        bindValue(animalRef.appendPath("name"))
                 .toInput(name)
                 .createWithin(bindingContext);
-        bindValue(modelRef.append("editable"))
+        bindValue(modelRef.appendPath("editable"))
                 .toProperty(name.editableProperty())
                 .createWithin(bindingContext);
 
-        bindValue(modelRef.append("nameStatus"))
+        bindValue(modelRef.appendPath("nameStatus"))
                 .toText(nameStatus)
                 .createWithin(bindingContext);
-        bindValue(animalRef.append("type"))
+        bindValue(animalRef.appendPath("type"))
                 .toInput(type)
-                .withSelectItems(selItemsRef.append("types"))
+                .withSelectItems(selItemsRef.appendPath("types"))
                 .createWithin(bindingContext);
-        bindValue(animalRef.append("family"))
+        bindValue(animalRef.appendPath("family"))
                 .toInput(family)
-                .withSelectItems(selItemsRef.append("families"))
+                .withSelectItems(selItemsRef.appendPath("families"))
                 .createWithin(bindingContext);
 
         name.requestFocus();
@@ -65,12 +65,12 @@ public class AnimalDetailTabController extends BaseTabController {
 
     @ChangeListener(pattern = "model.animal.name")
     public void onNameChanged() {
-        System.out.println("Animal name changed changed to " + getTabRef().append("model.animal.name").getValue());
+        System.out.println("Animal name changed changed to " + getTabRef().appendPath("model.animal.name").getValue());
     }
 
     @FXML
     protected void save(@SuppressWarnings("UnusedParameters") ActionEvent event) {
-        getTabRef().append("model").fire(new Action("save"));
+        getTabRef().appendPath("model").fire(new Action("save"));
     }
 
 }

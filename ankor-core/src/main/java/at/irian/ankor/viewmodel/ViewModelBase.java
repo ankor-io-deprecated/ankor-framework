@@ -22,7 +22,7 @@ public abstract class ViewModelBase {
     }
 
     protected Ref thisRef(String property) {
-        return viewModelRef.append(property);
+        return viewModelRef.appendPath(property);
     }
 
     private void initialize(Ref viewModelRef) {

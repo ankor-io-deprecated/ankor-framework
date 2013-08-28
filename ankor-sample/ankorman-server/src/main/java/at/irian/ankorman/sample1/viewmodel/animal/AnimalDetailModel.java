@@ -65,8 +65,8 @@ public class AnimalDetailModel extends ViewModelBase {
 
     @ChangeListener(pattern = "**.<AnimalDetailModel>.animal.type")
     public void animalTypeChanged() {
-        Ref familyRef = thisRef().append("animal.family");
-        Ref familiesRef = thisRef().append("selectItems.families");
+        Ref familyRef = thisRef().appendPath("animal.family");
+        Ref familiesRef = thisRef().appendPath("selectItems.families");
         new AnimalTypeChangeHandler().handleChange(familyRef, familiesRef, animal.getType());
     }
 

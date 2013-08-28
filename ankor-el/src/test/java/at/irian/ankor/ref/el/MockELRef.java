@@ -78,11 +78,6 @@ public class MockELRef implements Ref {
     }
 
     @Override
-    public Ref append(String propertyOrSubPath) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public Ref appendPath(String propertyOrSubPath) {
         throw new UnsupportedOperationException();
     }

@@ -11,7 +11,7 @@ public class ModelRoot extends ViewModelBase {
 
     public ModelRoot(Ref rootRef, TaskRepository taskRepository) {
         super(rootRef);
-        model = new TaskListModel(rootRef.append("model"), taskRepository);
+        model = new TaskListModel(rootRef.appendPath("model"), taskRepository);
     }
 
     public TaskListModel getModel() {

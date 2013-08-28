@@ -78,10 +78,10 @@ public class AnimalSearchModel extends ViewModelBase {
                                                                       paginator.getFirst(),
                                                                       paginator.getMaxResults());
 
-                thisRef().append("animals").setValue(animals);
+                thisRef().appendPath("animals").setValue(animals);
 
                 LOG.info("... finished RELOADING");
-                thisRef().root().append("serverStatus").setValue("");
+                thisRef().root().appendPath("serverStatus").setValue("");
             }
         });
     }
@@ -94,8 +94,8 @@ public class AnimalSearchModel extends ViewModelBase {
 
     @ChangeListener(pattern = "**.<AnimalSearchModel>.filter.type")
     public void animalTypeChanged() {
-        Ref familyRef = thisRef().append("filter.family");
-        Ref familiesRef = thisRef().append("selectItems.families");
+        Ref familyRef = thisRef().appendPath("filter.family");
+        Ref familiesRef = thisRef().appendPath("selectItems.families");
         new AnimalTypeChangeHandler().handleChange(familyRef, familiesRef, filter.getType());
     }
 
@@ -113,7 +113,7 @@ public class AnimalSearchModel extends ViewModelBase {
                 LOG.error("Error saving animals ", e);
             }
         }
-        thisRef().root().append("serverStatus").setValue(status);
+        thisRef().root().appendPath("serverStatus").setValue(status);
     }
 
 }

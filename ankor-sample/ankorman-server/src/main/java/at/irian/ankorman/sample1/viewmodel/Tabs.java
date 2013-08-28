@@ -10,7 +10,6 @@ import at.irian.ankorman.sample1.server.AnimalRepository;
 import at.irian.ankorman.sample1.viewmodel.animal.AnimalDetailModel;
 import at.irian.ankorman.sample1.viewmodel.animal.AnimalSearchModel;
 import at.irian.ankorman.sample1.viewmodel.animal.AnimalSelectItems;
-import at.irian.ankorman.sample1.viewmodel.TabIds;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,10 +41,10 @@ public class Tabs extends ViewModelMapBase<String, Tab> {
     public void createAnimalSearchTab() {
         String tabId = TabIds.next();
 
-        Ref tabRef = thisRef().append(tabId);
+        Ref tabRef = thisRef().appendPath(tabId);
 
         Tab<AnimalSearchModel> tab = new Tab<>(tabId, tabRef, "Animal Search", "animalSearchTab");
-        AnimalSearchModel model = new AnimalSearchModel(tabRef.append("model"), animalRepository, getAnimalSelectItems(), tab.getName());
+        AnimalSearchModel model = new AnimalSearchModel(tabRef.appendPath("model"), animalRepository, getAnimalSelectItems(), tab.getName());
         tab.setModel(model);
 
         tabRef.setValue(tab);
@@ -56,11 +55,11 @@ public class Tabs extends ViewModelMapBase<String, Tab> {
     public void createAnimalDetailTab() {
         String tabId = TabIds.next();
 
-        Ref tabRef = thisRef().append(tabId);
+        Ref tabRef = thisRef().appendPath(tabId);
         ModelRoot root = thisRef().root().getValue();
 
         Tab<AnimalDetailModel> tab = new Tab<>(tabId, tabRef, "New Animal", "animalDetailTab");
-        AnimalDetailModel model = new AnimalDetailModel(tabRef.append("model"),
+        AnimalDetailModel model = new AnimalDetailModel(tabRef.appendPath("model"),
                                                         new Animal(),
                                                         getAnimalSelectItems(),
                                                         animalRepository,

@@ -66,26 +66,26 @@ public class MainController implements Initializable {
     @ChangeListener(pattern = "root")
     public void rootRefChanged() {
         Ref rootRef = refFactory().ref("root");
-        Ref tabsRef = rootRef.append("tabs");
+        Ref tabsRef = rootRef.appendPath("tabs");
 
-        bindValue(rootRef.append("userName"))
+        bindValue(rootRef.appendPath("userName"))
                 .toText(userName)
                 .createWithin(bindingContext);
 
-        bindValue(rootRef.append("serverStatus"))
+        bindValue(rootRef.appendPath("serverStatus"))
                 .toText(serverStatus)
                 .createWithin(bindingContext);
 
         Map<String,?> tabs = tabsRef.getValue();
         for (String tabId : tabs.keySet()) {
-            Ref tabRef = tabsRef.append(tabId);
+            Ref tabRef = tabsRef.appendPath(tabId);
             showTab(tabRef);
         }
     }
 
     private void showTab(Ref tabRef) {
         String tabId = tabRef.propertyName();
-        Ref typeRef = tabRef.append("type");
+        Ref typeRef = tabRef.appendPath("type");
         TabType tabType = TabType.valueOf((String) typeRef.getValue());
         new TabLoader(tabType, tabId).showTab(tabPane);
     }
@@ -96,7 +96,7 @@ public class MainController implements Initializable {
     }
 
     public void openAnimalDetailTab(@SuppressWarnings("UnusedParameters") ActionEvent actionEvent) {
-        Ref tabsRef = refFactory().ref("root").append("tabs");
+        Ref tabsRef = refFactory().ref("root").appendPath("tabs");
         tabsRef.fire(new ActionBuilder().withName(animalDetailTab.getActionName()).create());
     }
 }

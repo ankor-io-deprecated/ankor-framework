@@ -55,30 +55,30 @@ public class AnimalSearchTabController extends BaseTabController {
     @Override
     public void initialize() {
         final Ref tabRef = getTabRef();
-        Ref filterRef = tabRef.append("model.filter");
-        Ref selItemsRef = tabRef.append("model.selectItems");
-        Ref rowsRef = tabRef.append("model.animals.rows");
-        Ref paginatorRef = tabRef.append("model.animals.paginator");
+        Ref filterRef = tabRef.appendPath("model.filter");
+        Ref selItemsRef = tabRef.appendPath("model.selectItems");
+        Ref rowsRef = tabRef.appendPath("model.animals.rows");
+        Ref paginatorRef = tabRef.appendPath("model.animals.paginator");
 
         bindTableColumns();
 
-        bindValue(tabRef.append("name"))
+        bindValue(tabRef.appendPath("name"))
                 .toTabText(tab)
                 .createWithin(bindingContext);
 
-        bindValue(filterRef.append("name"))
+        bindValue(filterRef.appendPath("name"))
                 .toInput(name)
                 .withFloodControlDelay(500L)
                 .createWithin(bindingContext);
 
-        bindValue(filterRef.append("type"))
+        bindValue(filterRef.appendPath("type"))
                 .toInput(type)
-                .withSelectItems(selItemsRef.append("types"))
+                .withSelectItems(selItemsRef.appendPath("types"))
                 .createWithin(bindingContext);
 
-        bindValue(filterRef.append("family"))
+        bindValue(filterRef.appendPath("family"))
                 .toInput(family)
-                .withSelectItems(selItemsRef.append("families"))
+                .withSelectItems(selItemsRef.appendPath("families"))
                 .createWithin(bindingContext);
 
         bindValue(rowsRef)
@@ -107,7 +107,7 @@ public class AnimalSearchTabController extends BaseTabController {
                 .callAction(new ClickAction() {
                     @Override
                     public void onClick(Object value) {
-                        tabRef.append("model").fire(new Action("save"));
+                        tabRef.appendPath("model").fire(new Action("save"));
                     }
                 }).create();
 
@@ -124,7 +124,7 @@ public class AnimalSearchTabController extends BaseTabController {
                     @Override
                     public void handle(TableColumn.CellEditEvent<Map, String> t) {
                         int rowNum = t.getTablePosition().getRow();
-                        Ref rowNameRef = getTabRef().append(String.format("model.animals.rows[%d].name", rowNum));
+                        Ref rowNameRef = getTabRef().appendPath(String.format("model.animals.rows[%d].name", rowNum));
                         AnkorPatterns.changeValueLater(rowNameRef, t.getNewValue());
                     }
                 });

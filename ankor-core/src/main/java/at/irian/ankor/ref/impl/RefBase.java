@@ -328,11 +328,6 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
     }
 
     @Override
-    public Ref append(String propertyOrSubPath) {
-        return appendPath(propertyOrSubPath);
-    }
-
-    @Override
     public Ref appendPath(String propertyOrSubPath) {
         return refFactory().ref(pathSyntax().concat(path(), propertyOrSubPath));
     }

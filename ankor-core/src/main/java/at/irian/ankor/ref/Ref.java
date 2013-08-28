@@ -41,12 +41,6 @@ public interface Ref {
     Ref parent();
 
     /**
-     * @deprecated use {@link #appendPath(String)} or the shortcut {@link #$(String)} instead
-     */
-    @Deprecated
-    Ref append(String propertyOrSubPath);
-
-    /**
      * @param propertyOrSubPath name of a property or a valid property path (see {@link at.irian.ankor.path.PathSyntax})
      * @return Ref to the model object this path evaluates to relative to this Ref
      * @see at.irian.ankor.path.PathSyntax#concat(String, String)

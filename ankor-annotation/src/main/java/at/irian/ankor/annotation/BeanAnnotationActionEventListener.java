@@ -111,7 +111,7 @@ public class BeanAnnotationActionEventListener extends ActionEventListener {
                             if (ObjectUtils.isEmpty(((ActionSourceRef) annotation).value())) {
                                 paramRef = event.getActionProperty();
                             } else {
-                                paramRef = event.getActionProperty().append(((ActionSourceRef) annotation).value());
+                                paramRef = event.getActionProperty().appendPath(((ActionSourceRef) annotation).value());
                             }
                             paramValues[i] = paramRef;
 

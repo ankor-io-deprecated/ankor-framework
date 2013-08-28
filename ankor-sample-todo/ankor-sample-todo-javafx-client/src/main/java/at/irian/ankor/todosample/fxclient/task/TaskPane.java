@@ -24,6 +24,7 @@ import javafx.scene.layout.AnchorPane;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 public class TaskPane extends AnchorPane {
 
@@ -108,9 +109,9 @@ public class TaskPane extends AnchorPane {
 
     @FXML
     public void delete(ActionEvent actionEvent) {
-        HashMap params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<String, Object>();
         params.put("index", index);
-        itemRef.root().append("model").fire(new Action("deleteTask", params));
+        itemRef.root().appendPath("model").fire(new Action("deleteTask", params));
     }
 
     public StringProperty textProperty() {

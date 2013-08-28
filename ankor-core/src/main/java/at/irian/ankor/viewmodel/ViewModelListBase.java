@@ -15,7 +15,7 @@ public class ViewModelListBase<T> extends ViewModelBase {
     protected List<T> list;
 
     public ViewModelListBase(Ref viewModelRef, String name, List<T> list) {
-        super(viewModelRef.append(name));
+        super(viewModelRef.appendPath(name));
         this.list = new ArrayList<T>(list);
     }
 

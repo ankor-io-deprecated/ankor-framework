@@ -19,7 +19,7 @@ public class ModelRoot extends ViewModelBase {
 
     public ModelRoot(Ref viewModelRef, AnimalRepository animalRepository) {
         super(viewModelRef);
-        this.tabs = new Tabs(viewModelRef.append("tabs"), animalRepository);
+        this.tabs = new Tabs(viewModelRef.appendPath("tabs"), animalRepository);
         this.userName.set("");
         this.serverStatus.set("");
     }

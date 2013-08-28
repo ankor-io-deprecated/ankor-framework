@@ -21,7 +21,7 @@ public class ViewModelPropertyFieldsInitializer implements ViewModelPostProcesso
                     setValue(modelObject, field, mp);
                 } else {
                     if (currentValue.getRef() == null) {
-                        currentValue.setRef(modelRef.append(field.getName()));
+                        currentValue.setRef(modelRef.appendPath(field.getName()));
                     }
                 }
             }

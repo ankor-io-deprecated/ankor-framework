@@ -101,7 +101,7 @@ public class TaskListController implements Initializable {
         filterActive.selectedProperty().bindBidirectional(filterActiveSelected);
         filterCompleted.selectedProperty().bindBidirectional(filterCompletedSelected);
 
-        renderTasks(modelRef.append("tasks"));
+        renderTasks(modelRef.appendPath("tasks"));
     }
 
     @ChangeListener(pattern = "root.model.tasks")
@@ -159,7 +159,7 @@ public class TaskListController implements Initializable {
 
                 TaskPane node;
                 if (cache.get(index) == null) {
-                    Ref itemRef = modelRef.append("tasks").appendIndex(index);
+                    Ref itemRef = modelRef.appendPath("tasks").appendIndex(index);
                     cache.put(index, new TaskPane(itemRef));
                 }
                 node = cache.get(index);

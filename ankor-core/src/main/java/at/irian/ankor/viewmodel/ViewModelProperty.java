@@ -22,7 +22,7 @@ public class ViewModelProperty<T> implements Wrapper<T> {
     }
 
     public ViewModelProperty(Ref parentObjectRef, String propertyName, T initialValue) {
-        this.ref = parentObjectRef != null ? parentObjectRef.append(propertyName) : null;
+        this.ref = parentObjectRef != null ? parentObjectRef.appendPath(propertyName) : null;
         this.value = initialValue;
     }
 

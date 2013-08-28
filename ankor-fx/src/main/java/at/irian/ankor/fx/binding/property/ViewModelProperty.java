@@ -12,8 +12,8 @@ public class ViewModelProperty<T> extends SimpleObjectProperty<T> implements Ref
     private Ref ref;
 
     public ViewModelProperty(Ref parentObjectRef, String propertyName) {
-        super(parentObjectRef.append(propertyName).<T>getValue());
-        this.ref = parentObjectRef.append(propertyName);
+        super(parentObjectRef.appendPath(propertyName).<T>getValue());
+        this.ref = parentObjectRef.appendPath(propertyName);
 
         RefListeners.addPropChangeListener(ref, this);
     }
