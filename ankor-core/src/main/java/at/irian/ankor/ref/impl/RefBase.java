@@ -191,6 +191,10 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
         } else if (listOrArrayOrMap instanceof Map) {
             String mapKey = asMapKey(key);
             ((Map) listOrArrayOrMap).remove(mapKey);
+        } else if (key instanceof String) {
+            // neither List nor Array nor Map, than we assume it is a bean and set the corresponding property to null...
+            Ref propertyRef = refFactory().ref(pathSyntax().concat(path(), (String) key));
+            ((RefBase)propertyRef).handleNewValueChange(null);
         } else {
             throw new IllegalArgumentException("list/array/map of type " + listOrArrayOrMap.getClass().getName());
         }
