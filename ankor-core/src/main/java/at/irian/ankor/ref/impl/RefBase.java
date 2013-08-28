@@ -315,7 +315,7 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
 
     @Override
     public Ref root() {
-        return refFactory().rootRef();  // todo  get custom root
+        return refFactory().ref(pathSyntax().rootOf(path()));
     }
 
     @Override

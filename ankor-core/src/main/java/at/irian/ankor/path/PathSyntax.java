@@ -40,4 +40,6 @@ public interface PathSyntax {
     boolean isLiteralMapKey(String path);
 
     boolean isPathMapKey(String path);
+
+    String rootOf(String path);
 }

@@ -36,6 +36,21 @@ public class SimpleELPathSyntax implements PathSyntax {
     }
 
     @Override
+    public String rootOf(String path) {
+        int i = path.indexOf('.');
+        if (i > 0) {
+            return path.substring(0, i);
+        }
+
+        i = path.indexOf('[');
+        if (i > 0) {
+            return path.substring(0, i);
+        }
+
+        return path;
+    }
+
+    @Override
     public boolean isHasParent(String path) {
         return path.indexOf('.') >= 0 || path.indexOf('[') >= 0;
     }
