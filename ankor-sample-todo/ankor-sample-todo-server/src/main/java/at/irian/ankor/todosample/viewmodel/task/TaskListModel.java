@@ -132,7 +132,7 @@ public class TaskListModel extends ViewModelBase {
         if (!Filter.valueOf(filter).equals(Filter.completed)) {
             int index = tasks.size();
             TaskModel model = new TaskModel(task);
-            tasksRef().insert(index, model);
+            tasksRef().toCollectionRef().insert(index, model);
         }
     }
 

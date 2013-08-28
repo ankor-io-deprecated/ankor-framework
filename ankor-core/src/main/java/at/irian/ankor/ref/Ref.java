@@ -129,7 +129,9 @@ public interface Ref {
 
     void delete();
 
-    void delete(Object keyOrIndex);
 
-    void insert(int idx, Object value);
+    CollectionRef toCollectionRef();
+
+    MapRef toMapRef();
+
 }

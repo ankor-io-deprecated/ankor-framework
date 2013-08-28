@@ -11,11 +11,14 @@ import at.irian.ankor.event.ModelEvent;
 import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.event.PropertyWatcher;
 import at.irian.ankor.path.PathSyntax;
+import at.irian.ankor.ref.CollectionRef;
+import at.irian.ankor.ref.MapRef;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefFactory;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,8 +26,8 @@ import java.util.Map;
 /**
  * @author Manfred Geiler
  */
-public abstract class RefBase implements Ref, RefImplementor {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RefBase.class);
+public abstract class RefBase implements Ref, RefImplementor, CollectionRef, MapRef {
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RefBase.class);
 
     private final RefContextImplementor refContext;
 
@@ -38,8 +41,13 @@ public abstract class RefBase implements Ref, RefImplementor {
     }
 
     @Override
-    public void delete(Object key) {
+    public void delete(String key) {
         apply(Change.deleteChange(key));
+    }
+
+    @Override
+    public void delete(int idx) {
+        apply(Change.deleteChange(idx));
     }
 
     @Override
@@ -50,6 +58,26 @@ public abstract class RefBase implements Ref, RefImplementor {
     @Override
     public void insert(int idx, Object value) {
         apply(Change.insertChange(idx, value));
+    }
+
+    @Override
+    public void add(Object value) {
+        Object collOrArray = getValue();
+        if (collOrArray == null) {
+            LOG.error("Cannot add to null list or array");
+            return;
+        }
+
+        int size;
+        if (collOrArray instanceof Collection) {
+            size = ((Collection) collOrArray).size();
+        } else if (collOrArray.getClass().isArray()) {
+            size = Array.getLength(collOrArray);
+        } else {
+            throw new IllegalArgumentException("collection or array of type " + collOrArray.getClass());
+        }
+
+        apply(Change.insertChange(size, value));
     }
 
     @Override
@@ -73,7 +101,7 @@ public abstract class RefBase implements Ref, RefImplementor {
                 break;
 
             case insert:
-                handleInsertChange(oldValue, (Number)change.getKey(), change.getValue());
+                handleInsertChange(oldValue, change.getKey(), change.getValue());
                 break;
 
             case delete:
@@ -100,35 +128,70 @@ public abstract class RefBase implements Ref, RefImplementor {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private void handleInsertChange(Object listOrArray, Number key, Object value) {
+    @SuppressWarnings({"unchecked", "SuspiciousSystemArraycopy"})
+    private void handleInsertChange(Object listOrArray, Object key, Object value) {
         if (listOrArray instanceof List) {
+            int idx = asIndex(key);
             List list = (List)listOrArray;
-            if (key.intValue() == list.size()) {
+            if (idx == list.size()) {
                 list.add(value);
             } else {
-                list.add(key.intValue(), value);
+                list.add(idx, value);
             }
         } else if (listOrArray.getClass().isArray()) {
-            //todo:  optimize by means of array copy operation...
-            List list = Arrays.asList(listOrArray);
-            list.add(key.intValue(), value);
-            internalSetValue(list.toArray());
+            int idx = asIndex(key);
+            int length = Array.getLength(listOrArray);
+            Class<?> componentType = listOrArray.getClass().getComponentType();
+            Object newArray = Array.newInstance(componentType, length + 1);
+            if (idx > 0) {
+                System.arraycopy(listOrArray, 0, newArray, 0, idx);
+            }
+            Array.set(listOrArray, idx, value);
+            if (idx < length) {
+                System.arraycopy(listOrArray, idx, newArray, idx + 1, length - idx);
+            }
         } else {
             throw new IllegalArgumentException("list/array of type " + listOrArray.getClass().getName());
         }
     }
 
+    private int asIndex(Object idxObj) {
+        if (idxObj instanceof Number) {
+            return ((Number) idxObj).intValue();
+        } else if (idxObj instanceof String) {
+            return Integer.parseInt((String) idxObj);
+        } else {
+            throw new IllegalArgumentException("list/array index of type " + idxObj.getClass());
+        }
+    }
+
+    private String asMapKey(Object keyObj) {
+        if (keyObj instanceof String) {
+            return (String)keyObj;
+        } else {
+            throw new IllegalArgumentException("map key of type " + keyObj.getClass());
+        }
+    }
+
+    @SuppressWarnings("SuspiciousSystemArraycopy")
     private void handleDeleteChange(Object listOrArrayOrMap, Object key) {
         if (listOrArrayOrMap instanceof List) {
-            ((List) listOrArrayOrMap).remove(Integer.parseInt(key.toString()));
+            int idx = asIndex(key);
+            ((List) listOrArrayOrMap).remove(idx);
         } else if (listOrArrayOrMap.getClass().isArray()) {
-            //todo:  optimize by means of array copy operation...
-            List list = Arrays.asList(listOrArrayOrMap);
-            list.remove(((Number)key).intValue());
-            internalSetValue(list.toArray());
+            int idx = asIndex(key);
+            int length = Array.getLength(listOrArrayOrMap);
+            Class<?> componentType = listOrArrayOrMap.getClass().getComponentType();
+            Object newArray = Array.newInstance(componentType, length - 1);
+            if (idx > 0) {
+                System.arraycopy(listOrArrayOrMap, 0, newArray, 0, idx);
+            }
+            if (idx + 1 < length) {
+                System.arraycopy(listOrArrayOrMap, idx, newArray, idx - 1, length - idx - 1);
+            }
         } else if (listOrArrayOrMap instanceof Map) {
-            ((Map) listOrArrayOrMap).remove(key);
+            String mapKey = asMapKey(key);
+            ((Map) listOrArrayOrMap).remove(mapKey);
         } else {
             throw new IllegalArgumentException("list/array/map of type " + listOrArrayOrMap.getClass().getName());
         }
@@ -351,4 +414,14 @@ public abstract class RefBase implements Ref, RefImplementor {
         return "Ref{" + path() + "}";
     }
 
+
+    @Override
+    public CollectionRef toCollectionRef() {
+        return this;
+    }
+
+    @Override
+    public MapRef toMapRef() {
+        return this;
+    }
 }

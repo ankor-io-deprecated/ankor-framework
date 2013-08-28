@@ -3,6 +3,8 @@ package at.irian.ankor.ref.el;
 import at.irian.ankor.action.Action;
 import at.irian.ankor.event.ModelEvent;
 import at.irian.ankor.path.el.SimpleELPathSyntax;
+import at.irian.ankor.ref.CollectionRef;
+import at.irian.ankor.ref.MapRef;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 
@@ -35,15 +37,15 @@ public class MockELRef implements Ref {
         this.propertyValue = value;
     }
 
-    @Override
-    public void delete(Object key) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void insert(int idx, Object value) {
-        throw new UnsupportedOperationException();
-    }
+//    @Override
+//    public void delete(Object key) {
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    @Override
+//    public void insert(int idx, Object value) {
+//        throw new UnsupportedOperationException();
+//    }
 
     @Override
     public void delete() {
@@ -166,4 +168,13 @@ public class MockELRef implements Ref {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public CollectionRef toCollectionRef() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public MapRef toMapRef() {
+        throw new UnsupportedOperationException();
+    }
 }

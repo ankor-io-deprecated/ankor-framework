@@ -52,7 +52,7 @@ public class ViewModelListBase<T> extends ViewModelBase {
     }
 
     public boolean add(T t) {
-        listRef().insert(size(), t);
+        listRef().toCollectionRef().add(t);
         return true;
     }
 
@@ -104,7 +104,7 @@ public class ViewModelListBase<T> extends ViewModelBase {
     }
 
     public void add(int index, T element) {
-        listRef().insert(index, element);
+        listRef().toCollectionRef().insert(index, element);
     }
 
     public T remove(int index) {
