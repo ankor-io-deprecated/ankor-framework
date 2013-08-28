@@ -74,8 +74,7 @@ public class SimpleELPathSyntax implements PathSyntax {
     @Override
     public String getPropertyName(String path) {
         if (path.endsWith("]")) {
-            int i = path.lastIndexOf('[');
-            String key = path.substring(i + 1, path.length() - 1);
+            String key = getArrayIdx(path);
             if (isLiteralKey(key)) {
                 return key.substring(1, key.length() - 1);
             } else {
@@ -95,13 +94,21 @@ public class SimpleELPathSyntax implements PathSyntax {
         return key.length() >= 2 && key.startsWith("'") && key.endsWith("'");
     }
 
+    /**
+     * @param path A string that contains '[' and ends with ']'
+     * @return The string between '[' and ']'
+     */
+    private String getArrayIdx(String path) {
+        int i = path.lastIndexOf('[');
+        return path.substring(i + 1, path.length() - 1);
+    }
+
     @Override
     public boolean isArrayIdx(String path) {
         if (!path.endsWith("]")) {
             return false;
         }
-        int i = path.lastIndexOf('[');
-        String key = path.substring(i, path.length() - 1);
+        String key = getArrayIdx(path);
         try {
             Integer.parseInt(key);
             return true;
@@ -115,8 +122,7 @@ public class SimpleELPathSyntax implements PathSyntax {
         if (!path.endsWith("]")) {
             return false;
         }
-        int i = path.lastIndexOf('[');
-        String key = path.substring(i, path.length() - 1);
+        String key = getArrayIdx(path);
         return isLiteralKey(key);
     }
 
@@ -125,8 +131,7 @@ public class SimpleELPathSyntax implements PathSyntax {
         if (!path.endsWith("]")) {
             return false;
         }
-        int i = path.lastIndexOf('[');
-        String key = path.substring(i, path.length() - 1);
+        String key = getArrayIdx(path);
         return !key.startsWith("'") || !key.endsWith("'");
     }
 }
