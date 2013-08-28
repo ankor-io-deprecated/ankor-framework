@@ -116,7 +116,7 @@ public abstract class RefBase implements Ref, RefImplementor {
 
     private void handleDeleteChange(Object listOrArrayOrMap, Object key) {
         if (listOrArrayOrMap instanceof List) {
-            ((List) listOrArrayOrMap).remove(((Number) key).intValue());
+            ((List) listOrArrayOrMap).remove(Integer.parseInt((String) key));
         } else if (listOrArrayOrMap.getClass().isArray()) {
             //todo:  optimize by means of array copy operation...
             List list = Arrays.asList(listOrArrayOrMap);

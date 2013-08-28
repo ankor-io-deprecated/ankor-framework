@@ -75,7 +75,7 @@ public class SimpleELPathSyntax implements PathSyntax {
     public String getPropertyName(String path) {
         if (path.endsWith("]")) {
             int i = path.lastIndexOf('[');
-            String key = path.substring(i, path.length() - 1);
+            String key = path.substring(i + 1, path.length() - 1);
             if (isLiteralKey(key)) {
                 return key.substring(1, key.length() - 1);
             } else {
