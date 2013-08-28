@@ -13,67 +13,7 @@ define([
     });
 
     var TaskList = function(modelRef) {
-
         var ENTER_KEY = 13;
-
-        // Proposed additional adapters
-
-        $.fn.ankorBind1 = function(functionName, ref) {
-            var element = this.first();
-
-            return ref.addPropChangeListener(function(ref) {
-                $.fn[functionName].call(element, ref.getValue());
-            });
-        };
-
-        $.fn.ankorBind2 = function(functionName, propertyName, ref) {
-            var element = this.first();
-
-            return ref.addPropChangeListener(function(ref) {
-                $.fn[functionName].call(element, propertyName, ref.getValue());
-            });
-        };
-
-        $.fn.ankorBindValue = function(functionName, propertyName, ref) {
-            var element = this.first();
-
-            element.on("change", function() {
-                var value = $.fn[functionName].call(element, propertyName);
-                ref.setValue(value);
-            });
-
-            return ref.addPropChangeListener(function(ref) {
-                $.fn[functionName].call(element, propertyName, ref.getValue());
-            });
-        };
-
-        $.fn.ankorBindHtml = function(ref) {
-            return $.fn.ankorBind1.call(this, "html", ref);
-        };
-
-        $.fn.ankorBindText = function(ref) {
-            return $.fn.ankorBind1.call(this, "text", ref);
-        };
-
-        $.fn.ankorBindProp = function(propertyName, ref) {
-            return $.fn.ankorBindValue.call(this, "prop", propertyName, ref);
-        };
-
-        $.fn.ankorBindAttr = function(propertyName, ref) {
-            return $.fn.ankorBindValue.call(this, "attr", propertyName, ref);
-        };
-
-        $.fn.ankorBindData = function(propertyName, ref) {
-            return $.fn.ankorBindValue.call(this, "data", propertyName, ref);
-        };
-
-        $.fn.ankorBindToggle = function(ref) {
-            return $.fn.ankorBind1.call(this, "toggle", ref);
-        }
-
-        $.fn.ankorBindToggleClass = function(clazz, ref) {
-            return $.fn.ankorBind2.call(this, "toggleClass", clazz, ref);
-        }
 
         $("#app").html(template.render());
 

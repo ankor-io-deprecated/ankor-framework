@@ -5,18 +5,23 @@ import at.irian.ankor.todosample.domain.task.Task;
 
 import java.util.LinkedHashMap;
 
+/**
+ * Wrapper around the domain task model.
+ */
 public class TaskModel {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TaskModel.class);
 
     @AnkorIgnore
+    private String id;
+
+    @AnkorIgnore
     private Task task;
 
-    private int index;
     private boolean editing = false;
 
-    public TaskModel(Task task, int index) {
+    public TaskModel(Task task) {
         this.task = task;
-        this.index = index;
+        this.id = task.getId();
     }
 
     public TaskModel(LinkedHashMap<String, Object> task) {
@@ -24,7 +29,8 @@ public class TaskModel {
         this.task.setId((String) task.get("id"));
         this.task.setTitle((String) task.get("title"));
         this.task.setCompleted((Boolean) task.get("completed"));
-        this.index = (int) task.get("index");
+
+        this.id = (String) task.get("id");
     }
 
     public Task getTask() {
@@ -51,14 +57,6 @@ public class TaskModel {
         task.setCompleted(completed);
     }
 
-    public int getIndex() {
-        return index;
-    }
-
-    public void setIndex(int index) {
-        this.index = index;
-    }
-
     public boolean isEditing() {
         return editing;
     }
@@ -67,6 +65,10 @@ public class TaskModel {
         this.editing = editing;
     }
 
+    /*
+     * XXX
+     * This is working for now but needs to be reviewed.
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -74,18 +76,14 @@ public class TaskModel {
 
         TaskModel taskModel = (TaskModel) o;
 
-        if (editing != taskModel.editing) return false;
-        if (index != taskModel.index) return false;
-        if (task != null ? !task.equals(taskModel.task) : taskModel.task != null) return false;
+        if (!id.equals(taskModel.id)) return false;
+        if (!task.isCompleted() == taskModel.isCompleted()) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = task != null ? task.hashCode() : 0;
-        result = 31 * result + index;
-        result = 31 * result + (editing ? 1 : 0);
-        return result;
+        return id.hashCode();
     }
 }

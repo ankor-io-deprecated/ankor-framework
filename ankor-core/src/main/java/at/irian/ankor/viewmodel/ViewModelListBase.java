@@ -5,6 +5,11 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.*;
 
+/**
+ * A utility class to make it more intuitive to work with lists and Ankor.
+ *
+ * Currently the "list" property has to be referenced to add ChangeListeners on the list
+ */
 public class ViewModelListBase<T> extends ViewModelBase {
 
     protected List<T> list;
@@ -15,12 +20,12 @@ public class ViewModelListBase<T> extends ViewModelBase {
     }
 
     private Ref listRef() {
-        return thisRef().append("list");
+        return thisRef("list");
     }
 
     private Ref listRef(int i) {
-        return thisRef().append(String.format("list[%s]", i));
-}
+        return listRef().appendIndex(i);
+    }
 
     public int size() {
         return list.size();
@@ -47,8 +52,7 @@ public class ViewModelListBase<T> extends ViewModelBase {
     }
 
     public boolean add(T t) {
-        list.add((T) new Object());
-        listRef(size() - 1).setValue(t);
+        listRef().insert(size(), t);
         return true;
     }
 
@@ -85,6 +89,10 @@ public class ViewModelListBase<T> extends ViewModelBase {
         listRef().setValue(new ArrayList<T>());
     }
 
+    public void reset(List<? extends T> c) {
+        listRef().setValue(c);
+    }
+
     public T get(int index) {
         return list.get(index);
     }
@@ -95,54 +103,13 @@ public class ViewModelListBase<T> extends ViewModelBase {
         return oldValue;
     }
 
-    /**
-     * Starting from index, shifts all elements of the list to the left (closer to 0),
-     * while informing the client about the changes.
-     *
-     * The last element of the list will be set to null, while the element at index will be be removed from the list.
-     * Note that this will not shift the entire list like a typical shift functions.
-     *
-     * @param index The index from which to start the shift.
-     *              The element on this position will be removed from the collection.
-     */
-    private void shiftLeft(int index) {
-        int i;
-        for(i = index; i < size() - 1; i++) {
-            listRef(i).setValue(get(i + 1));
-        }
-
-        listRef(i).setValue(null);
-        list.remove(list.size()-1);
-    }
-
-    /**
-     * Starting from index + 1, shifts all elements of the list to the right (away from 0),
-     * while informing the client about the changes.
-     *
-     * The element at index and the element at index + 1 will be identical after the shift.
-     * Note that this will not shift the entire List like typical shift functions.
-     *
-     * @param index The index from which to start the shift.
-     *              The element on this position and the next will be identical after the shift.
-     */
-    private void shiftRight(int index) {
-        list.add((T) new Object());
-
-        int i;
-        for(i = size() - 1; i > index; i--) {
-            listRef(i).setValue(this.get(i - 1));
-        }
-    }
-
-
     public void add(int index, T element) {
-        shiftRight(index);
-        listRef(index).setValue(element);
+        listRef().insert(index, element);
     }
 
     public T remove(int index) {
         T toRemove = get(index);
-        shiftLeft(index);
+        listRef(index).delete();
         return toRemove;
     }
 

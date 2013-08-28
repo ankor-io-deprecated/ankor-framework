@@ -150,10 +150,9 @@ public class TaskListController implements Initializable {
         public void run() {
             tasksList.getChildren().clear();
 
+            int index = 0;
             for (LinkedHashMap<String, Object> task : tasks) {
                 TaskModel model = new TaskModel(task);
-
-                int index = model.getIndex();
 
                 TaskPane node;
                 if (cache.get(index) == null) {
@@ -161,9 +160,11 @@ public class TaskListController implements Initializable {
                     cache.put(index, new TaskPane(itemRef));
                 }
                 node = cache.get(index);
-                node.setModel(model);
+                node.updateContent(model, index);
 
                 tasksList.getChildren().add(node);
+
+                index++;
             }
         }
     }
