@@ -1,7 +1,6 @@
 package at.irian.ankor.viewmodel;
 
 import at.irian.ankor.ref.Ref;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.*;
 
@@ -66,23 +65,23 @@ public class ViewModelListBase<T> extends ViewModelBase {
     }
 
     public boolean containsAll(Collection<?> c) {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     public boolean addAll(Collection<? extends T> c) {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     public boolean addAll(int index, Collection<? extends T> c) {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     public boolean removeAll(Collection<?> c) {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     public boolean retainAll(Collection<?> c) {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     public void clear() {
@@ -130,7 +129,7 @@ public class ViewModelListBase<T> extends ViewModelBase {
     }
 
     public List<T> subList(int fromIndex, int toIndex) {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     public List<T> getList() {
