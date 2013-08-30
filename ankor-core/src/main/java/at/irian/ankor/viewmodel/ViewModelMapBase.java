@@ -1,5 +1,6 @@
 package at.irian.ankor.viewmodel;
 
+import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
 
 import java.util.Collection;
@@ -10,14 +11,14 @@ import java.util.Set;
  * @author Thomas Spiegl
  */
 @SuppressWarnings("NullableProblems")
-public abstract class ViewModelMapBase<K, V> extends ViewModelBase implements Map<K, V> {
+public abstract class ViewModelMapBase<K, V> implements Map<K, V> {
 
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(MapViewModel.class);
 
     protected Map<K, V> map;
 
     protected ViewModelMapBase(Ref viewModelRef, Map<K, V> map) {
-        super(viewModelRef);
+        AnkorPatterns.initViewModel(this, viewModelRef);
         this.map = map;
     }
 

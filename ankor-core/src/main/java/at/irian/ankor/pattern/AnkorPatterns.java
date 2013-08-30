@@ -5,6 +5,7 @@ import at.irian.ankor.change.ChangeRequestEvent;
 import at.irian.ankor.delay.TaskRequestEvent;
 import at.irian.ankor.event.dispatch.EventDispatcher;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.viewmodel.ViewModelSupport;
 
 /**
  * @author Manfred Geiler
@@ -35,4 +36,10 @@ public final class AnkorPatterns {
     private static EventDispatcher getEventDispatcherFor(Ref property) {
         return property.context().modelContext().getEventDispatcher();
     }
+
+
+    public static void initViewModel(Object viewModelObject, Ref viewModelRef) {
+        ViewModelSupport.invokePostProcessorsOn(viewModelObject, viewModelRef);
+    }
+
 }

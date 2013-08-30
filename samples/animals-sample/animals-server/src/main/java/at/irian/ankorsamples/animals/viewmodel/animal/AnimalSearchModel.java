@@ -4,8 +4,8 @@ import at.irian.ankor.annotation.ActionListener;
 import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.delay.FloodControl;
 import at.irian.ankor.messaging.AnkorIgnore;
+import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.viewmodel.ViewModelBase;
 import at.irian.ankor.viewmodel.ViewModelProperty;
 import at.irian.ankorsamples.animals.domain.animal.Animal;
 import at.irian.ankorsamples.animals.domain.animal.AnimalRepository;
@@ -15,17 +15,17 @@ import at.irian.ankorsamples.animals.viewmodel.TabNameCreator;
 * @author Thomas Spiegl
 */
 @SuppressWarnings("UnusedDeclaration")
-public class AnimalSearchModel extends ViewModelBase {
+public class AnimalSearchModel {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalSearchModel.class);
 
     @AnkorIgnore
     private final ViewModelProperty<String> tabName;
-
     @AnkorIgnore
     private final AnimalRepository animalRepository;
-
     @AnkorIgnore
     private final FloodControl reloadFloodControl;
+    @AnkorIgnore
+    private final Ref thisRef;
 
     private AnimalSearchFilter filter;
 
@@ -36,7 +36,8 @@ public class AnimalSearchModel extends ViewModelBase {
     public AnimalSearchModel(Ref viewModelRef,
                              AnimalRepository animalRepository, AnimalSelectItems selectItems,
                              ViewModelProperty<String> tabName) {
-        super(viewModelRef);
+        AnkorPatterns.initViewModel(this, viewModelRef);
+        this.thisRef = viewModelRef;
         this.animalRepository = animalRepository;
         this.tabName = tabName;
         this.filter = new AnimalSearchFilter();
@@ -78,10 +79,10 @@ public class AnimalSearchModel extends ViewModelBase {
                                                                       paginator.getFirst(),
                                                                       paginator.getMaxResults());
 
-                thisRef().appendPath("animals").setValue(animals);
+                thisRef.appendPath("animals").setValue(animals);
 
                 LOG.info("... finished RELOADING");
-                thisRef().root().appendPath("serverStatus").setValue("");
+                thisRef.root().appendPath("serverStatus").setValue("");
             }
         });
     }
@@ -94,8 +95,8 @@ public class AnimalSearchModel extends ViewModelBase {
 
     @ChangeListener(pattern = "**.<AnimalSearchModel>.filter.type")
     public void animalTypeChanged() {
-        Ref familyRef = thisRef().appendPath("filter.family");
-        Ref familiesRef = thisRef().appendPath("selectItems.families");
+        Ref familyRef = thisRef.appendPath("filter.family");
+        Ref familiesRef = thisRef.appendPath("selectItems.families");
         new AnimalTypeChangeHandler().handleChange(familyRef, familiesRef, filter.getType());
     }
 
@@ -113,7 +114,7 @@ public class AnimalSearchModel extends ViewModelBase {
                 LOG.error("Error saving animals ", e);
             }
         }
-        thisRef().root().appendPath("serverStatus").setValue(status);
+        thisRef.root().appendPath("serverStatus").setValue(status);
     }
 
 }

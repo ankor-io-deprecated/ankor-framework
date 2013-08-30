@@ -6,7 +6,6 @@ import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.listener.RefActionListener;
 import at.irian.ankor.ref.listener.RefChangeListener;
 import at.irian.ankor.ref.match.RefMatcher;
-import at.irian.ankor.viewmodel.ViewModelBase;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
 
 import java.lang.annotation.Annotation;
@@ -22,12 +21,12 @@ public class ViewModelAnnotationScanner implements ViewModelPostProcessor {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ViewModelAnnotationScanner.class);
 
     @Override
-    public void postProcess(ViewModelBase viewModelObject, Ref viewModelRef) {
+    public void postProcess(Object viewModelObject, Ref viewModelRef) {
         scan(viewModelObject, viewModelRef);
     }
 
 
-    private void scan(ViewModelBase modelObject, Ref modelRef) {
+    private void scan(Object modelObject, Ref modelRef) {
         Class<?> modelType = modelObject.getClass();
         while (modelType != null) {
             scan(modelObject, modelRef, modelType);
@@ -35,7 +34,7 @@ public class ViewModelAnnotationScanner implements ViewModelPostProcessor {
         }
     }
 
-    private void scan(ViewModelBase modelObject, Ref modelRef, Class<?> modelType) {
+    private void scan(Object modelObject, Ref modelRef, Class<?> modelType) {
         for (Method method : modelType.getDeclaredMethods()) {
 
             ChangeListener changeListenerAnnotation = method.getAnnotation(ChangeListener.class);
@@ -69,12 +68,12 @@ public class ViewModelAnnotationScanner implements ViewModelPostProcessor {
 
     private static class MyChangeListener implements RefChangeListener {
 
-        private final ViewModelBase modelObject;
+        private final Object modelObject;
         private final Ref modelRef;
         private final String[] patterns;
         private final Method method;
 
-        public MyChangeListener(ViewModelBase modelObject, Ref modelRef, String[] patterns, Method method) {
+        public MyChangeListener(Object modelObject, Ref modelRef, String[] patterns, Method method) {
             this.modelObject = modelObject;
             this.modelRef = modelRef;
             this.patterns = patterns;
@@ -103,12 +102,12 @@ public class ViewModelAnnotationScanner implements ViewModelPostProcessor {
 
     private static class MyActionListener implements RefActionListener {
 
-        private final ViewModelBase modelObject;
+        private final Object modelObject;
         private final String actionName;
         private final Method method;
         private final String[] paramNames;
 
-        public MyActionListener(ViewModelBase modelObject, String actionName, Method method, String[] paramNames) {
+        public MyActionListener(Object modelObject, String actionName, Method method, String[] paramNames) {
             this.modelObject = modelObject;
             this.paramNames = paramNames;
             this.actionName = actionName;

@@ -5,13 +5,15 @@ import at.irian.ankor.ref.Ref;
 import java.lang.reflect.Field;
 
 /**
+ * This ViewModelPostProcessor scans a class for fields of type ViewModelProperty and initializes these fields.
+ *
 * @author Manfred Geiler
 */
 @SuppressWarnings("UnusedDeclaration")
 public class ViewModelPropertyFieldsInitializer implements ViewModelPostProcessor {
 
     @Override
-    public void postProcess(ViewModelBase modelObject, Ref modelRef) {
+    public void postProcess(Object modelObject, Ref modelRef) {
         for (Field field : modelObject.getClass().getDeclaredFields()) {
             if (ViewModelProperty.class.isAssignableFrom(field.getType())) {
                 assureAccessible(field);

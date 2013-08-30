@@ -1,6 +1,7 @@
 package at.irian.ankorsamples.animals.viewmodel;
 
 import at.irian.ankor.annotation.ActionListener;
+import at.irian.ankor.messaging.AnkorIgnore;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.viewmodel.ViewModelMapBase;
 import at.irian.ankorsamples.animals.domain.animal.Animal;
@@ -21,10 +22,14 @@ import java.util.List;
  */
 public class Tabs extends ViewModelMapBase<String, Tab> {
 
-    private AnimalRepository animalRepository;
+    @AnkorIgnore
+    private final Ref thisRef;
+    @AnkorIgnore
+    private final AnimalRepository animalRepository;
 
     protected Tabs(Ref viewModelRef, AnimalRepository animalRepository) {
         super(viewModelRef, new HashMap<String, Tab>());
+        this.thisRef = viewModelRef;
         this.animalRepository = animalRepository;
     }
 
@@ -41,7 +46,7 @@ public class Tabs extends ViewModelMapBase<String, Tab> {
     public void createAnimalSearchTab() {
         String tabId = TabIds.next();
 
-        Ref tabRef = thisRef().appendPath(tabId);
+        Ref tabRef = thisRef.appendPath(tabId);
 
         Tab<AnimalSearchModel> tab = new Tab<>(tabId, tabRef, "Animal Search", "animalSearchTab");
         AnimalSearchModel model = new AnimalSearchModel(tabRef.appendPath("model"), animalRepository, getAnimalSelectItems(), tab.getName());
@@ -55,8 +60,8 @@ public class Tabs extends ViewModelMapBase<String, Tab> {
     public void createAnimalDetailTab() {
         String tabId = TabIds.next();
 
-        Ref tabRef = thisRef().appendPath(tabId);
-        ModelRoot root = thisRef().root().getValue();
+        Ref tabRef = thisRef.appendPath(tabId);
+        ModelRoot root = thisRef.root().getValue();
 
         Tab<AnimalDetailModel> tab = new Tab<>(tabId, tabRef, "New Animal", "animalDetailTab");
         AnimalDetailModel model = new AnimalDetailModel(tabRef.appendPath("model"),

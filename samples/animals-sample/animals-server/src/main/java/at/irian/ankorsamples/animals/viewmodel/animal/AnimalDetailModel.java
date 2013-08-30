@@ -3,8 +3,8 @@ package at.irian.ankorsamples.animals.viewmodel.animal;
 import at.irian.ankor.annotation.ActionListener;
 import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.messaging.AnkorIgnore;
+import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.viewmodel.ViewModelBase;
 import at.irian.ankor.viewmodel.ViewModelProperty;
 import at.irian.ankorsamples.animals.domain.animal.Animal;
 import at.irian.ankorsamples.animals.domain.animal.AnimalRepository;
@@ -14,7 +14,7 @@ import at.irian.ankorsamples.animals.viewmodel.TabNameCreator;
  * @author Thomas Spiegl
  */
 @SuppressWarnings("UnusedDeclaration")
-public class AnimalDetailModel extends ViewModelBase {
+public class AnimalDetailModel {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalDetailModel.class);
 
     @AnkorIgnore
@@ -23,6 +23,8 @@ public class AnimalDetailModel extends ViewModelBase {
     private final ViewModelProperty<String> tabName;
     @AnkorIgnore
     private final ViewModelProperty<String> serverStatus;
+    @AnkorIgnore
+    private final Ref thisRef;
     @AnkorIgnore
     private boolean saved = false;
 
@@ -37,7 +39,8 @@ public class AnimalDetailModel extends ViewModelBase {
     public AnimalDetailModel(Ref myRef,
                              Animal animal, AnimalSelectItems selectItems, AnimalRepository animalRepository,
                              ViewModelProperty<String> tabName, ViewModelProperty<String> serverStatus) {
-        super(myRef);
+        AnkorPatterns.initViewModel(this, myRef);
+        this.thisRef = myRef;
         this.animal = animal;
         this.selectItems = selectItems;
         this.animalRepository = animalRepository;
@@ -65,8 +68,8 @@ public class AnimalDetailModel extends ViewModelBase {
 
     @ChangeListener(pattern = "**.<AnimalDetailModel>.animal.type")
     public void animalTypeChanged() {
-        Ref familyRef = thisRef().appendPath("animal.family");
-        Ref familiesRef = thisRef().appendPath("selectItems.families");
+        Ref familyRef = thisRef.appendPath("animal.family");
+        Ref familiesRef = thisRef.appendPath("selectItems.families");
         new AnimalTypeChangeHandler().handleChange(familyRef, familiesRef, animal.getType());
     }
 

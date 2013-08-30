@@ -1,5 +1,7 @@
 package at.irian.ankor.viewmodel;
 
+import at.irian.ankor.messaging.AnkorIgnore;
+import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
 
 import java.util.*;
@@ -9,17 +11,21 @@ import java.util.*;
  *
  * Currently the "list" property has to be referenced to add ChangeListeners on the list
  */
-public class ViewModelListBase<T> extends ViewModelBase {
+public class ViewModelListBase<T> {
 
+    @AnkorIgnore
+    private final Ref thisRef;
+    @AnkorIgnore
     protected List<T> list;
 
-    public ViewModelListBase(Ref viewModelRef, String name, List<T> list) {
-        super(viewModelRef.appendPath(name));
+    public ViewModelListBase(Ref viewModelRef, List<T> list) {
+        AnkorPatterns.initViewModel(this, viewModelRef);
+        this.thisRef = viewModelRef;
         this.list = new ArrayList<T>(list);
     }
 
     private Ref listRef() {
-        return thisRef("list");
+        return thisRef.appendPath("list");
     }
 
     private Ref listRef(int i) {

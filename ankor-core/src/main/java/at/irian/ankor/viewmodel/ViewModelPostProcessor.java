@@ -6,5 +6,5 @@ import at.irian.ankor.ref.Ref;
  * @author Manfred Geiler
  */
 public interface ViewModelPostProcessor {
-    void postProcess(ViewModelBase viewModelObject, Ref viewModelRef);
+    void postProcess(Object viewModelObject, Ref viewModelRef);
 }
