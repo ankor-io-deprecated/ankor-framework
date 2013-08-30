@@ -6,7 +6,7 @@
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>
-    <option name="MAIN_CLASS_NAME" value="at.irian.ankorman.sample1.fxclient.App" />
+    <option name="MAIN_CLASS_NAME" value="at.irian.ankorsamples.animals.fxclient.App" />
     <option name="VM_PARAMETERS" value="" />
     <option name="PROGRAM_PARAMETERS" value="--mode=httpClient --client=c1 --server=server@http://localhost:8080/ankor" />
     <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
