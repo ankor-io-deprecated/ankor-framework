@@ -1,7 +1,6 @@
-package at.irian.ankor.todosample.server;
+package at.irian.ankorsamples.todosample.domain.task;
 
-import at.irian.ankor.todosample.domain.task.Task;
-import at.irian.ankor.todosample.viewmodel.task.Filter;
+import at.irian.ankorsamples.todosample.viewmodel.task.Filter;
 
 import java.util.ArrayList;
 import java.util.List;

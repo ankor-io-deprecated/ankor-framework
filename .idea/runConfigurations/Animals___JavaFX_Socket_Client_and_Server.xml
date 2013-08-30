@@ -2,7 +2,7 @@
   <configuration default="false" name="Animals - JavaFX Socket Client and Server" type="Application" factoryName="Application" singleton="true">
     <extension name="coverage" enabled="false" merge="false" runner="idea">
       <pattern>
-        <option name="PATTERN" value="at.irian.ankor.todosample.fxclient.*" />
+        <option name="PATTERN" value="at.irian.ankorsamples.todosample.fxclient.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>

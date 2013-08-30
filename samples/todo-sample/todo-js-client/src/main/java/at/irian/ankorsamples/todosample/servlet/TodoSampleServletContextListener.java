@@ -1,10 +1,11 @@
-package at.irian.ankor.todosample.server;
+package at.irian.ankorsamples.todosample.servlet;
 
 import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.servlet.AnkorServletContextListener;
 import at.irian.ankor.session.ModelRootFactory;
-import at.irian.ankor.todosample.viewmodel.ModelRoot;
+import at.irian.ankorsamples.todosample.domain.task.TaskRepository;
+import at.irian.ankorsamples.todosample.viewmodel.ModelRoot;
 
 import java.util.Collection;
 import java.util.Collections;

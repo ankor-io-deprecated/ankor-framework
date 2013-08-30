@@ -1,4 +1,4 @@
-package at.irian.ankor.todosample.domain.task;
+package at.irian.ankorsamples.todosample.domain.task;
 
 import java.util.UUID;
 

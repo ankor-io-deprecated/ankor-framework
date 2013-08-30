@@ -1,9 +1,9 @@
-package at.irian.ankor.todosample.viewmodel;
+package at.irian.ankorsamples.todosample.viewmodel;
 
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.todosample.server.TaskRepository;
-import at.irian.ankor.todosample.viewmodel.task.TaskListModel;
 import at.irian.ankor.viewmodel.ViewModelBase;
+import at.irian.ankorsamples.todosample.domain.task.TaskRepository;
+import at.irian.ankorsamples.todosample.viewmodel.task.TaskListModel;
 
 public class ModelRoot extends ViewModelBase {
 

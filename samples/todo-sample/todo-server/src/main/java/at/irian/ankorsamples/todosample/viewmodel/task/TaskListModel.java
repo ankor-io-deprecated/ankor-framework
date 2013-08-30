@@ -1,4 +1,4 @@
-package at.irian.ankor.todosample.viewmodel.task;
+package at.irian.ankorsamples.todosample.viewmodel.task;
 
 import at.irian.ankor.annotation.ActionListener;
 import at.irian.ankor.annotation.ChangeListener;
@@ -7,9 +7,9 @@ import at.irian.ankor.messaging.AnkorIgnore;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.listener.RefChangeListener;
 import at.irian.ankor.ref.listener.RefListeners;
-import at.irian.ankor.todosample.domain.task.Task;
-import at.irian.ankor.todosample.server.TaskRepository;
 import at.irian.ankor.viewmodel.ViewModelBase;
+import at.irian.ankorsamples.todosample.domain.task.Task;
+import at.irian.ankorsamples.todosample.domain.task.TaskRepository;
 
 import java.util.ArrayList;
 import java.util.List;

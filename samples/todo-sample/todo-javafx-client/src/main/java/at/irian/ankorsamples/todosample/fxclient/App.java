@@ -1,4 +1,4 @@
-package at.irian.ankor.todosample.fxclient;
+package at.irian.ankorsamples.todosample.fxclient;
 
 import at.irian.ankor.fx.controller.FXControllerChangeListener;
 import at.irian.ankor.http.ClientHttpMessageLoop;
@@ -12,8 +12,8 @@ import at.irian.ankor.socket.SocketAnkorSystemStarter;
 import at.irian.ankor.socket.SocketMessageLoop;
 import at.irian.ankor.system.AnkorSystem;
 import at.irian.ankor.system.AnkorSystemBuilder;
-import at.irian.ankor.todosample.server.TaskRepository;
-import at.irian.ankor.todosample.viewmodel.ModelRoot;
+import at.irian.ankorsamples.todosample.domain.task.TaskRepository;
+import at.irian.ankorsamples.todosample.viewmodel.ModelRoot;
 import javafx.application.HostServices;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;

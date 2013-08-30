@@ -1,4 +1,4 @@
-package at.irian.ankor.todosample.fxclient.task;
+package at.irian.ankorsamples.todosample.fxclient.task;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.annotation.ChangeListener;
@@ -8,8 +8,8 @@ import at.irian.ankor.fx.binding.property.ViewModelProperty;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.listener.RefChangeListener;
 import at.irian.ankor.ref.listener.RefListeners;
-import at.irian.ankor.todosample.fxclient.App;
-import at.irian.ankor.todosample.viewmodel.task.TaskModel;
+import at.irian.ankorsamples.todosample.fxclient.App;
+import at.irian.ankorsamples.todosample.viewmodel.task.TaskModel;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import static at.irian.ankor.fx.controller.FXControllerAnnotationSupport.annotationSupport;
-import static at.irian.ankor.todosample.fxclient.App.refFactory;
+import static at.irian.ankorsamples.todosample.fxclient.App.refFactory;
 
 public class TaskListController implements Initializable {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TaskListController.class);

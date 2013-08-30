@@ -2,11 +2,11 @@
   <configuration default="false" name="Todo - JavaFX Socket Client and Server" type="Application" factoryName="Application" singleton="true">
     <extension name="coverage" enabled="false" merge="false" runner="idea">
       <pattern>
-        <option name="PATTERN" value="at.irian.ankor.todosample.fxclient.*" />
+        <option name="PATTERN" value="at.irian.ankorsamples.todosample.fxclient.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>
-    <option name="MAIN_CLASS_NAME" value="at.irian.ankor.todosample.fxclient.App" />
+    <option name="MAIN_CLASS_NAME" value="at.irian.ankorsamples.todosample.fxclient.App" />
     <option name="VM_PARAMETERS" value="" />
     <option name="PROGRAM_PARAMETERS" value="" />
     <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
@@ -17,6 +17,8 @@
     <option name="PASS_PARENT_ENVS" value="true" />
     <module name="todo-javafx-client" />
     <envs />
+    <RunnerSettings RunnerId="Run" />
+    <ConfigurationWrapper RunnerId="Run" />
     <method />
   </configuration>
 </component>
