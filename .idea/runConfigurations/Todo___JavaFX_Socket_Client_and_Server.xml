@@ -1,12 +1,12 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Animals App (JavaFX Client and Server)" type="Application" factoryName="Application" singleton="true">
+  <configuration default="false" name="Todo - JavaFX Socket Client and Server" type="Application" factoryName="Application" singleton="true">
     <extension name="coverage" enabled="false" merge="false" runner="idea">
       <pattern>
         <option name="PATTERN" value="at.irian.ankor.todosample.fxclient.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>
-    <option name="MAIN_CLASS_NAME" value="at.irian.ankorman.sample1.fxclient.App" />
+    <option name="MAIN_CLASS_NAME" value="at.irian.ankor.todosample.fxclient.App" />
     <option name="VM_PARAMETERS" value="" />
     <option name="PROGRAM_PARAMETERS" value="" />
     <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
@@ -15,7 +15,7 @@
     <option name="ENABLE_SWING_INSPECTOR" value="false" />
     <option name="ENV_VARIABLES" />
     <option name="PASS_PARENT_ENVS" value="true" />
-    <module name="ankorman-javafx-client" />
+    <module name="todo-javafx-client" />
     <envs />
     <method />
   </configuration>

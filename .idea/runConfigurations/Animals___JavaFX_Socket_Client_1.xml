@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Animals App (Multiple Socket Clients)" type="Application" factoryName="Application" singleton="true">
+  <configuration default="false" name="Animals - JavaFX Socket Client 1" type="Application" factoryName="Application" singleton="true">
     <extension name="coverage" enabled="false" merge="false" runner="idea">
       <pattern>
         <option name="PATTERN" value="at.irian.ankor.sample.fx.*" />
@@ -8,14 +8,14 @@
     </extension>
     <option name="MAIN_CLASS_NAME" value="at.irian.ankorman.sample1.fxclient.App" />
     <option name="VM_PARAMETERS" value="" />
-    <option name="PROGRAM_PARAMETERS" value="--mode=manyClients" />
+    <option name="PROGRAM_PARAMETERS" value="--mode=client --client=c1@localhost:9090 --server=server@localhost:8080" />
     <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" value="" />
     <option name="ENABLE_SWING_INSPECTOR" value="false" />
     <option name="ENV_VARIABLES" />
     <option name="PASS_PARENT_ENVS" value="true" />
-    <module name="ankorman-javafx-client" />
+    <module name="animals-javafx-client" />
     <envs />
     <RunnerSettings RunnerId="Debug">
       <option name="DEBUG_PORT" value="" />
@@ -25,6 +25,8 @@
     <RunnerSettings RunnerId="Run" />
     <ConfigurationWrapper RunnerId="Debug" />
     <ConfigurationWrapper RunnerId="Run" />
-    <method />
+    <method>
+      <option name="Make" enabled="false" />
+    </method>
   </configuration>
 </component>

@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Todo Sample (Tomcat 7.0)" type="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" factoryName="Local" APPLICATION_SERVER_NAME="Tomcat 7.0">
+  <configuration default="false" name="Todo - HTTP Server and JS Client (Tomcat 7.0)" type="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" factoryName="Local" APPLICATION_SERVER_NAME="Tomcat 7.0">
     <option name="UPDATING_POLICY" value="restart-server" />
     <deployment>
       <artifact name="ankor-sample-todo-js-client:war exploded">
