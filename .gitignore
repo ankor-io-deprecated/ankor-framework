@@ -1,5 +1,6 @@
 .DS_Store
 .idea/
+.svn/
 *.ipr
 *.iml
 *.iws
