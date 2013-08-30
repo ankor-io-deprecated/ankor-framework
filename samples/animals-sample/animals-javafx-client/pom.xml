@@ -3,14 +3,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>at.irian.ankorman</groupId>
-        <artifactId>ankorman-project</artifactId>
+        <groupId>at.irian.ankorsamples</groupId>
+        <artifactId>animals-sample</artifactId>
         <version>0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>ankorman-javafx-client</artifactId>
+    <artifactId>animals-javafx-client</artifactId>
     <packaging>jar</packaging>
-    <name>Ankor Animals Sample - JavaFX Client</name>
+    <name>Animals Sample - JavaFX Client</name>
 
     <properties>
         <javafx.version>2.2.21</javafx.version>
@@ -26,8 +26,8 @@
         </dependency>
 
         <dependency>
-            <groupId>at.irian.ankorman</groupId>
-            <artifactId>ankorman-server</artifactId>
+            <groupId>at.irian.ankorsamples</groupId>
+            <artifactId>animals-server</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>

@@ -19,8 +19,8 @@
         <module>ankor-servlet</module>
         <module>ankor-fx</module>
         <module>ankor-js</module>
-        <module>ankor-sample</module>
         <module>ankor-sample-todo</module>
+        <module>samples/animals-sample</module>
     </modules>
 
     <properties>

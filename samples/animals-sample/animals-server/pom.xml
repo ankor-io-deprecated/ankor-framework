@@ -3,14 +3,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>at.irian.ankorman</groupId>
-        <artifactId>ankorman-project</artifactId>
+        <groupId>at.irian.ankorsamples</groupId>
+        <artifactId>animals-sample</artifactId>
         <version>0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>ankorman-server</artifactId>
+    <artifactId>animals-server</artifactId>
     <packaging>jar</packaging>
-    <name>Ankor Animals Sample - Server</name>
+    <name>Animals Sample - Server</name>
 
     <dependencies>
 

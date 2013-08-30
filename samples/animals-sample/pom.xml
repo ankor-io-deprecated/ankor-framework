@@ -2,19 +2,20 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>at.irian.ankorman</groupId>
-    <artifactId>ankorman-project</artifactId>
+    <groupId>at.irian.ankorsamples</groupId>
+    <artifactId>animals-sample</artifactId>
     <packaging>pom</packaging>
     <version>0-SNAPSHOT</version>
-    <name>Ankor Animals Sample - Project</name>
+    <name>Animals Sample - Project</name>
 
     <modules>
-        <module>ankorman-server</module>
-        <module>ankorman-javafx-client</module>
-        <module>ankorman-js-client</module>
+        <module>animals-server</module>
+        <module>animals-javafx-client</module>
+        <module>animals-js-client</module>
     </modules>
 
     <properties>
+        <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
         <ankor.version>0-SNAPSHOT</ankor.version>
     </properties>
 

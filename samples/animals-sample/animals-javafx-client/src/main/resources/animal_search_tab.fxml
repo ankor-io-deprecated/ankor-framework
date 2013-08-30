@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
 <Tab fx:id="tab" closable="true" xmlns:fx="http://javafx.com/fxml" fx:controller="at.irian.ankorman.sample1.fxclient.animal.AnimalSearchTabController">
   <VBox prefHeight="350" prefWidth="519.0" spacing="10.0">
     <GridPane alignment="TOP_LEFT" hgap="10.0" vgap="5.0">

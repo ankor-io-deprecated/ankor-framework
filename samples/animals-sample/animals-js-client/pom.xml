@@ -3,14 +3,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>at.irian.ankorman</groupId>
-        <artifactId>ankorman-project</artifactId>
+        <groupId>at.irian.ankorsamples</groupId>
+        <artifactId>animals-sample</artifactId>
         <version>0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>ankorman-js-client</artifactId>
+    <artifactId>animals-js-client</artifactId>
     <packaging>war</packaging>
-    <name>Ankor Animals Sample - JavaScript Client</name>
+    <name>Animals Sample - JavaScript Client</name>
 
     <dependencies>
 
@@ -28,8 +28,8 @@
         </dependency>
 
         <dependency>
-            <groupId>at.irian.ankorman</groupId>
-            <artifactId>ankorman-server</artifactId>
+            <groupId>at.irian.ankorsamples</groupId>
+            <artifactId>animals-server</artifactId>
             <scope>compile</scope>
             <version>${project.version}</version>
         </dependency>
