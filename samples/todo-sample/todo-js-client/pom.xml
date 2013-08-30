@@ -3,14 +3,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>at.irian.ankor</groupId>
-        <artifactId>ankor-sample-todo</artifactId>
+        <groupId>at.irian.ankorsamples</groupId>
+        <artifactId>todo-sample</artifactId>
         <version>0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>ankor-sample-todo-js-client</artifactId>
+    <artifactId>todo-js-client</artifactId>
     <packaging>war</packaging>
-    <name>Ankor Todo Sample - JavaScript Client</name>
+    <name>Todo Sample - JavaScript Client</name>
 
     <dependencies>
 
@@ -28,8 +28,8 @@
         </dependency>
 
         <dependency>
-            <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-sample-todo-server</artifactId>
+            <groupId>at.irian.ankorsamples</groupId>
+            <artifactId>todo-server</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>

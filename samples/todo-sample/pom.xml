@@ -2,16 +2,16 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>at.irian.ankor</groupId>
-    <artifactId>ankor-sample-todo</artifactId>
+    <groupId>at.irian.ankorsamples</groupId>
+    <artifactId>todo-sample</artifactId>
     <packaging>pom</packaging>
     <version>0-SNAPSHOT</version>
-    <name>Ankor Todo Sample - Project</name>
+    <name>Todo Sample - Project</name>
 
     <modules>
-        <module>ankor-sample-todo-server</module>
-        <module>ankor-sample-todo-javafx-client</module>
-        <module>ankor-sample-todo-js-client</module>
+        <module>todo-server</module>
+        <module>todo-javafx-client</module>
+        <module>todo-js-client</module>
     </modules>
 
     <properties>

@@ -3,14 +3,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>at.irian.ankor</groupId>
-        <artifactId>ankor-sample-todo</artifactId>
+        <groupId>at.irian.ankorsamples</groupId>
+        <artifactId>todo-sample</artifactId>
         <version>0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>ankor-sample-todo-javafx-client</artifactId>
+    <artifactId>todo-javafx-client</artifactId>
     <packaging>jar</packaging>
-    <name>Ankor Todo Sample - JavaFX Client</name>
+    <name>Todo Sample - JavaFX Client</name>
 
     <properties>
         <javafx.version>2.2.21</javafx.version>
@@ -26,8 +26,8 @@
         </dependency>
 
         <dependency>
-            <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-sample-todo-server</artifactId>
+            <groupId>at.irian.ankorsamples</groupId>
+            <artifactId>todo-server</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
