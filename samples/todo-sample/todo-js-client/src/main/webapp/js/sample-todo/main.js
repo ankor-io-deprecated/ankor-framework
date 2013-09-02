@@ -1,16 +1,16 @@
 define([
     "jquery",
     "ankor/AnkorSystem", // XXX: For testing
-    "ankor/transport/HttpPollingTransport",
+    "ankor/transport/AtmosphereTransport",
     "ankor/utils/jQueryUtils",
     "./TaskList",
     "ankor/adapters/JQueryAdapter" //Require only, no reference needed
-], function($, AnkorSystem, HttpPollingTransport, jQueryUtils, TaskList) {
+], function($, AnkorSystem, AtmosphereTransport, jQueryUtils, TaskList) {
     //Setup AnkorSystem
     var ankorSystem = new AnkorSystem({
         debug: true,
         modelId: "collabTest",
-        transport: new HttpPollingTransport("/ankor"),
+        transport: new AtmosphereTransport("/meteor"),
         utils: new jQueryUtils($)
     });
 

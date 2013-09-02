@@ -17,11 +17,15 @@
                 paths: {
                     "text": "require/text",
                     "jquery": "//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min",
-                    "ejs": "ejs/ejs_production"
+                    "ejs": "ejs/ejs_production",
+                    "atmosphere": "../javascript/atmosphere"
                 },
                 shim: {
                     ejs: {
                         exports: "EJS"
+                    },
+                    atmosphere: {
+                        exports: "atmosphere"
                     }
                 }
             });

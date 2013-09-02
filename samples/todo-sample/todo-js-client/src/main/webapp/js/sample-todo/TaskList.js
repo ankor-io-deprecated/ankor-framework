@@ -39,6 +39,7 @@ define([
         $('#filter-completed')
             .on('click', function() { modelRef.append("filter").setValue("completed"); })
             .ankorBindToggleClass("selected", modelRef.append("filterCompletedSelected"));
+
         $("#toggle-all")
             .on('click', function() { modelRef.fire("toggleAll") })
             .ankorBindProp("checked", modelRef.append("toggleAll"));
@@ -77,6 +78,9 @@ define([
 
                     $todoList.append(taskTemplate.render(model));
                     var $task = $('#todo-list > li').eq(index);
+
+                    bindingContext.push(
+                        $task.ankorBindToggleClass("completed", listRef(index).append("completed")))
 
                     bindingContext.push(
                         $task

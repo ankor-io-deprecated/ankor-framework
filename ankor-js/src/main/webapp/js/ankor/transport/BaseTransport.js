@@ -1,4 +1,7 @@
-define(function() {
+define([
+    "../messages/ActionMessage",
+    "../messages/ChangeMessage",
+], function(ActionMessage, ChangeMessage) {
     var BaseTransport = function() {
         this.outgoingMessages = [];
         this.messageCounter = 0;
@@ -22,6 +25,30 @@ define(function() {
             console.log("IN", message);
         }
         this.ankorSystem.processIncomingMessage(message);
+    };
+
+    BaseTransport.buildJsonMessages = function(messages) {
+        var jsonMessages = [];
+        for (var i = 0, message; (message = messages[i]); i++) {
+            var jsonMessage = {
+                senderId: message.senderId,
+                modelId: message.modelId,
+                messageId: message.messageId,
+                property: message.property
+            };
+            if (message instanceof ActionMessage) {
+                jsonMessage.action = message.action;
+            }
+            else if (message instanceof ChangeMessage) {
+                jsonMessage.change = {
+                    type: message.type,
+                    key: message.key,
+                    value: message.value
+                };
+            }
+            jsonMessages.push(jsonMessage);
+        }
+        return jsonMessages;
     };
 
     return BaseTransport;

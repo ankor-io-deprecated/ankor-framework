@@ -2,21 +2,28 @@
 <web-app xmlns="http://java.sun.com/xml/ns/javaee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
-		  http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-         version="2.5">
+		  http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         version="3.0">
 
-    <listener>
-        <listener-class>at.irian.ankorsamples.todosample.servlet.TodoSampleServletContextListener</listener-class>
-    </listener>
-
+    <description>Atmosphere Chat</description>
+    <display-name>Atmosphere Chat</display-name>
     <servlet>
-        <servlet-name>AnkorServlet</servlet-name>
-        <servlet-class>at.irian.ankor.servlet.AnkorServlet</servlet-class>
+        <description>MeteorServlet</description>
+        <servlet-name>MeteorServlet</servlet-name>
+        <servlet-class>org.atmosphere.cpr.MeteorServlet</servlet-class>
+        <!-- Use it with mvn jetty:run -->
+        <init-param>
+            <param-name>org.atmosphere.cpr.packages</param-name>
+            <param-value>at.irian.ankorsamples.todosample</param-value>
+        </init-param>
+        <load-on-startup>0</load-on-startup>
+        <async-supported>true</async-supported>
     </servlet>
-
     <servlet-mapping>
-        <servlet-name>AnkorServlet</servlet-name>
-        <url-pattern>/ankor</url-pattern>
+        <servlet-name>MeteorServlet</servlet-name>
+        <url-pattern>/meteor</url-pattern>
     </servlet-mapping>
-
+    <session-config>
+        <session-timeout>25</session-timeout>
+    </session-config>
 </web-app>
