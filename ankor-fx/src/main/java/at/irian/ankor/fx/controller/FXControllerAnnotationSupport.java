@@ -1,7 +1,6 @@
 package at.irian.ankor.fx.controller;
 
 import at.irian.ankor.annotation.BeanAnnotationScanner;
-import at.irian.ankor.annotation.BeanLifeline;
 import at.irian.ankor.ref.Ref;
 
 /**
@@ -14,8 +13,8 @@ public final class FXControllerAnnotationSupport {
 
     public static void scan(Ref controllerRef, Object controller) {
         new BeanAnnotationScanner().scan(controller,
-                                         controllerRef,
-                                         new BeanLifeline(controller));
+                                         controllerRef
+        );
     }
 
 }

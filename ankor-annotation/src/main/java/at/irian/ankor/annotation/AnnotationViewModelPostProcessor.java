@@ -11,7 +11,7 @@ public class AnnotationViewModelPostProcessor implements ViewModelPostProcessor 
 
     @Override
     public void postProcess(Object viewModelObject, Ref viewModelRef) {
-        new BeanAnnotationScanner().scan(viewModelObject, viewModelRef, new RefLifeline(viewModelRef));
+        new BeanAnnotationScanner().scan(viewModelObject, viewModelRef);
     }
 
 }

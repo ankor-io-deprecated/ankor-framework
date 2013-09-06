@@ -6,6 +6,7 @@ import at.irian.ankor.action.ActionEventListener;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.match.RefMatcher;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
@@ -17,46 +18,47 @@ public class AnnotationActionEventListener extends ActionEventListener {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnnotationActionEventListener.class);
 
     private final String actionName;
-    private final Object bean;
+    private final WeakReference<Object> beanReference;
     private final RefMatcher[] matchers;
     private final Method method;
     private final String[] paramNames;
-    private final Lifeline lifeline;
 
     public AnnotationActionEventListener(Ref watchedProperty,
                                          String actionName,
                                          Object bean,
                                          RefMatcher[] matchers,
                                          Method method,
-                                         String[] paramNames,
-                                         Lifeline lifeline) {
+                                         String[] paramNames) {
         super(watchedProperty);
         this.actionName = actionName;
-        this.bean = bean;
+        this.beanReference = new WeakReference<Object>(bean);
         this.matchers = matchers;
         this.method = method;
         this.paramNames = paramNames;
-        this.lifeline = lifeline;
     }
 
     @Override
     public void process(ActionEvent event) {
-        Action action = event.getAction();
-        String eventActionName = action.getName();
-        Ref actionProperty = event.getActionProperty();
-        if (eventActionName.equals(actionName)) {
-            if (matchers != null) {
-                RefMatcher.Result match = match(actionProperty, getWatchedProperty(), matchers);
-                if (match != null) {
-                    invokeMethod(action, match.getBackRefs());
+        Object bean = beanReference.get();
+        Ref watchedProperty = getWatchedProperty();
+        if (bean != null && watchedProperty.isValid()) {
+            Action action = event.getAction();
+            String eventActionName = action.getName();
+            Ref actionProperty = event.getActionProperty();
+            if (eventActionName.equals(actionName)) {
+                if (matchers != null) {
+                    RefMatcher.Result match = match(actionProperty, watchedProperty, matchers);
+                    if (match != null) {
+                        invokeMethod(bean, action, match.getBackRefs());
+                    }
+                } else {
+                    invokeMethod(bean, action, Collections.<Ref>emptyList());
                 }
-            } else {
-                invokeMethod(action, Collections.<Ref>emptyList());
             }
         }
     }
 
-    private void invokeMethod(Action action, List<Ref> backRefs) {
+    private void invokeMethod(Object bean, Action action, List<Ref> backRefs) {
         try {
 
             int backRefsCnt = backRefs.size();
@@ -81,7 +83,7 @@ public class AnnotationActionEventListener extends ActionEventListener {
 
     @Override
     public boolean isDiscardable() {
-        return !lifeline.isAlive();
+        return beanReference.get() == null || !getWatchedProperty().isValid();
     }
 
 

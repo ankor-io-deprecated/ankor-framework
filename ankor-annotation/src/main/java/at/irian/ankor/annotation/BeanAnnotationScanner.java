@@ -18,29 +18,29 @@ public class BeanAnnotationScanner {
 
     private final RefMatcherFactory refMatcherFactory = new AntlrRefMatcherFactory();
 
-    public void scan(Object bean, Ref beanRef, Lifeline lifeline) {
-        scan(bean, beanRef, lifeline, getEventListeners(beanRef));
+    public void scan(Object bean, Ref beanRef) {
+        scan(bean, beanRef, getEventListeners(beanRef));
     }
 
     private EventListeners getEventListeners(Ref beanRef) {
         return ((RefContextImplementor) beanRef.context()).eventListeners();
     }
 
-    private void scan(Object bean, Ref beanRef, Lifeline lifeline, EventListeners eventListeners) {
+    private void scan(Object bean, Ref beanRef, EventListeners eventListeners) {
         Class<?> beanType = bean.getClass();
         while (beanType != null) {
-            scan(bean, beanRef, lifeline, beanType, eventListeners);
+            scan(bean, beanRef, beanType, eventListeners);
             beanType = beanType.getSuperclass();
         }
     }
 
-    private void scan(Object bean, Ref beanRef, Lifeline lifeline, Class<?> beanType, EventListeners eventListeners) {
+    private void scan(Object bean, Ref beanRef, Class<?> beanType, EventListeners eventListeners) {
         for (Method method : beanType.getDeclaredMethods()) {
 
             ChangeListener changeListenerAnnotation = method.getAnnotation(ChangeListener.class);
             if (changeListenerAnnotation != null) {
                 RefMatcher[] matchers = createMatchersFromPatterns(changeListenerAnnotation.pattern());
-                eventListeners.add(new AnnotationChangeEventListener(beanRef, bean, matchers, method, lifeline));
+                eventListeners.add(new AnnotationChangeEventListener(beanRef, bean, matchers, method));
             }
 
             ActionListener actionListenerAnnotation = method.getAnnotation(ActionListener.class);
@@ -64,8 +64,8 @@ public class BeanAnnotationScanner {
                                                                      bean,
                                                                      matchers,
                                                                      method,
-                                                                     paramNames,
-                                                                     lifeline));
+                                                                     paramNames
+                ));
             }
         }
     }
