@@ -3,11 +3,15 @@
     <words>
       <w>akka</w>
       <w>ankor</w>
+      <w>antlr</w>
+      <w>backref</w>
+      <w>backrefs</w>
       <w>deserialization</w>
       <w>deserialize</w>
       <w>discardable</w>
       <w>implementor</w>
       <w>loopback</w>
+      <w>matchers</w>
       <w>synchronizer</w>
       <w>unregister</w>
     </words>

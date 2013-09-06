@@ -166,4 +166,9 @@ public class MockELRef implements Ref {
     public MapRef toMapRef() {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public String toString() {
+        return parent != null ? parent.toString() + '.' + propertyName : propertyName;
+    }
 }

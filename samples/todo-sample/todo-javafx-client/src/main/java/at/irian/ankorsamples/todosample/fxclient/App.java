@@ -1,6 +1,5 @@
 package at.irian.ankorsamples.todosample.fxclient;
 
-import at.irian.ankor.fx.controller.FXControllerChangeListener;
 import at.irian.ankor.http.ClientHttpMessageLoop;
 import at.irian.ankor.http.ServerHost;
 import at.irian.ankor.ref.Ref;
@@ -181,7 +180,7 @@ public class App extends javafx.application.Application {
         SocketAnkorSystemStarter appBuilder = new SocketAnkorSystemStarter()
                 .withModelRootFactory(new MyModelRootFactory())
                 .withLocalHost(clientHost)
-                .withGlobalEventListener(new FXControllerChangeListener())
+                //.withGlobalEventListener(new FXControllerChangeListener())
                 .withServerHost(parseHost(server));
 
         refFactory = appBuilder.createAndStartClientSystem();
@@ -215,7 +214,7 @@ public class App extends javafx.application.Application {
 
         AnkorSystem clientSystem = new AnkorSystemBuilder()
                 .withName(clientId)
-                .withGlobalEventListener(new FXControllerChangeListener())
+                //.withGlobalEventListener(new FXControllerChangeListener())
                 .withMessageBus(clientMessageLoop.getMessageBus())
                 .withModelContextId("collabTest")
                 .createClient();

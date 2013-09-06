@@ -2,9 +2,9 @@ package at.irian.ankorsamples.todosample.fxclient.task;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.annotation.ChangeListener;
-import at.irian.ankor.fx.binding.BindingContext;
 import at.irian.ankor.fx.binding.property.ViewModelIntegerProperty;
 import at.irian.ankor.fx.binding.property.ViewModelProperty;
+import at.irian.ankor.fx.controller.FXControllerAnnotationSupport;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.listener.RefChangeListener;
 import at.irian.ankor.ref.listener.RefListeners;
@@ -27,13 +27,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import static at.irian.ankor.fx.controller.FXControllerAnnotationSupport.annotationSupport;
 import static at.irian.ankorsamples.todosample.fxclient.App.refFactory;
 
+@SuppressWarnings("UnusedParameters")
 public class TaskListController implements Initializable {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TaskListController.class);
 
-    private BindingContext bindingContext = new BindingContext();
     private Ref modelRef;
 
     @FXML public VBox tasksList;
@@ -51,18 +50,17 @@ public class TaskListController implements Initializable {
     @FXML public Node footerTop;
     @FXML public Node footerBottom;
 
-    public TaskListController() {
-        annotationSupport().registerChangeListeners(this);
-    }
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
-        // XXX: Annotation syntax not supported
-        RefListeners.addPropChangeListener(refFactory().ref("root.model"), new RefChangeListener() {
+        final Ref modelRef = refFactory().ref("root.model");
+        Ref tasksRef = modelRef.appendPath("tasks");
+        FXControllerAnnotationSupport.scan(tasksRef, this);
+
+        RefListeners.addPropChangeListener(modelRef, new RefChangeListener() {
             @Override
             public void processChange(Ref changedProperty) {
-                initialize(refFactory().ref("root.model"));
+                initialize(modelRef);
             }
         });
 
@@ -71,6 +69,7 @@ public class TaskListController implements Initializable {
 
     public void initialize(Ref modelRef) {
         this.modelRef = modelRef;
+        Ref tasksRef = modelRef.appendPath("tasks");
 
         ViewModelIntegerProperty itemsLeft = new ViewModelIntegerProperty(modelRef, "itemsLeft");
         ViewModelProperty<String> itemsLeftText = new ViewModelProperty<>(modelRef, "itemsLeftText");
@@ -101,12 +100,12 @@ public class TaskListController implements Initializable {
         filterActive.selectedProperty().bindBidirectional(filterActiveSelected);
         filterCompleted.selectedProperty().bindBidirectional(filterCompletedSelected);
 
-        renderTasks(modelRef.appendPath("tasks"));
+        renderTasks(tasksRef);
     }
 
-    @ChangeListener(pattern = "root.model.tasks")
-    public void renderTasks(Ref changedProperty) {
-        List<LinkedHashMap<String, Object>> tasks = changedProperty.getValue();
+    @ChangeListener(pattern = "root.model.(tasks)")
+    public void renderTasks(Ref tasksRef) {
+        List<LinkedHashMap<String, Object>> tasks = tasksRef.getValue();
         Platform.runLater(new TaskLoader(tasks));
     }
 

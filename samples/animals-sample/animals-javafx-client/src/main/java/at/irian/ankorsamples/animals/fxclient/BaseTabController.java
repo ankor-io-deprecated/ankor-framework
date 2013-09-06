@@ -47,13 +47,13 @@ public abstract class BaseTabController implements Initializable {
                 AnkorPatterns.deleteItemLater(refFactory().ref("root.tabs"), tabId);
             }
         });
+
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
                 initialize();
             }
         });
-
     }
 
     protected abstract void initialize();

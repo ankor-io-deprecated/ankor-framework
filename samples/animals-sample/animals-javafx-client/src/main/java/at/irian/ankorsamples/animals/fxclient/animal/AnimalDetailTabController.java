@@ -2,6 +2,7 @@ package at.irian.ankorsamples.animals.fxclient.animal;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.annotation.ChangeListener;
+import at.irian.ankor.fx.controller.FXControllerAnnotationSupport;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorsamples.animals.fxclient.BaseTabController;
 import javafx.event.ActionEvent;
@@ -11,7 +12,6 @@ import javafx.scene.control.TextInputControl;
 import javafx.scene.text.Text;
 
 import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
-import static at.irian.ankor.fx.controller.FXControllerAnnotationSupport.annotationSupport;
 
 /**
  * @author Thomas Spiegl
@@ -30,15 +30,17 @@ public class AnimalDetailTabController extends BaseTabController {
 
     public AnimalDetailTabController(String tabId) {
         super(tabId);
-        annotationSupport().registerChangeListener(this, getTabRef());
     }
 
     public void initialize() {
-        Ref modelRef = getTabRef().appendPath("model");
+        Ref tabRef = getTabRef();
+        FXControllerAnnotationSupport.scan(tabRef, this);
+
+        Ref modelRef = tabRef.appendPath("model");
         Ref animalRef = modelRef.appendPath("animal");
         Ref selItemsRef = modelRef.appendPath("selectItems");
 
-        bindValue(getTabRef().appendPath("name"))
+        bindValue(tabRef.appendPath("name"))
                 .toProperty(tab.textProperty())
                 .createWithin(bindingContext);
         bindValue(animalRef.appendPath("name"))
@@ -63,7 +65,7 @@ public class AnimalDetailTabController extends BaseTabController {
         name.requestFocus();
     }
 
-    @ChangeListener(pattern = "model.animal.name")
+    @ChangeListener(pattern = ".model.animal.name")
     public void onNameChanged() {
         System.out.println("Animal name changed changed to " + getTabRef().appendPath("model.animal.name").getValue());
     }

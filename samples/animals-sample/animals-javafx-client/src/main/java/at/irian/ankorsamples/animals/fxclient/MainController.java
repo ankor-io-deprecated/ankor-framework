@@ -4,6 +4,7 @@ import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionBuilder;
 import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.fx.binding.BindingContext;
+import at.irian.ankor.fx.controller.FXControllerAnnotationSupport;
 import at.irian.ankor.ref.Ref;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -17,7 +18,6 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
-import static at.irian.ankor.fx.controller.FXControllerAnnotationSupport.annotationSupport;
 import static at.irian.ankorsamples.animals.fxclient.App.refFactory;
 
 /**
@@ -35,29 +35,24 @@ public class MainController implements Initializable {
 
     private BindingContext bindingContext = new BindingContext();
 
-    public MainController() {
-        annotationSupport().registerChangeListeners(this);
-    }
-
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        refFactory().ref("root").fire(new Action("init"));
+        Ref rootRef = refFactory().ref("root");
+        FXControllerAnnotationSupport.scan(rootRef, this);
+        rootRef.fire(new Action("init"));
     }
 
-    @ChangeListener(pattern = "root.tabs.*")
-    public void tabsRefChanged(Ref changedProperty) {
-        final Ref tabsRef = refFactory().ref("root.tabs");
-        if (changedProperty.parent().equals(tabsRef)) {
-            String tabId = changedProperty.propertyName();
-            if (changedProperty.getValue() == null) {
-                for (Tab tab : tabPane.getTabs()) {
-                    if (tab.getUserData().equals(tabId)) {
-                        tabPane.getTabs().remove(tab);
-                        break;
-                    }
+    @ChangeListener(pattern = "root.tabs[(*)]")
+    public void tabsRefChanged(Ref tabRef) {
+        String tabId = tabRef.propertyName();
+        if (tabRef.getValue() == null) {
+            for (Tab tab : tabPane.getTabs()) {
+                if (tab.getUserData().equals(tabId)) {
+                    tabPane.getTabs().remove(tab);
+                    break;
                 }
-            } else {
-                showTab(changedProperty);
             }
+        } else {
+            showTab(tabRef);
         }
     }
 

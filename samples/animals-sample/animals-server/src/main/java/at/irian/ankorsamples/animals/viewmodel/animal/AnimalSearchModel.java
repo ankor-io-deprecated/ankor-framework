@@ -66,8 +66,8 @@ public class AnimalSearchModel {
         this.animals = animals;
     }
 
-    @ChangeListener(pattern = {"**.<AnimalSearchModel>.filter.**",
-                               "**.<AnimalSearchModel>.animals.paginator.**"})
+    @ChangeListener(pattern = {".filter.**",
+                               ".animals.paginator.**"})
     public void reloadAnimals() {
         reloadFloodControl.control(new Runnable() {
             @Override
@@ -87,13 +87,13 @@ public class AnimalSearchModel {
         });
     }
 
-    @ChangeListener(pattern = "**.<AnimalSearchModel>.filter.name")
+    @ChangeListener(pattern = ".filter.name")
     public void onNameChanged() {
         String name = filter.getName();
         tabName.set(new TabNameCreator().createName("Animal Search", name));
     }
 
-    @ChangeListener(pattern = "**.<AnimalSearchModel>.filter.type")
+    @ChangeListener(pattern = ".filter.type")
     public void animalTypeChanged() {
         Ref familyRef = thisRef.appendPath("filter.family");
         Ref familiesRef = thisRef.appendPath("selectItems.families");

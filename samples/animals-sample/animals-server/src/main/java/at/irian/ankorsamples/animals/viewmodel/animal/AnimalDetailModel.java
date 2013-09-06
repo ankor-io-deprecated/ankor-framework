@@ -23,8 +23,8 @@ public class AnimalDetailModel {
     private final ViewModelProperty<String> tabName;
     @AnkorIgnore
     private final ViewModelProperty<String> serverStatus;
-    @AnkorIgnore
-    private final Ref thisRef;
+    //@AnkorIgnore
+    //private final Ref thisRef;
     @AnkorIgnore
     private boolean saved = false;
 
@@ -40,7 +40,7 @@ public class AnimalDetailModel {
                              Animal animal, AnimalSelectItems selectItems, AnimalRepository animalRepository,
                              ViewModelProperty<String> tabName, ViewModelProperty<String> serverStatus) {
         AnkorPatterns.initViewModel(this, myRef);
-        this.thisRef = myRef;
+        //this.thisRef = myRef;
         this.animal = animal;
         this.selectItems = selectItems;
         this.animalRepository = animalRepository;
@@ -51,7 +51,7 @@ public class AnimalDetailModel {
         this.nameStatus.set("ok");
     }
 
-    @ChangeListener(pattern = "**.<AnimalDetailModel>.animal.name")
+    @ChangeListener(pattern = ".animal.name")
     public void onNameChanged() {
         String name = animal.getName();
 
@@ -66,10 +66,10 @@ public class AnimalDetailModel {
         }
     }
 
-    @ChangeListener(pattern = "**.<AnimalDetailModel>.animal.type")
-    public void animalTypeChanged() {
-        Ref familyRef = thisRef.appendPath("animal.family");
-        Ref familiesRef = thisRef.appendPath("selectItems.families");
+    @ChangeListener(pattern = "(@).animal.type")
+    public void animalTypeChanged(Ref modelRef) {
+        Ref familyRef = modelRef.appendPath("animal.family");
+        Ref familiesRef = modelRef.appendPath("selectItems.families");
         new AnimalTypeChangeHandler().handleChange(familyRef, familiesRef, animal.getType());
     }
 

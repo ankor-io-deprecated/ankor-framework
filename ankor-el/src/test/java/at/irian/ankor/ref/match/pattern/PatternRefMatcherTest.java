@@ -1,8 +1,7 @@
-package at.irian.ankor.ref.match;
+package at.irian.ankor.ref.match.pattern;
 
-import at.irian.ankor.path.PathSyntax;
-import at.irian.ankor.path.el.SimpleELPathSyntax;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.ref.match.RefMatcher;
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,10 +15,9 @@ import static at.irian.ankor.ref.el.MockELRef.createRootRef;
  * @author Manfred Geiler
  */
 @SuppressWarnings("SpellCheckingInspection")
-public class RefMatcherTest {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RefMatcherTest.class);
+public class PatternRefMatcherTest {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SimpleRefMatcherTest.class);
 
-    private PathSyntax pathSyntax;
     private Ref r1;
     private Ref r2;
     private Ref r11;
@@ -37,10 +35,9 @@ public class RefMatcherTest {
 
     @Before
     public void init() {
-        pathSyntax = SimpleELPathSyntax.getInstance();
 
-        RefMatcherTest root1Val = new RefMatcherTest();
-        RefMatcherTest root2Val = new RefMatcherTest();
+        PatternRefMatcherTest root1Val = new PatternRefMatcherTest();
+        PatternRefMatcherTest root2Val = new PatternRefMatcherTest();
         String test1Val = "1";
         String test2Val = "2";
         Integer sub1Val = 1;
@@ -63,14 +60,19 @@ public class RefMatcherTest {
     }
 
     private RefMatcher createMatcher(String pattern) {
-        return new RefMatcher(pathSyntax, pattern);
+        return new PatternRefMatcher(new AntlrRefMatcherFactory().createPatternFrom(pattern));
     }
 
     private boolean matches(RefMatcher matcher, Ref ref) {
-        RefMatcher.Result result = matcher.match(ref);
+        RefMatcher.Result result = matcher.match(ref, null);
         return result.isMatch();
     }
-    
+
+    private boolean matches(RefMatcher matcher, Ref ref, Ref contextRef) {
+        RefMatcher.Result result = matcher.match(ref, contextRef);
+        return result.isMatch();
+    }
+
     @Test
     public void test_1() throws Exception {
         RefMatcher m = createMatcher("root1");
@@ -476,7 +478,7 @@ public class RefMatcherTest {
 
     @Test
     public void test_t5() throws Exception {
-        RefMatcher m = createMatcher("<RefMatcherTest>.**");
+        RefMatcher m = createMatcher("<PatternRefMatcherTest>.**");
 
         Assert.assertFalse(matches(m, r1));
         Assert.assertFalse(matches(m, r2));
@@ -496,7 +498,7 @@ public class RefMatcherTest {
 
     @Test
     public void test_t6() throws Exception {
-        RefMatcher m = createMatcher("<at.irian.ankor.ref.match.RefMatcherTest>.**");
+        RefMatcher m = createMatcher("<at.irian.ankor.ref.match.pattern.PatternRefMatcherTest>.**");
 
         Assert.assertFalse(matches(m, r1));
         Assert.assertFalse(matches(m, r2));
@@ -533,7 +535,7 @@ public class RefMatcherTest {
         Assert.assertTrue (matches(m, r221));
         Assert.assertFalse(matches(m, r222));
 
-        List<Ref> watchedRefs = m.match(r111).getWatchedRefs();
+        List<Ref> watchedRefs = m.match(r111, null).getBackRefs();
         Assert.assertTrue(watchedRefs.size() == 1);
         Assert.assertTrue(watchedRefs.get(0).equals(r111));
     }
@@ -557,7 +559,7 @@ public class RefMatcherTest {
         Assert.assertFalse(matches(m, r221));
         Assert.assertFalse(matches(m, r222));
 
-        List<Ref> watchedRefs = m.match(r111).getWatchedRefs();
+        List<Ref> watchedRefs = m.match(r111, null).getBackRefs();
         Assert.assertTrue(watchedRefs.size() == 3);
         Assert.assertTrue(watchedRefs.get(0).equals(r1));
         Assert.assertTrue(watchedRefs.get(1).equals(r11));
@@ -565,4 +567,115 @@ public class RefMatcherTest {
     }
 
 
+    @Test
+    public void test_context1() throws Exception {
+        RefMatcher m = createMatcher(".test1");
+
+        Assert.assertFalse(matches(m, r1,   r1));
+        Assert.assertFalse(matches(m, r2,   r1));
+        Assert.assertTrue (matches(m, r11,  r1));
+        Assert.assertFalse(matches(m, r12,  r1));
+        Assert.assertFalse(matches(m, r21,  r1));
+        Assert.assertFalse(matches(m, r22,  r1));
+        Assert.assertFalse(matches(m, r111, r1));
+        Assert.assertFalse(matches(m, r112, r1));
+        Assert.assertFalse(matches(m, r121, r1));
+        Assert.assertFalse(matches(m, r122, r1));
+        Assert.assertFalse(matches(m, r211, r1));
+        Assert.assertFalse(matches(m, r212, r1));
+        Assert.assertFalse(matches(m, r221, r1));
+        Assert.assertFalse(matches(m, r222, r1));
+    }
+
+    @Test
+    public void test_context2() throws Exception {
+        RefMatcher m = createMatcher("@.test1");
+
+        Assert.assertFalse(matches(m, r1,   r1));
+        Assert.assertFalse(matches(m, r2,   r1));
+        Assert.assertTrue (matches(m, r11,  r1));
+        Assert.assertFalse(matches(m, r12,  r1));
+        Assert.assertFalse(matches(m, r21,  r1));
+        Assert.assertFalse(matches(m, r22,  r1));
+        Assert.assertFalse(matches(m, r111, r1));
+        Assert.assertFalse(matches(m, r112, r1));
+        Assert.assertFalse(matches(m, r121, r1));
+        Assert.assertFalse(matches(m, r122, r1));
+        Assert.assertFalse(matches(m, r211, r1));
+        Assert.assertFalse(matches(m, r212, r1));
+        Assert.assertFalse(matches(m, r221, r1));
+        Assert.assertFalse(matches(m, r222, r1));
+    }
+
+    @Test
+    public void test_context3() throws Exception {
+        RefMatcher m = createMatcher("(@).test1");
+
+        Assert.assertFalse(matches(m, r1,   r1));
+        Assert.assertFalse(matches(m, r2,   r1));
+        Assert.assertTrue (matches(m, r11,  r1));
+        Assert.assertFalse(matches(m, r12,  r1));
+        Assert.assertFalse(matches(m, r21,  r1));
+        Assert.assertFalse(matches(m, r22,  r1));
+        Assert.assertFalse(matches(m, r111, r1));
+        Assert.assertFalse(matches(m, r112, r1));
+        Assert.assertFalse(matches(m, r121, r1));
+        Assert.assertFalse(matches(m, r122, r1));
+        Assert.assertFalse(matches(m, r211, r1));
+        Assert.assertFalse(matches(m, r212, r1));
+        Assert.assertFalse(matches(m, r221, r1));
+        Assert.assertFalse(matches(m, r222, r1));
+
+        List<Ref> watchedRefs = m.match(r11, r1).getBackRefs();
+        Assert.assertTrue(watchedRefs.size() == 1);
+        Assert.assertTrue(watchedRefs.get(0).equals(r1));
+    }
+
+    @Test
+    public void test_context4() throws Exception {
+        RefMatcher m = createMatcher("(@).sub1");
+
+        Assert.assertFalse(matches(m, r1,   r12));
+        Assert.assertFalse(matches(m, r2,   r12));
+        Assert.assertFalse(matches(m, r11,  r12));
+        Assert.assertFalse(matches(m, r12,  r12));
+        Assert.assertFalse(matches(m, r21,  r12));
+        Assert.assertFalse(matches(m, r22,  r12));
+        Assert.assertFalse(matches(m, r111, r12));
+        Assert.assertFalse(matches(m, r112, r12));
+        Assert.assertTrue (matches(m, r121, r12));
+        Assert.assertFalse(matches(m, r122, r12));
+        Assert.assertFalse(matches(m, r211, r12));
+        Assert.assertFalse(matches(m, r212, r12));
+        Assert.assertFalse(matches(m, r221, r12));
+        Assert.assertFalse(matches(m, r222, r12));
+
+        List<Ref> watchedRefs = m.match(r121, r12).getBackRefs();
+        Assert.assertTrue(watchedRefs.size() == 1);
+        Assert.assertTrue(watchedRefs.get(0).equals(r12));
+    }
+
+    @Test
+    public void test_context5() throws Exception {
+        RefMatcher m = createMatcher(".(sub1)");
+
+        Assert.assertFalse(matches(m, r1,   r12));
+        Assert.assertFalse(matches(m, r2,   r12));
+        Assert.assertFalse(matches(m, r11,  r12));
+        Assert.assertFalse(matches(m, r12,  r12));
+        Assert.assertFalse(matches(m, r21,  r12));
+        Assert.assertFalse(matches(m, r22,  r12));
+        Assert.assertFalse(matches(m, r111, r12));
+        Assert.assertFalse(matches(m, r112, r12));
+        Assert.assertTrue (matches(m, r121, r12));
+        Assert.assertFalse(matches(m, r122, r12));
+        Assert.assertFalse(matches(m, r211, r12));
+        Assert.assertFalse(matches(m, r212, r12));
+        Assert.assertFalse(matches(m, r221, r12));
+        Assert.assertFalse(matches(m, r222, r12));
+
+        List<Ref> watchedRefs = m.match(r121, r12).getBackRefs();
+        Assert.assertTrue(watchedRefs.size() == 1);
+        Assert.assertTrue(watchedRefs.get(0).equals(r121));
+    }
 }

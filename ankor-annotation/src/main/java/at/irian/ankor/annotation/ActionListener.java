@@ -21,4 +21,8 @@ public @interface ActionListener {
      */
     Class<?> refType() default ActionListener.class;
 
+    /**
+     * One or more Ref patterns that must match.
+     */
+    String[] pattern() default "";
 }

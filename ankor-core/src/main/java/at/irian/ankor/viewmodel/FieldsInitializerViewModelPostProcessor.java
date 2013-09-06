@@ -10,7 +10,7 @@ import java.lang.reflect.Field;
 * @author Manfred Geiler
 */
 @SuppressWarnings("UnusedDeclaration")
-public class ViewModelPropertyFieldsInitializer implements ViewModelPostProcessor {
+public class FieldsInitializerViewModelPostProcessor implements ViewModelPostProcessor {
 
     @Override
     public void postProcess(Object modelObject, Ref modelRef) {
