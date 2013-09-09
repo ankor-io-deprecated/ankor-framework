@@ -6,7 +6,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Matches a concrete Ref against a pattern.
+ * RefMatcher for a concrete pattern. Can match a Ref against this pattern.
+ * Supports back references similar to regular expression backrefs.
  *
  * @author Manfred Geiler
  */

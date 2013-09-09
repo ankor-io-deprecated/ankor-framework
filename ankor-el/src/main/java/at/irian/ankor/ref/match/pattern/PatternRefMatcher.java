@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 /**
+ * RefMatcher implementation that is based on a {@link Pattern} model.
+ *
  * @author Manfred Geiler
  */
 public class PatternRefMatcher implements RefMatcher {
