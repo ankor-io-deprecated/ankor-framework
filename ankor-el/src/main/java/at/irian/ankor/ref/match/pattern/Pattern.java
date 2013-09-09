@@ -1,6 +1,8 @@
 package at.irian.ankor.ref.match.pattern;
 
 /**
+ * Model for parsed matching pattern.
+ *
  * @author Manfred Geiler
  */
 public class Pattern {

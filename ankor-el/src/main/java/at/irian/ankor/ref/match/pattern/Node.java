@@ -1,6 +1,8 @@
 package at.irian.ankor.ref.match.pattern;
 
 /**
+ * Single property node of a {@link Pattern}.
+ *
  * @author Manfred Geiler
  */
 public class Node {
