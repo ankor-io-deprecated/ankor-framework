@@ -10,11 +10,12 @@ define([
     var ankorSystem = new AnkorSystem({
         debug: true,
         modelId: "collabTest",
-        transport: new AtmosphereTransport("/meteor"),
+        transport: new AtmosphereTransport("/ankor"),
         utils: new jQueryUtils($)
     });
 
     window.ankorSystem = ankorSystem; //Make reference to ankor system globally available -> for debugging only
+    // asdf
 
     var rootRef = ankorSystem.getRef("root");
     rootRef.addPropChangeListener(function() {

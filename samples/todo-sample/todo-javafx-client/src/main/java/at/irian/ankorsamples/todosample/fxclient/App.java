@@ -45,7 +45,8 @@ public class App extends javafx.application.Application {
         client,
         server,
         manyClients,
-        httpClient
+        httpClient,
+        atmosphereClient
     }
 
     public static void main(String[] args) {
@@ -132,6 +133,13 @@ public class App extends javafx.application.Application {
                 client = DEFAULT_CLIENT;
             }
             createHttpClientSystem(client, server);
+            startFXClient(primaryStage);
+        } else if (mode == Mode.atmosphereClient) {
+            String client = params.get("client");
+            if (client == null) {
+                client = DEFAULT_CLIENT;
+            }
+            createAtmosphereClientSystem(client, server);
             startFXClient(primaryStage);
         } else {
             stop();
@@ -228,5 +236,51 @@ public class App extends javafx.application.Application {
         refFactory = clientRefContext.refFactory();
     }
 
+    private void createAtmosphereClientSystem(String client, String server) {
+        /*
+        AtmosphereClient atmosphereClient = ClientFactory.getDefault().newClient(AtmosphereClient.class);
+        RequestBuilder request = atmosphereClient.newRequestBuilder()
+                .method(Request.METHOD.GET)
+                .uri("http//127.0.0.1")
+                .trackMessageLength(true)
+                .transport(Request.TRANSPORT.WEBSOCKET)
+                .transport(Request.TRANSPORT.LONG_POLLING);
 
+        Socket socket = atmosphereClient.create();
+
+        socket.on(Event.OPEN, new Function<Object>() {
+            @Override
+            public void on(Object o) {
+                o = o;
+            }
+        });
+
+        socket.on(Event.MESSAGE, new Function<String>() {
+            @Override
+            public void on(String s) {
+                s = s;
+            }
+        });
+        */
+
+        String clientId = client.indexOf('@') >= 0 ? client.split("@")[0] : client;
+
+        String serverId = server.split("@")[0];
+        String serverUrl = server.split("@")[1];
+
+        /*
+        AnkorSystem clientSystem = new AnkorSystemBuilder()
+                .withName(clientId)
+                .withGlobalEventListener(new FXControllerChangeListener())
+                .withMessageBus(clientMessageLoop.getMessageBus())
+                .withModelContextId("collabTest")
+                .createClient();
+
+        // start
+        clientSystem.start();
+
+        RefContext clientRefContext = ((SingletonSessionManager)clientSystem.getSessionManager()).getSession().getRefContext();
+        refFactory = clientRefContext.refFactory();
+        */
+    }
 }
