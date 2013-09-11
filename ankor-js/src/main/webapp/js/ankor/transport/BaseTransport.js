@@ -20,6 +20,22 @@ define([
         }
     };
 
+    BaseTransport.prototype.receiveIncomingMessage = function(serializedMessage) {
+        try {
+            var message = this.utils.jsonParse(serializedMessage);
+        } catch (e) {
+            if (this.ankorSystem.debug) {
+                console.log("Ankor Transport Error", e);
+            }
+            return;
+        }
+
+        if (message.change != undefined) {
+            var messageObject = new ChangeMessage(message.senderId, message.modelId, message.messageId, message.property, message.change.type, message.change.key, message.change.value);
+            this.processIncomingMessage(messageObject);
+        }
+    }
+
     BaseTransport.prototype.processIncomingMessage = function(message) {
         if (this.ankorSystem.debug) {
             console.log("IN", message);

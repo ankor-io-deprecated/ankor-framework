@@ -45,27 +45,9 @@ define([
 
 
         request.onMessage = function (response) {
-
-            var doMessage = function(msg) {
-                try {
-                    // msg = msg.split('|')[1];
-                    var message = self.utils.jsonParse(msg);
-                } catch (e) {
-                    if (self.ankorSystem.debug) {
-                        console.log("Ankor Transport Error", e);
-                    }
-                    return;
-                }
-
-                if (message.change != undefined) {
-                    var messageObject = new ChangeMessage(message.senderId, message.modelId, message.messageId, message.property, message.change.type, message.change.key, message.change.value);
-                    self.processIncomingMessage(messageObject);
-                }
-            }
-
             var msgs = response.responseBody.match(/[^\r\n]+/g);
             for (var i = 0, msg; (msg = msgs[i]); i++) {
-                doMessage(msg);
+                self.receiveIncomingMessage(msg);
             }
         };
 
@@ -94,6 +76,7 @@ define([
         var self = this;
 
         // Ankor has to wait until atmosphere establishes a connection before sending the "init" Action.
+        // XXX: See SocketIOTransport for better solution
         var pushOrWait = function() {
             if (self.isReady) {
                 var jsonMessages = BaseTransport.buildJsonMessages(self.outgoingMessages);
