@@ -12,9 +12,9 @@ public class SocketIORemoteSystem implements RemoteSystem {
 
     private ConcurrentHashSet<String> pendingMessages = new ConcurrentHashSet<>();
 
-    public SocketIORemoteSystem(SocketIOClient resource) {
-        this.id = resource.getSessionId().toString();
-        this.client = resource;
+    public SocketIORemoteSystem(SocketIOClient client) {
+        this.id = client.getSessionId().toString();
+        this.client = client;
     }
 
     @Override
@@ -41,8 +41,7 @@ public class SocketIORemoteSystem implements RemoteSystem {
                 break;
 
             default:
-                pendingMessages.add(msg);
-                client.sendMessage(msg, new RetryAckCallback(msg, 1));
+                client.sendMessage(msg);
         }
     }
 
@@ -64,7 +63,7 @@ public class SocketIORemoteSystem implements RemoteSystem {
 
         @Override
         public void onTimeout() {
-            if (pendingMessages.contains(pendingMessage)) {
+           if (pendingMessages.contains(pendingMessage)) {
                 if (numRetries > 0) {
                     client.sendMessage(pendingMessage, new RetryAckCallback(pendingMessage, numRetries - 1));
                 } else {

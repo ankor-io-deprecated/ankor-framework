@@ -3,6 +3,7 @@ package at.irian.ankorsamples.todosample.fxclient;
 import at.irian.ankor.fx.controller.FXControllerChangeListener;
 import at.irian.ankor.http.ClientHttpMessageLoop;
 import at.irian.ankor.http.ServerHost;
+import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefFactory;
@@ -14,6 +15,11 @@ import at.irian.ankor.system.AnkorSystem;
 import at.irian.ankor.system.AnkorSystemBuilder;
 import at.irian.ankorsamples.todosample.domain.task.TaskRepository;
 import at.irian.ankorsamples.todosample.viewmodel.ModelRoot;
+import com.google.gson.JsonElement;
+import io.socket.IOAcknowledge;
+import io.socket.IOCallback;
+import io.socket.SocketIO;
+import io.socket.SocketIOException;
 import javafx.application.HostServices;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -21,6 +27,9 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -36,18 +45,8 @@ public class App extends javafx.application.Application {
     private static final String DEFAULT_SERVER = "server@localhost:8080";
     private static final String DEFAULT_CLIENT = "client@localhost:9090";
     private static final int NUMBER_OF_CLIENTS = 3;
-
     private static RefFactory refFactory;
     private static HostServices services;
-
-    private enum Mode {
-        clientServer,
-        client,
-        server,
-        manyClients,
-        httpClient,
-        atmosphereClient
-    }
 
     public static void main(String[] args) {
         launch(args);
@@ -57,12 +56,16 @@ public class App extends javafx.application.Application {
         return services;
     }
 
+    public static RefFactory refFactory() {
+        return refFactory;
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
 
         services = getHostServices();
 
-        Map<String,String> params = getParameters().getNamed();
+        Map<String, String> params = getParameters().getNamed();
 
         Mode mode = Mode.clientServer;
         String modeParam = params.get("mode");
@@ -72,38 +75,38 @@ public class App extends javafx.application.Application {
 
         if (mode == Mode.manyClients) {
             String[] command = {replaceVars("${java.home}/bin/java"),
-                                "-classpath",
-                                '"' + System.getProperty("java.class.path") + replaceVars(
-                                            ":${project.home}/ankor-sample/ankorman-javafx-client/target/classes" +
-                                            ":${project.home}/ankor-fx/target/classes" +
-                                            ":${project.home}/ankor-core/target/classes" +
-                                            ":${maven.repo}/org/slf4j/slf4j-api/1.7.1/slf4j-api-1.7.1.jar" +
-                                            ":${maven.repo}/com/typesafe/config/0.3.1/config-0.3.1.jar" +
-                                            ":${project.home}/ankor-actor/target/classes" +
-                                            ":${maven.repo}/com/typesafe/akka/akka-actor_2.10/2.2.0/akka-actor_2.10-2.2.0.jar" +
-                                            ":${maven.repo}/org/scala-lang/scala-library/2.10.2/scala-library-2.10.2.jar" +
-                                            ":${project.home}/ankor-service/target/classes:${project.home}/ankor-el/target/classes" +
-                                            ":${maven.repo}/javax/el/el-api/2.2/el-api-2.2.jar" +
-                                            ":${maven.repo}/org/glassfish/web/el-impl/2.2/el-impl-2.2.jar" +
-                                            ":${project.home}/ankor-json/target/classes" +
-                                            ":${maven.repo}/com/fasterxml/jackson/core/jackson-databind/2.2.2/jackson-databind-2.2.2.jar" +
-                                            ":${maven.repo}/com/fasterxml/jackson/core/jackson-annotations/2.2.2/jackson-annotations-2.2.2.jar" +
-                                            ":${maven.repo}/com/fasterxml/jackson/core/jackson-core/2.2.2/jackson-core-2.2.2.jar" +
-                                            ":${project.home}/ankor-annotation/target/classes" +
-                                            ":${project.home}/ankor-sample/ankorman-server/target/classes" +
-                                            ":${maven.repo}/ch/qos/logback/logback-classic/1.0.7/logback-classic-1.0.7.jar" +
-                                            ":${maven.repo}/ch/qos/logback/logback-core/1.0.7/logback-core-1.0.7.jar") + '"',
-                                App.class.getName(),
-                                "--mode=client",
-                                "--client=c1@localhost:9090"};
+                    "-classpath",
+                    '"' + System.getProperty("java.class.path") + replaceVars(
+                            ":${project.home}/ankor-sample/ankorman-javafx-client/target/classes" +
+                                    ":${project.home}/ankor-fx/target/classes" +
+                                    ":${project.home}/ankor-core/target/classes" +
+                                    ":${maven.repo}/org/slf4j/slf4j-api/1.7.1/slf4j-api-1.7.1.jar" +
+                                    ":${maven.repo}/com/typesafe/config/0.3.1/config-0.3.1.jar" +
+                                    ":${project.home}/ankor-actor/target/classes" +
+                                    ":${maven.repo}/com/typesafe/akka/akka-actor_2.10/2.2.0/akka-actor_2.10-2.2.0.jar" +
+                                    ":${maven.repo}/org/scala-lang/scala-library/2.10.2/scala-library-2.10.2.jar" +
+                                    ":${project.home}/ankor-service/target/classes:${project.home}/ankor-el/target/classes" +
+                                    ":${maven.repo}/javax/el/el-api/2.2/el-api-2.2.jar" +
+                                    ":${maven.repo}/org/glassfish/web/el-impl/2.2/el-impl-2.2.jar" +
+                                    ":${project.home}/ankor-json/target/classes" +
+                                    ":${maven.repo}/com/fasterxml/jackson/core/jackson-databind/2.2.2/jackson-databind-2.2.2.jar" +
+                                    ":${maven.repo}/com/fasterxml/jackson/core/jackson-annotations/2.2.2/jackson-annotations-2.2.2.jar" +
+                                    ":${maven.repo}/com/fasterxml/jackson/core/jackson-core/2.2.2/jackson-core-2.2.2.jar" +
+                                    ":${project.home}/ankor-annotation/target/classes" +
+                                    ":${project.home}/ankor-sample/ankorman-server/target/classes" +
+                                    ":${maven.repo}/ch/qos/logback/logback-classic/1.0.7/logback-classic-1.0.7.jar" +
+                                    ":${maven.repo}/ch/qos/logback/logback-core/1.0.7/logback-core-1.0.7.jar") + '"',
+                    App.class.getName(),
+                    "--mode=client",
+                    "--client=c1@localhost:9090"};
             Process lastProcess = null;
             for (int i = 0; i < NUMBER_OF_CLIENTS; i++) {
                 String[] c = new String[6];
                 System.arraycopy(command, 0, c, 0, 5);
                 c[5] = String.format("--client=c%03d@localhost:9%03d", i, i);
                 lastProcess = new ProcessBuilder().command(c)
-                                                  .inheritIO()
-                                                  .start();
+                        .inheritIO()
+                        .start();
             }
             if (lastProcess != null) {
                 lastProcess.waitFor();
@@ -134,12 +137,12 @@ public class App extends javafx.application.Application {
             }
             createHttpClientSystem(client, server);
             startFXClient(primaryStage);
-        } else if (mode == Mode.atmosphereClient) {
+        } else if (mode == Mode.socketIOClient) {
             String client = params.get("client");
             if (client == null) {
                 client = DEFAULT_CLIENT;
             }
-            createAtmosphereClientSystem(client, server);
+            createSocketIOClientSystem(client, server);
             startFXClient(primaryStage);
         } else {
             stop();
@@ -148,7 +151,7 @@ public class App extends javafx.application.Application {
 
     private void startFXClient(Stage primaryStage) throws IOException {
         primaryStage.setTitle("Ankor FX Sample");
-            Pane myPane = FXMLLoader.load(getClass().getClassLoader().getResource("tasks.fxml"));
+        Pane myPane = FXMLLoader.load(getClass().getClassLoader().getResource("tasks.fxml"));
 
         Scene myScene = new Scene(myPane);
         myScene.getStylesheets().add("style.css");
@@ -163,7 +166,6 @@ public class App extends javafx.application.Application {
         s = s.replaceAll("\\$\\{maven\\.repo\\}", quoteReplacement(System.getProperty("user.home") + "/.m2/repository"));
         return s;
     }
-
 
     private void createServerSystem(String server, boolean daemon) {
 
@@ -196,22 +198,6 @@ public class App extends javafx.application.Application {
 
     }
 
-    public static RefFactory refFactory() {
-        return refFactory;
-    }
-
-    private static class MyModelRootFactory implements ModelRootFactory {
-        @Override
-        public Set<String> getKnownRootNames() {
-            return Collections.singleton("root");
-        }
-
-        @Override
-        public Object createModelRoot(Ref rootRef) {
-            return new ModelRoot(rootRef, new TaskRepository());
-        }
-    }
-
     private void createHttpClientSystem(String client, String server) {
 
         String clientId = client.indexOf('@') >= 0 ? client.split("@")[0] : client;
@@ -232,55 +218,97 @@ public class App extends javafx.application.Application {
         clientSystem.start();
         clientMessageLoop.start(true);
 
-        RefContext clientRefContext = ((SingletonSessionManager)clientSystem.getSessionManager()).getSession().getRefContext();
+        RefContext clientRefContext = ((SingletonSessionManager) clientSystem.getSessionManager()).getSession().getRefContext();
         refFactory = clientRefContext.refFactory();
     }
 
-    private void createAtmosphereClientSystem(String client, String server) {
-        /*
-        AtmosphereClient atmosphereClient = ClientFactory.getDefault().newClient(AtmosphereClient.class);
-        RequestBuilder request = atmosphereClient.newRequestBuilder()
-                .method(Request.METHOD.GET)
-                .uri("http//127.0.0.1")
-                .trackMessageLength(true)
-                .transport(Request.TRANSPORT.WEBSOCKET)
-                .transport(Request.TRANSPORT.LONG_POLLING);
+    private void createSocketIOClientSystem(String client, String server) {
 
-        Socket socket = atmosphereClient.create();
-
-        socket.on(Event.OPEN, new Function<Object>() {
-            @Override
-            public void on(Object o) {
-                o = o;
-            }
-        });
-
-        socket.on(Event.MESSAGE, new Function<String>() {
-            @Override
-            public void on(String s) {
-                s = s;
-            }
-        });
-        */
-
-        String clientId = client.indexOf('@') >= 0 ? client.split("@")[0] : client;
+        final String clientId = client.indexOf('@') >= 0 ? client.split("@")[0] : client;
 
         String serverId = server.split("@")[0];
         String serverUrl = server.split("@")[1];
 
-        /*
-        AnkorSystem clientSystem = new AnkorSystemBuilder()
-                .withName(clientId)
-                .withGlobalEventListener(new FXControllerChangeListener())
-                .withMessageBus(clientMessageLoop.getMessageBus())
-                .withModelContextId("collabTest")
-                .createClient();
+        try {
+            final SocketIO socket = new SocketIO(new URL("http://127.0.0.1:9092"));
+            final SocketIOMessageBus messageBus = new SocketIOMessageBus(new ViewModelJsonMessageMapper());
 
-        // start
-        clientSystem.start();
+            socket.connect(new IOCallback() {
+                @Override
+                public void onMessage(String data, IOAcknowledge ack) {
+                    messageBus.receiveSerializedMessage(data);
+                }
 
-        RefContext clientRefContext = ((SingletonSessionManager)clientSystem.getSessionManager()).getSession().getRefContext();
-        refFactory = clientRefContext.refFactory();
-        */
+                @Override
+                public void onMessage(JsonElement jsonElement, IOAcknowledge ioAcknowledge) {
+                }
+
+                @Override
+                public void on(String s, IOAcknowledge ioAcknowledge, JsonElement... jsonElements) {
+                }
+
+                @Override
+                public void onError(SocketIOException socketIOException) {
+                }
+
+                @Override
+                public void onDisconnect() {
+                }
+
+                @Override
+                public void onConnect() {
+                    try {
+                        String transport = socket.getTransport();
+
+                        // XXX: Hacking a way to the session id
+                        Field f = socket.getClass().getDeclaredField("connection");
+                        f.setAccessible(true);
+                        Object connection = (Object) f.get(socket); //IllegalAccessException
+
+                        Field f2 = connection.getClass().getDeclaredField("sessionId"); //NoSuchFieldException
+                        f2.setAccessible(true);
+                        String sessionId = (String) f2.get(connection); //IllegalAccessException
+
+                        messageBus.addRemoteSystem(new SocketIORemoteSystem(sessionId, socket));
+
+                        AnkorSystem clientSystem = new AnkorSystemBuilder()
+                                .withName(sessionId)
+                                .withGlobalEventListener(new FXControllerChangeListener())
+                                .withMessageBus(messageBus)
+                                .withModelContextId("collabTest")
+                                .createClient();
+                        clientSystem.start();
+
+                        RefContext clientRefContext = ((SingletonSessionManager) clientSystem.getSessionManager()).getSession().getRefContext();
+                        refFactory = clientRefContext.refFactory();
+                    } catch (NoSuchFieldException | IllegalAccessException ignored) {
+                    }
+                }
+            });
+        } catch (MalformedURLException ignored) {
+        }
     }
+
+    private enum Mode {
+        clientServer,
+        client,
+        server,
+        manyClients,
+        httpClient,
+        socketIOClient
+    }
+
+    private static class MyModelRootFactory implements ModelRootFactory {
+        @Override
+        public Set<String> getKnownRootNames() {
+            return Collections.singleton("root");
+        }
+
+        @Override
+        public Object createModelRoot(Ref rootRef) {
+            return new ModelRoot(rootRef, new TaskRepository());
+        }
+    }
+
+
 }

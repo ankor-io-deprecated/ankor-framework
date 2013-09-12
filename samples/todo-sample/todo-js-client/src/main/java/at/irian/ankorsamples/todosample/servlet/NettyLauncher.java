@@ -23,7 +23,7 @@ import java.util.Set;
 public class NettyLauncher {
 
     private static AnkorSystem ankorSystem;
-    private static SocketIOMessageBus atmosphereMessageBus;
+    private static SocketIOMessageBus socketIOMessageBus;
 
     public static void main(String[] args) throws InterruptedException {
         startAnkorSystem();
@@ -34,27 +34,27 @@ public class NettyLauncher {
         Configuration config = new Configuration();
         config.setHostname("localhost");
         config.setPort(9092);
-        config.setTransports(Transport.WEBSOCKET, Transport.XHRPOLLING);
+        config.setTransports(Transport.XHRPOLLING);
 
         final SocketIOServer server = new SocketIOServer(config);
         server.addConnectListener(new ConnectListener() {
             @Override
             public void onConnect(SocketIOClient socketIOClient) {
-                atmosphereMessageBus.addRemoteSystem(new SocketIORemoteSystem(socketIOClient));
+                socketIOMessageBus.addRemoteSystem(new SocketIORemoteSystem(socketIOClient));
             }
         });
 
         server.addDisconnectListener(new DisconnectListener() {
             @Override
             public void onDisconnect(SocketIOClient socketIOClient) {
-                atmosphereMessageBus.removeRemoteSystem(socketIOClient.getSessionId().toString());
+                socketIOMessageBus.removeRemoteSystem(socketIOClient.getSessionId().toString());
             }
         });
 
         server.addMessageListener(new DataListener<String>() {
             @Override
             public void onData(SocketIOClient socketIOClient, String s, AckRequest ackRequest) {
-                atmosphereMessageBus.receiveSerializedMessage(s);
+                socketIOMessageBus.receiveSerializedMessage(s);
             }
         });
 
@@ -70,7 +70,7 @@ public class NettyLauncher {
                 .withName(getName())
                 .withBeanResolver(getBeanResolver())
                 .withModelRootFactory(getModelRootFactory())
-                .withMessageBus((atmosphereMessageBus = new SocketIOMessageBus(new ViewModelJsonMessageMapper())))
+                .withMessageBus((socketIOMessageBus = new SocketIOMessageBus(new ViewModelJsonMessageMapper())))
                 .withDispatcherFactory(new AkkaEventDispatcherFactory((ankorActorSystem = AnkorActorSystem.create())))
                 .withScheduler(new AkkaScheduler(ankorActorSystem))
                 .createServer();
