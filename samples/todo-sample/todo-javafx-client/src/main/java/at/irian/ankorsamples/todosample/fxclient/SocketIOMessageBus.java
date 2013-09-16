@@ -9,6 +9,7 @@ import javafx.application.Platform;
 import java.util.Collection;
 import java.util.HashMap;
 
+
 public class SocketIOMessageBus extends MessageBus<String> {
 
     private HashMap<String, SocketIORemoteSystem> remoteSystems = new HashMap<>();
@@ -26,9 +27,7 @@ public class SocketIOMessageBus extends MessageBus<String> {
         SocketIORemoteSystem remoteSystem = remoteSystems.get(remoteSystemId);
         if (remoteSystem != null) {
             SocketIO socket = remoteSystem.getSocket();
-            if (socket.isConnected()) {
-                socket.send(msg);
-            }
+            socket.send(msg);
         }
     }
 

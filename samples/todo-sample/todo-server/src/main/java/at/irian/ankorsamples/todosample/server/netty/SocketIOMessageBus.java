@@ -1,4 +1,4 @@
-package at.irian.ankorsamples.todosample.servlet;
+package at.irian.ankorsamples.todosample.server.netty;
 
 import at.irian.ankor.messaging.MessageBus;
 import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;

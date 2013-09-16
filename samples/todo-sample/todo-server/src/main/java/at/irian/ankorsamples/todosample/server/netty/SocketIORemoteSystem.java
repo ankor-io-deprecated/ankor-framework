@@ -1,4 +1,4 @@
-package at.irian.ankorsamples.todosample.servlet;
+package at.irian.ankorsamples.todosample.server.netty;
 
 import at.irian.ankor.session.RemoteSystem;
 import com.corundumstudio.socketio.SocketIOClient;
@@ -28,7 +28,7 @@ public class SocketIORemoteSystem implements RemoteSystem {
                 pendingMessages.add(msg);
 
                 // XXX: Waiting for other messages to bundle up, since consecutive writes do not succeed with long polling
-                try { Thread.sleep(25); } catch (InterruptedException ignored) {}
+                // try { Thread.sleep(25); } catch (InterruptedException ignored) {}
 
                 String bundle = "";
                 for (String s : pendingMessages) {

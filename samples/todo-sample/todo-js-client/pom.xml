@@ -40,12 +40,6 @@
             <scope>runtime</scope>
         </dependency>
 
-        <dependency>
-            <groupId>com.corundumstudio.socketio</groupId>
-            <artifactId>netty-socketio</artifactId>
-            <version>1.5.0</version>
-        </dependency>
-
     </dependencies>
 
 </project>

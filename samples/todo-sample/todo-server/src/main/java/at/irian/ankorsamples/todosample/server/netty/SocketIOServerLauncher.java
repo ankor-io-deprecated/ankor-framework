@@ -1,4 +1,4 @@
-package at.irian.ankorsamples.todosample.servlet;
+package at.irian.ankorsamples.todosample.server.netty;
 
 import at.irian.ankor.akka.AnkorActorSystem;
 import at.irian.ankor.base.BeanResolver;
@@ -15,12 +15,15 @@ import com.corundumstudio.socketio.*;
 import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
-public class NettyLauncher {
+public class SocketIOServerLauncher {
+    private static final Logger LOG = LoggerFactory.getLogger(SocketIOServerLauncher.class);
 
     private static AnkorSystem ankorSystem;
     private static SocketIOMessageBus socketIOMessageBus;
@@ -34,7 +37,7 @@ public class NettyLauncher {
         Configuration config = new Configuration();
         config.setHostname("localhost");
         config.setPort(9092);
-        config.setTransports(Transport.XHRPOLLING);
+        // config.setTransports(Transport.FLASHSOCKET);
 
         final SocketIOServer server = new SocketIOServer(config);
         server.addConnectListener(new ConnectListener() {
