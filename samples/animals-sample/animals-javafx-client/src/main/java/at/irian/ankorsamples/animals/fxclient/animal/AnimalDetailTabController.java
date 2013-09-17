@@ -2,6 +2,8 @@ package at.irian.ankorsamples.animals.fxclient.animal;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.annotation.ChangeListener;
+import at.irian.ankor.fx.binding.property.ViewModelListProperty;
+import at.irian.ankor.fx.binding.property.ViewModelProperty;
 import at.irian.ankor.fx.controller.FXControllerAnnotationSupport;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorsamples.animals.fxclient.BaseTabController;
@@ -10,8 +12,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.text.Text;
-
-import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
 
 /**
  * @author Thomas Spiegl
@@ -40,27 +40,19 @@ public class AnimalDetailTabController extends BaseTabController {
         Ref animalRef = modelRef.appendPath("animal");
         Ref selItemsRef = modelRef.appendPath("selectItems");
 
-        bindValue(tabRef.appendPath("name"))
-                .toProperty(tab.textProperty())
-                .createWithin(bindingContext);
-        bindValue(animalRef.appendPath("name"))
-                .toInput(name)
-                .createWithin(bindingContext);
-        bindValue(modelRef.appendPath("editable"))
-                .toProperty(name.editableProperty())
-                .createWithin(bindingContext);
+        tab.textProperty().bind(new ViewModelProperty<String>(tabRef, "name"));
 
-        bindValue(modelRef.appendPath("nameStatus"))
-                .toText(nameStatus)
-                .createWithin(bindingContext);
-        bindValue(animalRef.appendPath("type"))
-                .toInput(type)
-                .withSelectItems(selItemsRef.appendPath("types"))
-                .createWithin(bindingContext);
-        bindValue(animalRef.appendPath("family"))
-                .toInput(family)
-                .withSelectItems(selItemsRef.appendPath("families"))
-                .createWithin(bindingContext);
+        name.textProperty().bindBidirectional(new ViewModelProperty<String>(animalRef, "name"));
+
+        name.editableProperty().bind(new ViewModelProperty<Boolean>(modelRef, "editable"));
+
+        nameStatus.textProperty().bind(new ViewModelProperty<String>(modelRef, "nameStatus"));
+
+        type.itemsProperty().bind(new ViewModelListProperty<Enum>(selItemsRef, "types"));
+        type.valueProperty().bindBidirectional(new ViewModelProperty<Enum>(animalRef, "type"));
+
+        family.itemsProperty().bind(new ViewModelListProperty<Enum>(selItemsRef, "families"));
+        family.valueProperty().bindBidirectional(new ViewModelProperty<Enum>(animalRef, "family"));
 
         name.requestFocus();
     }

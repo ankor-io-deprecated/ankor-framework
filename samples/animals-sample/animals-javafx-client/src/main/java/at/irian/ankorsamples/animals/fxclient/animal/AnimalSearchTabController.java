@@ -1,11 +1,13 @@
 package at.irian.ankorsamples.animals.fxclient.animal;
 
 import at.irian.ankor.action.Action;
-import at.irian.ankor.fx.binding.ClickAction;
+import at.irian.ankor.fx.binding.property.ViewModelListProperty;
+import at.irian.ankor.fx.binding.property.ViewModelProperty;
 import at.irian.ankor.fx.controller.FXControllerAnnotationSupport;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorsamples.animals.fxclient.BaseTabController;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -13,9 +15,6 @@ import javafx.scene.control.cell.MapValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 
 import java.util.Map;
-
-import static at.irian.ankor.fx.binding.ButtonBindingBuilder.onButtonClick;
-import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
 
 /**
  * @author Thomas Spiegl
@@ -60,59 +59,42 @@ public class AnimalSearchTabController extends BaseTabController {
 
         Ref filterRef = tabRef.appendPath("model.filter");
         Ref selItemsRef = tabRef.appendPath("model.selectItems");
-        Ref rowsRef = tabRef.appendPath("model.animals.rows");
-        Ref paginatorRef = tabRef.appendPath("model.animals.paginator");
+        Ref animalsRef = tabRef.appendPath("model.animals");
+        final Ref paginatorRef = tabRef.appendPath("model.animals.paginator");
 
         bindTableColumns();
 
-        bindValue(tabRef.appendPath("name"))
-                .toTabText(tab)
-                .createWithin(bindingContext);
+        tab.textProperty().bind(new ViewModelProperty<String>(tabRef, "name"));
 
-        bindValue(filterRef.appendPath("name"))
-                .toInput(name)
-                .withFloodControlDelay(500L)
-                .createWithin(bindingContext);
+        // TODO flood control
+        name.textProperty().bindBidirectional(new ViewModelProperty<String>(filterRef, "name"));
 
-        bindValue(filterRef.appendPath("type"))
-                .toInput(type)
-                .withSelectItems(selItemsRef.appendPath("types"))
-                .createWithin(bindingContext);
+        type.itemsProperty().bind(new ViewModelListProperty<Enum>(selItemsRef, "types"));
+        type.valueProperty().bindBidirectional(new ViewModelProperty<Enum>(filterRef, "type"));
 
-        bindValue(filterRef.appendPath("family"))
-                .toInput(family)
-                .withSelectItems(selItemsRef.appendPath("families"))
-                .createWithin(bindingContext);
+        family.itemsProperty().bind(new ViewModelListProperty<Enum>(selItemsRef, "families"));
+        family.valueProperty().bindBidirectional(new ViewModelProperty<Enum>(filterRef, "family"));
 
-        bindValue(rowsRef)
-                .toTable(animalTable)
-                .createWithin(bindingContext);
+        animalTable.itemsProperty().bind(new ViewModelListProperty<Map>(animalsRef, "rows"));
 
-        onButtonClick(previous)
-                .callAction(new ClickAction<Ref>() {
-                    @Override
-                    public void onClick(Ref paginator) {
-                        paginator.fire(new Action("previous"));
-                    }
-                })
-                .withParam(paginatorRef).create();
-
-        onButtonClick(next)
-                .callAction(new ClickAction<Ref>() {
-                    @Override
-                    public void onClick(Ref paginator) {
-                        paginator.fire(new Action("next"));
-                    }
-                })
-                .withParam(paginatorRef).create();
-
-        onButtonClick(save)
-                .callAction(new ClickAction() {
-                    @Override
-                    public void onClick(Object value) {
-                        tabRef.appendPath("model").fire(new Action("save"));
-                    }
-                }).create();
+        previous.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                paginatorRef.fire(new Action("previous"));
+            }
+        });
+        next.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                paginatorRef.fire(new Action("next"));
+            }
+        });
+        save.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                tabRef.appendPath("model").fire(new Action("save"));
+            }
+        });
 
         name.requestFocus();
     }

@@ -3,7 +3,7 @@
     <option name="OPEN_IN_BROWSER" value="false" />
     <option name="UPDATING_POLICY" value="restart-server" />
     <deployment>
-      <artifact name="ankorman-js-client:war exploded">
+      <artifact name="animals-js-client:war exploded">
         <settings>
           <option name="CONTEXT_PATH" value="/" />
         </settings>
@@ -72,7 +72,7 @@
     </ConfigurationWrapper>
     <method>
       <option name="BuildArtifacts" enabled="true">
-        <artifact name="ankorman-js-client:war exploded" />
+        <artifact name="animals-js-client:war exploded" />
       </option>
     </method>
   </configuration>

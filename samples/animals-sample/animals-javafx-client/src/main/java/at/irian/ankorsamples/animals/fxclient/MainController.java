@@ -3,7 +3,7 @@ package at.irian.ankorsamples.animals.fxclient;
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionBuilder;
 import at.irian.ankor.annotation.ChangeListener;
-import at.irian.ankor.fx.binding.BindingContext;
+import at.irian.ankor.fx.binding.property.ViewModelProperty;
 import at.irian.ankor.fx.controller.FXControllerAnnotationSupport;
 import at.irian.ankor.ref.Ref;
 import javafx.event.ActionEvent;
@@ -17,7 +17,6 @@ import java.net.URL;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
 import static at.irian.ankorsamples.animals.fxclient.App.refFactory;
 
 /**
@@ -32,8 +31,6 @@ public class MainController implements Initializable {
     private TabPane tabPane;
     @FXML
     private Text userName;
-
-    private BindingContext bindingContext = new BindingContext();
 
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Ref rootRef = refFactory().ref("root");
@@ -61,13 +58,9 @@ public class MainController implements Initializable {
         Ref rootRef = refFactory().ref("root");
         Ref tabsRef = rootRef.appendPath("tabs");
 
-        bindValue(rootRef.appendPath("userName"))
-                .toText(userName)
-                .createWithin(bindingContext);
+        userName.textProperty().bind(new ViewModelProperty<String>(rootRef, "userName"));
 
-        bindValue(rootRef.appendPath("serverStatus"))
-                .toText(serverStatus)
-                .createWithin(bindingContext);
+        serverStatus.textProperty().bind(new ViewModelProperty<String>(rootRef, "serverStatus"));
 
         Map<String,?> tabs = tabsRef.getValue();
         for (String tabId : tabs.keySet()) {
