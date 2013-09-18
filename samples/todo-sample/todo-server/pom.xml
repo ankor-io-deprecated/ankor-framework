@@ -10,7 +10,7 @@
 
     <artifactId>todo-server</artifactId>
     <packaging>jar</packaging>
-    <name>Ankor Todo Sample - Server</name>
+    <name>Todo Sample - Server</name>
 
     <dependencies>
 
