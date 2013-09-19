@@ -1,4 +1,4 @@
-package at.irian.ankorsamples.todosample.servlet;
+package at.irian.ankor.servlet.websocket;
 
 import at.irian.ankor.session.RemoteSystem;
 import org.slf4j.Logger;

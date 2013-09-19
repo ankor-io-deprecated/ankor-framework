@@ -1,10 +1,10 @@
 define([
     "./BaseTransport"
 ], function (BaseTransport) {
-    var WebSocketTransport = function (endpoint, options) {
+    var WebSocketTransport = function (endpoint) {
         BaseTransport.call(this);
-        this.endpoint = endpoint;
 
+        this.endpoint = endpoint || "/websocket/ankor";
         this.isHandshake = false;
         this.isReady = false;
 
@@ -14,7 +14,7 @@ define([
          *
          * @param clientId The uuid of the new connection.
          */
-        this.sendPendingMessages = function(clientId) {
+        this.sendPendingMessages = function (clientId) {
             var jsonMessages = BaseTransport.buildJsonMessages(this.outgoingMessages);
             while (jsonMessages.length > 0) {
                 var jsonMessage = jsonMessages.pop()
@@ -39,47 +39,54 @@ define([
     WebSocketTransport.prototype.init = function (ankorSystem) {
         BaseTransport.prototype.init(ankorSystem);
 
-        var self = this;
-
-        var host = "";
-        if (window.location.protocol == 'http:') {
-            host = 'ws://' + window.location.host + this.endpoint;
-        } else {
-            host = 'wss://' + window.location.host + this.endpoint;
-        }
-
-        if ('WebSocket' in window) {
-            this.socket = new WebSocket(host);
-        } else if ('MozWebSocket' in window) {
-            this.socket = new MozWebSocket(host);
-        } else {
-            console.log('Error: WebSocket is not supported by this browser.');
-            return;
-        }
-
-        this.socket.onopen = function () {
-            console.log('WebSocket connected');
-            self.isHandshake = true;
-        };
-
-        this.socket.onclose = function () {
-            console.log('Info: WebSocket closed.');
-        };
-
-        this.socket.onmessage = function (message) {
-            console.log('WebSocket received messages');
-
-            if (self.isHandshake && !self.isReady) {
-                // TODO: Check if UUID
-                var clientId = message.data;
-                self.ankorSystem.senderId = clientId;
-                self.sendPendingMessages(clientId)
-                self.isHandshake = false;
-                self.isReady = true;
-            } else if (self.isReady && !self.isHandshake) {
-                self.receiveIncomingMessage(message.data);
+        var host = function (endpoint) {
+            if (window.location.protocol == 'http:') {
+                return 'ws://' + window.location.host + endpoint;
+            } else {
+                return 'wss://' + window.location.host + endpoint;
             }
-        };
+        }
+
+        var socket = function (host) {
+            if ('WebSocket' in window) {
+                return new WebSocket(host);
+            } else if ('MozWebSocket' in window) {
+                return new MozWebSocket(host);
+            } else {
+                console.log('Error: WebSocket is not supported by this browser.');
+                return null;
+            }
+        }
+
+        this.socket = socket(host(this.endpoint));
+        if (this.socket != null) {
+
+            var self = this;
+
+            this.socket.onopen = function () {
+                console.log('WebSocket connected');
+                self.isHandshake = true;
+            };
+
+            this.socket.onclose = function () {
+                console.log('Info: WebSocket closed.');
+            };
+
+            this.socket.onmessage = function (message) {
+                console.log('WebSocket received messages');
+
+                if (self.isHandshake && !self.isReady) {
+                    // TODO: Check if UUID
+                    var clientId = message.data;
+                    self.ankorSystem.senderId = clientId;
+                    self.sendPendingMessages(clientId)
+                    self.isHandshake = false;
+                    self.isReady = true;
+                } else if (self.isReady && !self.isHandshake) {
+                    self.receiveIncomingMessage(message.data);
+                }
+            };
+        }
     };
 
     WebSocketTransport.prototype.sendMessage = function (message) {

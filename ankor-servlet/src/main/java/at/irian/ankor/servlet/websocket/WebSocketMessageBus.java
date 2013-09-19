@@ -1,4 +1,4 @@
-package at.irian.ankorsamples.todosample.servlet;
+package at.irian.ankor.servlet.websocket;
 
 import at.irian.ankor.messaging.MessageBus;
 import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
@@ -12,7 +12,7 @@ import java.util.HashMap;
 public class WebSocketMessageBus extends MessageBus<String> {
     private static Logger LOG = LoggerFactory.getLogger(WebSocketMessageBus.class);
 
-    private HashMap<String, WebSocketRemoteSystem> remoteSystems = new HashMap<>();
+    private HashMap<String, WebSocketRemoteSystem> remoteSystems = new HashMap<String, WebSocketRemoteSystem>();
 
     public WebSocketMessageBus(ViewModelJsonMessageMapper mapper) {
         super(mapper, mapper);

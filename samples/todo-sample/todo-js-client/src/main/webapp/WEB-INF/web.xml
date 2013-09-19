@@ -3,4 +3,6 @@
          xmlns:j2ee="http://java.sun.com/xml/ns/javaee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee    http://java.sun.com/xml/ns/j2ee/web-app_3.0.xsd">
+    <!-- just serving the static html and js -->
+    <!-- the websocket endpoint gets registered via annotation -->
 </web-app>
