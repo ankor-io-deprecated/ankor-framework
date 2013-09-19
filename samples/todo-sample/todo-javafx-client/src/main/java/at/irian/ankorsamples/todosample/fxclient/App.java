@@ -4,14 +4,11 @@ import at.irian.ankor.fx.controller.FXControllerChangeListener;
 import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefFactory;
+import at.irian.ankor.servlet.websocket.messaging.WebSocketMessageBus;
+import at.irian.ankor.servlet.websocket.session.WebSocketRemoteSystem;
 import at.irian.ankor.session.SingletonSessionManager;
 import at.irian.ankor.system.AnkorSystem;
 import at.irian.ankor.system.AnkorSystemBuilder;
-import com.google.gson.JsonElement;
-import io.socket.IOAcknowledge;
-import io.socket.IOCallback;
-import io.socket.SocketIO;
-import io.socket.SocketIOException;
 import javafx.application.Application;
 import javafx.application.HostServices;
 import javafx.fxml.FXMLLoader;
@@ -19,10 +16,10 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
+import javax.websocket.*;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.util.UUID;
 
 /**
  * @author Thomas Spiegl
@@ -41,8 +38,8 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         services = getHostServices();
-        createSocketIOClientSystem();
-        startFXClient(primaryStage);
+        createWebSocketClientSystem(primaryStage);
+        //startFXClient(primaryStage);
     }
 
     private void startFXClient(Stage primaryStage) throws IOException {
@@ -55,66 +52,41 @@ public class App extends Application {
         primaryStage.show();
     }
 
-    private void createSocketIOClientSystem() {
-        try {
-            final SocketIO socket = new SocketIO(new URL("http://127.0.0.1:9092"));
-            final SocketIOMessageBus messageBus = new SocketIOMessageBus(new ViewModelJsonMessageMapper());
+    private void createWebSocketClientSystem(final Stage primaryStage) throws IOException, DeploymentException {
+        final String clientId = UUID.randomUUID().toString();
 
-            socket.connect(new IOCallback() {
-                @Override
-                public void onMessage(String data, IOAcknowledge ack) {
-                    messageBus.receiveSerializedMessage(data);
-                }
+        final AnkorSystem[] clientSystem = new AnkorSystem[1];
+        final WebSocketMessageBus messageBus = new WebSocketMessageBus(new ViewModelJsonMessageMapper());
+        final AnkorSystemBuilder systemBuilder = new AnkorSystemBuilder()
+                .withName(clientId)
+                .withGlobalEventListener(new FXControllerChangeListener())
+                .withMessageBus(messageBus)
+                .withModelContextId("collabTest");
 
-                @Override
-                public void onMessage(JsonElement jsonElement, IOAcknowledge ioAcknowledge) {
-                }
+        WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+        String uri = "ws://localhost:8080" + "/websocket/ankor/" + clientId;
+        container.connectToServer(new Endpoint() {
 
-                @Override
-                public void on(String s, IOAcknowledge ioAcknowledge, JsonElement... jsonElements) {
-                }
+            @Override
+            public void onOpen(Session session, EndpointConfig config) {
+                session.addMessageHandler(new MessageHandler.Whole<String>() {
 
-                @Override
-                public void onError(SocketIOException socketIOException) {
-                }
-
-                @Override
-                public void onDisconnect() {
-                }
-
-                @Override
-                public void onConnect() {
-                    try {
-                        if (!connected) {
-                            connected = true;
-
-                            // XXX: The sessionId is not exposed by the api
-                            Field f = socket.getClass().getDeclaredField("connection");
-                            f.setAccessible(true);
-                            Object connection = (Object) f.get(socket); //IllegalAccessException
-
-                            Field f2 = connection.getClass().getDeclaredField("sessionId"); //NoSuchFieldException
-                            f2.setAccessible(true);
-                            String sessionId = (String) f2.get(connection); //IllegalAccessException
-
-                            messageBus.addRemoteSystem(new SocketIORemoteSystem(sessionId, socket));
-                            AnkorSystem clientSystem = new AnkorSystemBuilder()
-                                    .withName(sessionId)
-                                    .withGlobalEventListener(new FXControllerChangeListener())
-                                    .withMessageBus(messageBus)
-                                    .withModelContextId("collabTest")
-                                    .createClient();
-                            clientSystem.start();
-
-                            RefContext clientRefContext = ((SingletonSessionManager) clientSystem.getSessionManager()).getSession().getRefContext();
-                            refFactory = clientRefContext.refFactory();
-                        }
-                    } catch (NoSuchFieldException | IllegalAccessException ignored) {
+                    @Override
+                    public void onMessage(String message) {
+                        messageBus.receiveSerializedMessage(message);
                     }
+                });
+
+                messageBus.addRemoteSystem(new WebSocketRemoteSystem(clientId, session));
+                final AnkorSystem clientSystem = systemBuilder.createClient();
+                RefContext clientRefContext = ((SingletonSessionManager) clientSystem.getSessionManager()).getSession().getRefContext();
+                refFactory = clientRefContext.refFactory();
+                try {
+                    startFXClient(primaryStage);
+                } catch (IOException ignored) {
                 }
-            });
-        } catch (MalformedURLException ignored) {
-        }
+            }
+        }, URI.create(uri));
     }
 
     public static HostServices getServices() {

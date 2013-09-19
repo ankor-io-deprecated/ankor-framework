@@ -13,25 +13,21 @@
     <name>Todo Sample - JavaFX Client</name>
 
     <properties>
-        <javafx.version>2.2.21</javafx.version>
+        <javafx.version>2.2.40</javafx.version>
         <javafx.runtime.lib.jar>${java.home}/lib/jfxrt.jar</javafx.runtime.lib.jar>
     </properties>
-
-    <repositories>
-
-        <repository>
-            <id>keytwo.net</id>
-            <name>Keytwo.net Repository</name>
-            <url>http://audiobox.keytwo.net</url>
-        </repository>
-
-    </repositories>
 
     <dependencies>
 
         <dependency>
             <groupId>at.irian.ankor</groupId>
             <artifactId>ankor-fx</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>at.irian.ankor</groupId>
+            <artifactId>ankor-servlet</artifactId>
             <scope>compile</scope>
         </dependency>
 
@@ -56,9 +52,16 @@
         </dependency>
 
         <dependency>
-            <groupId>io.socket</groupId>
-            <artifactId>socket.io-client</artifactId>
-            <version>0.2.1</version>
+            <groupId>javax.websocket</groupId>
+            <artifactId>javax.websocket-api</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <!-- This is required for ContainerProvider.getWebSocketContainer() -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.0.1</version>
         </dependency>
 
     </dependencies>
