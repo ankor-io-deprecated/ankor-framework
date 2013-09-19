@@ -1,11 +1,10 @@
-package at.irian.ankor.servlet.websocket;
+package at.irian.ankor.servlet.websocket.session;
 
 import at.irian.ankor.session.RemoteSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.websocket.Session;
-import java.io.IOException;
 
 public class WebSocketRemoteSystem implements RemoteSystem {
     private static Logger LOG = LoggerFactory.getLogger(WebSocketRemoteSystem.class);
@@ -24,11 +23,7 @@ public class WebSocketRemoteSystem implements RemoteSystem {
     }
 
     public void sendMessage(String msg) {
-        try {
-            LOG.info("Send serialized message {}", msg);
-            client.getBasicRemote().sendText(msg);
-        } catch (IOException e) {
-            LOG.error(e.toString());
-        }
+        LOG.info("Send serialized message {}", msg);
+        client.getAsyncRemote().sendText(msg);
     }
 }

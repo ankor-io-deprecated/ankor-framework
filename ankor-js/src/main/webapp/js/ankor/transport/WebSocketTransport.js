@@ -5,20 +5,15 @@ define([
         BaseTransport.call(this);
 
         this.endpoint = endpoint || "/websocket/ankor";
-        this.isHandshake = false;
         this.isReady = false;
 
         /**
          * Sends pending messages after the connection has be established.
-         * A new connection has a new clientId, so the pending messages have to have their senderId updated.
-         *
-         * @param clientId The uuid of the new connection.
          */
-        this.sendPendingMessages = function (clientId) {
+        this.sendPendingMessages = function () {
             var jsonMessages = BaseTransport.buildJsonMessages(this.outgoingMessages);
             while (jsonMessages.length > 0) {
                 var jsonMessage = jsonMessages.pop()
-                jsonMessage.senderId = clientId;
                 this.sendMessageInner(jsonMessage);
             }
             this.outgoingMessages = [];
@@ -39,11 +34,11 @@ define([
     WebSocketTransport.prototype.init = function (ankorSystem) {
         BaseTransport.prototype.init(ankorSystem);
 
-        var host = function (endpoint) {
+        var host = function (endpoint, clientId) {
             if (window.location.protocol == 'http:') {
-                return 'ws://' + window.location.host + endpoint;
+                return 'ws://' + window.location.host + endpoint + '/' + clientId;
             } else {
-                return 'wss://' + window.location.host + endpoint;
+                return 'wss://' + window.location.host + endpoint + '/' + clientId;
             }
         }
 
@@ -58,33 +53,25 @@ define([
             }
         }
 
-        this.socket = socket(host(this.endpoint));
+        this.socket = socket(host(this.endpoint, this.ankorSystem.senderId));
         if (this.socket != null) {
 
             var self = this;
 
             this.socket.onopen = function () {
                 console.log('WebSocket connected');
-                self.isHandshake = true;
+                self.isReady = true;
+                self.sendPendingMessages();
             };
 
             this.socket.onclose = function () {
                 console.log('Info: WebSocket closed.');
+                // TODO: Inform user
             };
 
             this.socket.onmessage = function (message) {
                 console.log('WebSocket received messages');
-
-                if (self.isHandshake && !self.isReady) {
-                    // TODO: Check if UUID
-                    var clientId = message.data;
-                    self.ankorSystem.senderId = clientId;
-                    self.sendPendingMessages(clientId)
-                    self.isHandshake = false;
-                    self.isReady = true;
-                } else if (self.isReady && !self.isHandshake) {
-                    self.receiveIncomingMessage(message.data);
-                }
+                self.receiveIncomingMessage(message.data);
             };
         }
     };

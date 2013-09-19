@@ -7,10 +7,12 @@ import at.irian.ankor.session.ModelRootFactory;
 import at.irian.ankorsamples.todosample.domain.task.TaskRepository;
 import at.irian.ankorsamples.todosample.viewmodel.ModelRoot;
 
+import javax.servlet.annotation.WebListener;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
+@WebListener
 public class TodoEndpoint extends AnkorEndpoint {
 
     @Override
