@@ -21,6 +21,7 @@
         <module>ankor-js</module>
         <module>samples/todo-sample</module>
         <module>samples/animals-sample</module>
+        <module>samples/fxrates-sample</module>
     </modules>
 
     <properties>
