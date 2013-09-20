@@ -1,5 +1,6 @@
 package at.irian.ankor.fx.binding.property;
 
+import at.irian.ankor.delay.FloodControl;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.listener.RefChangeListener;
@@ -11,30 +12,40 @@ import javafx.collections.ObservableList;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class ViewModelListProperty<T> extends SimpleListProperty<T> implements RefChangeListener {
 
-    private Ref ref;
+    private final FloodControl floodControl;
+    private final Ref listRef;
 
     public ViewModelListProperty(Ref parentObjectRef, String propertyName) {
         super(new ObservableListWrapper<>(new ArrayList<T>()));
-        this.ref = parentObjectRef.appendPath(propertyName);
-        processChange(this.ref);
-        RefListeners.addPropChangeListener(ref, this);
+        this.listRef = parentObjectRef.appendPath(propertyName);
+        this.floodControl = new FloodControl(listRef, 5);
+        processChange(this.listRef);
+        RefListeners.addTreeChangeListener(listRef, this);
     }
+
+    private int count;
 
     @Override
     public void processChange(final Ref changedProperty) {
-        Platform.runLater(new Runnable() {
+        floodControl.control(new Runnable() {
             @Override
             public void run() {
-                ObservableList<T> observableList = getValue();
-                observableList.clear();
-                Object value = ref.getValue();
-                if (value instanceof Collection) {
-                    //noinspection unchecked
-                    observableList.addAll((Collection<T>) value);
-                }
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        ObservableList<T> observableList = getValue();
+                        observableList.clear();
+                        Object value = listRef.getValue();
+                        if (value instanceof Collection) {
+                            //noinspection unchecked
+                            observableList.addAll((Collection<T>) value);
+                        }
+                    }
+                });
             }
         });
     }
@@ -42,6 +53,6 @@ public class ViewModelListProperty<T> extends SimpleListProperty<T> implements R
     @Override
     public void set(ObservableList<T> value) {
         super.set(value);
-        AnkorPatterns.changeValueLater(ref, value);
+        AnkorPatterns.changeValueLater(listRef, value);
     }
 }
