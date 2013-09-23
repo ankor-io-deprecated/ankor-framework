@@ -20,10 +20,9 @@ import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
-/**
- * @author Thomas Spiegl
- */
 public class App extends Application {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(App.class);
 
@@ -38,8 +37,12 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         services = getHostServices();
-        createWebSocketClientSystem(primaryStage);
-        //startFXClient(primaryStage);
+        AnkorSystem clientSystem = createWebSocketClientSystem();
+
+        RefContext clientRefContext = ((SingletonSessionManager) clientSystem.getSessionManager()).getSession().getRefContext();
+        refFactory = clientRefContext.refFactory();
+
+        startFXClient(primaryStage);
     }
 
     private void startFXClient(Stage primaryStage) throws IOException {
@@ -52,7 +55,7 @@ public class App extends Application {
         primaryStage.show();
     }
 
-    private void createWebSocketClientSystem(final Stage primaryStage) throws IOException, DeploymentException {
+    private AnkorSystem createWebSocketClientSystem() throws IOException, DeploymentException, InterruptedException {
         final String clientId = UUID.randomUUID().toString();
 
         final AnkorSystem[] clientSystem = new AnkorSystem[1];
@@ -63,8 +66,11 @@ public class App extends Application {
                 .withMessageBus(messageBus)
                 .withModelContextId("collabTest");
 
+        final CountDownLatch latch = new CountDownLatch(1);
+
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         String uri = "ws://localhost:8080" + "/websocket/ankor/" + clientId;
+
         container.connectToServer(new Endpoint() {
 
             @Override
@@ -78,15 +84,17 @@ public class App extends Application {
                 });
 
                 messageBus.addRemoteSystem(new WebSocketRemoteSystem(clientId, session));
-                final AnkorSystem clientSystem = systemBuilder.createClient();
-                RefContext clientRefContext = ((SingletonSessionManager) clientSystem.getSessionManager()).getSession().getRefContext();
-                refFactory = clientRefContext.refFactory();
-                try {
-                    startFXClient(primaryStage);
-                } catch (IOException ignored) {
-                }
+                clientSystem[0] = systemBuilder.createClient();
+                clientSystem[0].start();
+                latch.countDown();
             }
         }, URI.create(uri));
+
+        if (latch.await(5, TimeUnit.SECONDS)) {
+            return clientSystem[0];
+        } else {
+            throw new IOException("WebSocket could not connect to " + uri);
+        }
     }
 
     public static HostServices getServices() {
