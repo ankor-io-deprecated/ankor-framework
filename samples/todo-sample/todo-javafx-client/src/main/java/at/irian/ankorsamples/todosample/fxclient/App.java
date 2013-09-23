@@ -28,7 +28,6 @@ public class App extends Application {
 
     private static RefFactory refFactory;
     private static HostServices services;
-    private boolean connected = false;
 
     public static void main(String[] args) {
         launch(args);

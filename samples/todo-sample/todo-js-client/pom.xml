@@ -41,15 +41,4 @@
         </dependency>
 
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <version>9.0.0.M5</version>
-            </plugin>
-        </plugins>
-    </build>
-
 </project>
