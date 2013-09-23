@@ -1,6 +1,8 @@
 define([
-    "./BaseTransport"
-], function (BaseTransport) {
+    "jquery",
+    "./BaseTransport",
+    "gracefulWebSocket"             //Require only, no reference needed
+], function ($, BaseTransport) {
     var WebSocketTransport = function (endpoint) {
         BaseTransport.call(this);
 
@@ -43,14 +45,15 @@ define([
         }
 
         var socket = function (host) {
-            if ('WebSocket' in window) {
-                return new WebSocket(host);
-            } else if ('MozWebSocket' in window) {
-                return new MozWebSocket(host);
-            } else {
-                console.log('Error: WebSocket is not supported by this browser.');
-                return null;
-            }
+            return $.gracefulWebSocket(host);
+//            if ('WebSocket' in window) {
+//                return new WebSocket(host);
+//            } else if ('MozWebSocket' in window) {
+//                return new MozWebSocket(host);
+//            } else {
+//                console.log('Error: WebSocket is not supported by this browser.');
+//                return null;
+//            }
         }
 
         this.socket = socket(host(this.endpoint, this.ankorSystem.senderId));
