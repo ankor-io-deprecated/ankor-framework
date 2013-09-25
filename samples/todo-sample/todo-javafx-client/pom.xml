@@ -60,21 +60,15 @@
         <!-- These are required for ContainerProvider.getWebSocketContainer() to work -->
         <!-- https://blogs.oracle.com/arungupta/entry/websocket_java_client_api_in -->
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.0.1</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.glassfish.tyrus</groupId>
             <artifactId>tyrus-client</artifactId>
-            <version>1.0</version>
+            <version>1.2.1</version>
         </dependency>
 
         <dependency>
             <groupId>org.glassfish.tyrus</groupId>
             <artifactId>tyrus-container-grizzly</artifactId>
-            <version>1.0</version>
+            <version>1.2.1</version>
         </dependency>
 
     </dependencies>
