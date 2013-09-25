@@ -41,11 +41,6 @@ public class AnimalSearchTabController extends BaseTabController {
     protected TableColumn<Map, String> animalFamily;
 
     @FXML
-    protected Button previous;
-    @FXML
-    protected Button next;
-
-    @FXML
     protected Button save;
 
     public AnimalSearchTabController(String tabId) {
@@ -57,10 +52,9 @@ public class AnimalSearchTabController extends BaseTabController {
         final Ref tabRef = getTabRef();
         FXControllerAnnotationSupport.scan(tabRef, this);
 
+        Ref modelRef = tabRef.appendPath("model");
         Ref filterRef = tabRef.appendPath("model.filter");
         Ref selItemsRef = tabRef.appendPath("model.selectItems");
-        Ref animalsRef = tabRef.appendPath("model.animals");
-        final Ref paginatorRef = tabRef.appendPath("model.animals.paginator");
 
         bindTableColumns();
 
@@ -75,20 +69,8 @@ public class AnimalSearchTabController extends BaseTabController {
         family.itemsProperty().bind(new ViewModelListProperty<Enum>(selItemsRef, "families"));
         family.valueProperty().bindBidirectional(new ViewModelProperty<Enum>(filterRef, "family"));
 
-        animalTable.itemsProperty().bind(new ViewModelListProperty<Map>(animalsRef, "rows"));
+        animalTable.itemsProperty().bind(new ViewModelListProperty<Map>(modelRef, "animals"));
 
-        previous.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                paginatorRef.fire(new Action("previous"));
-            }
-        });
-        next.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                paginatorRef.fire(new Action("next"));
-            }
-        });
         save.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
@@ -109,7 +91,7 @@ public class AnimalSearchTabController extends BaseTabController {
                     @Override
                     public void handle(TableColumn.CellEditEvent<Map, String> t) {
                         int rowNum = t.getTablePosition().getRow();
-                        Ref rowNameRef = getTabRef().appendPath(String.format("model.animals.rows[%d].name", rowNum));
+                        Ref rowNameRef = getTabRef().appendPath(String.format("model.animals[%d].name", rowNum));
                         AnkorPatterns.changeValueLater(rowNameRef, t.getNewValue());
                     }
                 });

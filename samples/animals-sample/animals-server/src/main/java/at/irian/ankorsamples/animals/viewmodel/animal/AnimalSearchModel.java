@@ -11,6 +11,9 @@ import at.irian.ankorsamples.animals.domain.animal.Animal;
 import at.irian.ankorsamples.animals.domain.animal.AnimalRepository;
 import at.irian.ankorsamples.animals.viewmodel.TabNameCreator;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
 * @author Thomas Spiegl
 */
@@ -31,7 +34,7 @@ public class AnimalSearchModel {
 
     private AnimalSelectItems selectItems;
 
-    private Data<Animal> animals;
+    private List<Animal> animals;
 
     public AnimalSearchModel(Ref viewModelRef,
                              AnimalRepository animalRepository, AnimalSelectItems selectItems,
@@ -42,7 +45,7 @@ public class AnimalSearchModel {
         this.tabName = tabName;
         this.filter = new AnimalSearchFilter();
         this.selectItems = selectItems;
-        this.animals = new Data<>(new Paginator(0, 5));
+        this.animals = Collections.emptyList();
         this.reloadFloodControl = new FloodControl(viewModelRef, 500L);
     }
 
@@ -58,11 +61,11 @@ public class AnimalSearchModel {
         this.selectItems = selectItems;
     }
 
-    public Data<Animal> getAnimals() {
+    public List<Animal> getAnimals() {
         return animals;
     }
 
-    public void setAnimals(Data<Animal> animals) {
+    public void setAnimals(List<Animal> animals) {
         this.animals = animals;
     }
 
@@ -73,11 +76,9 @@ public class AnimalSearchModel {
             @Override
             public void run() {
                 LOG.info("RELOADING animals ...");
-                Paginator paginator = getAnimals().getPaginator();
-                paginator.reset();
-                Data<Animal> animals = animalRepository.searchAnimals(filter,
-                                                                      paginator.getFirst(),
-                                                                      paginator.getMaxResults());
+                List<Animal> animals = animalRepository.searchAnimals(filter,
+                                                                      0,
+                                                                      Integer.MAX_VALUE);
 
                 thisRef.appendPath("animals").setValue(animals);
 
@@ -104,7 +105,7 @@ public class AnimalSearchModel {
     public void save() {
         String status;
         try {
-            for (Animal animal : getAnimals().getRows()) {
+            for (Animal animal : getAnimals()) {
                 animalRepository.saveAnimal(animal);
             }
             status = "Animals successfully saved";
