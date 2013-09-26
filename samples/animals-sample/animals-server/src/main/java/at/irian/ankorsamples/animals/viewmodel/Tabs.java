@@ -5,17 +5,11 @@ import at.irian.ankor.messaging.AnkorIgnore;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.viewmodel.ViewModelMapBase;
 import at.irian.ankorsamples.animals.domain.animal.Animal;
-import at.irian.ankorsamples.animals.domain.animal.AnimalFamily;
 import at.irian.ankorsamples.animals.domain.animal.AnimalRepository;
-import at.irian.ankorsamples.animals.domain.animal.AnimalType;
 import at.irian.ankorsamples.animals.viewmodel.animal.AnimalDetailModel;
 import at.irian.ankorsamples.animals.viewmodel.animal.AnimalSearchModel;
-import at.irian.ankorsamples.animals.viewmodel.animal.AnimalSelectItems;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * @author Thomas Spiegl
@@ -49,7 +43,8 @@ public class Tabs extends ViewModelMapBase<String, Tab> {
         Ref tabRef = thisRef.appendPath(tabId);
 
         Tab<AnimalSearchModel> tab = new Tab<>(tabId, tabRef, "Animal Search", "animalSearchTab");
-        AnimalSearchModel model = new AnimalSearchModel(tabRef.appendPath("model"), animalRepository, getAnimalSelectItems(), tab.getName());
+        AnimalSearchModel model = new AnimalSearchModel(tabRef.appendPath("model"), animalRepository, tab.getName());
+        model.reloadAnimals();
         tab.setModel(model);
 
         tabRef.setValue(tab);
@@ -66,7 +61,6 @@ public class Tabs extends ViewModelMapBase<String, Tab> {
         Tab<AnimalDetailModel> tab = new Tab<>(tabId, tabRef, "New Animal", "animalDetailTab");
         AnimalDetailModel model = new AnimalDetailModel(tabRef.appendPath("model"),
                                                         new Animal(),
-                                                        getAnimalSelectItems(),
                                                         animalRepository,
                                                         tab.getName(),
                                                         root.getServerStatus());
@@ -75,9 +69,4 @@ public class Tabs extends ViewModelMapBase<String, Tab> {
         tabRef.setValue(tab);
     }
 
-    private AnimalSelectItems getAnimalSelectItems() {
-        List<AnimalType> types = new ArrayList<>(AnimalType.values().length + 1);
-        types.addAll(Arrays.asList(AnimalType.values()));
-        return new AnimalSelectItems(types, new ArrayList<AnimalFamily>());
-    }
 }

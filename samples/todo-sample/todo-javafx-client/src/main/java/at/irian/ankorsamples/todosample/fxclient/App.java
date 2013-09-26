@@ -1,6 +1,5 @@
 package at.irian.ankorsamples.todosample.fxclient;
 
-import at.irian.ankor.fx.controller.FXControllerChangeListener;
 import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefFactory;
@@ -61,7 +60,7 @@ public class App extends Application {
         final WebSocketMessageBus messageBus = new WebSocketMessageBus(new ViewModelJsonMessageMapper());
         final AnkorSystemBuilder systemBuilder = new AnkorSystemBuilder()
                 .withName(clientId)
-                .withGlobalEventListener(new FXControllerChangeListener())
+                // .withGlobalEventListener(new FXControllerChangeListener())
                 .withMessageBus(messageBus)
                 .withModelContextId("collabTest");
 

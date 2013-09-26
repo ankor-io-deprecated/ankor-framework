@@ -10,6 +10,7 @@ import javafx.beans.property.SimpleObjectProperty;
 public class ViewModelProperty<T> extends SimpleObjectProperty<T> implements RefChangeListener {
 
     private Ref ref;
+    private boolean fxChange;
 
     public ViewModelProperty(Ref parentObjectRef, String propertyName) {
         super(parentObjectRef.appendPath(propertyName).<T>getValue());
@@ -20,6 +21,10 @@ public class ViewModelProperty<T> extends SimpleObjectProperty<T> implements Ref
 
     @Override
     public void processChange(final Ref changedProperty) {
+        if (fxChange) {
+            fxChange = false;
+            return;
+        }
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -30,6 +35,8 @@ public class ViewModelProperty<T> extends SimpleObjectProperty<T> implements Ref
 
     @Override
     public void set(T v) {
+        fxChange = true;
+        super.set(v);
         AnkorPatterns.changeValueLater(ref, v);
     }
 }

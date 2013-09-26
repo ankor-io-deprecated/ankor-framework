@@ -2,10 +2,9 @@ package at.irian.ankorsamples.animals.domain.animal;
 
 import at.irian.ankor.base.ObjectUtils;
 import at.irian.ankorsamples.animals.viewmodel.animal.AnimalSearchFilter;
-import at.irian.ankorsamples.animals.viewmodel.animal.Data;
-import at.irian.ankorsamples.animals.viewmodel.animal.Paginator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -32,6 +31,10 @@ public class AnimalRepository {
         }
     }
 
+    public List<AnimalType> getAnimalTypes() {
+        return Arrays.asList(AnimalType.values());
+    }
+
     public List<AnimalFamily> getAnimalFamilies(AnimalType type) {
         List<AnimalFamily> families;
         if (type != null) {
@@ -55,7 +58,7 @@ public class AnimalRepository {
         return families;
     }
 
-    public Data<Animal> searchAnimals(AnimalSearchFilter filter, int first, int maxResults) {
+    public List<Animal> searchAnimals(AnimalSearchFilter filter, int first, int maxResults) {
         String nameFilter = filter.getName() != null && filter.getName().trim().length() > 0 ? filter.getName().toLowerCase() : null;
         List<Animal> animals = getAnimals();
         if (filter.getType() != null || nameFilter != null) {
@@ -70,28 +73,20 @@ public class AnimalRepository {
                 }
             }
         }
-        if (first >= animals.size()) {
-            return new Data<>(new Paginator(animals.size(), maxResults));
-        }
-        if (first < 0) {
-            first = 0;
-        }
-        int last = first + maxResults;
-        if (last > animals.size()) {
-            last = animals.size();
-        }
 
-        Data<Animal> data = new Data<>(new Paginator(first, maxResults));
+        int from = Math.max(first, 0);
+        int to = Math.min(first + maxResults, animals.size());
 
-        data.getRows().addAll(animals.subList(first, last));
+        List<Animal> result = animals.subList(from, to);
 
         try {
+            // simulate database latency
             Thread.sleep(300L);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
 
-        return data;
+        return result;
     }
 
     private List<Animal> getAnimals() {

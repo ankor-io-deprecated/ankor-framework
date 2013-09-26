@@ -32,19 +32,13 @@ define([
             emptyOption: true
         });
         body.find("select.family").ankorBindInputValue(ref.append("model.filter.family"));
-        body.find("button.previous").click(function() {
-            ref.append("model.animals.paginator").fire("previous");
-        });
-        body.find("button.next").click(function() {
-            ref.append("model.animals.paginator").fire("next");
-        });
         body.find("button.save").click(function() {
             ref.append("model").fire("save");
         });
 
         //Table rendering
         var listeners = [];
-        ref.append("model.animals.rows").addPropChangeListener(function(ref) {
+        ref.append("model.animals").addPropChangeListener(function(ref) {
             var rows = ref.getValue();
             var tbody = body.find("tbody");
 

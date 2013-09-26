@@ -1,6 +1,6 @@
 package at.irian.ankor.system;
 
-import at.irian.ankor.annotation.ViewModelAnnotationScanner;
+import at.irian.ankor.annotation.AnnotationViewModelPostProcessor;
 import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.change.ChangeRequestEventListener;
 import at.irian.ankor.context.*;
@@ -18,8 +18,8 @@ import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.ref.el.ELRefContextFactory;
 import at.irian.ankor.session.*;
+import at.irian.ankor.viewmodel.FieldsInitializerViewModelPostProcessor;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
-import at.irian.ankor.viewmodel.ViewModelPropertyFieldsInitializer;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
@@ -221,8 +221,8 @@ public class AnkorSystemBuilder {
 
     private List<ViewModelPostProcessor> createDefaultServerViewModelPostProcessors() {
         List<ViewModelPostProcessor> list = new ArrayList<ViewModelPostProcessor>();
-        list.add(new ViewModelPropertyFieldsInitializer());
-        list.add(new ViewModelAnnotationScanner());
+        list.add(new FieldsInitializerViewModelPostProcessor());
+        list.add(new AnnotationViewModelPostProcessor());
         return list;
     }
 

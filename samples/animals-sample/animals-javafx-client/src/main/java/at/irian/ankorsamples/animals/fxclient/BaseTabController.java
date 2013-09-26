@@ -1,6 +1,5 @@
 package at.irian.ankorsamples.animals.fxclient;
 
-import at.irian.ankor.fx.binding.BindingContext;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
 import javafx.application.Platform;
@@ -24,11 +23,8 @@ public abstract class BaseTabController implements Initializable {
 
     private final String tabId;
 
-    protected BindingContext bindingContext;
-
     protected BaseTabController(String tabId) {
         this.tabId = tabId;
-        this.bindingContext = new BindingContext();
     }
 
     public Ref getTabRef() {
@@ -43,17 +39,16 @@ public abstract class BaseTabController implements Initializable {
         tab.setOnClosed(new EventHandler<Event>() {
             @Override
             public void handle(Event event) {
-                bindingContext.unbind();
                 AnkorPatterns.deleteItemLater(refFactory().ref("root.tabs"), tabId);
             }
         });
+
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
                 initialize();
             }
         });
-
     }
 
     protected abstract void initialize();

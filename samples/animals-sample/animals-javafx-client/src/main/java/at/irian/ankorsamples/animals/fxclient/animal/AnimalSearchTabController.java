@@ -1,10 +1,13 @@
 package at.irian.ankorsamples.animals.fxclient.animal;
 
 import at.irian.ankor.action.Action;
-import at.irian.ankor.fx.binding.ClickAction;
+import at.irian.ankor.fx.binding.property.ViewModelListProperty;
+import at.irian.ankor.fx.binding.property.ViewModelProperty;
+import at.irian.ankor.fx.controller.FXControllerAnnotationSupport;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorsamples.animals.fxclient.BaseTabController;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -12,9 +15,6 @@ import javafx.scene.control.cell.MapValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 
 import java.util.Map;
-
-import static at.irian.ankor.fx.binding.ButtonBindingBuilder.onButtonClick;
-import static at.irian.ankor.fx.binding.ValueBindingsBuilder.bindValue;
 
 /**
  * @author Thomas Spiegl
@@ -41,11 +41,6 @@ public class AnimalSearchTabController extends BaseTabController {
     protected TableColumn<Map, String> animalFamily;
 
     @FXML
-    protected Button previous;
-    @FXML
-    protected Button next;
-
-    @FXML
     protected Button save;
 
     public AnimalSearchTabController(String tabId) {
@@ -55,61 +50,33 @@ public class AnimalSearchTabController extends BaseTabController {
     @Override
     public void initialize() {
         final Ref tabRef = getTabRef();
+        FXControllerAnnotationSupport.scan(tabRef, this);
+
+        Ref modelRef = tabRef.appendPath("model");
         Ref filterRef = tabRef.appendPath("model.filter");
         Ref selItemsRef = tabRef.appendPath("model.selectItems");
-        Ref rowsRef = tabRef.appendPath("model.animals.rows");
-        Ref paginatorRef = tabRef.appendPath("model.animals.paginator");
 
         bindTableColumns();
 
-        bindValue(tabRef.appendPath("name"))
-                .toTabText(tab)
-                .createWithin(bindingContext);
+        tab.textProperty().bind(new ViewModelProperty<String>(tabRef, "name"));
 
-        bindValue(filterRef.appendPath("name"))
-                .toInput(name)
-                .withFloodControlDelay(500L)
-                .createWithin(bindingContext);
+        // TODO flood control
+        name.textProperty().bindBidirectional(new ViewModelProperty<String>(filterRef, "name"));
 
-        bindValue(filterRef.appendPath("type"))
-                .toInput(type)
-                .withSelectItems(selItemsRef.appendPath("types"))
-                .createWithin(bindingContext);
+        type.itemsProperty().bind(new ViewModelListProperty<Enum>(selItemsRef, "types"));
+        type.valueProperty().bindBidirectional(new ViewModelProperty<Enum>(filterRef, "type"));
 
-        bindValue(filterRef.appendPath("family"))
-                .toInput(family)
-                .withSelectItems(selItemsRef.appendPath("families"))
-                .createWithin(bindingContext);
+        family.itemsProperty().bind(new ViewModelListProperty<Enum>(selItemsRef, "families"));
+        family.valueProperty().bindBidirectional(new ViewModelProperty<Enum>(filterRef, "family"));
 
-        bindValue(rowsRef)
-                .toTable(animalTable)
-                .createWithin(bindingContext);
+        animalTable.itemsProperty().bind(new ViewModelListProperty<Map>(modelRef, "animals"));
 
-        onButtonClick(previous)
-                .callAction(new ClickAction<Ref>() {
-                    @Override
-                    public void onClick(Ref paginator) {
-                        paginator.fire(new Action("previous"));
-                    }
-                })
-                .withParam(paginatorRef).create();
-
-        onButtonClick(next)
-                .callAction(new ClickAction<Ref>() {
-                    @Override
-                    public void onClick(Ref paginator) {
-                        paginator.fire(new Action("next"));
-                    }
-                })
-                .withParam(paginatorRef).create();
-
-        onButtonClick(save)
-                .callAction(new ClickAction() {
-                    @Override
-                    public void onClick(Object value) {
-                        tabRef.appendPath("model").fire(new Action("save"));
-                    }
-                }).create();
+        save.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                tabRef.appendPath("model").fire(new Action("save"));
+            }
+        });
 
         name.requestFocus();
     }
@@ -124,7 +91,7 @@ public class AnimalSearchTabController extends BaseTabController {
                     @Override
                     public void handle(TableColumn.CellEditEvent<Map, String> t) {
                         int rowNum = t.getTablePosition().getRow();
-                        Ref rowNameRef = getTabRef().appendPath(String.format("model.animals.rows[%d].name", rowNum));
+                        Ref rowNameRef = getTabRef().appendPath(String.format("model.animals[%d].name", rowNum));
                         AnkorPatterns.changeValueLater(rowNameRef, t.getNewValue());
                     }
                 });

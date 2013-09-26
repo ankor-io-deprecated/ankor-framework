@@ -21,6 +21,7 @@
         <module>ankor-js</module>
         <module>samples/todo-sample</module>
         <module>samples/animals-sample</module>
+        <module>samples/fxrates-sample</module>
     </modules>
 
     <properties>
@@ -78,6 +79,12 @@
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
                 <version>${jackson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-runtime</artifactId>
+                <version>4.1</version>
             </dependency>
 
         </dependencies>

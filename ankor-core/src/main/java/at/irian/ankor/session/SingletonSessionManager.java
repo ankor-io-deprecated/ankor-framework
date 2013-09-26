@@ -41,6 +41,11 @@ public class SingletonSessionManager implements SessionManager {
     }
 
     @Override
+    public Collection<Session> getAllFor(RemoteSystem remoteSystem) {
+        return Collections.singleton(session);
+    }
+
+    @Override
     public void invalidate(Session session) {
         throw new UnsupportedOperationException();
     }

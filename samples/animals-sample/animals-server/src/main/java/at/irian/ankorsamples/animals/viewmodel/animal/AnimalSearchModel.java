@@ -11,6 +11,9 @@ import at.irian.ankorsamples.animals.domain.animal.Animal;
 import at.irian.ankorsamples.animals.domain.animal.AnimalRepository;
 import at.irian.ankorsamples.animals.viewmodel.TabNameCreator;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
 * @author Thomas Spiegl
 */
@@ -31,18 +34,18 @@ public class AnimalSearchModel {
 
     private AnimalSelectItems selectItems;
 
-    private Data<Animal> animals;
+    private List<Animal> animals;
 
     public AnimalSearchModel(Ref viewModelRef,
-                             AnimalRepository animalRepository, AnimalSelectItems selectItems,
+                             AnimalRepository animalRepository,
                              ViewModelProperty<String> tabName) {
         AnkorPatterns.initViewModel(this, viewModelRef);
         this.thisRef = viewModelRef;
         this.animalRepository = animalRepository;
         this.tabName = tabName;
         this.filter = new AnimalSearchFilter();
-        this.selectItems = selectItems;
-        this.animals = new Data<>(new Paginator(0, 5));
+        this.selectItems = AnimalSelectItems.create(animalRepository.getAnimalTypes());
+        this.animals = Collections.emptyList();
         this.reloadFloodControl = new FloodControl(viewModelRef, 500L);
     }
 
@@ -54,30 +57,23 @@ public class AnimalSearchModel {
         return selectItems;
     }
 
-    public void setSelectItems(AnimalSelectItems selectItems) {
-        this.selectItems = selectItems;
-    }
-
-    public Data<Animal> getAnimals() {
+    public List<Animal> getAnimals() {
         return animals;
     }
 
-    public void setAnimals(Data<Animal> animals) {
+    public void setAnimals(List<Animal> animals) {
         this.animals = animals;
     }
 
-    @ChangeListener(pattern = {"**.<AnimalSearchModel>.filter.**",
-                               "**.<AnimalSearchModel>.animals.paginator.**"})
+    @ChangeListener(pattern = {".filter.**"})
     public void reloadAnimals() {
         reloadFloodControl.control(new Runnable() {
             @Override
             public void run() {
                 LOG.info("RELOADING animals ...");
-                Paginator paginator = getAnimals().getPaginator();
-                paginator.reset();
-                Data<Animal> animals = animalRepository.searchAnimals(filter,
-                                                                      paginator.getFirst(),
-                                                                      paginator.getMaxResults());
+                List<Animal> animals = animalRepository.searchAnimals(filter,
+                                                                      0,
+                                                                      Integer.MAX_VALUE);
 
                 thisRef.appendPath("animals").setValue(animals);
 
@@ -87,24 +83,24 @@ public class AnimalSearchModel {
         });
     }
 
-    @ChangeListener(pattern = "**.<AnimalSearchModel>.filter.name")
+    @ChangeListener(pattern = ".filter.name")
     public void onNameChanged() {
         String name = filter.getName();
         tabName.set(new TabNameCreator().createName("Animal Search", name));
     }
 
-    @ChangeListener(pattern = "**.<AnimalSearchModel>.filter.type")
+    @ChangeListener(pattern = ".filter.type")
     public void animalTypeChanged() {
         Ref familyRef = thisRef.appendPath("filter.family");
         Ref familiesRef = thisRef.appendPath("selectItems.families");
-        new AnimalTypeChangeHandler().handleChange(familyRef, familiesRef, filter.getType());
+        new AnimalTypeChangeHandler(animalRepository).handleChange(filter.getType(), familyRef, familiesRef);
     }
 
     @ActionListener(name = "save")
     public void save() {
         String status;
         try {
-            for (Animal animal : getAnimals().getRows()) {
+            for (Animal animal : getAnimals()) {
                 animalRepository.saveAnimal(animal);
             }
             status = "Animals successfully saved";

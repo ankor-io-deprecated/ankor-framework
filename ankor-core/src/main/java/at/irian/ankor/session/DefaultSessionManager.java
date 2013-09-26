@@ -59,8 +59,35 @@ public class DefaultSessionManager implements SessionManager {
         return result == null ? Collections.<Session>emptyList() : result;
     }
 
+    @Override
+    public Collection<Session> getAllFor(RemoteSystem remoteSystem) {
+        Collection<Session> result = null;
+        for (Map.Entry<String, Session> entry : sessionMap.entrySet()) {
+            String remoteSystemId = getRemoteSystemIdFromSessionId(entry.getKey());
+            if (remoteSystem.getId().equals(remoteSystemId)) {
+                if (result == null) {
+                    result = Collections.singleton(entry.getValue());
+                } else {
+                    if (result.size() == 1) {
+                        result = new ArrayList<Session>(result);
+                    }
+                    result.add(entry.getValue());
+                }
+            }
+        }
+        return result == null ? Collections.<Session>emptyList() : result;
+    }
+
     private String getSessionIdFrom(ModelContext modelContext, RemoteSystem remoteSystem) {
         return remoteSystem.getId() + "_" + modelContext.getId();
+    }
+
+    private String getRemoteSystemIdFromSessionId(String sessionId) {
+        int i = sessionId.indexOf('_');
+        if (i == -1) {
+            throw new IllegalArgumentException("invalid session id " + sessionId);
+        }
+        return sessionId.substring(0, i);
     }
 
     protected Session createAndInitSession(ModelContext modelContext, RemoteSystem remoteSystem) {

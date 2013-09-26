@@ -2,7 +2,7 @@
   <configuration default="false" name="Todo - HTTP Server and JS Client (Tomcat 7.0)" type="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" factoryName="Local" APPLICATION_SERVER_NAME="Tomcat 7.0">
     <option name="UPDATING_POLICY" value="restart-server" />
     <deployment>
-      <artifact name="ankor-sample-todo-js-client:war exploded">
+      <artifact name="todo-js-client:war exploded">
         <settings>
           <option name="CONTEXT_PATH" value="/" />
         </settings>
@@ -71,7 +71,7 @@
     </ConfigurationWrapper>
     <method>
       <option name="BuildArtifacts" enabled="true">
-        <artifact name="ankor-sample-todo-js-client:war exploded" />
+        <artifact name="todo-js-client:war exploded" />
       </option>
     </method>
   </configuration>

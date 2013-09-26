@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import at.irian.ankorsamples.fxrates.client.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.BorderPane?>
+<BorderPane layoutX="0.0" layoutY="0.0" prefHeight="580.0" prefWidth="710.0" xmlns:fx="http://javafx.com/fxml" fx:controller="at.irian.ankorsamples.fxrates.client.RatesController">
+    <center>
+        <TableView fx:id="ratesTable" editable="true" prefHeight="187.0" prefWidth="499.0">
+            <columns>
+                <TableColumn editable="true"  prefWidth="100.0" text="Symbol" fx:id="symbol" />
+                <TableColumn editable="false" prefWidth="100.0" text="Ask" fx:id="ask">
+                    <cellFactory>
+                        <HighlightTableCellFactory />
+                    </cellFactory>
+                </TableColumn>
+                <TableColumn editable="false" prefWidth="100.0" text="Bid" fx:id="bid">
+                    <cellFactory>
+                        <HighlightTableCellFactory />
+                    </cellFactory>
+                </TableColumn>
+                <TableColumn editable="false" prefWidth="100.0" text="High" fx:id="high">
+                    <cellFactory>
+                        <HighlightTableCellFactory />
+                    </cellFactory>
+                </TableColumn>
+                <TableColumn editable="false" prefWidth="100.0" text="Low" fx:id="low">
+                    <cellFactory>
+                        <HighlightTableCellFactory />
+                    </cellFactory>
+                </TableColumn>
+                <TableColumn editable="false" prefWidth="100.0" text="Direction" fx:id="direction">
+                    <cellFactory>
+                        <HighlightTableCellFactory />
+                    </cellFactory>
+                </TableColumn>
+                <TableColumn editable="false" prefWidth="100.0" text="Last" fx:id="last" />
+            </columns>
+        </TableView>
+    </center>
+
+</BorderPane>
