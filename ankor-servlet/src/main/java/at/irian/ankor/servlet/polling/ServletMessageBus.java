@@ -1,4 +1,4 @@
-package at.irian.ankor.servlet;
+package at.irian.ankor.servlet.polling;
 
 import at.irian.ankor.messaging.Message;
 import at.irian.ankor.messaging.MessageBus;

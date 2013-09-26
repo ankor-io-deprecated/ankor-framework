@@ -1,4 +1,4 @@
-package at.irian.ankor.servlet;
+package at.irian.ankor.servlet.polling;
 
 import at.irian.ankor.event.ModelEvent;
 import at.irian.ankor.event.ModelEventListener;

@@ -42,56 +42,9 @@
         </dependency>
 
         <dependency>
-            <groupId>javax.websocket</groupId>
-            <artifactId>javax.websocket-api</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>3.0.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.glassfish.tyrus</groupId>
-            <artifactId>tyrus-container-servlet</artifactId>
-            <version>1.2.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.tyrus</groupId>
-            <artifactId>tyrus-client</artifactId>
-            <version>1.2.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.tyrus</groupId>
-            <artifactId>tyrus-container-glassfish-cdi</artifactId>
-            <version>1.2.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.tyrus</groupId>
-            <artifactId>tyrus-container-grizzly</artifactId>
-            <version>1.2.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.tyrus</groupId>
-            <artifactId>tyrus-core</artifactId>
-            <version>1.2.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.tyrus</groupId>
-            <artifactId>tyrus-server</artifactId>
-            <version>1.2.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.tyrus</groupId>
-            <artifactId>tyrus-spi</artifactId>
-            <version>1.2.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.tyrus</groupId>
-            <artifactId>tyrus-websocket-core</artifactId>
-            <version>1.2.1</version>
         </dependency>
 
     </dependencies>

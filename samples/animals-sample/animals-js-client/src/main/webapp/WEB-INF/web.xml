@@ -11,7 +11,7 @@
 
     <servlet>
         <servlet-name>AnkorServlet</servlet-name>
-        <servlet-class>at.irian.ankor.servlet.AnkorServlet</servlet-class>
+        <servlet-class>at.irian.ankor.servlet.polling.AnkorServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>

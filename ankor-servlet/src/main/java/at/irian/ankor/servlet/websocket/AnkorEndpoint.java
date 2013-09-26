@@ -5,6 +5,7 @@ import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.delay.AkkaScheduler;
 import at.irian.ankor.event.dispatch.AkkaEventDispatcherFactory;
 import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
+import at.irian.ankor.ref.Ref;
 import at.irian.ankor.servlet.websocket.messaging.WebSocketMessageBus;
 import at.irian.ankor.servlet.websocket.session.WebSocketRemoteSystem;
 import at.irian.ankor.session.ModelRootFactory;
@@ -13,11 +14,12 @@ import at.irian.ankor.system.AnkorSystemBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 import javax.websocket.*;
-import javax.websocket.server.ServerContainer;
+import javax.websocket.server.ServerApplicationConfig;
 import javax.websocket.server.ServerEndpointConfig;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * This is the base class of a WebSocket endpoint that communicates with a {@link AnkorSystem}.
@@ -27,15 +29,12 @@ import javax.websocket.server.ServerEndpointConfig;
  * clients WebSocketTransport default implementation. It passes incoming messages to the AnkorSystem and registers
  * the connection with the AnkorSystem, so that  outgoing messages will be sent the the clients.
  *
- * As a user you need to subtype this class and override a couple of methods, most notably
- * {@link #getModelRootFactory()}. This factory provides the base level model, which is unique to your application.
- *
- * Note that you must annotate your implementation with the {@link javax.servlet.annotation.WebListener} annotation.
+ * As a user you need to subtype this class and override the {@link #getModelRoot(at.irian.ankor.ref.Ref)} method.
  *
  * @author Florian Klampfer
  */
-// TODO: Actual session management via ping-pongs or timeouts, etc...
-public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.Whole<String>, ServletContextListener {
+// TODO: Session Management: ping-pongs, timeouts, heartbeat, etc...
+public abstract class AnkorEndpoint extends Endpoint implements  MessageHandler.Whole<String>, ServerApplicationConfig {
 
     private static Logger LOG = LoggerFactory.getLogger(AnkorEndpoint.class);
 
@@ -52,7 +51,7 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
          * so using a cheap "singleton" for the ankorSystem to prevent reinitialization.
          *
          * This also means that the AnkorSystem will be created only when the first client connects to the server,
-         * resulting in a short lag, so maybe have the AnkorSystem in a servlet and reference from here?
+         * resulting in a short lag, so maybe have the AnkorSystem in a servlet and reference it from here?
          */
         if (ankorSystem == null) {
             startAnkorSystem();
@@ -81,14 +80,16 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
     }
 
     @Override
-    // TODO: Check under which circumstances this function gets called
+    // TODO: Session Management: Check under which circumstances this function gets called
     public void onClose(Session session, CloseReason closeReason) {
         super.onClose(session, closeReason);
         webSocketMessageBus.removeRemoteSystem(clientId);
+
+        // TODO: Session Management: Invalidate Ankor session
     }
 
     @Override
-    // TODO: Check under which circumstances this function gets called
+    // TODO: Session Management: Check under which circumstances this function gets called
     public void onError(Session session, Throwable thr) {
         super.onError(session, thr);
         webSocketMessageBus.removeRemoteSystem(clientId);
@@ -108,6 +109,14 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
     }
 
     /**
+     * You must override this method in your implementation.
+     *
+     * @param rootRef The Ankor {@link Ref} to your root model.
+     * @return The root model of your application.
+     */
+    protected abstract Object getModelRoot(Ref rootRef);
+
+    /**
      * You can override this method in your implementation.
      * @return A name for the AnkorSystem on your server.
      */
@@ -116,52 +125,61 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
     }
 
     /**
-     * You must override this method in your implementation.
-     * XXX: I don't know what this is.
-     * @return
-     */
-    protected abstract BeanResolver getBeanResolver();
-
-    /**
-     * You must override this method in your implementation.
+     * You can override this method in your implementation.
      * @return A {@link ModelRootFactory} the provides the root model of your application.
      */
-    // TODO: This can probably be made even easier by just exposing createModelRoot method to the subtype.
-    protected abstract ModelRootFactory getModelRootFactory();
+    protected ModelRootFactory getModelRootFactory() {
+        return new ModelRootFactory() {
+            @Override
+            public Set<String> getKnownRootNames() {
+                return Collections.singleton("root");
+            }
+
+            @Override
+            public Object createModelRoot(Ref rootRef) {
+                return getModelRoot(rootRef);
+            }
+        };
+    }
+
+    /**
+     * You can override this method in your implementation.
+     * @return A bean resolver for the Ankor system.
+     */
+    // XXX: Do we need this at all?
+    protected BeanResolver getBeanResolver() {
+        return new BeanResolver() {
+            @Override
+            public Object resolveByName(String beanName) {
+                return null;
+            }
+
+            @Override
+            public Collection<String> getKnownBeanNames() {
+                return Collections.emptyList();
+            }
+        };
+    }
 
     /**
      * This method can be overridden to provide a custom url to the WebSocket.
      * Note that you need to specify this string on the client as well.
      *
-     * @return a string that starts with '/'
+     * @return a path string that starts with '/' but must not end with '/'.
+     * Defaults to "/websocket/ankor".
      */
     protected String getWebSocketUrl() {
         return "/websocket/ankor";
     }
 
     @Override
-    public void contextInitialized(ServletContextEvent sce) {
-        ServerContainer sc = (ServerContainer) sce.getServletContext().getAttribute("javax.websocket.server.ServerContainer");
-        addWebSocketEndpoint(sc);
-    }
-
-    /**
-     * Register this class (meaning a subtype) as the web socket {@link Endpoint}.
-     * This is used to 'circumvent' the design of the WebSocket API, which is usually annotation based but does not
-     * support inheritance.
-     *
-     * @param sc The server container of this servlet.
-     */
-    private void addWebSocketEndpoint(ServerContainer sc) {
-        try {
-            sc.addEndpoint(ServerEndpointConfig.Builder.create(getClass(), getWebSocketUrl() + "/{clientId}").build());
-        } catch (DeploymentException e) {
-            throw new  IllegalStateException(e);
-        }
+    public final Set<ServerEndpointConfig> getEndpointConfigs(Set<Class<? extends Endpoint>> endpointClasses) {
+        // XXX: Only one WebSocket endpoint url (specified by getPath()) allowed in this servlet.
+        return Collections.singleton(ServerEndpointConfig.Builder.create(this.getClass(), this.getWebSocketUrl() + "/{clientId}").build());
     }
 
     @Override
-    public void contextDestroyed(ServletContextEvent sce) {
-        // NO-OP
+    public final Set<Class<?>> getAnnotatedEndpointClasses(Set<Class<?>> scanned) {
+        return Collections.emptySet();
     }
 }

@@ -1,4 +1,4 @@
-package at.irian.ankor.servlet;
+package at.irian.ankor.servlet.polling;
 
 import at.irian.ankor.akka.AnkorActorSystem;
 import at.irian.ankor.base.BeanResolver;
