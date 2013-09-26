@@ -37,14 +37,14 @@ public class AnimalSearchModel {
     private List<Animal> animals;
 
     public AnimalSearchModel(Ref viewModelRef,
-                             AnimalRepository animalRepository, AnimalSelectItems selectItems,
+                             AnimalRepository animalRepository,
                              ViewModelProperty<String> tabName) {
         AnkorPatterns.initViewModel(this, viewModelRef);
         this.thisRef = viewModelRef;
         this.animalRepository = animalRepository;
         this.tabName = tabName;
         this.filter = new AnimalSearchFilter();
-        this.selectItems = selectItems;
+        this.selectItems = AnimalSelectItems.create(animalRepository.getAnimalTypes());
         this.animals = Collections.emptyList();
         this.reloadFloodControl = new FloodControl(viewModelRef, 500L);
     }
@@ -57,10 +57,6 @@ public class AnimalSearchModel {
         return selectItems;
     }
 
-    public void setSelectItems(AnimalSelectItems selectItems) {
-        this.selectItems = selectItems;
-    }
-
     public List<Animal> getAnimals() {
         return animals;
     }
@@ -69,8 +65,7 @@ public class AnimalSearchModel {
         this.animals = animals;
     }
 
-    @ChangeListener(pattern = {".filter.**",
-                               ".animals.paginator.**"})
+    @ChangeListener(pattern = {".filter.**"})
     public void reloadAnimals() {
         reloadFloodControl.control(new Runnable() {
             @Override
@@ -98,7 +93,7 @@ public class AnimalSearchModel {
     public void animalTypeChanged() {
         Ref familyRef = thisRef.appendPath("filter.family");
         Ref familiesRef = thisRef.appendPath("selectItems.families");
-        new AnimalTypeChangeHandler().handleChange(familyRef, familiesRef, filter.getType());
+        new AnimalTypeChangeHandler(animalRepository).handleChange(filter.getType(), familyRef, familiesRef);
     }
 
     @ActionListener(name = "save")

@@ -4,6 +4,7 @@ import at.irian.ankor.base.ObjectUtils;
 import at.irian.ankorsamples.animals.viewmodel.animal.AnimalSearchFilter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -28,6 +29,10 @@ public class AnimalRepository {
         for (int i = 0; i < 20; i++) {
             animals.add(new Animal("Bird " + i, AnimalType.Bird, AnimalFamily.Accipitridae));
         }
+    }
+
+    public List<AnimalType> getAnimalTypes() {
+        return Arrays.asList(AnimalType.values());
     }
 
     public List<AnimalFamily> getAnimalFamilies(AnimalType type) {
