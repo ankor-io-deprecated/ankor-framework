@@ -1,4 +1,4 @@
-package at.iran.ankorsamples.fxrates.client;
+package at.irian.ankorsamples.fxrates.client;
 
 import javafx.animation.FadeTransition;
 import javafx.beans.value.ChangeListener;

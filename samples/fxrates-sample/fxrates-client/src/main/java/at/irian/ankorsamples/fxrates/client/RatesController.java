@@ -1,4 +1,4 @@
-package at.iran.ankorsamples.fxrates.client;
+package at.irian.ankorsamples.fxrates.client;
 
 import at.irian.ankor.fx.binding.property.ViewModelListProperty;
 import javafx.fxml.Initializable;
@@ -10,7 +10,7 @@ import java.net.URL;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import static at.iran.ankorsamples.fxrates.client.RatesClient.rootRef;
+import static at.irian.ankorsamples.fxrates.client.RatesClient.rootRef;
 
 /**
  * @author Thomas Spiegl

@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import at.irian.ankorsamples.fxrates.client.*?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TableColumn?>
-<?import at.iran.ankorsamples.fxrates.client.HighlightTableCellFactory?>
-<BorderPane layoutX="0.0" layoutY="0.0" prefHeight="580.0" prefWidth="710.0" xmlns:fx="http://javafx.com/fxml" fx:controller="at.iran.ankorsamples.fxrates.client.RatesController">
+<BorderPane layoutX="0.0" layoutY="0.0" prefHeight="580.0" prefWidth="710.0" xmlns:fx="http://javafx.com/fxml" fx:controller="at.irian.ankorsamples.fxrates.client.RatesController">
     <center>
         <TableView fx:id="ratesTable" editable="true" prefHeight="187.0" prefWidth="499.0">
             <columns>

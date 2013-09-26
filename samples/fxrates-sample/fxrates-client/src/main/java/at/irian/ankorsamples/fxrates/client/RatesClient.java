@@ -1,4 +1,4 @@
-package at.iran.ankorsamples.fxrates.client;
+package at.irian.ankorsamples.fxrates.client;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.ref.Ref;
