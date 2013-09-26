@@ -10,66 +10,41 @@ import at.irian.ankor.ref.Ref;
 public class ViewModelProperty<T> implements Wrapper<T> {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ViewModelProperty.class);
 
-    private Ref ref;
+    private final Ref ref;
     private T value;
 
-    ViewModelProperty() {
-        this(null, null);
+    public ViewModelProperty() {
+        this(null);
     }
 
-    public ViewModelProperty(Ref parentObjectRef, String propertyName) {
-        this(parentObjectRef, propertyName, null);
+    public ViewModelProperty(Ref ref) {
+        this.ref = ref;
+        this.value = null;
     }
 
-    public ViewModelProperty(Ref parentObjectRef, String propertyName, T initialValue) {
-        this.ref = parentObjectRef != null ? parentObjectRef.appendPath(propertyName) : null;
+    public ViewModelProperty(Ref ref, T initialValue) {
+        this.ref = ref;
         this.value = initialValue;
     }
 
-    public static <T> ViewModelProperty<T> createUnreferencedProperty() {
-        return new ViewModelProperty<T>(null, null, null);
+    public ViewModelProperty withRef(Ref ref) {
+        return new ViewModelProperty<T>(ref, value);
     }
 
-    public static <T> ViewModelProperty<T> createUnreferencedProperty(T initialValue) {
-        return new ViewModelProperty<T>(null, null, initialValue);
+    public ViewModelProperty withInitialValue(T value) {
+        return new ViewModelProperty<T>(ref, value);
     }
-
-    public static <T> ViewModelProperty<T> createReferencedProperty(Ref parentObjectRef, String propertyName) {
-        return new ViewModelProperty<T>(parentObjectRef, propertyName, null);
-    }
-
-    public static <T> ViewModelProperty<T> createReferencedProperty(Ref parentObjectRef, String propertyName, T initialValue) {
-        return new ViewModelProperty<T>(parentObjectRef, propertyName, initialValue);
-    }
-
 
     public void set(T newValue) {
-        if (this.ref == null) {
-            //throw new IllegalStateException("no ref");
-            LOG.warn("setting non-referencing object " + this, new IllegalStateException());
-            putWrappedValue(newValue);
-        } else if (this.ref.isValid()) {
-            // set value by indirection over ankor ref system
-            this.ref.setValue(newValue);
+        if (ref != null && ref.isValid()) {
+            ref.setValue(newValue);
         } else {
-            putWrappedValue(newValue);
+            this.value = newValue;
         }
     }
 
-    public void init(T newValue) {
-        putWrappedValue(newValue);
-    }
-
     public T get() {
-        return getWrappedValue();
-    }
-
-    public Ref getRef() {
-        return ref;
-    }
-
-    void setRef(Ref ref) {
-        this.ref = ref;
+        return this.value;
     }
 
     @Override
@@ -80,5 +55,9 @@ public class ViewModelProperty<T> implements Wrapper<T> {
     @Override
     public final void putWrappedValue(T val) {
         this.value = val;
+    }
+
+    protected Ref getRef() {
+        return ref;
     }
 }

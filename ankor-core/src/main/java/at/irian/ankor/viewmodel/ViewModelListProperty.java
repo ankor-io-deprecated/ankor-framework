@@ -1,7 +1,6 @@
 package at.irian.ankor.viewmodel;
 
 import at.irian.ankor.base.Wrapper;
-import at.irian.ankor.messaging.AnkorIgnore;
 import at.irian.ankor.ref.Ref;
 
 import java.util.ArrayList;
@@ -15,11 +14,8 @@ import java.util.List;
 public class ViewModelListProperty<T extends List> implements Wrapper<T> {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ViewModelListProperty.class);
 
-    @AnkorIgnore
     private Ref ref;
-    @AnkorIgnore
     private T value;
-    @AnkorIgnore
     private int threshold;
 
     ViewModelListProperty() {
@@ -31,8 +27,8 @@ public class ViewModelListProperty<T extends List> implements Wrapper<T> {
     }
 
     /**
-     * Used on {@set} of a new List value. If the percentage rows changed > current list size then
-     * the list is changed. Else only the changed rows are set, therefor less change events get dispatched.
+     * Used on {@link #set(java.util.List)} of a new List value. If the percentage rows changed > current list size then
+     * the list is changed. Else only the changed rows are set, therefore less change events get dispatched.
      * @param threshold in percent
      */
     public void setThreshold(int threshold) {

@@ -10,6 +10,7 @@
       <w>deserialize</w>
       <w>discardable</w>
       <w>implementor</w>
+      <w>jgen</w>
       <w>loopback</w>
       <w>matchers</w>
       <w>synchronizer</w>

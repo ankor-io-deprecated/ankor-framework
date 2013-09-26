@@ -10,8 +10,6 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 import java.io.IOException;
 
-import static at.irian.ankor.viewmodel.ViewModelProperty.createUnreferencedProperty;
-
 /**
 * @author Manfred Geiler
 */
@@ -27,6 +25,6 @@ class ViewModelPropertyDeserializer extends StdDeserializer<ViewModelProperty> {
         TreeNode tree = mapper.readTree(jp);
         Object value = mapper.treeToValue(tree, Object.class);
         //noinspection unchecked
-        return createUnreferencedProperty(value);
+        return new ViewModelProperty().withInitialValue(value);
     }
 }

@@ -17,20 +17,21 @@ public class FieldsInitializerViewModelPostProcessor implements ViewModelPostPro
         for (Field field : modelObject.getClass().getDeclaredFields()) {
             if (ViewModelProperty.class.isAssignableFrom(field.getType())) {
                 assureAccessible(field);
-                ViewModelProperty currentValue = getValue(modelObject, field);
-                if (currentValue == null) {
-                    ViewModelProperty mp = new ViewModelProperty(modelRef, field.getName());
-                    setValue(modelObject, field, mp);
+                ViewModelProperty fieldValue = getFieldValue(modelObject, field);
+                if (fieldValue == null) {
+                    ViewModelProperty mp = new ViewModelProperty().withRef(modelRef.appendPath(field.getName()));
+                    setFieldValue(modelObject, field, mp);
                 } else {
-                    if (currentValue.getRef() == null) {
-                        currentValue.setRef(modelRef.appendPath(field.getName()));
+                    if (fieldValue.getRef() == null) {
+                        ViewModelProperty mp = fieldValue.withRef(modelRef.appendPath(field.getName()));
+                        setFieldValue(modelObject, field, mp);
                     }
                 }
             }
         }
     }
 
-    private <T> void setValue(Object modelObject, Field field, T value) {
+    private <T> void setFieldValue(Object modelObject, Field field, T value) {
         try {
             field.set(modelObject, value);
         } catch (IllegalAccessException e) {
@@ -38,7 +39,7 @@ public class FieldsInitializerViewModelPostProcessor implements ViewModelPostPro
         }
     }
 
-    private <T> T getValue(Object modelObject, Field field) {
+    private <T> T getFieldValue(Object modelObject, Field field) {
         try {
             //noinspection unchecked
             return (T)field.get(modelObject);

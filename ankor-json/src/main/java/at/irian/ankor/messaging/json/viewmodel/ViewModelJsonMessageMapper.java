@@ -1,6 +1,7 @@
 package at.irian.ankor.messaging.json.viewmodel;
 
 import at.irian.ankor.action.Action;
+import at.irian.ankor.base.Wrapper;
 import at.irian.ankor.messaging.Message;
 import at.irian.ankor.messaging.MessageArrayDeserializer;
 import at.irian.ankor.messaging.MessageArraySerializer;
@@ -47,7 +48,7 @@ public class ViewModelJsonMessageMapper implements MessageMapper<String>,
         module.addDeserializer(Message.class, new MessageDeserializer());
         module.addSerializer(Action.class, new ActionSerializer());
         module.addDeserializer(Action.class, new ActionDeserializer());
-        module.addSerializer(ViewModelProperty.class, new ViewModelPropertySerializer());
+        module.addSerializer(Wrapper.class, new WrapperSerializer());
         module.addDeserializer(ViewModelProperty.class, new ViewModelPropertyDeserializer());
 
         mapper = new ObjectMapper();
