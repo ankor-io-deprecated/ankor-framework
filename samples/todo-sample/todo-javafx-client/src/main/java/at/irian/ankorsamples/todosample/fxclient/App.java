@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -25,8 +26,12 @@ import java.util.concurrent.TimeUnit;
 public class App extends Application {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(App.class);
 
+    private static final String DEFAULT_SERVER = "wss://ankor-todo-sample.irian.at";
+    private static final String DEFAULT_ENDPOINT = "/websocket/ankor";
+
     private static RefFactory refFactory;
     private static HostServices services;
+
 
     public static void main(String[] args) {
         launch(args);
@@ -34,11 +39,23 @@ public class App extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        services = getHostServices();
-        AnkorSystem clientSystem = createWebSocketClientSystem();
+        Map<String,String> params = getParameters().getNamed();
+
+        String server = params.get("server");
+        if (server == null) {
+            server = DEFAULT_SERVER;
+        }
+
+        String endpoint = params.get("endpoint");
+        if (endpoint == null) {
+            endpoint = DEFAULT_ENDPOINT;
+        }
+
+        AnkorSystem clientSystem = createWebSocketClientSystem(server, endpoint);
 
         RefContext clientRefContext = ((SingletonSessionManager) clientSystem.getSessionManager()).getSession().getRefContext();
         refFactory = clientRefContext.refFactory();
+        services = getHostServices();
 
         startFXClient(primaryStage);
     }
@@ -53,21 +70,21 @@ public class App extends Application {
         primaryStage.show();
     }
 
-    private AnkorSystem createWebSocketClientSystem() throws IOException, DeploymentException, InterruptedException {
+    // TODO: This should be easier
+    private AnkorSystem createWebSocketClientSystem(String server, String endpoint) throws IOException, DeploymentException, InterruptedException {
         final String clientId = UUID.randomUUID().toString();
 
         final AnkorSystem[] clientSystem = new AnkorSystem[1];
         final WebSocketMessageBus messageBus = new WebSocketMessageBus(new ViewModelJsonMessageMapper());
         final AnkorSystemBuilder systemBuilder = new AnkorSystemBuilder()
                 .withName(clientId)
-                // .withGlobalEventListener(new FXControllerChangeListener())
                 .withMessageBus(messageBus)
                 .withModelContextId("collabTest");
 
         final CountDownLatch latch = new CountDownLatch(1);
 
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-        String uri = "ws://localhost:8080" + "/websocket/ankor/" + clientId;
+        String uri = server + endpoint + "/" + clientId;
 
         container.connectToServer(new Endpoint() {
 
