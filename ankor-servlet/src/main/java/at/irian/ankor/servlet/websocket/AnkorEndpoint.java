@@ -75,8 +75,16 @@ public abstract class AnkorEndpoint extends Endpoint implements  MessageHandler.
 
     @Override
     public void onMessage(String message) {
-        LOG.info("Endpoint received {}", message);
-        webSocketMessageBus.receiveSerializedMessage(message);
+        if (!isHearbeat(message)) {
+            LOG.info("Endpoint received {}, length = {}", message, message.length());
+
+            // TODO: Validate message: A malformed message will crash this Ankor session (but new clients can connect)
+            webSocketMessageBus.receiveSerializedMessage(message);
+        }
+    }
+
+    private boolean isHearbeat(String message) {
+        return message.trim().equals("");
     }
 
     @Override

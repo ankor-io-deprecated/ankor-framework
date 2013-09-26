@@ -15,12 +15,12 @@ define([
          *
          * @param uuid The uuid of the new connection.
          */
-        this.sendPendingMessages = function(uuid) {
+        this._sendPendingMessages = function(uuid) {
             var jsonMessages = BaseTransport.buildJsonMessages(this.outgoingMessages);
             while (jsonMessages.length > 0) {
                 var jsonMessage = jsonMessages.pop()
                 jsonMessage.senderId = uuid;
-                this.sendMessageInner(jsonMessage);
+                this._sendMessageInner(jsonMessage);
             }
             this.outgoingMessages = [];
         }
@@ -28,7 +28,7 @@ define([
         /**
          * Private method to prevent code duplication.
          */
-        this.sendMessageInner = function(jsonMessage) {
+        this._sendMessageInner = function(jsonMessage) {
             var msg = this.utils.jsonStringify(jsonMessage)
             console.log('socket.io send message ', msg);
             this.socket.send(msg);
@@ -49,7 +49,7 @@ define([
             console.log('socket.io connected using ', self.socket.socket.transport);
             var uuid = self.socket.socket.sessionid;
             self.ankorSystem.senderId = uuid;
-            self.sendPendingMessages(uuid);
+            self._sendPendingMessages(uuid);
             self.isReady = true;
         });
 
@@ -70,7 +70,7 @@ define([
         BaseTransport.prototype.sendMessage.call(this, message);
         if (this.isReady) {
             var jsonMessages = BaseTransport.buildJsonMessages(this.outgoingMessages);
-            this.sendMessageInner(jsonMessages.pop());
+            this._sendMessageInner(jsonMessages.pop());
             this.outgoingMessages = [];
         }
     };
