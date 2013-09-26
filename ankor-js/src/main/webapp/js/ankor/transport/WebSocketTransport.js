@@ -40,7 +40,7 @@ define([
         BaseTransport.prototype.init(ankorSystem);
 
         var host = function (endpoint, clientId) {
-            var path = window.location.host + window.location.pathname + endpoint.substr(1) + '/' + clientId;
+            var path = window.location.host + endpoint + '/' + clientId;
 
             if (window.location.protocol == 'http:') {
                 path = 'ws://' + path;
@@ -62,7 +62,7 @@ define([
                 self._sendPendingMessages();
 
                 function heartbeat() {
-                    console.log("'\u2665' beat");
+                    console.log("\u2665 beat");
                     self.socket.send("");
 
                     // TODO: Could try to reconnect here

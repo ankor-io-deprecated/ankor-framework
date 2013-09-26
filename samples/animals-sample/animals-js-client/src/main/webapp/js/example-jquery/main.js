@@ -1,18 +1,18 @@
 define([
     "jquery",
     "ankor/AnkorSystem",
-    "ankor/transport/HttpPollingTransport",
+    "ankor/transport/WebSocketTransport",
     "ankor/utils/jQueryUtils",
     "./AnimalDetailTab",
     "./AnimalSearchTab",
     "jquery-ui", //Require only, no reference needed
     "ankor/adapters/JQueryAdapter" //Require only, no reference needed
-], function($, AnkorSystem, HttpPollingTransport, jQueryUtils, AnimalDetailTab, AnimalSearchTab) {
+], function($, AnkorSystem, WebSocketTransport, jQueryUtils, AnimalDetailTab, AnimalSearchTab) {
     //Setup AnkorSystem
     var ankorSystem = new AnkorSystem({
         debug: true,
         modelId: "collabTest",
-        transport: new HttpPollingTransport("/ankor"),
+        transport: new WebSocketTransport("/ankor"),
         utils: new jQueryUtils($)
     });
     window.ankorSystem = ankorSystem; //Make reference to ankor system globally available -> for debugging only
