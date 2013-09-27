@@ -47,7 +47,9 @@ public class ContentPane {
 
         AnimalSearchModel model = new AnimalSearchModel(panelRef.appendPath("model"),
                                                         panelRef.appendPath("name").<String>toTypedRef(),
-                                                        animalRepository);
+                                                        serverStatusRef, animalRepository);
+        model.reloadAnimals();
+
         Panel<AnimalSearchModel> panel = new Panel<>(panelId, panelRef, "Animal Search", "animalSearch",
                                                      model);
 

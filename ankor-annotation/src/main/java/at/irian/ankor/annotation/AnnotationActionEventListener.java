@@ -52,7 +52,9 @@ public class AnnotationActionEventListener extends ActionEventListener {
                         invokeMethod(bean, action, match.getBackRefs());
                     }
                 } else {
-                    invokeMethod(bean, action, Collections.<Ref>emptyList());
+                    if (watchedProperty.equals(event.getActionProperty())) {
+                        invokeMethod(bean, action, Collections.<Ref>emptyList());
+                    }
                 }
             }
         }

@@ -66,10 +66,10 @@ public class AnimalDetailModel {
         }
     }
 
-    @ChangeListener(pattern = "(@).animal.type")
-    public void animalTypeChanged(Ref modelRef) {
-        Ref familyRef = modelRef.appendPath("animal.family");
-        Ref familiesRef = modelRef.appendPath("selectItems.families");
+    @ChangeListener(pattern = ".animal.type")
+    public void animalTypeChanged() {
+        Ref familyRef = myRef.appendPath("animal.family");
+        Ref familiesRef = myRef.appendPath("selectItems.families");
         new AnimalTypeChangeHandler(animalRepository).handleChange(animal.getType(), familyRef, familiesRef);
     }
 

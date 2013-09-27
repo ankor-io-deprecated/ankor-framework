@@ -21,7 +21,9 @@ import java.util.List;
 public class AnimalSearchModel {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalSearchModel.class);
 
+    private final Ref myRef;
     private final TypedRef<String> panelNameRef;
+    private final TypedRef<String> serverStatusRef;
 
     @AnkorIgnore
     private final AnimalRepository animalRepository;
@@ -36,14 +38,16 @@ public class AnimalSearchModel {
 
     public AnimalSearchModel(Ref animalSearchModelRef,
                              TypedRef<String> panelNameRef,
+                             TypedRef<String> serverStatusRef,
                              AnimalRepository animalRepository) {
-        this.animalRepository = animalRepository;
+        this.myRef = animalSearchModelRef;
         this.panelNameRef = panelNameRef;
+        this.serverStatusRef = serverStatusRef;
+        this.animalRepository = animalRepository;
         this.filter = new AnimalSearchFilter();
         this.selectItems = AnimalSelectItems.create(animalRepository.getAnimalTypes());
         this.animals = Collections.emptyList();
         this.reloadFloodControl = new FloodControl(animalSearchModelRef, 500L);
-        reloadAnimals(animalSearchModelRef.root(), animalSearchModelRef); //todo  move out
         AnkorPatterns.initViewModel(this, animalSearchModelRef);
     }
 
@@ -63,16 +67,16 @@ public class AnimalSearchModel {
         this.animals = animals;
     }
 
-    @ChangeListener(pattern = {"(*).**.(@).filter.**"})
-    public void reloadAnimals(final Ref rootRef, final Ref modelRef) {
+    @ChangeListener(pattern = {".filter.**"})
+    public void reloadAnimals() {
         reloadFloodControl.control(new Runnable() {
             @Override
             public void run() {
                 LOG.info("RELOADING animals ...");
                 setAnimals(animalRepository.searchAnimals(filter, 0, Integer.MAX_VALUE));
                 LOG.info("... finished RELOADING");
-                modelRef.appendPath("animals").signalChange();
-                rootRef.appendPath("serverStatus").setValue("");
+                myRef.appendPath("animals").signalChange();
+                serverStatusRef.setValue("");
             }
         });
     }
@@ -83,15 +87,15 @@ public class AnimalSearchModel {
         panelNameRef.setValue(new PanelNameCreator().createName("Animal Search", name));
     }
 
-    @ChangeListener(pattern = "(@).filter.type")
-    public void animalTypeChanged(final Ref modelRef) {
-        Ref familyRef = modelRef.appendPath("filter.family");
-        Ref familiesRef = modelRef.appendPath("selectItems.families");
+    @ChangeListener(pattern = ".filter.type")
+    public void animalTypeChanged() {
+        Ref familyRef = myRef.appendPath("filter.family");
+        Ref familiesRef = myRef.appendPath("selectItems.families");
         new AnimalTypeChangeHandler(animalRepository).handleChange(filter.getType(), familyRef, familiesRef);
     }
 
-    @ActionListener(name = "save", pattern = "(*).**.@")
-    public void save(Ref rootRef) {
+    @ActionListener(name = "save")
+    public void save() {
         String status;
         try {
             for (Animal animal : getAnimals()) {
@@ -104,7 +108,7 @@ public class AnimalSearchModel {
                 LOG.error("Error saving animals ", e);
             }
         }
-        rootRef.appendPath("serverStatus").setValue(status);
+        serverStatusRef.setValue(status);
     }
 
 }
