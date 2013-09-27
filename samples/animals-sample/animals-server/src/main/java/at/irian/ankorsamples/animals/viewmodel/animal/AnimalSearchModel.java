@@ -27,8 +27,6 @@ public class AnimalSearchModel {
     private final AnimalRepository animalRepository;
     @AnkorIgnore
     private final FloodControl reloadFloodControl;
-    @AnkorIgnore
-    private final Ref thisRef;
 
     private AnimalSearchFilter filter;
 
@@ -40,13 +38,14 @@ public class AnimalSearchModel {
                              AnimalRepository animalRepository,
                              ViewModelProperty<String> tabName) {
         AnkorPatterns.initViewModel(this, viewModelRef);
-        this.thisRef = viewModelRef;
         this.animalRepository = animalRepository;
         this.tabName = tabName;
         this.filter = new AnimalSearchFilter();
         this.selectItems = AnimalSelectItems.create(animalRepository.getAnimalTypes());
         this.animals = Collections.emptyList();
         this.reloadFloodControl = new FloodControl(viewModelRef, 500L);
+
+        reloadAnimals(viewModelRef.root(), viewModelRef);
     }
 
     public AnimalSearchFilter getFilter() {
@@ -65,20 +64,16 @@ public class AnimalSearchModel {
         this.animals = animals;
     }
 
-    @ChangeListener(pattern = {".filter.**"})
-    public void reloadAnimals() {
+    @ChangeListener(pattern = {"(*).**.(@).filter.**"})
+    public void reloadAnimals(final Ref rootRef, final Ref modelRef) {
         reloadFloodControl.control(new Runnable() {
             @Override
             public void run() {
                 LOG.info("RELOADING animals ...");
-                List<Animal> animals = animalRepository.searchAnimals(filter,
-                                                                      0,
-                                                                      Integer.MAX_VALUE);
-
-                thisRef.appendPath("animals").setValue(animals);
-
+                setAnimals(animalRepository.searchAnimals(filter, 0, Integer.MAX_VALUE));
                 LOG.info("... finished RELOADING");
-                thisRef.root().appendPath("serverStatus").setValue("");
+                modelRef.appendPath("animals").signalChange();
+                rootRef.appendPath("serverStatus").setValue("");
             }
         });
     }
@@ -89,15 +84,15 @@ public class AnimalSearchModel {
         tabName.set(new TabNameCreator().createName("Animal Search", name));
     }
 
-    @ChangeListener(pattern = ".filter.type")
-    public void animalTypeChanged() {
-        Ref familyRef = thisRef.appendPath("filter.family");
-        Ref familiesRef = thisRef.appendPath("selectItems.families");
+    @ChangeListener(pattern = "(@).filter.type")
+    public void animalTypeChanged(final Ref modelRef) {
+        Ref familyRef = modelRef.appendPath("filter.family");
+        Ref familiesRef = modelRef.appendPath("selectItems.families");
         new AnimalTypeChangeHandler(animalRepository).handleChange(filter.getType(), familyRef, familiesRef);
     }
 
-    @ActionListener(name = "save")
-    public void save() {
+    @ActionListener(name = "save", pattern = "(*).**.@")
+    public void save(Ref rootRef) {
         String status;
         try {
             for (Animal animal : getAnimals()) {
@@ -110,7 +105,7 @@ public class AnimalSearchModel {
                 LOG.error("Error saving animals ", e);
             }
         }
-        thisRef.root().appendPath("serverStatus").setValue(status);
+        rootRef.appendPath("serverStatus").setValue(status);
     }
 
 }

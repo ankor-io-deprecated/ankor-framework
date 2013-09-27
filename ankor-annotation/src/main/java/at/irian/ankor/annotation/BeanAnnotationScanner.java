@@ -49,13 +49,17 @@ public class BeanAnnotationScanner {
                 if (actionName == null || actionName.isEmpty()) {
                     actionName = method.getName();
                 }
-                String[] paramNames = new String[method.getParameterTypes().length];
+                Class<?>[] parameterTypes = method.getParameterTypes();
+                MethodParamInfo[] params = new MethodParamInfo[parameterTypes.length];
                 for (int i = 0; i < method.getParameterAnnotations().length; i++) {
                     Annotation[] paramAnnotations = method.getParameterAnnotations()[i];
-                    for (Annotation paramAnnotation : paramAnnotations) {
-                        if (paramAnnotation instanceof Param) {
-                            paramNames[i] = ((Param) paramAnnotation).value();
-                        }
+                    String paramName = getParamNameFromAnnotations(paramAnnotations);
+                    if (paramName != null) {
+                        params[i] = MethodParamInfo.namedActionParam(paramName, parameterTypes[i]);
+                    } else if (Ref.class.isAssignableFrom(parameterTypes[i])) {
+                        params[i] = MethodParamInfo.backRefParam(parameterTypes[i]);
+                    } else {
+                        throw new IllegalArgumentException("Method " + method + " has wrong parameters. Parameter " + i + " must be either annotated or be of java type " + Ref.class.getName());
                     }
                 }
                 RefMatcher[] matchers = createMatchersFromPatterns(actionListenerAnnotation.pattern());
@@ -64,10 +68,18 @@ public class BeanAnnotationScanner {
                                                                      bean,
                                                                      matchers,
                                                                      method,
-                                                                     paramNames
-                ));
+                                                                     params));
             }
         }
+    }
+
+    private String getParamNameFromAnnotations(Annotation[] paramAnnotations) {
+        for (Annotation paramAnnotation : paramAnnotations) {
+            if (paramAnnotation instanceof Param) {
+                return ((Param) paramAnnotation).value();
+            }
+        }
+        return null;
     }
 
 

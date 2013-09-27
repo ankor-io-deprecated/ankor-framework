@@ -21,20 +21,20 @@ public class AnnotationActionEventListener extends ActionEventListener {
     private final WeakReference<Object> beanReference;
     private final RefMatcher[] matchers;
     private final Method method;
-    private final String[] paramNames;
+    private final MethodParamInfo[] params;
 
     public AnnotationActionEventListener(Ref watchedProperty,
                                          String actionName,
                                          Object bean,
                                          RefMatcher[] matchers,
                                          Method method,
-                                         String[] paramNames) {
+                                         MethodParamInfo[] params) {
         super(watchedProperty);
         this.actionName = actionName;
         this.beanReference = new WeakReference<Object>(bean);
         this.matchers = matchers;
         this.method = method;
-        this.paramNames = paramNames;
+        this.params = params;
     }
 
     @Override
@@ -61,17 +61,15 @@ public class AnnotationActionEventListener extends ActionEventListener {
     private void invokeMethod(Object bean, Action action, List<Ref> backRefs) {
         try {
 
-            int backRefsCnt = backRefs.size();
-            Object[] paramValues = new Object[backRefsCnt + paramNames.length];
-
-            for (int i = 0; i < backRefsCnt; i++) {
-                paramValues[i] = backRefs.get(i);
+            Object[] paramValues = new Object[params.length];
+            int backRefIdx = 0;
+            for (int i = 0; i < params.length; i++) {
+                if (params[i].isBackRef()) {
+                    paramValues[i] = backRefs.get(backRefIdx++);
+                } else {
+                    paramValues[i] = action.getParams().get(params[i].getName());
+                }
             }
-
-            for (int i = 0; i < paramNames.length; i++) {
-                paramValues[backRefsCnt + i] = action.getParams().get(paramNames[i]);
-            }
-
             method.invoke(bean, paramValues);
 
         } catch (Exception e) {
