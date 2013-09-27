@@ -117,6 +117,14 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
         context().modelContext().getEventDispatcher().dispatch(changeEvent);
     }
 
+    @Override
+    public void signalChange() {
+        Object value = getValue();
+        Change change = Change.valueChange(value);
+        ChangeEvent changeEvent = new ChangeEvent(this, change);
+        context().modelContext().getEventDispatcher().dispatch(changeEvent);
+    }
+
     private void handleNewValueChange(Object newValue) {
         Class<?> type = getType();
         if (Wrapper.class.isAssignableFrom(type)) {

@@ -171,4 +171,9 @@ public class MockELRef implements Ref {
     public String toString() {
         return parent != null ? parent.toString() + '.' + propertyName : propertyName;
     }
+
+    @Override
+    public void signalChange() {
+        throw new UnsupportedOperationException();
+    }
 }

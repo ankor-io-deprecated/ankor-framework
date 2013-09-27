@@ -123,4 +123,6 @@ public interface Ref {
 
     MapRef toMapRef();
 
+    void signalChange();
+
 }
