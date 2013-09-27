@@ -21,8 +21,8 @@ import java.util.List;
 public class AnimalSearchModel {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalSearchModel.class);
 
-    @AnkorIgnore
     private final TypedRef<String> tabNameRef;
+
     @AnkorIgnore
     private final AnimalRepository animalRepository;
     @AnkorIgnore

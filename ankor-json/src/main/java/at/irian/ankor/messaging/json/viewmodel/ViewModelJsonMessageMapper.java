@@ -9,6 +9,7 @@ import at.irian.ankor.messaging.MessageMapper;
 import at.irian.ankor.messaging.json.common.ActionDeserializer;
 import at.irian.ankor.messaging.json.common.ActionSerializer;
 import at.irian.ankor.messaging.json.common.MessageDeserializer;
+import at.irian.ankor.ref.TypedRef;
 import at.irian.ankor.viewmodel.ViewModelProperty;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -42,18 +43,23 @@ public class ViewModelJsonMessageMapper implements MessageMapper<String>,
     }
 
     public void init() {
-        SimpleModule module =
-                new SimpleModule("ViewModelJsonMessageMapperModule",
-                                 new Version(1, 0, 0, null, null, null));
+        SimpleModule module = new SimpleModule("ViewModelJsonMessageMapperModule",
+                                               new Version(1, 0, 0, null, null, null));
+
+        // custom serializers/deserializers
         module.addDeserializer(Message.class, new MessageDeserializer());
         module.addSerializer(Action.class, new ActionSerializer());
         module.addDeserializer(Action.class, new ActionDeserializer());
         module.addSerializer(Wrapper.class, new WrapperSerializer());
         module.addDeserializer(ViewModelProperty.class, new ViewModelPropertyDeserializer());
 
+        // do always ignore Refs (ie. do never serialize Refs)
+        module.setMixInAnnotation(TypedRef.class, MixIn.class);
+
         mapper = new ObjectMapper();
-        mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         mapper.registerModule(module);
+
+        mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 
         mapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
         mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
