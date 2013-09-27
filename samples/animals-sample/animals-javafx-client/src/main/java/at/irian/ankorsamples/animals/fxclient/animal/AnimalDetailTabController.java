@@ -17,7 +17,7 @@ import javafx.scene.text.Text;
  * @author Thomas Spiegl
  */
 public class AnimalDetailTabController extends BaseTabController {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalSearchTabController.class);
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalSearchTabController.class);
 
     @FXML
     protected TextInputControl name;
@@ -59,7 +59,7 @@ public class AnimalDetailTabController extends BaseTabController {
 
     @ChangeListener(pattern = ".model.animal.name")
     public void onNameChanged() {
-        System.out.println("Animal name changed changed to " + getTabRef().appendPath("model.animal.name").getValue());
+        LOG.debug("Animal name changed changed to " + getTabRef().appendPath("model.animal.name").getValue());
     }
 
     @FXML

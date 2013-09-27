@@ -5,10 +5,10 @@ import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.messaging.AnkorIgnore;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.viewmodel.ViewModelProperty;
+import at.irian.ankor.ref.TypedRef;
 import at.irian.ankorsamples.animals.domain.animal.Animal;
 import at.irian.ankorsamples.animals.domain.animal.AnimalRepository;
-import at.irian.ankorsamples.animals.viewmodel.TabNameCreator;
+import at.irian.ankorsamples.animals.viewmodel.PanelNameCreator;
 
 /**
  * @author Thomas Spiegl
@@ -20,48 +20,49 @@ public class AnimalDetailModel {
     @AnkorIgnore
     private final AnimalRepository animalRepository;
     @AnkorIgnore
-    private final ViewModelProperty<String> tabName;
-    @AnkorIgnore
-    private final ViewModelProperty<String> serverStatus;
-    @AnkorIgnore
     private boolean saved = false;
+
+    private final TypedRef<String> panelNameRef;
+    private final TypedRef<String> serverStatusRef;
+
+    private final Ref myRef;
 
     private Animal animal;
 
     private AnimalSelectItems selectItems;
 
-    private ViewModelProperty<Boolean> editable;
+    private boolean editable;
 
-    private ViewModelProperty<String> nameStatus;
+    private String nameStatus;
 
     public AnimalDetailModel(Ref myRef,
-                             Animal animal,
+                             TypedRef<String> panelNameRef,
+                             TypedRef<String> serverStatusRef,
                              AnimalRepository animalRepository,
-                             ViewModelProperty<String> tabName,
-                             ViewModelProperty<String> serverStatus) {
-        AnkorPatterns.initViewModel(this, myRef);
+                             Animal animal) {
+        this.myRef = myRef;
         this.animal = animal;
         this.selectItems = AnimalSelectItems.create(animalRepository.getAnimalTypes());
         this.animalRepository = animalRepository;
-        this.tabName = tabName;
-        this.serverStatus = serverStatus;
-
-        this.editable.set(true);
-        this.nameStatus.set("ok");
+        this.panelNameRef = panelNameRef;
+        this.serverStatusRef = serverStatusRef;
+        this.editable = true;
+        this.nameStatus = "ok";
+        AnkorPatterns.initViewModel(this, myRef);
     }
 
     @ChangeListener(pattern = ".animal.name")
     public void onNameChanged() {
         String name = animal.getName();
 
-        tabName.set(new TabNameCreator().createName("New Animal", name));
+        panelNameRef.setValue(new PanelNameCreator().createName("New Animal", name));
 
         if (animalRepository.isAnimalNameAlreadyExists(name)) {
-            nameStatus.set("name already exists");
+            myRef.appendPath("nameStatus").setValue("name already exists");
         } else if (name.length() > AnimalRepository.MAX_NAME_LEN) {
-            nameStatus.set("name is too long");
+            myRef.appendPath("nameStatus").setValue("name is too long");
         } else {
-            nameStatus.set("ok");
+            myRef.appendPath("nameStatus").setValue("ok");
         }
     }
 
@@ -84,7 +85,7 @@ public class AnimalDetailModel {
             try {
                 animalRepository.saveAnimal(animal);
                 saved = true;
-                editable.set(false);
+                myRef.appendPath("editable").setValue(false);
                 status = "Animal successfully saved";
             } catch (Exception e) {
                 status = "Error: " + e.getMessage();
@@ -93,7 +94,7 @@ public class AnimalDetailModel {
                 }
             }
         }
-        serverStatus.set(status);
+        serverStatusRef.setValue(status);
     }
 
     public AnimalSelectItems getSelectItems() {
@@ -104,11 +105,19 @@ public class AnimalDetailModel {
         return animal;
     }
 
-    public ViewModelProperty<Boolean> getEditable() {
+    public boolean isEditable() {
         return editable;
     }
 
-    public ViewModelProperty<String> getNameStatus() {
+    public String getNameStatus() {
         return nameStatus;
+    }
+
+    public void setEditable(boolean editable) {
+        this.editable = editable;
+    }
+
+    public void setNameStatus(String nameStatus) {
+        this.nameStatus = nameStatus;
     }
 }

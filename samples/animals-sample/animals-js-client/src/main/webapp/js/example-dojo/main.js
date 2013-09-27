@@ -26,14 +26,14 @@ define([
 
     //Setup main UI
     var rootRef = ankorSystem.getRef("root");
-    var tabsRef = rootRef.append("tabs");
+    var tabsRef = rootRef.append("contentPane").append("panels");
     rootRef.addPropChangeListener(function() {
         /*//Connect new tab buttons
         $("#newSearchTab").click(function() {
-            tabsRef.fire("createAnimalSearchTab");
+            tabsRef.fire("createAnimalSearchPanel");
         });
         $("#newDetailTab").click(function() {
-            tabsRef.fire("createAnimalDetailTab");
+            tabsRef.fire("createAnimalDetailPanel");
         });
 
         //Bind userName and serverStatus

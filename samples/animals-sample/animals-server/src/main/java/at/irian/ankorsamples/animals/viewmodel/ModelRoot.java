@@ -3,7 +3,6 @@ package at.irian.ankorsamples.animals.viewmodel;
 import at.irian.ankor.annotation.ActionListener;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.viewmodel.ViewModelProperty;
 import at.irian.ankorsamples.animals.domain.animal.AnimalRepository;
 
 /**
@@ -13,39 +12,44 @@ import at.irian.ankorsamples.animals.domain.animal.AnimalRepository;
 public class ModelRoot {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TestModel.class);
 
-    private ViewModelProperty<String> userName;
-    private ViewModelProperty<String> serverStatus;
-    private Tabs tabs;
+    private final Ref myRef;
+    private final ContentPane contentPane;
 
-    public ModelRoot(Ref viewModelRef, AnimalRepository animalRepository) {
-        AnkorPatterns.initViewModel(this, viewModelRef);
-        this.userName.set("");
-        this.serverStatus.set("");
-        this.tabs = new Tabs(viewModelRef.appendPath("tabs"), animalRepository);
+    private String userName = "";
+    private String serverStatus = "";
+
+    public ModelRoot(Ref myRef, AnimalRepository animalRepository) {
+        this.myRef = myRef;
+        this.contentPane = new ContentPane(myRef.appendPath("contentPane"),
+                                           myRef.appendPath("serverStatus").<String>toTypedRef(),
+                                           animalRepository);
+        AnkorPatterns.initViewModel(this, myRef);
     }
 
     @ActionListener
     public void init() {
-        userName.set("John Doe");
+        myRef.appendPath("userName").setValue("John Doe");
+        myRef.appendPath("serverStatus").setValue("");
     }
 
-    public ViewModelProperty<String> getUserName() {
+
+    public String getUserName() {
         return userName;
     }
 
-    public void setUserName(ViewModelProperty<String> userName) {
+    public void setUserName(String userName) {
         this.userName = userName;
     }
 
-    public Tabs getTabs() {
-        return tabs;
-    }
-
-    public ViewModelProperty<String> getServerStatus() {
+    public String getServerStatus() {
         return serverStatus;
     }
 
-    public void setServerStatus(ViewModelProperty<String> serverStatus) {
+    public void setServerStatus(String serverStatus) {
         this.serverStatus = serverStatus;
+    }
+
+    public ContentPane getContentPane() {
+        return contentPane;
     }
 }

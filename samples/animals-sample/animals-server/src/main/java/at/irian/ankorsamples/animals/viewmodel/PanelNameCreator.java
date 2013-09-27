@@ -5,8 +5,8 @@ import at.irian.ankor.base.ObjectUtils;
 /**
  * @author Thomas Spiegl
  */
-public class TabNameCreator {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TabNameCreator.class);
+public class PanelNameCreator {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(PanelNameCreator.class);
 
     private static final int MAX_LEN = 15;
     public String createName(String name, String value) {

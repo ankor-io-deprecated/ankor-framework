@@ -5,8 +5,8 @@ package at.irian.ankorsamples.animals.fxclient;
  */
 public enum TabType {
 
-    animalSearchTab("createAnimalSearchTab", "animal_search_tab.fxml"),
-    animalDetailTab("createAnimalDetailTab", "animal_detail_tab.fxml"),
+    animalSearch("createAnimalSearchPanel", "animal_search_tab.fxml"),
+    animalDetail("createAnimalDetailPanel", "animal_detail_tab.fxml"),
 
     ;
 

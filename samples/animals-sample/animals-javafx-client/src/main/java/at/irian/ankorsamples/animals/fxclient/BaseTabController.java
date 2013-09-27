@@ -28,7 +28,7 @@ public abstract class BaseTabController implements Initializable {
     }
 
     public Ref getTabRef() {
-        return refFactory().ref(String.format("root.tabs.%s", tabId));
+        return refFactory().ref(String.format("root.contentPane.panels.%s", tabId));
     }
 
     @Override
@@ -39,7 +39,7 @@ public abstract class BaseTabController implements Initializable {
         tab.setOnClosed(new EventHandler<Event>() {
             @Override
             public void handle(Event event) {
-                AnkorPatterns.deleteItemLater(refFactory().ref("root.tabs"), tabId);
+                AnkorPatterns.deleteItemLater(refFactory().ref("root.contentPane.panels"), tabId);
             }
         });
 

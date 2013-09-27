@@ -38,7 +38,7 @@ public class MainController implements Initializable {
         rootRef.fire(new Action("init"));
     }
 
-    @ChangeListener(pattern = "root.tabs[(*)]")
+    @ChangeListener(pattern = "root.contentPane.panels[(*)]")
     public void tabsRefChanged(Ref tabRef) {
         String tabId = tabRef.propertyName();
         if (tabRef.getValue() == null) {
@@ -56,7 +56,7 @@ public class MainController implements Initializable {
     @ChangeListener(pattern = "root")
     public void rootRefChanged() {
         Ref rootRef = refFactory().ref("root");
-        Ref tabsRef = rootRef.appendPath("tabs");
+        Ref tabsRef = rootRef.appendPath("contentPane.panels");
 
         userName.textProperty().bind(new ViewModelProperty<String>(rootRef, "userName"));
 
@@ -77,12 +77,12 @@ public class MainController implements Initializable {
     }
 
     public void openAnimalSearchTab(@SuppressWarnings("UnusedParameters") ActionEvent actionEvent) {
-        Ref tabsRef = refFactory().ref("root.tabs");
-        tabsRef.fire(new ActionBuilder().withName(TabType.animalSearchTab.getActionName()).create());
+        Ref contentPaneRef = refFactory().ref("root.contentPane");
+        contentPaneRef.fire(new ActionBuilder().withName(TabType.animalSearch.getActionName()).create());
     }
 
     public void openAnimalDetailTab(@SuppressWarnings("UnusedParameters") ActionEvent actionEvent) {
-        Ref tabsRef = refFactory().ref("root").appendPath("tabs");
-        tabsRef.fire(new ActionBuilder().withName(TabType.animalDetailTab.getActionName()).create());
+        Ref contentPaneRef = refFactory().ref("root.contentPane");
+        contentPaneRef.fire(new ActionBuilder().withName(TabType.animalDetail.getActionName()).create());
     }
 }

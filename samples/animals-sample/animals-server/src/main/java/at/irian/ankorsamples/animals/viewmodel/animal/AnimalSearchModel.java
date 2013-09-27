@@ -9,7 +9,7 @@ import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.TypedRef;
 import at.irian.ankorsamples.animals.domain.animal.Animal;
 import at.irian.ankorsamples.animals.domain.animal.AnimalRepository;
-import at.irian.ankorsamples.animals.viewmodel.TabNameCreator;
+import at.irian.ankorsamples.animals.viewmodel.PanelNameCreator;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,7 +21,7 @@ import java.util.List;
 public class AnimalSearchModel {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalSearchModel.class);
 
-    private final TypedRef<String> tabNameRef;
+    private final TypedRef<String> panelNameRef;
 
     @AnkorIgnore
     private final AnimalRepository animalRepository;
@@ -34,18 +34,17 @@ public class AnimalSearchModel {
 
     private List<Animal> animals;
 
-    public AnimalSearchModel(Ref viewModelRef,
-                             AnimalRepository animalRepository,
-                             TypedRef<String> tabNameRef) {
-        AnkorPatterns.initViewModel(this, viewModelRef);
+    public AnimalSearchModel(Ref animalSearchModelRef,
+                             TypedRef<String> panelNameRef,
+                             AnimalRepository animalRepository) {
         this.animalRepository = animalRepository;
-        this.tabNameRef = tabNameRef;
+        this.panelNameRef = panelNameRef;
         this.filter = new AnimalSearchFilter();
         this.selectItems = AnimalSelectItems.create(animalRepository.getAnimalTypes());
         this.animals = Collections.emptyList();
-        this.reloadFloodControl = new FloodControl(viewModelRef, 500L);
-
-        reloadAnimals(viewModelRef.root(), viewModelRef);
+        this.reloadFloodControl = new FloodControl(animalSearchModelRef, 500L);
+        reloadAnimals(animalSearchModelRef.root(), animalSearchModelRef); //todo  move out
+        AnkorPatterns.initViewModel(this, animalSearchModelRef);
     }
 
     public AnimalSearchFilter getFilter() {
@@ -81,7 +80,7 @@ public class AnimalSearchModel {
     @ChangeListener(pattern = ".filter.name")
     public void onNameChanged() {
         String name = filter.getName();
-        tabNameRef.setValue(new TabNameCreator().createName("Animal Search", name));
+        panelNameRef.setValue(new PanelNameCreator().createName("Animal Search", name));
     }
 
     @ChangeListener(pattern = "(@).filter.type")
