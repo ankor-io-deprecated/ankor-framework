@@ -6,7 +6,7 @@ import at.irian.ankor.delay.FloodControl;
 import at.irian.ankor.messaging.AnkorIgnore;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.viewmodel.ViewModelProperty;
+import at.irian.ankor.ref.TypedRef;
 import at.irian.ankorsamples.animals.domain.animal.Animal;
 import at.irian.ankorsamples.animals.domain.animal.AnimalRepository;
 import at.irian.ankorsamples.animals.viewmodel.TabNameCreator;
@@ -22,7 +22,7 @@ public class AnimalSearchModel {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalSearchModel.class);
 
     @AnkorIgnore
-    private final ViewModelProperty<String> tabName;
+    private final TypedRef<String> tabNameRef;
     @AnkorIgnore
     private final AnimalRepository animalRepository;
     @AnkorIgnore
@@ -36,10 +36,10 @@ public class AnimalSearchModel {
 
     public AnimalSearchModel(Ref viewModelRef,
                              AnimalRepository animalRepository,
-                             ViewModelProperty<String> tabName) {
+                             TypedRef<String> tabNameRef) {
         AnkorPatterns.initViewModel(this, viewModelRef);
         this.animalRepository = animalRepository;
-        this.tabName = tabName;
+        this.tabNameRef = tabNameRef;
         this.filter = new AnimalSearchFilter();
         this.selectItems = AnimalSelectItems.create(animalRepository.getAnimalTypes());
         this.animals = Collections.emptyList();
@@ -81,7 +81,7 @@ public class AnimalSearchModel {
     @ChangeListener(pattern = ".filter.name")
     public void onNameChanged() {
         String name = filter.getName();
-        tabName.set(new TabNameCreator().createName("Animal Search", name));
+        tabNameRef.setValue(new TabNameCreator().createName("Animal Search", name));
     }
 
     @ChangeListener(pattern = "(@).filter.type")

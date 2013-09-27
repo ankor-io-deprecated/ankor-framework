@@ -10,10 +10,7 @@ import at.irian.ankor.change.OldValuesAwareChangeEvent;
 import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.event.PropertyWatcher;
 import at.irian.ankor.path.PathSyntax;
-import at.irian.ankor.ref.CollectionRef;
-import at.irian.ankor.ref.MapRef;
-import at.irian.ankor.ref.Ref;
-import at.irian.ankor.ref.RefFactory;
+import at.irian.ankor.ref.*;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -424,5 +421,11 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
     @Override
     public MapRef toMapRef() {
         return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypedRef<T> toTypedRef() {
+        return (TypedRef<T>)this;
     }
 }

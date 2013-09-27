@@ -2,10 +2,7 @@ package at.irian.ankor.ref.el;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.path.el.SimpleELPathSyntax;
-import at.irian.ankor.ref.CollectionRef;
-import at.irian.ankor.ref.MapRef;
-import at.irian.ankor.ref.Ref;
-import at.irian.ankor.ref.RefContext;
+import at.irian.ankor.ref.*;
 
 /**
  * @author Manfred Geiler
@@ -35,16 +32,6 @@ public class MockELRef implements Ref {
     public void setValue(Object value) {
         this.propertyValue = value;
     }
-
-//    @Override
-//    public void delete(Object key) {
-//        throw new UnsupportedOperationException();
-//    }
-//
-//    @Override
-//    public void insert(int idx, Object value) {
-//        throw new UnsupportedOperationException();
-//    }
 
     @Override
     public void delete() {
@@ -175,5 +162,11 @@ public class MockELRef implements Ref {
     @Override
     public void signalChange() {
         throw new UnsupportedOperationException();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypedRef<T> toTypedRef() {
+        return (TypedRef<T>)this;
     }
 }

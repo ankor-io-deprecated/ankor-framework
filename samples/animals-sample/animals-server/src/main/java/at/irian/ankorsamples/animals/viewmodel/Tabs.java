@@ -43,7 +43,8 @@ public class Tabs extends ViewModelMapBase<String, Tab> {
         Ref tabRef = thisRef.appendPath(tabId);
 
         Tab<AnimalSearchModel> tab = new Tab<>(tabId, tabRef, "Animal Search", "animalSearchTab");
-        AnimalSearchModel model = new AnimalSearchModel(tabRef.appendPath("model"), animalRepository, tab.getName());
+        AnimalSearchModel model = new AnimalSearchModel(tabRef.appendPath("model"), animalRepository,
+                                                        tabRef.appendPath("name").<String>toTypedRef());
         tab.setModel(model);
 
         tabRef.setValue(tab);
