@@ -10,7 +10,6 @@ import at.irian.ankor.messaging.json.common.ActionDeserializer;
 import at.irian.ankor.messaging.json.common.ActionSerializer;
 import at.irian.ankor.messaging.json.common.MessageDeserializer;
 import at.irian.ankor.ref.TypedRef;
-import at.irian.ankor.viewmodel.ViewModelProperty;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -51,7 +50,6 @@ public class ViewModelJsonMessageMapper implements MessageMapper<String>,
         module.addSerializer(Action.class, new ActionSerializer());
         module.addDeserializer(Action.class, new ActionDeserializer());
         module.addSerializer(Wrapper.class, new WrapperSerializer());
-        module.addDeserializer(ViewModelProperty.class, new ViewModelPropertyDeserializer());
 
         // do always ignore Refs (ie. do never serialize Refs)
         module.setMixInAnnotation(TypedRef.class, MixIn.class);

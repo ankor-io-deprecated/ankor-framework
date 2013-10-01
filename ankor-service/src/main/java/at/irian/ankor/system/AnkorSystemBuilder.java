@@ -18,7 +18,6 @@ import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.ref.el.ELRefContextFactory;
 import at.irian.ankor.session.*;
-import at.irian.ankor.viewmodel.FieldsInitializerViewModelPostProcessor;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -221,7 +220,6 @@ public class AnkorSystemBuilder {
 
     private List<ViewModelPostProcessor> createDefaultServerViewModelPostProcessors() {
         List<ViewModelPostProcessor> list = new ArrayList<ViewModelPostProcessor>();
-        list.add(new FieldsInitializerViewModelPostProcessor());
         list.add(new AnnotationViewModelPostProcessor());
         return list;
     }

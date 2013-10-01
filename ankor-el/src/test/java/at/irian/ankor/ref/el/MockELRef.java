@@ -160,7 +160,7 @@ public class MockELRef implements Ref {
     }
 
     @Override
-    public void signalChange() {
+    public void signalValueChange() {
         throw new UnsupportedOperationException();
     }
 

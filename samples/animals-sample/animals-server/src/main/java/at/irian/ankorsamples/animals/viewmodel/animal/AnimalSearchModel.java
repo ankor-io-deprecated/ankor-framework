@@ -7,11 +7,12 @@ import at.irian.ankor.messaging.AnkorIgnore;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.TypedRef;
+import at.irian.ankor.viewmodel.diff.ListDiff;
 import at.irian.ankorsamples.animals.domain.animal.Animal;
 import at.irian.ankorsamples.animals.domain.animal.AnimalRepository;
 import at.irian.ankorsamples.animals.viewmodel.PanelNameCreator;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -46,7 +47,7 @@ public class AnimalSearchModel {
         this.animalRepository = animalRepository;
         this.filter = new AnimalSearchFilter();
         this.selectItems = AnimalSelectItems.create(animalRepository.getAnimalTypes());
-        this.animals = Collections.emptyList();
+        this.animals = new ArrayList<>();
         this.reloadFloodControl = new FloodControl(animalSearchModelRef, 500L);
         AnkorPatterns.initViewModel(this, animalSearchModelRef);
     }
@@ -72,10 +73,22 @@ public class AnimalSearchModel {
         reloadFloodControl.control(new Runnable() {
             @Override
             public void run() {
+
+                // remember old values for later diff
+                List<Animal> oldAnimalsList = animals;
+
+                // get new list from database
                 LOG.info("RELOADING animals ...");
-                setAnimals(animalRepository.searchAnimals(filter, 0, Integer.MAX_VALUE));
+                List<Animal> newAnimalsList = animalRepository.searchAnimals(filter, 0, Integer.MAX_VALUE);
                 LOG.info("... finished RELOADING");
-                myRef.appendPath("animals").signalChange();
+
+                // compare old and new list and apply smart changes
+                Ref listRef = myRef.appendPath("animals");
+                new ListDiff<>(listRef, oldAnimalsList, newAnimalsList)
+                        .withThreshold(5) // send whole list if 5 changes or more
+                        .applyChanges();
+
+                // reset server status display
                 serverStatusRef.setValue("");
             }
         });

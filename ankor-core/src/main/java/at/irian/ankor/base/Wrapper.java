@@ -6,7 +6,6 @@ package at.irian.ankor.base;
  * the actual implementing java type.
  *
  * @author Manfred Geiler
- * @see at.irian.ankor.viewmodel.ViewModelProperty
  */
 public interface Wrapper<T> {
     T getWrappedValue();

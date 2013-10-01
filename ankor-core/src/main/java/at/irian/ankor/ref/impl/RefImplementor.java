@@ -12,4 +12,7 @@ import at.irian.ankor.ref.Ref;
 public interface RefImplementor extends Ref {
 
     void apply(Change change);
+
+    void signal(Change change);
+
 }

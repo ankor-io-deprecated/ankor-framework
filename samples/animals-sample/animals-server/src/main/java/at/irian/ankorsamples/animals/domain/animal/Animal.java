@@ -5,6 +5,7 @@ import java.util.UUID;
 /**
 * @author Thomas Spiegl
 */
+@SuppressWarnings("UnusedDeclaration")
 public class Animal {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(Animal.class);
 
@@ -68,5 +69,29 @@ public class Animal {
         sb.append(", family=").append(family);
         sb.append('}');
         return sb.toString();
+    }
+
+    @SuppressWarnings("RedundantIfStatement")
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Animal animal = (Animal) o;
+
+        if (!uuid.equals(animal.uuid)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return uuid.hashCode();
     }
 }

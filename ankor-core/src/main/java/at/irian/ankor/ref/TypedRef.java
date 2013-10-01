@@ -124,6 +124,6 @@ public interface TypedRef<T> {
 
     MapRef toMapRef();
 
-    void signalChange();
+    void signalValueChange();
 
 }
