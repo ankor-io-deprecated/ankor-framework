@@ -15,19 +15,24 @@ import java.util.Collection;
 import java.util.List;
 
 public class ViewModelListProperty<T> extends SimpleListProperty<T> implements RefChangeListener {
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ViewModelListProperty.class);
+
+    private static final int DEFAULT_FLOOD_CONTROL_DELAY_MILLIS = 5;
 
     private final FloodControl floodControl;
     private final Ref listRef;
 
     public ViewModelListProperty(Ref parentObjectRef, String propertyName) {
+        this(parentObjectRef, propertyName, DEFAULT_FLOOD_CONTROL_DELAY_MILLIS);
+    }
+
+    public ViewModelListProperty(Ref parentObjectRef, String propertyName, int floodControlDelayMillis) {
         super(new ObservableListWrapper<>(new ArrayList<T>()));
         this.listRef = parentObjectRef.appendPath(propertyName);
-        this.floodControl = new FloodControl(listRef, 5);
+        this.floodControl = new FloodControl(listRef, floodControlDelayMillis);
         processChange(this.listRef);
         RefListeners.addTreeChangeListener(listRef, this);
     }
-
-    private int count;
 
     @Override
     public void processChange(final Ref changedProperty) {
@@ -37,12 +42,16 @@ public class ViewModelListProperty<T> extends SimpleListProperty<T> implements R
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
-                        ObservableList<T> observableList = getValue();
+                        List<T> observableList = getValue();
                         observableList.clear();
                         Object value = listRef.getValue();
-                        if (value instanceof Collection) {
-                            //noinspection unchecked
-                            observableList.addAll((Collection<T>) value);
+                        if (value != null) {
+                            if (value instanceof Collection) {
+                                //noinspection unchecked
+                                observableList.addAll((Collection<T>) value);
+                            } else {
+                                LOG.error("Expected value of type Collection, but value of {} is of type {}", listRef, value.getClass().getName());
+                            }
                         }
                     }
                 });
