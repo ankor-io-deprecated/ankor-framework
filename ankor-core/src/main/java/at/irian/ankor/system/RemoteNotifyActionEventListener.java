@@ -20,7 +20,7 @@ import java.util.Collection;
  * @author Manfred Geiler
  */
 public class RemoteNotifyActionEventListener extends ActionEventListener {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RemoteNotifyActionEventListener.class);
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RemoteNotifyActionEventListener.class);
 
     private final MessageFactory messageFactory;
     private final SessionManager sessionManager;
@@ -57,6 +57,7 @@ public class RemoteNotifyActionEventListener extends ActionEventListener {
             Message message = messageFactory.createActionMessage(actionProperty.context().modelContext(),
                                                                  actionPropertyPath,
                                                                  action);
+            LOG.debug("server sends {}", message);
             session.getMessageSender().sendMessage(message);
         }
     }

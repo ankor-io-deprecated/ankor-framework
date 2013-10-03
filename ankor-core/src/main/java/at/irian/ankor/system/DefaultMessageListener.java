@@ -22,6 +22,7 @@ import static at.irian.ankor.system.RemoteEvent.createChangeEvent;
 * @author Manfred Geiler
 */
 public class DefaultMessageListener implements ActionMessage.Listener, ChangeMessage.Listener {
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(DefaultMessageListener.class);
 
     private final ModelContextManager modelContextManager;
     private final SessionManager sessionManager;
@@ -37,6 +38,7 @@ public class DefaultMessageListener implements ActionMessage.Listener, ChangeMes
 
     @Override
     public void onActionMessage(ActionMessage message) {
+        LOG.debug("server received {}", message);
 
         if (message.getProperty() == null) {
             // ignore global actions
@@ -62,6 +64,8 @@ public class DefaultMessageListener implements ActionMessage.Listener, ChangeMes
 
     @Override
     public void onChangeMessage(ChangeMessage message) {
+        LOG.debug("server received {}", message);
+
         ModelContext modelContext = modelContextManager.getOrCreate(message.getModelId());
         Session session = sessionManager.getOrCreate(modelContext, getRemoteSystemOf(message));
 

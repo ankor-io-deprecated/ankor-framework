@@ -24,7 +24,7 @@ import java.util.Set;
  * @author Manfred Geiler
  */
 public class RemoteNotifyChangeEventListener extends ChangeEventListener implements SessionInitEvent.Listener {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RemoteNotifyChangeEventListener.class);
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RemoteNotifyChangeEventListener.class);
 
     private final MessageFactory messageFactory;
     private final SessionManager sessionManager;
@@ -64,6 +64,7 @@ public class RemoteNotifyChangeEventListener extends ChangeEventListener impleme
             Message message = messageFactory.createChangeMessage(changedProperty.context().modelContext(),
                                                                  changedPropertyPath,
                                                                  change);
+            LOG.debug("server sends {}", message);
             session.getMessageSender().sendMessage(message);
         }
 
@@ -82,6 +83,7 @@ public class RemoteNotifyChangeEventListener extends ChangeEventListener impleme
                 Message message = messageFactory.createChangeMessage(modelContext,
                                                                      rootRef.path(),
                                                                      Change.valueChange(rootObj));
+                LOG.debug("server sends {}", message);
                 session.getMessageSender().sendMessage(message);
             }
         }

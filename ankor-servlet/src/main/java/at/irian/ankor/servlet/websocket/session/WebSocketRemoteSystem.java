@@ -23,7 +23,7 @@ public class WebSocketRemoteSystem implements RemoteSystem {
     }
 
     public void sendMessage(String msg) {
-        LOG.info("Send serialized message {}", msg);
+        LOG.debug("Send serialized message {} to client {}", msg, client.getId());
         client.getAsyncRemote().sendText(msg);
     }
 }
