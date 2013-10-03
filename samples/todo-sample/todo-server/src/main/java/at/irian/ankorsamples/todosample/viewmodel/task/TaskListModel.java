@@ -8,6 +8,7 @@ import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.listener.RefChangeListener;
 import at.irian.ankor.ref.listener.RefListeners;
+import at.irian.ankor.viewmodel.diff.ListDiff;
 import at.irian.ankorsamples.todosample.domain.task.Task;
 import at.irian.ankorsamples.todosample.domain.task.TaskRepository;
 
@@ -206,7 +207,7 @@ public class TaskListModel {
     }
 
     private void updateTasksData() {
-        tasksRef().setValue(fetchTasksData());
+        new ListDiff<>(tasksRef(), tasks, fetchTasksData()).withThreshold(10).applyChanges();
         thisRef.appendPath("itemsLeft").setValue(taskRepository.getActiveTasks().size());
         thisRef.appendPath("itemsComplete").setValue(taskRepository.getCompletedTasks().size());
     }
