@@ -3,7 +3,7 @@ package at.irian.ankor.system;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.change.ChangeEventListener;
-import at.irian.ankor.event.EventListeners;
+import at.irian.ankor.ref.Ref;
 
 /**
  * Global ChangeEventListener that automatically discards all ModelEventListeners that are no longer owned by valid
@@ -14,11 +14,8 @@ import at.irian.ankor.event.EventListeners;
 public class ListenerCleanupChangeEventListener extends ChangeEventListener {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ListenerCleanupChangeEventListener.class);
 
-    private final EventListeners eventListeners;
-
-    public ListenerCleanupChangeEventListener(EventListeners eventListeners) {
+    public ListenerCleanupChangeEventListener() {
         super(null); // global listener
-        this.eventListeners = eventListeners;
     }
 
     @Override
@@ -29,8 +26,27 @@ public class ListenerCleanupChangeEventListener extends ChangeEventListener {
     @Override
     public void process(ChangeEvent event) {
         Change change = event.getChange();
-        if (change.getValue() == null) {
-            eventListeners.cleanup();
+        switch (change.getType()) {
+            case new_value:
+                if (change.getValue() == null) {
+                    cleanupListeners(event);
+                }
+                break;
+            case delete:
+                cleanupListeners(event);
+                break;
+            case insert:
+                // no cleanup necessary
+                break;
+            default:
+                throw new IllegalArgumentException("unsupported change type " + change.getType().name());
+        }
+    }
+
+    private void cleanupListeners(ChangeEvent event) {
+        Ref changedProperty = event.getChangedProperty();
+        if (changedProperty != null) {
+            changedProperty.context().modelContext().getEventListeners().cleanup();
         }
     }
 }

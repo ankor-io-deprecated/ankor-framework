@@ -205,8 +205,8 @@ public class AnkorSystemBuilder {
         // global change event listener for sending change events to remote partner
         eventListeners.add(new RemoteNotifyChangeEventListener(messageFactory, sessionManager, modelRootFactory));
 
-        // global change event listener for cleaning up obsolete listeners
-        eventListeners.add(new ListenerCleanupChangeEventListener(eventListeners));
+        // global change event listener for cleaning up obsolete model context listeners
+        eventListeners.add(new ListenerCleanupChangeEventListener());
 
         // global change request event listener
         eventListeners.add(new ChangeRequestEventListener());
