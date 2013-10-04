@@ -17,15 +17,15 @@ class DiffChange<E> {
     }
 
     public static <E> DiffChange<E> insert(int index, E element) {
-        return new DiffChange<E>(DiffChangeType.insert, index, element);
+        return new DiffChange<E>(DiffChangeType.insertElement, index, element);
     }
 
     public static <E> DiffChange<E> delete(int index) {
-        return new DiffChange<E>(DiffChangeType.delete, index, null);
+        return new DiffChange<E>(DiffChangeType.deleteElement, index, null);
     }
 
     public static <E> DiffChange<E> replace(int index, E element) {
-        return new DiffChange<E>(DiffChangeType.replace, index, element);
+        return new DiffChange<E>(DiffChangeType.replaceElement, index, element);
     }
 
     DiffChangeType getType() {

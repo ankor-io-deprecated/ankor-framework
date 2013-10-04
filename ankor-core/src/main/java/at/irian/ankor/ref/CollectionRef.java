@@ -9,7 +9,7 @@ public interface CollectionRef extends Ref {
 
     void delete(int idx);
 
-    void insert(int idx, Object value);
+    void insert(int idx, Object value);      // todo: insert multiple objects...
 
     void add(Object value);
 

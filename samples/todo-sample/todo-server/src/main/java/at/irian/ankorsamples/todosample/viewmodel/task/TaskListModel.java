@@ -207,7 +207,7 @@ public class TaskListModel {
     }
 
     private void updateTasksData() {
-        new ListDiff<>(tasksRef(), tasks, fetchTasksData()).withThreshold(10).applyChanges();
+        new ListDiff<>(tasks, fetchTasksData()).withThreshold(10).applyChangesTo(tasksRef());
         thisRef.appendPath("itemsLeft").setValue(taskRepository.getActiveTasks().size());
         thisRef.appendPath("itemsComplete").setValue(taskRepository.getCompletedTasks().size());
     }

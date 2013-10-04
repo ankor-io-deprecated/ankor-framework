@@ -1,7 +1,6 @@
 package at.irian.ankor.viewmodel.diff;
 
 import at.irian.ankor.change.Change;
-import at.irian.ankor.ref.CollectionRef;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.impl.RefImplementor;
 
@@ -17,46 +16,45 @@ public class ListDiff<E> {
 
     private static final int DEFAULT_THRESHOLD = Integer.MAX_VALUE;
 
-    private final CollectionRef listRef;
     private final List<E> oldList;
     private final List<E> newList;
     private final int threshold;
 
-    public ListDiff(Ref listRef, List<E> oldList, List<E> newList) {
-        this(listRef, oldList, newList, DEFAULT_THRESHOLD);
+    public ListDiff(List<E> oldList, List<E> newList) {
+        this(oldList, newList, DEFAULT_THRESHOLD);
     }
 
-    protected ListDiff(Ref listRef, List<E> oldList, List<E> newList, int threshold) {
-        this.listRef = listRef.toCollectionRef();
+    protected ListDiff(List<E> oldList, List<E> newList, int threshold) {
         this.oldList = oldList;
         this.newList = newList;
         this.threshold = threshold;
     }
 
     public ListDiff<E> withThreshold(int threshold) {
-        return new ListDiff<E>(listRef, oldList, newList, threshold);
+        return new ListDiff<E>(oldList, newList, threshold);
     }
 
 
-    public void applyChanges() {
+    public void applyChangesTo(List<E> destinationList) {
         List<DiffChange<E>> diffChanges = calcDiffChanges();
 
         if (diffChanges.size() >= threshold) {
-            listRef.setValue(newList);
+            destinationList.clear();
+            destinationList.addAll(newList);
             return;
         }
 
-        for (DiffChange diffChange : diffChanges) {
+        for (DiffChange<E> diffChange : diffChanges) {
             int index = diffChange.getIndex();
             switch (diffChange.getType()) {
-                case delete:
-                    listRef.delete(index);
+                case deleteElement:
+                    destinationList.remove(index);
                     break;
-                case insert:
-                    listRef.insert(index, diffChange.getElement());
+                case insertElement:
+                    destinationList.add(index, diffChange.getElement());
                     break;
-                case replace:
-                    listRef.appendIndex(index).setValue(diffChange.getElement());
+                case replaceElement:
+                    destinationList.set(index, diffChange.getElement());
                     break;
                 case none:
                 default:
@@ -65,8 +63,53 @@ public class ListDiff<E> {
         }
     }
 
+    public void applyChangesTo(Ref listRef) {
+        List<DiffChange<E>> diffChanges = calcDiffChanges();
 
-    public void signalChanges() {
+        if (diffChanges.size() >= threshold) {
+            listRef.setValue(newList);
+            return;
+        }
+
+        for (int i = 0, len = diffChanges.size(); i < len; i++) {
+            DiffChange<E> diffChange = diffChanges.get(i);
+            int index = diffChange.getIndex();
+            switch (diffChange.getType()) {
+                case deleteElement:
+                    listRef.toCollectionRef().delete(index);
+                    break;
+                case insertElement:
+                    listRef.toCollectionRef().insert(index, diffChange.getElement());
+                    break;
+                case replaceElement:
+                    // examine next elements to combine multiple replaces to one ref.replace call
+                    int j;
+                    for (j = 1; i + j < len; j++) {
+                        DiffChange<E> nextDiffChange = diffChanges.get(i + j);
+                        if (nextDiffChange.getType() != DiffChangeType.replaceElement
+                            || nextDiffChange.getIndex() != index + j) {
+                            break;
+                        }
+                    }
+                    if (j > 1) {
+                        List<E> replaceElements = new ArrayList<E>(j);
+                        for (int k = 0; k < j; k++) {
+                            replaceElements.add(diffChanges.get(i + k).getElement());
+                        }
+                        listRef.toCollectionRef().replace(index, replaceElements);
+                        i = i + j - 1;
+                    } else {
+                        listRef.appendIndex(index).setValue(diffChange.getElement());
+                    }
+                    break;
+                case none:
+                default:
+                    throw new IllegalStateException();
+            }
+        }
+    }
+
+    public void signalChangesFor(Ref listRef) {
 
         List<DiffChange<E>> diffChanges = calcDiffChanges();
 
@@ -75,17 +118,36 @@ public class ListDiff<E> {
             return;
         }
 
-        for (DiffChange diffChange : diffChanges) {
+        for (int i = 0, len = diffChanges.size(); i < len; i++) {
+            DiffChange<E> diffChange = diffChanges.get(i);
             int index = diffChange.getIndex();
             switch (diffChange.getType()) {
-                case delete:
+                case deleteElement:
                     ((RefImplementor)listRef).signal(Change.deleteChange(index));
                     break;
-                case insert:
+                case insertElement:
                     ((RefImplementor)listRef).signal(Change.insertChange(index, diffChange.getElement()));
                     break;
-                case replace:
-                    ((RefImplementor)listRef.appendIndex(index)).signal(Change.valueChange(diffChange.getElement()));
+                case replaceElement:
+                    // examine next elements to combine multiple replaces to one ref.replace call
+                    int j;
+                    for (j = 1; i + j < len; j++) {
+                        DiffChange<E> nextDiffChange = diffChanges.get(i + j);
+                        if (nextDiffChange.getType() != DiffChangeType.replaceElement
+                            || nextDiffChange.getIndex() != index + j) {
+                            break;
+                        }
+                    }
+                    if (j > 1) {
+                        List<E> replaceElements = new ArrayList<E>(j);
+                        for (int k = 0; k < j; k++) {
+                            replaceElements.add(diffChanges.get(i + k).getElement());
+                        }
+                        ((RefImplementor)listRef).signal(Change.replaceChange(index, replaceElements));
+                        i = i + j - 1;
+                    } else {
+                        ((RefImplementor)listRef.appendIndex(index)).signal(Change.valueChange(diffChange.getElement()));
+                    }
                     break;
                 case none:
                 default:
@@ -107,15 +169,15 @@ public class ListDiff<E> {
 
             DiffChangeType diffChangeType = calcFirstElementChange(list1, list2);
             switch (diffChangeType) {
-                case delete:
+                case deleteElement:
                     result.add(DiffChange.<E>delete(i));
                     list1 = restOf(list1);
                     break;
-                case insert:
+                case insertElement:
                     result.add(DiffChange.insert(i++, list2.get(0)));
                     list2 = restOf(list2);
                     break;
-                case replace:
+                case replaceElement:
                     result.add(DiffChange.replace(i++, list2.get(0)));
                     list1 = restOf(list1);
                     list2 = restOf(list2);
@@ -154,13 +216,13 @@ public class ListDiff<E> {
                 return DiffChangeType.none;
             } else {
                 // list 1 is empty, list 2 is not --> insert first element of list 2
-                return DiffChangeType.insert;
+                return DiffChangeType.insertElement;
             }
         }
 
         if (list2.isEmpty()) {
             // list 2 is empty, list 1 is not --> delete first element of list 1
-            return DiffChangeType.delete;
+            return DiffChangeType.deleteElement;
         }
 
         // both lists are non-empty...
@@ -184,20 +246,20 @@ public class ListDiff<E> {
 
         if (i1 == -1 && i2 == -1) {
             // both first elements are not in the other list --> replace
-            return DiffChangeType.replace;
+            return DiffChangeType.replaceElement;
         }
 
         if (i2 == -1) {
             // first element of list 1 is no longer in list 2 --> delete first element of list 1
-            return DiffChangeType.delete;
+            return DiffChangeType.deleteElement;
         }
 
         if (i1 == -1) {
             // first element of list 2 was not found in list 1 --> insert first element of list 2
-            return DiffChangeType.insert;
+            return DiffChangeType.insertElement;
         }
 
-        return DiffChangeType.replace;
+        return DiffChangeType.replaceElement;
     }
 
 

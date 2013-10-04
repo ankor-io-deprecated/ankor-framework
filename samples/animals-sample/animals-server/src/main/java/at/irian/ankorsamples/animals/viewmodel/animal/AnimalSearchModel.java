@@ -84,9 +84,9 @@ public class AnimalSearchModel {
 
                 // compare old and new list and apply smart changes
                 Ref listRef = myRef.appendPath("animals");
-                new ListDiff<>(listRef, oldAnimalsList, newAnimalsList)
+                new ListDiff<>(oldAnimalsList, newAnimalsList)
                         .withThreshold(5) // send whole list if 5 changes or more
-                        .applyChanges();
+                        .applyChangesTo(listRef);
 
                 // reset server status display
                 serverStatusRef.setValue("");
