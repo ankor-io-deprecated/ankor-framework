@@ -109,7 +109,7 @@ define([
     AnkorSystem.prototype.processIncomingMessage = function(message) {
         var ref = this.getRef(message.property);
 
-        if (message.type == message.TYPES["NEWVALUE"]) {
+        if (message.type == message.TYPES["VALUE"]) {
             ref.setValue(message.value, true);
         }
         else if (message.type == message.TYPES["DEL"]) {
@@ -122,6 +122,11 @@ define([
         }
         else if (message.type == message.TYPES["INSERT"]) {
             ref.insert(message.key, message.value, true);
+        }
+        else if (message.type == message.TYPES["REPLACE"]) {
+            for(var i = 0; i < message.value.length; i++) {
+                ref.appendIndex(message.key + i).setValue(message.value[i]);
+            }
         }
     };
 

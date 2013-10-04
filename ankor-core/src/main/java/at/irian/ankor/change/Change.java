@@ -1,5 +1,7 @@
 package at.irian.ankor.change;
 
+import java.util.Collection;
+
 /**
  * @author Manfred Geiler
  */
@@ -22,17 +24,20 @@ public class Change {
 
 
     public static Change valueChange(Object newValue) {
-        return new Change(ChangeType.new_value, null, newValue);
+        return new Change(ChangeType.value, null, newValue);
     }
 
-    public static Change insertChange(int idx, Object newValue) {
-        return new Change(ChangeType.insert, idx, newValue);
+    public static Change insertChange(int idx, Object insertedElement) {
+        return new Change(ChangeType.insert, idx, insertedElement);
     }
 
     public static Change deleteChange(Object key) {
         return new Change(ChangeType.delete, key, null);
     }
 
+    public static Change replaceChange(int fromIdx, Collection newElements) {
+        return new Change(ChangeType.replace, fromIdx, newElements);
+    }
 
     public ChangeType getType() {
         return type;

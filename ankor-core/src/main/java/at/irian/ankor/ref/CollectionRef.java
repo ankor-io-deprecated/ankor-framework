@@ -1,5 +1,7 @@
 package at.irian.ankor.ref;
 
+import java.util.Collection;
+
 /**
  * @author Manfred Geiler
  */
@@ -10,4 +12,6 @@ public interface CollectionRef extends Ref {
     void insert(int idx, Object value);
 
     void add(Object value);
+
+    void replace(int fromIdx, Collection elements);
 }

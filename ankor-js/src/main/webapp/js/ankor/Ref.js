@@ -84,7 +84,7 @@ define([
 
     Ref.prototype.setValue = function(value, omitMessage) {
         var model = this.parent().getValue();
-        var message = new ChangeMessage(this.ankorSystem.senderId, this.ankorSystem.modelId, null, this.path(), ChangeMessage.prototype.TYPES["NEWVALUE"], null, value);
+        var message = new ChangeMessage(this.ankorSystem.senderId, this.ankorSystem.modelId, null, this.path(), ChangeMessage.prototype.TYPES["VALUE"], null, value);
 
         //Apply change to model
         model[this.propertyName()] = value;

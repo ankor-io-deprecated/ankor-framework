@@ -27,7 +27,7 @@ public class ListenerCleanupChangeEventListener extends ChangeEventListener {
     public void process(ChangeEvent event) {
         Change change = event.getChange();
         switch (change.getType()) {
-            case new_value:
+            case value:
                 if (change.getValue() == null) {
                     cleanupListeners(event);
                 }
@@ -37,6 +37,9 @@ public class ListenerCleanupChangeEventListener extends ChangeEventListener {
                 break;
             case insert:
                 // no cleanup necessary
+                break;
+            case replace:
+                cleanupListeners(event);
                 break;
             default:
                 throw new IllegalArgumentException("unsupported change type " + change.getType().name());

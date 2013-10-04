@@ -11,9 +11,10 @@ define([
     ChangeMessage.prototype = new BaseMessage();
 
     ChangeMessage.prototype.TYPES = {
-        NEWVALUE: "new_value",
+        VALUE: "value",
         INSERT: "insert",
-        DEL: "delete"
+        DEL: "delete",
+        REPLACE: "replace"
     };
 
     return ChangeMessage;

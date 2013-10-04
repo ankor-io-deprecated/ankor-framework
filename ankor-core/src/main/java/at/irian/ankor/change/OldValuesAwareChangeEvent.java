@@ -41,25 +41,26 @@ public class OldValuesAwareChangeEvent extends ChangeEvent {
         ChangeEventListener changeEventListener = (ChangeEventListener) listener;
         Ref watchedProperty = changeEventListener.getWatchedProperty();
 
-        Object changedPropOldValue = getOldChangedValue();
-        Object changedPropNewValue = getChange().getValue();
+        //todo, this does not work unless we are using deep copies for the old values
+
+        Change change = getChange();
         if (watchedProperty == null) {
             // this is a global listener
             // invoke listener if the CHANGED property has actually changed it's value
-            return isDifferent(changedPropOldValue, changedPropNewValue);
+            return isModification(change) || isDifferent(getOldChangedValue(), change.getValue());
         }
 
         Ref changedProperty = getChangedProperty();
         if (watchedProperty.equals(changedProperty)) {
             // listener watches exactly this ref
             // invoke listener if the CHANGED/WATCHED property has actually changed it's value
-            return isDifferent(changedPropOldValue, changedPropNewValue);
+            return isModification(change) || isDifferent(getOldChangedValue(), change.getValue());
         }
 
         if (changedProperty.isDescendantOf(watchedProperty)) {
             // changed property is a descendant of the watched property
             // invoke listener only if the CHANGED property has actually changed it's value
-            return isDifferent(changedPropOldValue, changedPropNewValue);
+            return isModification(change) || isDifferent(getOldChangedValue(), change.getValue());
         }
 
         if (changedProperty.isAncestorOf(watchedProperty)) {
@@ -78,6 +79,12 @@ public class OldValuesAwareChangeEvent extends ChangeEvent {
         return false;
     }
 
+    private boolean isModification(Change change) {
+        ChangeType changeType = change.getType();
+        return changeType == ChangeType.insert
+               || changeType == ChangeType.delete
+               || changeType == ChangeType.replace;
+    }
 
     private boolean isDifferent(Object changedPropOldValue, Object changedPropNewValue) {
         return !ObjectUtils.nullSafeEquals(changedPropOldValue, changedPropNewValue);

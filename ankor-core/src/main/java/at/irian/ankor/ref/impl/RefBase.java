@@ -14,10 +14,7 @@ import at.irian.ankor.ref.*;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Manfred Geiler
@@ -77,6 +74,11 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
     }
 
     @Override
+    public void replace(int fromIdx, Collection elements) {
+        apply(Change.replaceChange(fromIdx, elements));
+    }
+
+    @Override
     public void apply(Change change) {
 
         // remember old value of the referenced property
@@ -87,13 +89,11 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
             oldValue = null;
         }
 
-        // remember old values of the watched properties
-        Map<Ref, Object> oldWatchedValues = getOldWatchedValues();
 
         ChangeType changeType = change.getType();
         switch(changeType) {
-            case new_value:
-                handleNewValueChange(change.getValue());
+            case value:
+                handleValueChange(change.getValue());
                 break;
 
             case insert:
@@ -104,13 +104,20 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
                 handleDeleteChange(oldValue, change.getKey());
                 break;
 
+            case replace:
+                handleReplaceChange(oldValue, change.getKey(), change.getValue());
+                break;
+
             default:
                 throw new IllegalArgumentException("Unsupported change type " + changeType);
         }
 
+        // remember old values of the watched properties
+        Map<Ref, Object> oldWatchedValues = getOldWatchedValues();
+
         // fire change event
         ChangeEvent changeEvent
-                = new OldValuesAwareChangeEvent(this, change, oldValue, oldWatchedValues);
+                = new OldValuesAwareChangeEvent(this, change, deepCopy(oldValue), oldWatchedValues);
         context().modelContext().getEventDispatcher().dispatch(changeEvent);
     }
 
@@ -125,7 +132,7 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
         context().modelContext().getEventDispatcher().dispatch(changeEvent);
     }
 
-    private void handleNewValueChange(Object newValue) {
+    private void handleValueChange(Object newValue) {
         Class<?> type = getType();
         if (Wrapper.class.isAssignableFrom(type)) {
             Object newValueUnwrapped = unwrapIfNecessary(newValue);
@@ -153,10 +160,72 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
             if (idx > 0) {
                 System.arraycopy(listOrArray, 0, newArray, 0, idx);
             }
-            Array.set(listOrArray, idx, value);
+            Array.set(newArray, idx, value);
             if (idx < length) {
                 System.arraycopy(listOrArray, idx, newArray, idx + 1, length - idx);
             }
+            internalSetValue(newArray);
+        } else {
+            throw new IllegalArgumentException("list/array of type " + listOrArray.getClass().getName());
+        }
+    }
+
+    @SuppressWarnings("SuspiciousSystemArraycopy")
+    private void handleDeleteChange(Object listOrArrayOrMap, Object key) {
+        if (listOrArrayOrMap instanceof List) {
+            int idx = asIndex(key);
+            ((List) listOrArrayOrMap).remove(idx);
+        } else if (listOrArrayOrMap.getClass().isArray()) {
+            int idx = asIndex(key);
+            int length = Array.getLength(listOrArrayOrMap);
+            Class<?> componentType = listOrArrayOrMap.getClass().getComponentType();
+            Object newArray = Array.newInstance(componentType, length - 1);
+            if (idx > 0) {
+                System.arraycopy(listOrArrayOrMap, 0, newArray, 0, idx);
+            }
+            if (idx + 1 < length) {
+                System.arraycopy(listOrArrayOrMap, idx, newArray, idx - 1, length - idx - 1);
+            }
+            internalSetValue(newArray);
+        } else if (listOrArrayOrMap instanceof Map) {
+            String mapKey = asMapKey(key);
+            ((Map) listOrArrayOrMap).remove(mapKey);
+        } else if (key instanceof String) {
+            // neither List nor Array nor Map, than we assume it is a bean and set the corresponding property to null...
+            Ref propertyRef = refFactory().ref(pathSyntax().concat(path(), (String) key));
+            ((RefBase)propertyRef).handleValueChange(null);
+        } else {
+            throw new IllegalArgumentException("list/array/map of type " + listOrArrayOrMap.getClass().getName());
+        }
+    }
+
+    @SuppressWarnings({"unchecked", "SuspiciousSystemArraycopy"})
+    private void handleReplaceChange(Object listOrArray, Object key, Object value) {
+        int fromIdx = asIndex(key);
+        Collection replacementElements = asCollection(value);
+        if (listOrArray instanceof List) {
+            List list = (List)listOrArray;
+            Iterator iterator = replacementElements.iterator();
+            for (int i = 0, len = replacementElements.size(); i < len; i++) {
+                Object elem = iterator.next();
+                if (i == list.size()) {
+                    list.add(elem);
+                } else {
+                    list.set(fromIdx + i, elem);
+                }
+            }
+        } else if (listOrArray.getClass().isArray()) {
+            int oldLen = Array.getLength(listOrArray);
+            Class<?> componentType = listOrArray.getClass().getComponentType();
+            int newLen = Math.max(oldLen, fromIdx + replacementElements.size());
+            Object newArray = Array.newInstance(componentType, newLen);
+            System.arraycopy(listOrArray, 0, newArray, 0, oldLen);
+            Iterator iterator = replacementElements.iterator();
+            for (int i = 0, len = replacementElements.size(); i < len; i++) {
+                Object elem = iterator.next();
+                Array.set(newArray, fromIdx + i, elem);
+            }
+            internalSetValue(newArray);
         } else {
             throw new IllegalArgumentException("list/array of type " + listOrArray.getClass().getName());
         }
@@ -180,33 +249,16 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
         }
     }
 
-    @SuppressWarnings("SuspiciousSystemArraycopy")
-    private void handleDeleteChange(Object listOrArrayOrMap, Object key) {
-        if (listOrArrayOrMap instanceof List) {
-            int idx = asIndex(key);
-            ((List) listOrArrayOrMap).remove(idx);
-        } else if (listOrArrayOrMap.getClass().isArray()) {
-            int idx = asIndex(key);
-            int length = Array.getLength(listOrArrayOrMap);
-            Class<?> componentType = listOrArrayOrMap.getClass().getComponentType();
-            Object newArray = Array.newInstance(componentType, length - 1);
-            if (idx > 0) {
-                System.arraycopy(listOrArrayOrMap, 0, newArray, 0, idx);
-            }
-            if (idx + 1 < length) {
-                System.arraycopy(listOrArrayOrMap, idx, newArray, idx - 1, length - idx - 1);
-            }
-        } else if (listOrArrayOrMap instanceof Map) {
-            String mapKey = asMapKey(key);
-            ((Map) listOrArrayOrMap).remove(mapKey);
-        } else if (key instanceof String) {
-            // neither List nor Array nor Map, than we assume it is a bean and set the corresponding property to null...
-            Ref propertyRef = refFactory().ref(pathSyntax().concat(path(), (String) key));
-            ((RefBase)propertyRef).handleNewValueChange(null);
+    private Collection asCollection(Object collectionOrArray) {
+        if (collectionOrArray instanceof Collection) {
+            return (Collection) collectionOrArray;
+        } else if (collectionOrArray.getClass().isArray()) {
+            return Arrays.asList((Object[]) collectionOrArray);
         } else {
-            throw new IllegalArgumentException("list/array/map of type " + listOrArrayOrMap.getClass().getName());
+            throw new IllegalArgumentException("list/array replace value of type " + collectionOrArray.getClass());
         }
     }
+
 
     private Map<Ref, Object> getOldWatchedValues() {
         Map<Ref, Object> result = new HashMap<Ref, Object>();
@@ -216,7 +268,7 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
                 if (watchedProperty != null && !(result.containsKey(watchedProperty))) {
                     Object oldWatchedValue;
                     try {
-                        oldWatchedValue = watchedProperty.getValue();
+                        oldWatchedValue = deepCopy(watchedProperty.getValue());
                     } catch (IllegalStateException e) {
                         // watched property is currently not valid
                         oldWatchedValue = null;
@@ -226,6 +278,31 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
             }
         }
         return result;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Object deepCopy(Object value) {
+        return value;
+//        if (value == null) {
+//            return null;
+//        } else if (value instanceof List) {
+//            List result = new ArrayList(((List)value).size());
+//            for (Object o : (List) value) {
+//                result.add(deepCopy(o));
+//            }
+//            return result;
+//        } else if (value instanceof Set) {
+//            Set result = new HashSet(((Set)value).size());
+//            for (Object o : (Set) value) {
+//                result.add(deepCopy(o));
+//            }
+//            return result;
+//
+//            // todo... Array, Collection, Bean ?
+//
+//        } else {
+//            return value;
+//        }
     }
 
     private Object unwrapIfNecessary(Object newValue) {

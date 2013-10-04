@@ -31,7 +31,7 @@ class SimpleTreeChangeDeserializer extends StdDeserializer<Change> {
 
         ChangeType type = mapper.treeToValue(tree.get("type"), ChangeType.class);
         switch (type) {
-            case new_value:
+            case value:
                 return Change.valueChange(getValue(mapper, tree));
 
             case insert:
@@ -39,6 +39,9 @@ class SimpleTreeChangeDeserializer extends StdDeserializer<Change> {
 
             case delete:
                 return Change.deleteChange(getKey(mapper, tree));
+
+            case replace:
+                return Change.replaceChange(getIdx(mapper, tree).intValue(), getListValue(mapper, tree));
 
             default:
                 throw new IllegalArgumentException("Unsupported type: " + type);
@@ -54,17 +57,30 @@ class SimpleTreeChangeDeserializer extends StdDeserializer<Change> {
     }
 
     private Object getValue(ObjectMapper mapper, ObjectNode tree) throws JsonProcessingException {
-        Object newValue;
+        Object result;
         JsonNode newValueTree = tree.get("value");
         if (newValueTree == null) {
-            newValue = null;
+            result = null;
         } else if (newValueTree.getNodeType() == JsonNodeType.OBJECT) {
-            newValue = mapper.treeToValue(newValueTree, Map.class);
+            result = mapper.treeToValue(newValueTree, Map.class);
         } else if (newValueTree.getNodeType() == JsonNodeType.ARRAY) {
-            newValue = mapper.treeToValue(newValueTree, List.class);
+            result = mapper.treeToValue(newValueTree, List.class);
         } else {
-            newValue = mapper.treeToValue(newValueTree, Object.class);
+            result = mapper.treeToValue(newValueTree, Object.class);
         }
-        return newValue;
+        return result;
+    }
+
+    private List getListValue(ObjectMapper mapper, ObjectNode tree) throws JsonProcessingException {
+        List result;
+        JsonNode newValueTree = tree.get("value");
+        if (newValueTree == null || newValueTree.getNodeType() == JsonNodeType.MISSING) {
+            result = null;
+        } else if (newValueTree.getNodeType() == JsonNodeType.ARRAY) {
+            result = mapper.treeToValue(newValueTree, List.class);
+        } else {
+            throw new IllegalArgumentException("Array/List expected: " + tree);
+        }
+        return result;
     }
 }
