@@ -28,7 +28,7 @@ public class ViewModelProperty<T> extends SimpleObjectProperty<T> implements Ref
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                ViewModelProperty.super.set(changedProperty.<T>getValue());
+                ViewModelProperty.super.set(ref.<T>getValue());
             }
         });
     }
