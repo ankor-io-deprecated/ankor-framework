@@ -23,11 +23,11 @@ import java.util.Set;
 
 /**
  * This is the base class of a WebSocket endpoint that communicates with a {@link AnkorSystem}.
- * It is meant reside on a web server (e.g. GlassFish) that supports JSR 365 (javax.websocket).
+ * It is meant be deployed on a web server (e.g. GlassFish) that supports JSR 365 (javax.websocket).
  *
- * This class handles new WebSocket connections on a fixed url ("/websockets/ankor"), which is also used by the JS
- * clients WebSocketTransport default implementation. It passes incoming messages to the AnkorSystem and registers
- * the connection with the AnkorSystem, so that  outgoing messages will be sent the the clients.
+ * This class handles new WebSocket connections on a fixed url ("/websockets/ankor").
+ * It passes incoming messages to the AnkorSystem and registers the connection with the AnkorSystem, so that
+ * outgoing messages will be sent the the clients.
  *
  * As a user you need to subtype this class and override the {@link #getModelRoot(at.irian.ankor.ref.Ref)} method.
  *
@@ -47,7 +47,7 @@ public abstract class AnkorEndpoint extends Endpoint implements  MessageHandler.
         LOG.info("Creating new Endpoint");
 
         /*
-         * XXX: This class gets created for every new websocket connection,
+         * XXX: This class gets created for every new WebSocket connection,
          * so using a cheap "singleton" for the ankorSystem to prevent reinitialization.
          *
          * This also means that the AnkorSystem will be created only when the first client connects to the server,
@@ -67,7 +67,7 @@ public abstract class AnkorEndpoint extends Endpoint implements  MessageHandler.
             throw new IllegalArgumentException();
         }
 
-        LOG.info(" New client connected {}", clientId);
+        LOG.info("New client connected {}", clientId);
 
         session.addMessageHandler(this);
         webSocketMessageBus.addRemoteSystem(new WebSocketRemoteSystem(clientId, session));

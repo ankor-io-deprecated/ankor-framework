@@ -66,11 +66,16 @@ define([
                     self.socket.send("");
 
                     // TODO: Could try to reconnect here
+
                     setTimeout(heartbeat, self.heartbeatInterval)
                 }
 
                 console.log("Starting heartbeat");
                 setTimeout(heartbeat, self.heartbeatInterval);
+
+                window.onbeforeunload = function() {
+                    self.socket.close();
+                };
             };
 
             this.socket.onclose = function () {
