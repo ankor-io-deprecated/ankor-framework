@@ -36,7 +36,7 @@ public class WebSocketMessageBus extends MessageBus<String> {
         return remoteSystems.values();
     }
 
-    public void removeRemoteSystem(String clientId) {
-        remoteSystems.remove(clientId);
+    public RemoteSystem removeRemoteSystem(String clientId) {
+        return remoteSystems.remove(clientId);
     }
 }

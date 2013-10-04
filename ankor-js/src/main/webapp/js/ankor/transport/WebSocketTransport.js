@@ -62,7 +62,7 @@ define([
                 self._sendPendingMessages();
 
                 function heartbeat() {
-                    console.log("\u2665 beat");
+                    console.log("\u2665-beat");
                     self.socket.send("");
 
                     // TODO: Could try to reconnect here
@@ -73,9 +73,11 @@ define([
                 console.log("Starting heartbeat");
                 setTimeout(heartbeat, self.heartbeatInterval);
 
+                /*
                 window.onbeforeunload = function() {
                     self.socket.close();
                 };
+                */
             };
 
             this.socket.onclose = function () {

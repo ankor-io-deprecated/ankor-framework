@@ -9,6 +9,7 @@ import at.irian.ankor.ref.Ref;
 import at.irian.ankor.servlet.websocket.messaging.WebSocketMessageBus;
 import at.irian.ankor.servlet.websocket.session.WebSocketRemoteSystem;
 import at.irian.ankor.session.ModelRootFactory;
+import at.irian.ankor.session.RemoteSystem;
 import at.irian.ankor.system.AnkorSystem;
 import at.irian.ankor.system.AnkorSystemBuilder;
 import org.slf4j.Logger;
@@ -17,9 +18,13 @@ import org.slf4j.LoggerFactory;
 import javax.websocket.*;
 import javax.websocket.server.ServerApplicationConfig;
 import javax.websocket.server.ServerEndpointConfig;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This is the base class of a WebSocket endpoint that communicates with a {@link AnkorSystem}.
@@ -34,14 +39,21 @@ import java.util.Set;
  * @author Florian Klampfer
  */
 // TODO: Session Management: ping-pongs, timeouts, heartbeat, etc...
-public abstract class AnkorEndpoint extends Endpoint implements  MessageHandler.Whole<String>, ServerApplicationConfig {
-
+public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.Whole<String>, ServerApplicationConfig {
     private static Logger LOG = LoggerFactory.getLogger(AnkorEndpoint.class);
+
+    /**
+     * Must be greater than the clients heartbeat interval.
+     */
+    private static final int TIME_OUT = 60;
 
     private static AnkorSystem ankorSystem;
     private static WebSocketMessageBus webSocketMessageBus;
 
     private String clientId;
+    private long lastSeen = System.currentTimeMillis();
+
+    private final static ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
     public AnkorEndpoint() {
         LOG.info("Creating new Endpoint");
@@ -59,7 +71,7 @@ public abstract class AnkorEndpoint extends Endpoint implements  MessageHandler.
     }
 
     @Override
-    public void onOpen(Session session, EndpointConfig config) {
+    public void onOpen(final Session session, EndpointConfig config) {
         clientId = session.getPathParameters().get("clientId");
 
         if (clientId == null) {
@@ -71,36 +83,62 @@ public abstract class AnkorEndpoint extends Endpoint implements  MessageHandler.
 
         session.addMessageHandler(this);
         webSocketMessageBus.addRemoteSystem(new WebSocketRemoteSystem(clientId, session));
+
+        watchForTimeout(session);
+    }
+
+    /**
+     * This checks if a (heartbeat) message has been received within the last {@code TIME_OUT} seconds,
+     * otherwise the WebSocket connection is closed and the Ankor session is invalidated.
+     *
+     * @param session The WebSocket session.
+     */
+    private void watchForTimeout(final Session session) {
+        executor.schedule(new Runnable() {
+            @Override
+            public void run() {
+                if (System.currentTimeMillis() - lastSeen > TIME_OUT * 1000) {
+                    try {
+                        // Invalidate the Ankor session.
+                        invalidate(session);
+
+                        // Close the web socket session if it isn't closed already.
+                        if (session.isOpen()) {
+                            session.close();
+                        }
+                    } catch (IOException ignored) {
+                    }
+                } else {
+                    executor.schedule(this, TIME_OUT, TimeUnit.SECONDS);
+                }
+            }
+        }, TIME_OUT, TimeUnit.SECONDS);
     }
 
     @Override
     public void onMessage(String message) {
-        if (!isHearbeat(message)) {
+        if (!isHeartbeat(message)) {
             LOG.info("Endpoint received {}, length = {}", message, message.length());
 
             // TODO: Validate message: A malformed message will crash this Ankor session (but new clients can connect)
             webSocketMessageBus.receiveSerializedMessage(message);
         }
+
+        lastSeen = System.currentTimeMillis();
     }
 
-    private boolean isHearbeat(String message) {
+    private boolean isHeartbeat(String message) {
         return message.trim().equals("");
     }
 
     @Override
-    // TODO: Session Management: Check under which circumstances this function gets called
     public void onClose(Session session, CloseReason closeReason) {
-        super.onClose(session, closeReason);
-        webSocketMessageBus.removeRemoteSystem(clientId);
-
-        // TODO: Session Management: Invalidate Ankor session
+        invalidate(session);
     }
 
     @Override
-    // TODO: Session Management: Check under which circumstances this function gets called
     public void onError(Session session, Throwable thr) {
-        super.onError(session, thr);
-        webSocketMessageBus.removeRemoteSystem(clientId);
+        invalidate(session);
     }
 
     private void startAnkorSystem() {
@@ -114,6 +152,19 @@ public abstract class AnkorEndpoint extends Endpoint implements  MessageHandler.
                 .withScheduler(new AkkaScheduler(ankorActorSystem))
                 .createServer();
         ankorSystem.start();
+    }
+
+    private void invalidate(Session session) {
+        session.removeMessageHandler(this);
+        RemoteSystem remoteSystem = webSocketMessageBus.removeRemoteSystem(this.clientId);
+        invalidateAnkorSessionsFor(remoteSystem);
+    }
+
+    private void invalidateAnkorSessionsFor(RemoteSystem remoteSystem) {
+        Collection<at.irian.ankor.session.Session> ankorSessions = ankorSystem.getSessionManager().getAllFor(remoteSystem);
+        for(at.irian.ankor.session.Session ankorSession : ankorSessions) {
+            ankorSystem.getSessionManager().invalidate(ankorSession);
+        }
     }
 
     /**
