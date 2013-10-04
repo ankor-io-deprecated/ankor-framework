@@ -218,6 +218,7 @@ public class AnkorSystemBuilder {
     }
 
 
+
     private List<ViewModelPostProcessor> createDefaultServerViewModelPostProcessors() {
         List<ViewModelPostProcessor> list = new ArrayList<ViewModelPostProcessor>();
         list.add(new AnnotationViewModelPostProcessor());

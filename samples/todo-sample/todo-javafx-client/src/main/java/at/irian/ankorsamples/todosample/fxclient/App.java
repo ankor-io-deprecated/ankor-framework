@@ -21,6 +21,8 @@ import java.net.URI;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class App extends Application {
@@ -28,6 +30,8 @@ public class App extends Application {
 
     private static final String DEFAULT_SERVER = "wss://ankor-todo-sample.irian.at";
     private static final String DEFAULT_ENDPOINT = "/websocket/ankor";
+
+    public static final int HEARTBEAT_INTERVAL = 25;
 
     private static RefFactory refFactory;
     private static HostServices services;
@@ -70,6 +74,8 @@ public class App extends Application {
         primaryStage.show();
     }
 
+    private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+
     // TODO: This should be easier
     private AnkorSystem createWebSocketClientSystem(String server, String endpoint) throws IOException, DeploymentException, InterruptedException {
         final String clientId = UUID.randomUUID().toString();
@@ -101,8 +107,19 @@ public class App extends Application {
                 messageBus.addRemoteSystem(new WebSocketRemoteSystem(clientId, session));
                 clientSystem[0] = systemBuilder.createClient();
                 clientSystem[0].start();
+                startHeartbeat(session);
                 latch.countDown();
             }
+
+            private void startHeartbeat(final Session session) {
+                executor.scheduleAtFixedRate(new Runnable() {
+                    @Override
+                    public void run() {
+                        session.getAsyncRemote().sendText(""); // heartbeat
+                    }
+                }, 0, HEARTBEAT_INTERVAL, TimeUnit.SECONDS);
+            }
+
         }, URI.create(uri));
 
         if (latch.await(5, TimeUnit.SECONDS)) {
