@@ -3,6 +3,7 @@ package at.irian.ankor.system;
 import at.irian.ankor.action.Action;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.event.ModelEventListener;
+import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.impl.RefBase;
 
 /**
@@ -20,16 +21,23 @@ public class RemoteEventListener implements ModelEventListener {
 
     public void process(RemoteEvent event) {
 
+        Ref property = event.getSourceProperty();
+
         Action action = event.getAction();
         if (action != null) {
-            event.getSourceProperty().fire(action);
+            property.fire(action);
         }
 
         Change change = event.getChange();
         if (change != null) {
-            ((RefBase)event.getSourceProperty()).apply(change);
+            ((RefBase) property).apply(change);
         }
 
+//        RemoteMissing missing = event.getMissing();
+//        if (missing != null) {
+//            property.context().modelContext().getEventDispatcher().dispatch(new MissingEvent(property, missing));
+//        }
+//
     }
 
 }

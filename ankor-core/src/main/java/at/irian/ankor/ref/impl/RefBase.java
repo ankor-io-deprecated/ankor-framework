@@ -323,7 +323,12 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
 
         } else {
 
-            Wrapper wrapper = internalGetValue();
+            Wrapper wrapper;
+            try {
+                wrapper = internalGetValue();
+            } catch (InvalidRefException e) {
+                throw new RuntimeException(String.format("Ref %s is invalid", this.path()), e);
+            }
             if (wrapper == null) {
                 wrapper = createNewWrapperInstance(type);
                 internalSetValue(wrapper);
@@ -375,14 +380,20 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getValue() {
-        T val = internalGetValue();
+        T val;
+        try {
+            val = internalGetValue();
+        } catch (InvalidRefException e) {
+            context().modelContext().getEventDispatcher().dispatch(new MissingEvent(this));
+            val = null;  // todo   shall we re-throw the exception instead?
+        }
         if (val != null && val instanceof Wrapper) {
             return (T)((Wrapper)val).getWrappedValue();
         }
         return val;
     }
 
-    protected abstract <T> T internalGetValue();
+    protected abstract <T> T internalGetValue() throws InvalidRefException;
 
     protected abstract Class<?> getType();
 

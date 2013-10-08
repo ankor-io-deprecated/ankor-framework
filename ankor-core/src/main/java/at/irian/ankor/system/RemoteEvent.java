@@ -30,14 +30,16 @@ public class RemoteEvent extends ModelPropertyEvent {
     private final RemoteAction action;
 
     private RemoteEvent(Ref changedProperty, RemoteChange change) {
-        super(changedProperty);
-        this.change = change;
-        this.action = null;
+        this(changedProperty, change, null);
     }
 
-    private RemoteEvent(Ref source, RemoteAction action) {
+    private RemoteEvent(Ref actionSource, RemoteAction action) {
+        this(actionSource, null, action);
+    }
+
+    private RemoteEvent(Ref source, RemoteChange change, RemoteAction action) {
         super(source);
-        this.change = null;
+        this.change = change;
         this.action = action;
     }
 
