@@ -21,7 +21,7 @@ public class ELRef extends RefBase {
     }
 
     @Override
-    protected void internalSetValue(Object newValue) {
+    public void internalSetValue(Object newValue) {
 
         // check if we are correctly running in an event dispatcher thread
         new DispatchThreadChecker(context().modelContext()).check();

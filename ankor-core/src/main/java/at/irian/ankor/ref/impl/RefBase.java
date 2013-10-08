@@ -372,8 +372,6 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
         return wrapper;
     }
 
-    protected abstract void internalSetValue(Object newUnwrappedValue);
-
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getValue() {

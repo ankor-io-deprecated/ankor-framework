@@ -15,4 +15,6 @@ public interface RefImplementor extends Ref {
 
     void signal(Change change);
 
+    void internalSetValue(Object newUnwrappedValue);
+
 }
