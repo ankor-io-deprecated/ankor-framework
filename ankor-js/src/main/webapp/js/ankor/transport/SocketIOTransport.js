@@ -42,7 +42,6 @@ define([
 
         var self = this;
 
-        // XXX: Expose parameter for address
         this.socket = io.connect('http://localhost:9092');
 
         this.socket.on('connect', function() {

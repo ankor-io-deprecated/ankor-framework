@@ -6,7 +6,7 @@ define([
     var WebSocketTransport = function (endpoint, options) {
         BaseTransport.call(this);
 
-        var _options = options || {}
+        var _options = options || {};
         this.endpoint = endpoint || "/websocket/ankor";
         this.heartbeatInterval = _options.heartbeatInterval || 25000;
 
@@ -18,17 +18,17 @@ define([
         this._sendPendingMessages = function () {
             var jsonMessages = BaseTransport.buildJsonMessages(this.outgoingMessages);
             while (jsonMessages.length > 0) {
-                var jsonMessage = jsonMessages.pop()
+                var jsonMessage = jsonMessages.pop();
                 this._sendMessageInner(jsonMessage);
             }
             this.outgoingMessages = [];
-        }
+        };
 
         /**
          * Private method to prevent code duplication.
          */
         this._sendMessageInner = function (jsonMessage) {
-            var msg = this.utils.jsonStringify(jsonMessage)
+            var msg = this.utils.jsonStringify(jsonMessage);
             console.log('WebSocket send message ', msg);
             this.socket.send(msg);
         }
@@ -49,7 +49,7 @@ define([
             }
 
             return path
-        }
+        };
 
         this.socket = $.gracefulWebSocket(host(this.endpoint, this.ankorSystem.senderId));
         if (this.socket != null) {
@@ -65,24 +65,19 @@ define([
                     console.log("\u2665-beat");
                     self.socket.send("");
 
-                    // TODO: Could try to reconnect here
-
                     setTimeout(heartbeat, self.heartbeatInterval)
                 }
 
                 console.log("Starting heartbeat");
                 setTimeout(heartbeat, self.heartbeatInterval);
 
-                /*
                 window.onbeforeunload = function() {
                     self.socket.close();
                 };
-                */
             };
 
             this.socket.onclose = function () {
                 console.log('Info: WebSocket closed.');
-                // TODO: Session Management: Inform user
             };
 
             this.socket.onmessage = function (message) {

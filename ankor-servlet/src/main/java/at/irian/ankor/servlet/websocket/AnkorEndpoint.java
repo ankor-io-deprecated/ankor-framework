@@ -38,7 +38,6 @@ import java.util.concurrent.TimeUnit;
  *
  * @author Florian Klampfer
  */
-// TODO: Session Management: ping-pongs, timeouts, heartbeat, etc...
 public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.Whole<String>, ServerApplicationConfig {
     private static Logger LOG = LoggerFactory.getLogger(AnkorEndpoint.class);
 
@@ -62,7 +61,7 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
          * XXX: This class gets created for every new WebSocket connection,
          * so using a cheap "singleton" for the ankorSystem to prevent reinitialization.
          *
-         * This also means that the AnkorSystem will be created only when the first client connects to the server,
+         * This also means that the Ankor system will be created only when the first client connects to the server,
          * resulting in a short lag, so maybe have the AnkorSystem in a servlet and reference it from here?
          */
         if (ankorSystem == null) {
