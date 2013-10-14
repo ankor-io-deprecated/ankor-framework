@@ -39,6 +39,10 @@ public class Change {
         return new Change(ChangeType.replace, fromIdx, newElements);
     }
 
+    public Change withValue(Object newValue) {
+        return new Change(type, key, newValue);
+    }
+
     public ChangeType getType() {
         return type;
     }

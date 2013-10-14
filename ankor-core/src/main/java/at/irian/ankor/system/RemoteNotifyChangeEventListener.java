@@ -5,6 +5,7 @@ import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.change.ChangeEventListener;
 import at.irian.ankor.change.RemoteChange;
 import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.messaging.ChangeModifier;
 import at.irian.ankor.messaging.Message;
 import at.irian.ankor.messaging.MessageFactory;
 import at.irian.ankor.ref.Ref;
@@ -28,14 +29,17 @@ public class RemoteNotifyChangeEventListener extends ChangeEventListener impleme
 
     private final MessageFactory messageFactory;
     private final SessionManager sessionManager;
+    private final ChangeModifier changeModifier;
     private Set<String> rootNames;
 
     public RemoteNotifyChangeEventListener(MessageFactory messageFactory,
                                            SessionManager sessionManager,
-                                           ModelRootFactory modelRootFactory) {
+                                           ModelRootFactory modelRootFactory,
+                                           ChangeModifier changeModifier) {
         super(null); //global listener
         this.messageFactory = messageFactory;
         this.sessionManager = sessionManager;
+        this.changeModifier = changeModifier;
         this.rootNames = modelRootFactory.getKnownRootNames();
     }
 
@@ -49,6 +53,14 @@ public class RemoteNotifyChangeEventListener extends ChangeEventListener impleme
     public void process(ChangeEvent event) {
         Change change = event.getChange();
         Ref changedProperty = event.getChangedProperty();
+
+        Change changeForSending;
+        if (changeModifier != null) {
+            changeForSending = changeModifier.modify(change, changedProperty);
+        } else {
+            changeForSending = change;
+        }
+
         ModelContext modelContext = changedProperty.context().modelContext();
         Collection<Session> sessions = sessionManager.getAllFor(modelContext);
         for (Session session : sessions) {
@@ -63,7 +75,7 @@ public class RemoteNotifyChangeEventListener extends ChangeEventListener impleme
             String changedPropertyPath = changedProperty.path();
             Message message = messageFactory.createChangeMessage(changedProperty.context().modelContext(),
                                                                  changedPropertyPath,
-                                                                 change);
+                                                                 changeForSending);
             LOG.debug("server sends {}", message);
             session.getMessageSender().sendMessage(message);
         }

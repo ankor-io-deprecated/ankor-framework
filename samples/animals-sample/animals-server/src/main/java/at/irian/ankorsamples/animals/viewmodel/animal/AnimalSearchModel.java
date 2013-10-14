@@ -35,6 +35,7 @@ public class AnimalSearchModel {
 
     private AnimalSelectItems selectItems;
 
+    //@AnkorBigCollection
     private List<Animal> animals;
 
     public AnimalSearchModel(Ref animalSearchModelRef,

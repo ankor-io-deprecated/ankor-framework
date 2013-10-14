@@ -13,6 +13,7 @@ import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.event.dispatch.EventDispatcherFactory;
 import at.irian.ankor.event.dispatch.SynchronisedEventDispatcherFactory;
 import at.irian.ankor.messaging.*;
+import at.irian.ankor.messaging.json.viewmodel.JacksonAnnotationAwareChangeModifier;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefContextFactory;
@@ -132,7 +133,10 @@ public class AnkorSystemBuilder {
                                                                  messageBus);
         SessionManager sessionManager = new DefaultSessionManager(sessionFactory);
 
-        EventListeners globalEventListeners = getGlobalEventListeners(messageFactory, sessionManager, modelRootFactory);
+        ChangeModifier changeModifier = new JacksonAnnotationAwareChangeModifier();
+
+        EventListeners globalEventListeners = getGlobalEventListeners(messageFactory, sessionManager, modelRootFactory,
+                                                                      changeModifier);
 
         ModelContextFactory modelContextFactory = getModelContextFactory(eventDispatcherFactory, globalEventListeners);
 
@@ -166,7 +170,10 @@ public class AnkorSystemBuilder {
         String modelContextId = getModelContextId();
 
         SingletonSessionManager sessionManager = new SingletonSessionManager();
-        EventListeners globalEventListeners = getGlobalEventListeners(messageFactory, sessionManager, modelRootFactory);
+        ChangeModifier changeModifier = new ChangeModifier.PassThrough();
+
+        EventListeners globalEventListeners = getGlobalEventListeners(messageFactory, sessionManager, modelRootFactory,
+                                                                      changeModifier);
 
         ModelContextFactory modelContextFactory = getModelContextFactory(getEventDispatcherFactory(), globalEventListeners);
 
@@ -192,7 +199,8 @@ public class AnkorSystemBuilder {
 
     private EventListeners createDefaultGlobalEventListeners(MessageFactory messageFactory,
                                                              SessionManager sessionManager,
-                                                             ModelRootFactory modelRootFactory) {
+                                                             ModelRootFactory modelRootFactory,
+                                                             ChangeModifier changeModifier) {
 
         EventListeners eventListeners = new ArrayListEventListeners();
 
@@ -203,7 +211,8 @@ public class AnkorSystemBuilder {
         eventListeners.add(new RemoteNotifyActionEventListener(messageFactory, sessionManager));
 
         // global change event listener for sending change events to remote partner
-        eventListeners.add(new RemoteNotifyChangeEventListener(messageFactory, sessionManager, modelRootFactory));
+        eventListeners.add(new RemoteNotifyChangeEventListener(messageFactory, sessionManager, modelRootFactory,
+                                                               changeModifier));
 
         // global change event listener for cleaning up obsolete model context listeners
         eventListeners.add(new ListenerCleanupChangeEventListener());
@@ -333,10 +342,12 @@ public class AnkorSystemBuilder {
 
     public EventListeners getGlobalEventListeners(MessageFactory messageFactory,
                                                   SessionManager sessionManager,
-                                                  ModelRootFactory modelRootFactory) {
+                                                  ModelRootFactory modelRootFactory,
+                                                  ChangeModifier changeModifier) {
         EventListeners globalEventListeners;
         if (defaultGlobalEventListeners == null) {
-            globalEventListeners = createDefaultGlobalEventListeners(messageFactory, sessionManager, modelRootFactory);
+            globalEventListeners = createDefaultGlobalEventListeners(messageFactory, sessionManager, modelRootFactory,
+                                                                     changeModifier);
         } else {
             globalEventListeners = defaultGlobalEventListeners;
         }
