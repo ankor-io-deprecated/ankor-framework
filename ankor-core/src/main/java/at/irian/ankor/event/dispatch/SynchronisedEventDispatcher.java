@@ -20,11 +20,13 @@ public class SynchronisedEventDispatcher extends SimpleEventDispatcher {
     public void dispatch(ModelEvent event) {
         synchronized (modelContext) {
             DispatchThreadChecker dispatchThreadChecker = new DispatchThreadChecker(modelContext);
-            dispatchThreadChecker.register();
+            boolean registered = dispatchThreadChecker.registerCurrentThread();
             try {
                 super.dispatch(event);
             } finally {
-                dispatchThreadChecker.clear();
+                if (registered) {
+                    dispatchThreadChecker.clear();
+                }
             }
         }
     }

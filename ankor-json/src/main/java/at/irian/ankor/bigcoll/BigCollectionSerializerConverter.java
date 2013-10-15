@@ -15,6 +15,9 @@ public class BigCollectionSerializerConverter extends StdConverter<Collection, C
     @SuppressWarnings("UnnecessaryLocalVariable")
     @Override
     public Collection convert(Collection actualCollection) {
+        if (actualCollection == null) {
+            return null;
+        }
         Map<String,Integer> dummyEntry = Collections.singletonMap("@size", actualCollection.size());
         Collection<Map<String,Integer>> dummyCollection = Collections.singletonList(dummyEntry);
         return dummyCollection;

@@ -18,14 +18,25 @@ public class DispatchThreadChecker {
         }
     }
 
-    public void register() {
+    /**
+     * @return true, if the current thread was register; false, if the current thread is already registered
+     * @throws IllegalStateException if another thread was registered before
+     */
+    public boolean registerCurrentThread() {
         if (modelContext != null) {
-            Thread currentDispatchThread = modelContext.getCurrentDispatchThread();
-            if (currentDispatchThread != null && currentDispatchThread != Thread.currentThread()) {
-                throw new IllegalStateException("ModelContext already being dispatched by another Thread: " + currentDispatchThread);
+            Thread previousDispatchThread = modelContext.getCurrentDispatchThread();
+            Thread currentThread = Thread.currentThread();
+            if (previousDispatchThread != null) {
+                if (previousDispatchThread != currentThread) {
+                    throw new IllegalStateException("ModelContext already being dispatched by another Thread: " + previousDispatchThread);
+                }
+                return false;
+            } else {
+                modelContext.setCurrentDispatchThread(Thread.currentThread());
+                return true;
             }
-            modelContext.setCurrentDispatchThread(Thread.currentThread());
         }
+        return false;
     }
 
     public void clear() {
@@ -38,6 +49,7 @@ public class DispatchThreadChecker {
         if (modelContext != null) {
             if (modelContext.getCurrentDispatchThread() != Thread.currentThread()) {
                 throw new IllegalStateException("access to ModelContext from a non-dispatching thread");
+                //LOG.warn("access to ModelContext from a non-dispatching thread");
             }
         }
     }

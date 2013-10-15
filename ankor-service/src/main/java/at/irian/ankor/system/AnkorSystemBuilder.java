@@ -2,6 +2,8 @@ package at.irian.ankor.system;
 
 import at.irian.ankor.annotation.AnnotationViewModelPostProcessor;
 import at.irian.ankor.base.BeanResolver;
+import at.irian.ankor.bigcoll.BigCollectionAwareClientReceiveChangeModifier;
+import at.irian.ankor.bigcoll.MissingItemActionEventListener;
 import at.irian.ankor.change.ChangeRequestEventListener;
 import at.irian.ankor.context.*;
 import at.irian.ankor.delay.Scheduler;
@@ -13,7 +15,7 @@ import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.event.dispatch.EventDispatcherFactory;
 import at.irian.ankor.event.dispatch.SynchronisedEventDispatcherFactory;
 import at.irian.ankor.messaging.*;
-import at.irian.ankor.messaging.json.viewmodel.JacksonAnnotationAwareChangeModifier;
+import at.irian.ankor.messaging.json.viewmodel.JacksonAnnotationAwareServerSendChangeModifier;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefContextFactory;
@@ -133,10 +135,11 @@ public class AnkorSystemBuilder {
                                                                  messageBus);
         SessionManager sessionManager = new DefaultSessionManager(sessionFactory);
 
-        ChangeModifier changeModifier = new JacksonAnnotationAwareChangeModifier();
+        ChangeModifier sendChangeModifier = new JacksonAnnotationAwareServerSendChangeModifier();
+        ChangeModifier receiveChangeModifier = new ChangeModifier.PassThrough();
 
         EventListeners globalEventListeners = getGlobalEventListeners(messageFactory, sessionManager, modelRootFactory,
-                                                                      changeModifier);
+                                                                      sendChangeModifier, receiveChangeModifier);
 
         ModelContextFactory modelContextFactory = getModelContextFactory(eventDispatcherFactory, globalEventListeners);
 
@@ -170,10 +173,11 @@ public class AnkorSystemBuilder {
         String modelContextId = getModelContextId();
 
         SingletonSessionManager sessionManager = new SingletonSessionManager();
-        ChangeModifier changeModifier = new ChangeModifier.PassThrough();
+        ChangeModifier sendChangeModifier = new ChangeModifier.PassThrough();
+        ChangeModifier receiveChangeModifier = new BigCollectionAwareClientReceiveChangeModifier();
 
         EventListeners globalEventListeners = getGlobalEventListeners(messageFactory, sessionManager, modelRootFactory,
-                                                                      changeModifier);
+                                                                      sendChangeModifier, receiveChangeModifier);
 
         ModelContextFactory modelContextFactory = getModelContextFactory(getEventDispatcherFactory(), globalEventListeners);
 
@@ -200,19 +204,20 @@ public class AnkorSystemBuilder {
     private EventListeners createDefaultGlobalEventListeners(MessageFactory messageFactory,
                                                              SessionManager sessionManager,
                                                              ModelRootFactory modelRootFactory,
-                                                             ChangeModifier changeModifier) {
+                                                             ChangeModifier sendChangeModifier,
+                                                             ChangeModifier receiveChangeModifier) {
 
         EventListeners eventListeners = new ArrayListEventListeners();
 
         // remote actions and changes listener
-        eventListeners.add(new RemoteEventListener());
+        eventListeners.add(new RemoteEventListener(receiveChangeModifier));
 
         // action event listener for sending action events to remote partner
         eventListeners.add(new RemoteNotifyActionEventListener(messageFactory, sessionManager));
 
         // global change event listener for sending change events to remote partner
         eventListeners.add(new RemoteNotifyChangeEventListener(messageFactory, sessionManager, modelRootFactory,
-                                                               changeModifier));
+                                                               sendChangeModifier));
 
         // global change event listener for cleaning up obsolete model context listeners
         eventListeners.add(new ListenerCleanupChangeEventListener());
@@ -222,6 +227,9 @@ public class AnkorSystemBuilder {
 
         // global task request event listener
         eventListeners.add(new TaskRequestEventListener());
+
+        // global missing item action event listener
+        eventListeners.add(new MissingItemActionEventListener());
 
         return eventListeners;
     }
@@ -343,11 +351,12 @@ public class AnkorSystemBuilder {
     public EventListeners getGlobalEventListeners(MessageFactory messageFactory,
                                                   SessionManager sessionManager,
                                                   ModelRootFactory modelRootFactory,
-                                                  ChangeModifier changeModifier) {
+                                                  ChangeModifier sendChangeModifier,
+                                                  ChangeModifier receiveChangeModifier) {
         EventListeners globalEventListeners;
         if (defaultGlobalEventListeners == null) {
             globalEventListeners = createDefaultGlobalEventListeners(messageFactory, sessionManager, modelRootFactory,
-                                                                     changeModifier);
+                                                                     sendChangeModifier, receiveChangeModifier);
         } else {
             globalEventListeners = defaultGlobalEventListeners;
         }

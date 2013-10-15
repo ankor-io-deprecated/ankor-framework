@@ -23,4 +23,9 @@ public class RemoteChange extends Change {
     public Session getSession() {
         return session;
     }
+
+    @Override
+    public Change withValue(Object newValue) {
+        return new RemoteChange(getType(), getKey(), newValue, session);
+    }
 }

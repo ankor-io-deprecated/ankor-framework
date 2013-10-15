@@ -2,6 +2,7 @@ package at.irian.ankorsamples.animals.viewmodel.animal;
 
 import at.irian.ankor.annotation.ActionListener;
 import at.irian.ankor.annotation.ChangeListener;
+import at.irian.ankor.bigcoll.AnkorBigCollection;
 import at.irian.ankor.delay.FloodControl;
 import at.irian.ankor.messaging.AnkorIgnore;
 import at.irian.ankor.pattern.AnkorPatterns;
@@ -35,7 +36,7 @@ public class AnimalSearchModel {
 
     private AnimalSelectItems selectItems;
 
-    //@AnkorBigCollection
+    @AnkorBigCollection
     private List<Animal> animals;
 
     public AnimalSearchModel(Ref animalSearchModelRef,

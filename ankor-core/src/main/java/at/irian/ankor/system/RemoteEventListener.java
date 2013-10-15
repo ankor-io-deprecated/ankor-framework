@@ -3,6 +3,7 @@ package at.irian.ankor.system;
 import at.irian.ankor.action.Action;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.event.ModelEventListener;
+import at.irian.ankor.messaging.ChangeModifier;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.impl.RefBase;
 
@@ -13,6 +14,12 @@ import at.irian.ankor.ref.impl.RefBase;
  */
 public class RemoteEventListener implements ModelEventListener {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RemoteEventListener.class);
+
+    private final ChangeModifier changeModifier;
+
+    public RemoteEventListener(ChangeModifier changeModifier) {
+        this.changeModifier = changeModifier;
+    }
 
     @Override
     public boolean isDiscardable() {
@@ -30,6 +37,7 @@ public class RemoteEventListener implements ModelEventListener {
 
         Change change = event.getChange();
         if (change != null) {
+            change = changeModifier.modify(change, property);
             ((RefBase) property).apply(change);
         }
 

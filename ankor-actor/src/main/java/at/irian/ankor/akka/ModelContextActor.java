@@ -41,11 +41,13 @@ public class ModelContextActor extends UntypedActor {
     }
 
     private void handleEvent(ModelEvent event) {
-        dispatchThreadChecker.register();
+        boolean registered = dispatchThreadChecker.registerCurrentThread();
         try {
             eventDispatcher.dispatch(event);
         } finally {
-            dispatchThreadChecker.clear();
+            if (registered) {
+                dispatchThreadChecker.clear();
+            }
         }
     }
 
