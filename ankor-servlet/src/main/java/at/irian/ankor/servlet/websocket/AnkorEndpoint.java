@@ -1,7 +1,6 @@
 package at.irian.ankor.servlet.websocket;
 
 import at.irian.ankor.akka.AnkorActorSystem;
-import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.delay.AkkaScheduler;
 import at.irian.ankor.event.dispatch.AkkaEventDispatcherFactory;
 import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
@@ -19,40 +18,36 @@ import javax.websocket.*;
 import javax.websocket.server.ServerApplicationConfig;
 import javax.websocket.server.ServerEndpointConfig;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
 
 /**
  * This is the base class of a WebSocket endpoint that communicates with a {@link AnkorSystem}.
  * It is meant be deployed on a web server (e.g. GlassFish) that supports JSR 365 (javax.websocket).
- *
+ * <p/>
  * This class handles new WebSocket connections on a fixed url ("/websockets/ankor").
  * It passes incoming messages to the AnkorSystem and registers the connection with the AnkorSystem, so that
  * outgoing messages will be sent the the clients.
- *
+ * <p/>
  * As a user you need to subtype this class and override the {@link #getModelRoot(at.irian.ankor.ref.Ref)} method.
  *
  * @author Florian Klampfer
  */
 public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.Whole<String>, ServerApplicationConfig {
-    private static Logger LOG = LoggerFactory.getLogger(AnkorEndpoint.class);
-
     /**
      * Must be greater than the clients heartbeat interval.
      */
-    private static final int TIME_OUT = 60;
+    private static final int TIME_OUT = 30000;
+    private final static Timer timer;
 
+    static {
+        timer = new Timer();
+    }
+
+    private static Logger LOG = LoggerFactory.getLogger(AnkorEndpoint.class);
     private static AnkorSystem ankorSystem;
     private static WebSocketMessageBus webSocketMessageBus;
-
     private String clientId;
     private long lastSeen = System.currentTimeMillis();
-
-    private final static ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
     public AnkorEndpoint() {
         LOG.info("Creating new Endpoint");
@@ -93,25 +88,27 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
      * @param session The WebSocket session.
      */
     private void watchForTimeout(final Session session) {
-        executor.schedule(new Runnable() {
+
+        timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                if (System.currentTimeMillis() - lastSeen > TIME_OUT * 1000) {
-                    try {
-                        // Invalidate the Ankor session.
-                        invalidate(session);
-
-                        // Close the web socket session if it isn't closed already.
+                try {
+                    if (System.currentTimeMillis() - lastSeen > TIME_OUT * 1000) {
                         if (session.isOpen()) {
+                            // Close the web socket session if it isn't closed already.
                             session.close();
+                        } else {
+                            // Invalidate the Ankor session if the socket is already closed.
+                            // XXX: a closed socket with valid session shouldn't be possible!
+                            invalidate(session);
                         }
-                    } catch (IOException ignored) {
+
+                        this.cancel();
                     }
-                } else {
-                    executor.schedule(this, TIME_OUT, TimeUnit.SECONDS);
+                } catch (IOException ignored) {
                 }
             }
-        }, TIME_OUT, TimeUnit.SECONDS);
+        }, TIME_OUT, TIME_OUT);
     }
 
     @Override
@@ -119,7 +116,7 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
         if (!isHeartbeat(message)) {
             LOG.info("Endpoint received {}, length = {}", message, message.length());
 
-            // TODO: Validate message: A malformed message will crash this Ankor session (but new clients can connect)
+            // XXX: A malformed message will crash this Ankor session (but new clients can connect)
             webSocketMessageBus.receiveSerializedMessage(message);
         }
 
@@ -144,7 +141,6 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
         AnkorActorSystem ankorActorSystem;
         ankorSystem = new AnkorSystemBuilder()
                 .withName(getName())
-                .withBeanResolver(getBeanResolver())
                 .withModelRootFactory(getModelRootFactory())
                 .withMessageBus((webSocketMessageBus = new WebSocketMessageBus(new ViewModelJsonMessageMapper())))
                 .withDispatcherFactory(new AkkaEventDispatcherFactory((ankorActorSystem = AnkorActorSystem.create())))
@@ -155,13 +151,13 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
 
     private void invalidate(Session session) {
         session.removeMessageHandler(this);
-        RemoteSystem remoteSystem = webSocketMessageBus.removeRemoteSystem(this.clientId);
-        invalidateAnkorSessionsFor(remoteSystem);
-    }
 
-    private void invalidateAnkorSessionsFor(RemoteSystem remoteSystem) {
-        Collection<at.irian.ankor.session.Session> ankorSessions = ankorSystem.getSessionManager().getAllFor(remoteSystem);
-        for(at.irian.ankor.session.Session ankorSession : ankorSessions) {
+        RemoteSystem remoteSystem = webSocketMessageBus.removeRemoteSystem(clientId);
+
+        Collection<at.irian.ankor.session.Session> ankorSessions = ankorSystem.getSessionManager()
+                .getAllFor(remoteSystem);
+
+        for (at.irian.ankor.session.Session ankorSession : ankorSessions) {
             ankorSystem.getSessionManager().invalidate(ankorSession);
         }
     }
@@ -176,6 +172,7 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
 
     /**
      * You can override this method in your implementation.
+     *
      * @return A name for the AnkorSystem on your server.
      */
     protected String getName() {
@@ -184,6 +181,7 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
 
     /**
      * You can override this method in your implementation.
+     *
      * @return A {@link ModelRootFactory} the provides the root model of your application.
      */
     protected ModelRootFactory getModelRootFactory() {
@@ -201,30 +199,11 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
     }
 
     /**
-     * You can override this method in your implementation.
-     * @return A bean resolver for the Ankor system.
-     */
-    // XXX: Do we need this at all?
-    protected BeanResolver getBeanResolver() {
-        return new BeanResolver() {
-            @Override
-            public Object resolveByName(String beanName) {
-                return null;
-            }
-
-            @Override
-            public Collection<String> getKnownBeanNames() {
-                return Collections.emptyList();
-            }
-        };
-    }
-
-    /**
      * This method can be overridden to provide a custom url to the WebSocket.
      * Note that you need to specify this string on the client as well.
      *
      * @return a path string that starts with '/' but must not end with '/'.
-     * Defaults to "/websocket/ankor".
+     *         Defaults to "/websocket/ankor".
      */
     protected String getWebSocketUrl() {
         return "/websocket/ankor";
