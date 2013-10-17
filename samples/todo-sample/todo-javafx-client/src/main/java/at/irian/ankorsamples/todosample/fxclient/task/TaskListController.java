@@ -6,8 +6,6 @@ import at.irian.ankor.fx.binding.property.ViewModelIntegerProperty;
 import at.irian.ankor.fx.binding.property.ViewModelProperty;
 import at.irian.ankor.fx.controller.FXControllerAnnotationSupport;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.ref.listener.RefChangeListener;
-import at.irian.ankor.ref.listener.RefListeners;
 import at.irian.ankorsamples.todosample.fxclient.App;
 import at.irian.ankorsamples.todosample.viewmodel.task.TaskModel;
 import javafx.application.Platform;
@@ -22,56 +20,54 @@ import javafx.scene.layout.VBox;
 import javafx.util.converter.NumberStringConverter;
 
 import java.net.URL;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import static at.irian.ankorsamples.todosample.fxclient.App.refFactory;
 
 @SuppressWarnings("UnusedParameters")
 public class TaskListController implements Initializable {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TaskListController.class);
-
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TaskListController.class);
+    @FXML
+    public VBox tasksList;
+    @FXML
+    public ToggleButton toggleAllButton;
+    @FXML
+    public TextField newTodo;
+    @FXML
+    public Label todoCountNum;
+    @FXML
+    public Label todoCountText;
+    @FXML
+    public Button clearButton;
+    @FXML
+    public RadioButton filterAll;
+    @FXML
+    public RadioButton filterActive;
+    @FXML
+    public RadioButton filterCompleted;
+    @FXML
+    public ToggleGroup filterToggleGroup;
+    @FXML
+    public Node footerTop;
+    @FXML
+    public Node footerBottom;
     private Ref modelRef;
-
-    @FXML public VBox tasksList;
-    @FXML public ToggleButton toggleAllButton;
-    @FXML public TextField newTodo;
-    @FXML public Label todoCountNum;
-    @FXML public Label todoCountText;
-    @FXML public Button clearButton;
-
-    @FXML public RadioButton filterAll;
-    @FXML public RadioButton filterActive;
-    @FXML public RadioButton filterCompleted;
-    @FXML public ToggleGroup filterToggleGroup;
-
-    @FXML public Node footerTop;
-    @FXML public Node footerBottom;
     private boolean initialized = false;
+    private HashMap<Integer, TaskPane> cache = new HashMap<>();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
-        final Ref modelRef = refFactory().ref("root.model");
-        Ref tasksRef = modelRef.appendPath("tasks");
-        FXControllerAnnotationSupport.scan(tasksRef, this);
-
-        RefListeners.addPropChangeListener(modelRef, new RefChangeListener() {
-            @Override
-            public void processChange(Ref changedProperty) {
-                initialize(modelRef);
-            }
-        });
-
-        refFactory().ref("root").fire(new Action("init"));
+        Ref rootRef = refFactory().ref("root");
+        FXControllerAnnotationSupport.scan(rootRef, this);
+        rootRef.fire(new Action("init"));
     }
 
-    public void initialize(Ref modelRef) {
+    @ChangeListener(pattern = "root")
+    public void initialize() {
         initialized = true;
 
-        this.modelRef = modelRef;
+        Ref rootRef = refFactory().ref("root");
+        modelRef = rootRef.appendPath("model");
         Ref tasksRef = modelRef.appendPath("tasks");
 
         ViewModelIntegerProperty itemsLeft = new ViewModelIntegerProperty(modelRef, "itemsLeft");
@@ -148,32 +144,40 @@ public class TaskListController implements Initializable {
         App.getServices().showDocument("http://todomvc.com/");
     }
 
-    private HashMap<Integer, TaskPane> cache = new HashMap<>();
-
     private class TaskLoader implements Runnable {
 
         private List<LinkedHashMap<String, Object>> tasks;
-        public TaskLoader(List<LinkedHashMap<String, Object>> tasks) { this.tasks = tasks; }
+
+        public TaskLoader(List<LinkedHashMap<String, Object>> tasks) {
+            this.tasks = tasks;
+        }
 
         @Override
         public void run() {
             tasksList.getChildren().clear();
 
             int index = 0;
-            for (LinkedHashMap<String, Object> task : tasks) {
-                TaskModel model = new TaskModel(task);
+            try {
 
-                TaskPane node;
-                if (cache.get(index) == null) {
-                    Ref itemRef = modelRef.appendPath("tasks").appendIndex(index);
-                    cache.put(index, new TaskPane(itemRef));
+                for (LinkedHashMap<String, Object> task : tasks) {
+                    TaskModel model = new TaskModel(task);
+
+                    TaskPane node;
+                    if (cache.get(index) == null) {
+                        Ref itemRef = modelRef.appendPath("tasks").appendIndex(index);
+                        cache.put(index, new TaskPane(itemRef));
+                    }
+                    node = cache.get(index);
+                    node.updateContent(model, index);
+
+                    tasksList.getChildren().add(node);
+
+                    index++;
                 }
-                node = cache.get(index);
-                node.updateContent(model, index);
-
-                tasksList.getChildren().add(node);
-
-                index++;
+            } catch (ConcurrentModificationException ignored) {
+                // XXX: This happens when there are a lot of changes in the list, but it shouldn't be a problem,
+                // since the change should have triggered another rendering of the list
+                LOG.error("Modification of tasks list while drawing..");
             }
         }
     }
