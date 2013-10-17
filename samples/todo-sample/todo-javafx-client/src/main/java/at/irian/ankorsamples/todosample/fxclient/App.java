@@ -105,8 +105,7 @@ public class App extends Application {
                 });
 
                 messageBus.addRemoteSystem(new WebSocketRemoteSystem(clientId, session));
-                clientSystem[0] = systemBuilder.createClient();
-                clientSystem[0].start();
+                (clientSystem[0] = systemBuilder.createClient()).start();
                 startHeartbeat(session);
                 latch.countDown();
             }

@@ -49,6 +49,7 @@ public class TaskListController implements Initializable {
 
     @FXML public Node footerTop;
     @FXML public Node footerBottom;
+    private boolean initialized = false;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -68,6 +69,8 @@ public class TaskListController implements Initializable {
     }
 
     public void initialize(Ref modelRef) {
+        initialized = true;
+
         this.modelRef = modelRef;
         Ref tasksRef = modelRef.appendPath("tasks");
 
@@ -111,6 +114,8 @@ public class TaskListController implements Initializable {
 
     @FXML
     public void newTodo(ActionEvent actionEvent) {
+        if (!initialized) throw new IllegalStateException("Not initialized! (Response from server not received)");
+
         if (!newTodo.getText().equals("")) {
 
             LinkedHashMap<String, Object> params = new LinkedHashMap<>();
@@ -123,11 +128,13 @@ public class TaskListController implements Initializable {
 
     @FXML
     public void toggleAll(ActionEvent actionEvent) {
+        if (!initialized) throw new IllegalStateException("Not initialized! (Response from server not received)");
         modelRef.fire(new Action("toggleAll"));
     }
 
     @FXML
     public void clearTasks(ActionEvent actionEvent) {
+        if (!initialized) throw new IllegalStateException("Not initialized! (Response from server not received)");
         modelRef.fire(new Action("clearTasks"));
     }
 
