@@ -149,8 +149,10 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
             List list = (List)listOrArray;
             if (idx == list.size()) {
                 list.add(value);
-            } else {
+            } else if (idx < list.size()) {
                 list.add(idx, value);
+            } else {
+                // XXX: Sometimes this gets called with out of bounds indices
             }
         } else if (listOrArray.getClass().isArray()) {
             int idx = asIndex(key);
@@ -174,7 +176,12 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
     private void handleDeleteChange(Object listOrArrayOrMap, Object key) {
         if (listOrArrayOrMap instanceof List) {
             int idx = asIndex(key);
-            ((List) listOrArrayOrMap).remove(idx);
+            List list = (List)listOrArrayOrMap;
+            if (idx < list.size()) {
+                list.remove(idx);
+            } else {
+                // XXX: Sometimes this gets called with out of bounds indices
+            }
         } else if (listOrArrayOrMap.getClass().isArray()) {
             int idx = asIndex(key);
             int length = Array.getLength(listOrArrayOrMap);
