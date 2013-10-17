@@ -8,12 +8,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class WebSocketMessageBus extends MessageBus<String> {
     private static Logger LOG = LoggerFactory.getLogger(WebSocketMessageBus.class);
 
-    private HashMap<String, WebSocketRemoteSystem> remoteSystems = new HashMap<String, WebSocketRemoteSystem>();
+    private Map<String, WebSocketRemoteSystem> remoteSystems = new ConcurrentHashMap<String, WebSocketRemoteSystem>();
 
     public WebSocketMessageBus(ViewModelJsonMessageMapper mapper) {
         super(mapper, mapper);
