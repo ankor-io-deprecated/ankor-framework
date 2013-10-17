@@ -2,9 +2,12 @@ package at.irian.ankorsamples.animals.fxclient;
 
 import at.irian.ankor.http.ClientHttpMessageLoop;
 import at.irian.ankor.http.ServerHost;
+import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefFactory;
+import at.irian.ankor.servlet.websocket.messaging.WebSocketMessageBus;
+import at.irian.ankor.servlet.websocket.session.WebSocketRemoteSystem;
 import at.irian.ankor.session.ModelRootFactory;
 import at.irian.ankor.session.SingletonSessionManager;
 import at.irian.ankor.socket.SocketAnkorSystemStarter;
@@ -16,10 +19,12 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
+import javax.websocket.*;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
+import java.net.URI;
+import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static java.util.regex.Matcher.quoteReplacement;
 
@@ -40,7 +45,8 @@ public class App extends javafx.application.Application {
         client,
         server,
         manyClients,
-        httpClient
+        httpClient,
+        webSocketClient
     }
 
     public static void main(String[] args) {
@@ -122,8 +128,76 @@ public class App extends javafx.application.Application {
             }
             createHttpClientSystem(client, server);
             startFXClient(primaryStage);
+        } else if (mode == Mode.webSocketClient) {
+            String client = params.get("client");
+            if (client == null) {
+                client = DEFAULT_CLIENT;
+            }
+
+            createWebSocketClientSystem(client, server);
+            startFXClient(primaryStage);
+
         } else {
             stop();
+        }
+    }
+
+    private void createWebSocketClientSystem(String client, String server) throws Exception {
+        final int HEARTBEAT_INTERVAL = 25;
+
+        String host = server.split("@")[1];
+
+        final String clientId = UUID.randomUUID().toString();
+        final AnkorSystem[] clientSystem = new AnkorSystem[1];
+        final WebSocketMessageBus messageBus = new WebSocketMessageBus(new ViewModelJsonMessageMapper());
+        final AnkorSystemBuilder systemBuilder = new AnkorSystemBuilder()
+                .withName(clientId)
+                .withMessageBus(messageBus)
+                .withModelContextId("collabTest");
+
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+        String uri = "ws://" + host + "/websocket/ankor/" + clientId;
+
+        container.connectToServer(new Endpoint() {
+
+            @Override
+            public void onOpen(javax.websocket.Session session, EndpointConfig config) {
+                session.addMessageHandler(new MessageHandler.Whole<String>() {
+
+                    @Override
+                    public void onMessage(String message) {
+                        messageBus.receiveSerializedMessage(message);
+                    }
+                });
+
+                messageBus.addRemoteSystem(new WebSocketRemoteSystem(clientId, session));
+                (clientSystem[0] = systemBuilder.createClient()).start();
+                startHeartbeat(session);
+                latch.countDown();
+            }
+
+            private Timer timer = new Timer();
+            private void startHeartbeat(final javax.websocket.Session session) {
+                TimerTask task = new TimerTask() {
+
+                    @Override
+                    public void run() {
+                        session.getAsyncRemote().sendText("");
+                    }
+                };
+
+                timer.schedule(task, HEARTBEAT_INTERVAL * 1000, HEARTBEAT_INTERVAL * 1000);
+            }
+
+        }, URI.create(uri));
+
+        if (latch.await(10, TimeUnit.SECONDS)) {
+            RefContext clientRefContext = ((SingletonSessionManager) clientSystem[0].getSessionManager()).getSession().getRefContext();
+            refFactory = clientRefContext.refFactory();
+        } else {
+            throw new Exception("WebSocket could not connect to " + uri);
         }
     }
 

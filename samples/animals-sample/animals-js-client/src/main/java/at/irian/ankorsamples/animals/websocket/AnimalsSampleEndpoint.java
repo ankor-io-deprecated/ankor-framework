@@ -16,9 +16,4 @@ public class AnimalsSampleEndpoint extends AnkorEndpoint {
     protected Object getModelRoot(Ref rootRef) {
         return new ModelRoot(rootRef, new AnimalRepository());
     }
-
-    @Override
-    protected String getWebSocketUrl() {
-        return "/ankor";
-    }
 }

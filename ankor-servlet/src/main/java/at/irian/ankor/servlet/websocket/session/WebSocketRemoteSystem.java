@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.websocket.Session;
+import java.io.IOException;
 
 public class WebSocketRemoteSystem implements RemoteSystem {
     private static Logger LOG = LoggerFactory.getLogger(WebSocketRemoteSystem.class);
@@ -24,6 +25,10 @@ public class WebSocketRemoteSystem implements RemoteSystem {
 
     public void sendMessage(String msg) {
         LOG.debug("Send serialized message {} to client {}", msg, client.getId());
-        client.getAsyncRemote().sendText(msg);
+        try {
+            client.getBasicRemote().sendText(msg);
+        } catch (IOException e) {
+            LOG.error("Error while sending message.");
+        }
     }
 }
