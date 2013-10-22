@@ -72,10 +72,10 @@ define([
     Ref.prototype.getValue = function() {
         var value = this.ankorSystem.model;
         for (var i = 0, segment; (segment = this.segments[i]); i++) {
-            if (segment.property != undefined) {
+            if (segment.property != undefined && value.hasOwnProperty(segment.property)) {
                 value = value[segment.property];
             }
-            else if (segment.index != undefined) {
+            else if (segment.index != undefined && segment.index < value.length) {
                 value = value[segment.index];
             }
         }

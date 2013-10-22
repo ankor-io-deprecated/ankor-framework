@@ -20,10 +20,10 @@ import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class App extends Application {
@@ -32,11 +32,11 @@ public class App extends Application {
     private static final String DEFAULT_SERVER = "wss://ankor-todo-sample.irian.at";
     private static final String DEFAULT_ENDPOINT = "/websocket/ankor";
 
-    public static final int HEARTBEAT_INTERVAL = 25;
+    public static final int HEARTBEAT_INTERVAL = 5000;
 
     private static RefFactory refFactory;
     private static HostServices services;
-
+    private Timer timer = new Timer();
 
     public static void main(String[] args) {
         launch(args);
@@ -75,8 +75,6 @@ public class App extends Application {
         primaryStage.show();
     }
 
-    private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-
     // TODO: This should be easier
     private AnkorSystem createWebSocketClientSystem(String server, String endpoint) throws IOException, DeploymentException, InterruptedException {
         final String clientId = UUID.randomUUID().toString();
@@ -89,7 +87,7 @@ public class App extends Application {
                 .withDispatcherFactory(new JavaFxEventDispatcherFactory())
                 .withModelContextId("collabTest");
 
-        final CountDownLatch latch = new CountDownLatch(1);
+        final CountDownLatch latch = new CountDownLatch(2);
 
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         String uri = server + endpoint + "/" + clientId;
@@ -97,33 +95,45 @@ public class App extends Application {
         container.connectToServer(new Endpoint() {
 
             @Override
-            public void onOpen(Session session, EndpointConfig config) {
+            public void onOpen(final Session session, EndpointConfig config) {
                 session.addMessageHandler(new MessageHandler.Whole<String>() {
+
+                    private boolean idReceived = false;
 
                     @Override
                     public void onMessage(String message) {
-                        messageBus.receiveSerializedMessage(message);
+                        if (!idReceived) {
+                            systemBuilder.withName(message);
+                            messageBus.addRemoteSystem(new WebSocketRemoteSystem(message, session));
+                            latch.countDown();
+
+                            idReceived = true;
+                        } else {
+                            messageBus.receiveSerializedMessage(message);
+                        }
                     }
                 });
 
-                messageBus.addRemoteSystem(new WebSocketRemoteSystem(clientId, session));
-                (clientSystem[0] = systemBuilder.createClient()).start();
                 startHeartbeat(session);
                 latch.countDown();
             }
 
             private void startHeartbeat(final Session session) {
-                executor.scheduleAtFixedRate(new Runnable() {
+                TimerTask task = new TimerTask() {
+
                     @Override
                     public void run() {
                         session.getAsyncRemote().sendText(""); // heartbeat
                     }
-                }, 0, HEARTBEAT_INTERVAL, TimeUnit.SECONDS);
+                };
+
+                timer.schedule(task, HEARTBEAT_INTERVAL, HEARTBEAT_INTERVAL);
             }
 
         }, URI.create(uri));
 
-        if (latch.await(5, TimeUnit.SECONDS)) {
+        if (latch.await(10, TimeUnit.SECONDS)) {
+            (clientSystem[0] = systemBuilder.createClient()).start();
             return clientSystem[0];
         } else {
             throw new IOException("WebSocket could not connect to " + uri);

@@ -98,7 +98,6 @@ public class DefaultSessionManager implements SessionManager {
 
     @Override
     public void invalidate(Session session) {
-        sessionMap.values().remove(session);
         session.close();
     }
 

@@ -19,6 +19,9 @@ import javax.websocket.server.ServerApplicationConfig;
 import javax.websocket.server.ServerEndpointConfig;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * This is the base class of a WebSocket endpoint that communicates with a {@link AnkorSystem}.
@@ -33,10 +36,18 @@ import java.util.*;
  * @author Florian Klampfer
  */
 public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.Whole<String>, ServerApplicationConfig {
+
     /**
      * Must be greater than the clients heartbeat interval.
      */
-    private static final int TIME_OUT = 30000;
+    private static final int TIMEOUT = 10000;
+    /**
+     * The frequency of timeout checks.
+     */
+    private static final int TIMEOUT_CHECK_INTERVAL = 5000;
+    /**
+     * Timer to check for received heartbeat messages every {@link #TIMEOUT_CHECK_INTERVAL} milliseconds.
+     */
     private final static Timer timer;
 
     static {
@@ -46,8 +57,11 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
     private static Logger LOG = LoggerFactory.getLogger(AnkorEndpoint.class);
     private static AnkorSystem ankorSystem;
     private static WebSocketMessageBus webSocketMessageBus;
+    private static ExecutorService pool = Executors.newCachedThreadPool();
+    private static Set<String> uniqueIds = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
     private String clientId;
-    private long lastSeen = System.currentTimeMillis();
+    private long lastSeen;
+    private TimerTask task;
 
     public AnkorEndpoint() {
         LOG.info("Creating new Endpoint");
@@ -66,49 +80,64 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
 
     @Override
     public void onOpen(final Session session, EndpointConfig config) {
-        clientId = session.getPathParameters().get("clientId");
 
-        if (clientId == null) {
-            LOG.error("Trying to connect without supplying an id");
-            throw new IllegalArgumentException();
+        try {
+            clientId = UUID.randomUUID().toString();
+
+            if (clientId == null) {
+                LOG.error("Trying to connect without supplying an id");
+                throw new IllegalArgumentException();
+            } else if (uniqueIds.contains(clientId)) {
+                LOG.error("Id is not unique");
+                throw new IllegalArgumentException();
+            }
+
+            uniqueIds.add(clientId);
+            session.getBasicRemote().sendText(clientId);
+            LOG.info("New client connected {}", clientId);
+            LOG.info("Current connected clients: {}", webSocketMessageBus.getKnownRemoteSystems().size());
+            webSocketMessageBus.addRemoteSystem(new WebSocketRemoteSystem(clientId, session));
+            lastSeen = System.currentTimeMillis();
+            watchForTimeout(session);
+            session.addMessageHandler(this);
+        } catch (IOException e) {
+            LOG.error("Error while sending id to newly connected client");
         }
-
-        LOG.info("New client connected {}", clientId);
-
-        session.addMessageHandler(this);
-        webSocketMessageBus.addRemoteSystem(new WebSocketRemoteSystem(clientId, session));
-
-        watchForTimeout(session);
     }
 
     /**
-     * This checks if a (heartbeat) message has been received within the last {@code TIME_OUT} seconds,
+     * This checks if a (heartbeat) message has been received within the last {@code TIMEOUT} milliseconds,
      * otherwise the WebSocket connection is closed and the Ankor session is invalidated.
      *
      * @param session The WebSocket session.
      */
     private void watchForTimeout(final Session session) {
-
-        timer.schedule(new TimerTask() {
+        task = new TimerTask() {
             @Override
             public void run() {
-                try {
-                    if (System.currentTimeMillis() - lastSeen > TIME_OUT * 1000) {
-                        if (session.isOpen()) {
-                            // Close the web socket session if it isn't closed already.
-                            session.close();
-                        } else {
-                            // Invalidate the Ankor session if the socket is already closed.
-                            // XXX: a closed socket with valid session shouldn't be possible!
-                            invalidate(session);
-                        }
+                if (System.currentTimeMillis() - lastSeen > TIMEOUT) {
 
-                        this.cancel();
-                    }
-                } catch (IOException ignored) {
+                    // trying not to delay the timer task
+                    pool.submit(new Runnable() {
+                        public void run() {
+                            if (session.isOpen()) {
+                                try {
+                                    session.close();
+                                } catch (IOException e) {
+                                    LOG.error("Error while closing the connection after timeout");
+                                }
+                            } else {
+                                LOG.error("Timeout of session, but the connection is no longer open");
+                            }
+                        }
+                    });
+
+                    this.cancel();
                 }
             }
-        }, TIME_OUT, TIME_OUT);
+        };
+
+        timer.schedule(task, TIMEOUT_CHECK_INTERVAL, TIMEOUT_CHECK_INTERVAL);
     }
 
     @Override
@@ -129,12 +158,20 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
 
     @Override
     public void onClose(Session session, CloseReason closeReason) {
-        invalidate(session);
+        LOG.info("Invalidating session {}", clientId);
+        this.invalidate();
+        task.cancel();
+        LOG.info("Current connected clients: {}", webSocketMessageBus.getKnownRemoteSystems().size());
     }
 
     @Override
     public void onError(Session session, Throwable thr) {
-        invalidate(session);
+        LOG.error("Invalidating session {} because of error", clientId);
+        this.invalidate();
+        if (task != null) {
+            task.cancel();
+        }
+        LOG.info("Current connected clients: {}", webSocketMessageBus.getKnownRemoteSystems().size());
     }
 
     private void startAnkorSystem() {
@@ -147,19 +184,6 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
                 .withScheduler(new AkkaScheduler(ankorActorSystem))
                 .createServer();
         ankorSystem.start();
-    }
-
-    private void invalidate(Session session) {
-        session.removeMessageHandler(this);
-
-        RemoteSystem remoteSystem = webSocketMessageBus.removeRemoteSystem(clientId);
-
-        Collection<at.irian.ankor.session.Session> ankorSessions = ankorSystem.getSessionManager()
-                .getAllFor(remoteSystem);
-
-        for (at.irian.ankor.session.Session ankorSession : ankorSessions) {
-            ankorSystem.getSessionManager().invalidate(ankorSession);
-        }
     }
 
     /**
@@ -212,11 +236,21 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
     @Override
     public final Set<ServerEndpointConfig> getEndpointConfigs(Set<Class<? extends Endpoint>> endpointClasses) {
         // XXX: Only one WebSocket endpoint url (specified by getPath()) allowed in this servlet.
-        return Collections.singleton(ServerEndpointConfig.Builder.create(this.getClass(), this.getWebSocketUrl() + "/{clientId}").build());
+        return Collections.singleton(ServerEndpointConfig.Builder.create(this.getClass(), this.getWebSocketUrl()).build());
     }
 
     @Override
     public final Set<Class<?>> getAnnotatedEndpointClasses(Set<Class<?>> scanned) {
         return Collections.emptySet();
     }
+
+    private void invalidate() {
+        RemoteSystem remoteSystem = webSocketMessageBus.removeRemoteSystem(clientId);
+        Collection<at.irian.ankor.session.Session> ankorSessions = ankorSystem.getSessionManager().getAllFor(remoteSystem);
+        for (at.irian.ankor.session.Session ankorSession : ankorSessions) {
+            ankorSystem.getSessionManager().invalidate(ankorSession);
+        }
+
+    }
 }
+
