@@ -41,10 +41,10 @@ public class MissingPropertyActionEventListener extends ActionEventListener {
                 AnkorBigList bigListAnnotation = new ModelPropertyAnnotationsFinder()
                         .findModelPropertyAnnotations(maybeCollRef, AnkorBigList.class);
                 if (bigListAnnotation != null) {
-                    int aheadSend = bigListAnnotation.aheadSendSize();
-                    int fromIndex = Integer.parseInt(missingProperty.propertyName());
-                    int toIndex = fromIndex + 1 + aheadSend;
-                    if (aheadSend > 0) {
+                    int chunkSize = bigListAnnotation.chunkSize();
+                    if (chunkSize > 1) {
+                        int fromIndex = Integer.parseInt(missingProperty.propertyName());
+                        int toIndex = fromIndex + chunkSize;
                         List list = maybeCollRef.getValue();
                         List subList = list.subList(fromIndex, Math.min(toIndex, list.size()));
                         Change change = Change.replaceChange(fromIndex, subList);

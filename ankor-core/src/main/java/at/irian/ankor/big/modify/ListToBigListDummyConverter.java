@@ -12,22 +12,22 @@ public class ListToBigListDummyConverter {
 
     public static final String SIZE_KEY = "@size";
     public static final String SUBSTITUTE_KEY = "@subst";
-    public static final String INITIAL_ELEMENTS_KEY = "@init";
-    public static final String AHEAD_SEND_SIZE_KEY = "@ahead";
+    public static final String INITIAL_SIZE_KEY = "@init";
+    public static final String CHUNK_SIZE_KEY = "@chunk";
 
     private final int thresholdSize;
     private final int initialSize;
     private final Object missingElementSubstitute;
-    private final int aheadSendSize;
+    private final int chunkSize;
 
     public ListToBigListDummyConverter(int thresholdSize,
                                        int initialSize,
                                        Object missingElementSubstitute,
-                                       int aheadSendSize) {
+                                       int chunkSize) {
         this.thresholdSize = thresholdSize;
         this.initialSize = initialSize;
         this.missingElementSubstitute = missingElementSubstitute;
-        this.aheadSendSize = aheadSendSize;
+        this.chunkSize = chunkSize;
     }
 
     public static ListToBigListDummyConverter createFromAnnotation(AnkorBigList ann) {
@@ -40,10 +40,10 @@ public class ListToBigListDummyConverter {
                 throw new RuntimeException("Unable to instantiate " + missingElementSubstitute);
             }
         }
-        return new ListToBigListDummyConverter(ann.thresholdSize(),
-                                               ann.initialSendSize(),
+        return new ListToBigListDummyConverter(ann.threshold(),
+                                               ann.initialSize(),
                                                missingElementSubstitute,
-                                               ann.aheadSendSize());
+                                               ann.chunkSize());
     }
 
 
@@ -60,7 +60,7 @@ public class ListToBigListDummyConverter {
         Map<String, Object> bigListAttributes = new LinkedHashMap<String, Object>();
         bigListAttributes.put(SIZE_KEY,  actualCollection.size());
         bigListAttributes.put(SUBSTITUTE_KEY, missingElementSubstitute);
-        bigListAttributes.put(AHEAD_SEND_SIZE_KEY,  aheadSendSize);
+        bigListAttributes.put(CHUNK_SIZE_KEY, chunkSize);
 
         if (initialSize > 0) {
             List initialList = new ArrayList(initialSize);
@@ -69,7 +69,7 @@ public class ListToBigListDummyConverter {
                 //noinspection unchecked
                 initialList.add(iterator.next());
             }
-            bigListAttributes.put(INITIAL_ELEMENTS_KEY, initialList);
+            bigListAttributes.put(INITIAL_SIZE_KEY, initialList);
         }
 
         List<Map<String,Object>> dummyList = Collections.singletonList(bigListAttributes);

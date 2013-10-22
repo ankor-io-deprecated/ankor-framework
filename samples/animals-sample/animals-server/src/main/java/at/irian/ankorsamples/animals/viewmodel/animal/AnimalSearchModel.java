@@ -37,9 +37,9 @@ public class AnimalSearchModel {
     private AnimalSelectItems selectItems;
 
     @AnkorBigList( missingElementSubstitute = EmptyAnimal.class,
-                   initialSendSize = 10,
-                   thresholdSize = 1000,
-                   aheadSendSize = 20)
+                   threshold = 1000,
+                   initialSize = 10,
+                   chunkSize = 10)
     private List<Animal> animals;
 
     public AnimalSearchModel(Ref animalSearchModelRef,

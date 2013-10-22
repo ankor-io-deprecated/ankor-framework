@@ -27,16 +27,16 @@ public class MissingPropertyActionFiringBigList<E> extends AbstractBigList<E> {
     private final E missingElementSubstitute;
 
     @AnkorIgnore
-    private final int aheadSendSize;
+    private final int chunkSize;
 
     @AnkorIgnore
     private final FloodControl floodControl;
 
-    public MissingPropertyActionFiringBigList(int size, Ref listRef, E missingElementSubstitute, int aheadSendSize) {
+    public MissingPropertyActionFiringBigList(int size, Ref listRef, E missingElementSubstitute, int chunkSize) {
         super(size);
         this.listRef = listRef;
         this.missingElementSubstitute = missingElementSubstitute;
-        this.aheadSendSize = aheadSendSize;
+        this.chunkSize = chunkSize;
         this.floodControl = new FloodControl(listRef, 50);
     }
 
@@ -50,7 +50,7 @@ public class MissingPropertyActionFiringBigList<E> extends AbstractBigList<E> {
                     Collections.sort(list);
                     int lastIdx = -1;
                     for (Integer reqIdx : list) {
-                        if (lastIdx == -1 || reqIdx >= lastIdx + aheadSendSize) {
+                        if (lastIdx == -1 || reqIdx >= lastIdx + chunkSize) {
                             listRef.appendIndex(reqIdx).fire(new Action(MissingPropertyActionEventListener.ACTION_NAME));
                             lastIdx = reqIdx;
                         }
