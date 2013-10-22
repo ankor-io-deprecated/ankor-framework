@@ -36,7 +36,7 @@ public class App extends Application {
 
     private static RefFactory refFactory;
     private static HostServices services;
-    private Timer timer = new Timer();
+    private Timer timer = new Timer(true);
 
     public static void main(String[] args) {
         launch(args);
@@ -76,7 +76,9 @@ public class App extends Application {
     }
 
     // TODO: This should be easier
-    private AnkorSystem createWebSocketClientSystem(String server, String endpoint) throws IOException, DeploymentException, InterruptedException {
+    private AnkorSystem createWebSocketClientSystem(String server, String endpoint) throws IOException,
+            DeploymentException, InterruptedException {
+
         final String clientId = UUID.randomUUID().toString();
 
         final AnkorSystem[] clientSystem = new AnkorSystem[1];
@@ -90,7 +92,7 @@ public class App extends Application {
         final CountDownLatch latch = new CountDownLatch(2);
 
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-        String uri = server + endpoint + "/" + clientId;
+        String uri = server + endpoint;
 
         container.connectToServer(new Endpoint() {
 

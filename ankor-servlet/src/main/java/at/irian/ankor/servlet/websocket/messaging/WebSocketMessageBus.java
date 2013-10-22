@@ -12,12 +12,13 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class WebSocketMessageBus extends MessageBus<String> {
+    private static int EXPECTED_CONCURRENT_REQUESTS = 2;
+
     private static Logger LOG = LoggerFactory.getLogger(WebSocketMessageBus.class);
-    private Map<String, WebSocketRemoteSystem> remoteSystems = new ConcurrentHashMap<String, WebSocketRemoteSystem>(50, 0.9f, 50);
-    private AtomicInteger i = new AtomicInteger(0);
+    private Map<String, WebSocketRemoteSystem> remoteSystems =
+            new ConcurrentHashMap<String, WebSocketRemoteSystem>(1, 0.9f, EXPECTED_CONCURRENT_REQUESTS);
 
     public WebSocketMessageBus(ViewModelJsonMessageMapper mapper) {
         super(mapper, mapper);
@@ -44,13 +45,10 @@ public class WebSocketMessageBus extends MessageBus<String> {
     }
 
     public void addRemoteSystem(WebSocketRemoteSystem remoteSystem) {
-        int temp = i.incrementAndGet();
         remoteSystems.put(remoteSystem.getId(), remoteSystem);
     }
 
     public RemoteSystem removeRemoteSystem(String clientId) {
-        int temp = i.decrementAndGet();
-        // uniqueIds.remove(clientId);
         return remoteSystems.remove(clientId);
     }
 }

@@ -6,10 +6,10 @@ define([
 
         var _options = options || {};
         this.endpoint = endpoint || "/websocket/ankor";
-        this.heartbeatInterval = _options.heartbeatInterval || 25000;
+        this.heartbeatInterval = _options.heartbeatInterval || 5000;
 
         this._idReceived = false;
-        var _isReady = false;
+        this._isReady = false;
 
         // Sends pending messages after the connection has been established
         // will assign the server created id to the pending messages
