@@ -1,9 +1,10 @@
 package at.irian.ankor.system;
 
+import at.irian.ankor.action.MissingPropertyActionEventListener;
 import at.irian.ankor.annotation.AnnotationViewModelPostProcessor;
 import at.irian.ankor.base.BeanResolver;
-import at.irian.ankor.bigcoll.BigCollectionAwareClientReceiveChangeModifier;
-import at.irian.ankor.bigcoll.MissingItemActionEventListener;
+import at.irian.ankor.big.modify.ClientSideBigListModifier;
+import at.irian.ankor.big.modify.ServerSideBigListModifier;
 import at.irian.ankor.change.ChangeRequestEventListener;
 import at.irian.ankor.context.*;
 import at.irian.ankor.delay.Scheduler;
@@ -15,7 +16,8 @@ import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.event.dispatch.EventDispatcherFactory;
 import at.irian.ankor.event.dispatch.SynchronisedEventDispatcherFactory;
 import at.irian.ankor.messaging.*;
-import at.irian.ankor.messaging.json.viewmodel.JacksonAnnotationAwareServerSendChangeModifier;
+import at.irian.ankor.messaging.modify.Modifier;
+import at.irian.ankor.messaging.modify.PassThroughModifier;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefContextFactory;
@@ -135,11 +137,13 @@ public class AnkorSystemBuilder {
                                                                  messageBus);
         SessionManager sessionManager = new DefaultSessionManager(sessionFactory);
 
-        ChangeModifier sendChangeModifier = new JacksonAnnotationAwareServerSendChangeModifier();
-        ChangeModifier receiveChangeModifier = new ChangeModifier.PassThrough();
+        Modifier defaultModifier = getDefaultModifier();
+        Modifier modifier = new ServerSideBigListModifier(defaultModifier);
 
-        EventListeners globalEventListeners = getGlobalEventListeners(messageFactory, sessionManager, modelRootFactory,
-                                                                      sendChangeModifier, receiveChangeModifier);
+        EventListeners globalEventListeners = getGlobalEventListeners(messageFactory,
+                                                                      sessionManager,
+                                                                      modelRootFactory,
+                                                                      modifier);
 
         ModelContextFactory modelContextFactory = getModelContextFactory(eventDispatcherFactory, globalEventListeners);
 
@@ -151,6 +155,9 @@ public class AnkorSystemBuilder {
                                modelRootFactory);
     }
 
+    private Modifier getDefaultModifier() {
+        return new PassThroughModifier();
+    }
 
     public AnkorSystem createClient() {
 
@@ -173,11 +180,13 @@ public class AnkorSystemBuilder {
         String modelContextId = getModelContextId();
 
         SingletonSessionManager sessionManager = new SingletonSessionManager();
-        ChangeModifier sendChangeModifier = new ChangeModifier.PassThrough();
-        ChangeModifier receiveChangeModifier = new BigCollectionAwareClientReceiveChangeModifier();
+        Modifier defaultModifier = getDefaultModifier();
+        Modifier modifier = new ClientSideBigListModifier(defaultModifier);
 
-        EventListeners globalEventListeners = getGlobalEventListeners(messageFactory, sessionManager, modelRootFactory,
-                                                                      sendChangeModifier, receiveChangeModifier);
+        EventListeners globalEventListeners = getGlobalEventListeners(messageFactory,
+                                                                      sessionManager,
+                                                                      modelRootFactory,
+                                                                      modifier);
 
         ModelContextFactory modelContextFactory = getModelContextFactory(getEventDispatcherFactory(), globalEventListeners);
 
@@ -204,20 +213,18 @@ public class AnkorSystemBuilder {
     private EventListeners createDefaultGlobalEventListeners(MessageFactory messageFactory,
                                                              SessionManager sessionManager,
                                                              ModelRootFactory modelRootFactory,
-                                                             ChangeModifier sendChangeModifier,
-                                                             ChangeModifier receiveChangeModifier) {
+                                                             Modifier modifier) {
 
         EventListeners eventListeners = new ArrayListEventListeners();
 
         // remote actions and changes listener
-        eventListeners.add(new RemoteEventListener(receiveChangeModifier));
+        eventListeners.add(new RemoteEventListener(modifier));
 
         // action event listener for sending action events to remote partner
-        eventListeners.add(new RemoteNotifyActionEventListener(messageFactory, sessionManager));
+        eventListeners.add(new RemoteNotifyActionEventListener(messageFactory, sessionManager, modifier));
 
         // global change event listener for sending change events to remote partner
-        eventListeners.add(new RemoteNotifyChangeEventListener(messageFactory, sessionManager, modelRootFactory,
-                                                               sendChangeModifier));
+        eventListeners.add(new RemoteNotifyChangeEventListener(messageFactory, sessionManager, modelRootFactory, modifier));
 
         // global change event listener for cleaning up obsolete model context listeners
         eventListeners.add(new ListenerCleanupChangeEventListener());
@@ -229,7 +236,7 @@ public class AnkorSystemBuilder {
         eventListeners.add(new TaskRequestEventListener());
 
         // global missing item action event listener
-        eventListeners.add(new MissingItemActionEventListener());
+        eventListeners.add(new MissingPropertyActionEventListener());
 
         return eventListeners;
     }
@@ -351,12 +358,13 @@ public class AnkorSystemBuilder {
     public EventListeners getGlobalEventListeners(MessageFactory messageFactory,
                                                   SessionManager sessionManager,
                                                   ModelRootFactory modelRootFactory,
-                                                  ChangeModifier sendChangeModifier,
-                                                  ChangeModifier receiveChangeModifier) {
+                                                  Modifier modifier) {
         EventListeners globalEventListeners;
         if (defaultGlobalEventListeners == null) {
-            globalEventListeners = createDefaultGlobalEventListeners(messageFactory, sessionManager, modelRootFactory,
-                                                                     sendChangeModifier, receiveChangeModifier);
+            globalEventListeners = createDefaultGlobalEventListeners(messageFactory,
+                                                                     sessionManager,
+                                                                     modelRootFactory,
+                                                                     modifier);
         } else {
             globalEventListeners = defaultGlobalEventListeners;
         }

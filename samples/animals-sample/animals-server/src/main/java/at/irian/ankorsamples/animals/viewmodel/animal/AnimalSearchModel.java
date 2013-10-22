@@ -2,7 +2,7 @@ package at.irian.ankorsamples.animals.viewmodel.animal;
 
 import at.irian.ankor.annotation.ActionListener;
 import at.irian.ankor.annotation.ChangeListener;
-import at.irian.ankor.bigcoll.AnkorBigCollection;
+import at.irian.ankor.big.AnkorBigList;
 import at.irian.ankor.delay.FloodControl;
 import at.irian.ankor.messaging.AnkorIgnore;
 import at.irian.ankor.pattern.AnkorPatterns;
@@ -36,7 +36,10 @@ public class AnimalSearchModel {
 
     private AnimalSelectItems selectItems;
 
-    @AnkorBigCollection
+    @AnkorBigList( missingElementSubstitute = EmptyAnimal.class,
+                   initialSendSize = 10,
+                   thresholdSize = 1000,
+                   aheadSendSize = 20)
     private List<Animal> animals;
 
     public AnimalSearchModel(Ref animalSearchModelRef,
@@ -126,4 +129,9 @@ public class AnimalSearchModel {
         serverStatusRef.setValue(status);
     }
 
+    public static class EmptyAnimal extends Animal {
+        public EmptyAnimal() {
+            super("...", null, null);
+        }
+    }
 }

@@ -26,7 +26,7 @@ public class AnimalRepository {
         animals.add(new Animal("Eagle", AnimalType.Bird, AnimalFamily.Accipitridae));
         animals.add(new Animal("Blue Whale", AnimalType.Mammal, AnimalFamily.Balaenopteridae));
         animals.add(new Animal("Tiger", AnimalType.Mammal, AnimalFamily.Felidae));
-        for (int i = 0; i < 2000; i++) {
+        for (int i = 0; i < 1000; i++) {
             animals.add(new Animal("Bird " + i, AnimalType.Bird, AnimalFamily.Accipitridae));
         }
     }

@@ -2,6 +2,7 @@ package at.irian.ankor.messaging.json.viewmodel;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.base.Wrapper;
+import at.irian.ankor.big.json.AnkorSerializerModifier;
 import at.irian.ankor.messaging.Message;
 import at.irian.ankor.messaging.MessageArrayDeserializer;
 import at.irian.ankor.messaging.MessageArraySerializer;
@@ -53,6 +54,8 @@ public class ViewModelJsonMessageMapper implements MessageMapper<String>,
 
         // do always ignore Refs (ie. do never serialize Refs)
         module.setMixInAnnotation(TypedRef.class, MixIn.class);
+
+        module.setSerializerModifier(new AnkorSerializerModifier());
 
         mapper = new ObjectMapper();
         mapper.registerModule(module);

@@ -7,6 +7,7 @@ import at.irian.ankor.action.RemoteAction;
 import at.irian.ankor.context.ModelContext;
 import at.irian.ankor.messaging.Message;
 import at.irian.ankor.messaging.MessageFactory;
+import at.irian.ankor.messaging.modify.Modifier;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.session.Session;
 import at.irian.ankor.session.SessionManager;
@@ -24,12 +25,15 @@ public class RemoteNotifyActionEventListener extends ActionEventListener {
 
     private final MessageFactory messageFactory;
     private final SessionManager sessionManager;
+    private final Modifier preSendModifier;
 
     public RemoteNotifyActionEventListener(MessageFactory messageFactory,
-                                           SessionManager sessionManager) {
+                                           SessionManager sessionManager,
+                                           Modifier preSendModifier) {
         super(null); //global listener
         this.messageFactory = messageFactory;
         this.sessionManager = sessionManager;
+        this.preSendModifier = preSendModifier;
     }
 
     @Override
@@ -42,6 +46,7 @@ public class RemoteNotifyActionEventListener extends ActionEventListener {
     public void process(ActionEvent event) {
         Action action = event.getAction();
         Ref actionProperty = event.getActionProperty();
+        Action modifiedAction = preSendModifier.modifyBeforeSend(action, actionProperty);
         ModelContext modelContext = actionProperty.context().modelContext();
         Collection<Session> sessions = sessionManager.getAllFor(modelContext);
         for (Session session : sessions) {
@@ -56,7 +61,7 @@ public class RemoteNotifyActionEventListener extends ActionEventListener {
             String actionPropertyPath = actionProperty.path();
             Message message = messageFactory.createActionMessage(actionProperty.context().modelContext(),
                                                                  actionPropertyPath,
-                                                                 action);
+                                                                 modifiedAction);
             LOG.debug("server sends {}", message);
             session.getMessageSender().sendMessage(message);
         }

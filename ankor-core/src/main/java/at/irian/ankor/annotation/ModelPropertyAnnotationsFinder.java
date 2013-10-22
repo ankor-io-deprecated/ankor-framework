@@ -37,4 +37,14 @@ public class ModelPropertyAnnotationsFinder {
         return field.getDeclaredAnnotations();
     }
 
+    public <A extends Annotation> A findModelPropertyAnnotations(Ref propertyRef, Class<A> annotationType) {
+        Annotation[] annotations = getModelPropertyAnnotations(propertyRef);
+        for (Annotation annotation : annotations) {
+            if (annotationType.isAssignableFrom(annotation.getClass())) {
+                //noinspection unchecked
+                return (A)annotation;
+            }
+        }
+        return null;
+    }
 }

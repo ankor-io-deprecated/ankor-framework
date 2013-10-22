@@ -5,9 +5,9 @@ import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.change.ChangeEventListener;
 import at.irian.ankor.change.RemoteChange;
 import at.irian.ankor.context.ModelContext;
-import at.irian.ankor.messaging.ChangeModifier;
 import at.irian.ankor.messaging.Message;
 import at.irian.ankor.messaging.MessageFactory;
+import at.irian.ankor.messaging.modify.Modifier;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.session.ModelRootFactory;
@@ -29,17 +29,17 @@ public class RemoteNotifyChangeEventListener extends ChangeEventListener impleme
 
     private final MessageFactory messageFactory;
     private final SessionManager sessionManager;
-    private final ChangeModifier changeModifier;
+    private final Modifier preSendModifier;
     private Set<String> rootNames;
 
     public RemoteNotifyChangeEventListener(MessageFactory messageFactory,
                                            SessionManager sessionManager,
                                            ModelRootFactory modelRootFactory,
-                                           ChangeModifier changeModifier) {
+                                           Modifier preSendModifier) {
         super(null); //global listener
         this.messageFactory = messageFactory;
         this.sessionManager = sessionManager;
-        this.changeModifier = changeModifier;
+        this.preSendModifier = preSendModifier;
         this.rootNames = modelRootFactory.getKnownRootNames();
     }
 
@@ -53,14 +53,7 @@ public class RemoteNotifyChangeEventListener extends ChangeEventListener impleme
     public void process(ChangeEvent event) {
         Change change = event.getChange();
         Ref changedProperty = event.getChangedProperty();
-
-        Change changeForSending;
-        if (changeModifier != null) {
-            changeForSending = changeModifier.modify(change, changedProperty);
-        } else {
-            changeForSending = change;
-        }
-
+        Change modifiedChange = preSendModifier.modifyBeforeSend(change, changedProperty);
         ModelContext modelContext = changedProperty.context().modelContext();
         Collection<Session> sessions = sessionManager.getAllFor(modelContext);
         for (Session session : sessions) {
@@ -75,7 +68,7 @@ public class RemoteNotifyChangeEventListener extends ChangeEventListener impleme
             String changedPropertyPath = changedProperty.path();
             Message message = messageFactory.createChangeMessage(changedProperty.context().modelContext(),
                                                                  changedPropertyPath,
-                                                                 changeForSending);
+                                                                 modifiedChange);
             LOG.debug("server sends {}", message);
             session.getMessageSender().sendMessage(message);
         }
@@ -92,9 +85,11 @@ public class RemoteNotifyChangeEventListener extends ChangeEventListener impleme
             Ref rootRef = refContext.refFactory().ref(rootName);
             Object rootObj = rootRef.getValue();
             if (rootObj != null) {
+                Change change = Change.valueChange(rootObj);
+                Change modifiedChange = preSendModifier.modifyBeforeSend(change, rootRef);
                 Message message = messageFactory.createChangeMessage(modelContext,
                                                                      rootRef.path(),
-                                                                     Change.valueChange(rootObj));
+                                                                     modifiedChange);
                 LOG.debug("server sends {}", message);
                 session.getMessageSender().sendMessage(message);
             }

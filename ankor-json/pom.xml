@@ -23,6 +23,13 @@
 
         <dependency>
             <groupId>at.irian.ankor</groupId>
+            <artifactId>ankor-annotation</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>at.irian.ankor</groupId>
             <artifactId>ankor-el</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>

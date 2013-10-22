@@ -8,11 +8,13 @@
       <w>backrefs</w>
       <w>deserialization</w>
       <w>deserialize</w>
+      <w>deserialized</w>
       <w>discardable</w>
       <w>implementor</w>
       <w>jgen</w>
       <w>loopback</w>
       <w>matchers</w>
+      <w>pluggable</w>
       <w>synchronizer</w>
       <w>unregister</w>
     </words>

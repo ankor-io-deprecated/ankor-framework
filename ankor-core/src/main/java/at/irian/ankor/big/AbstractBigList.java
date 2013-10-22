@@ -1,4 +1,4 @@
-package at.irian.ankor.bigcoll;
+package at.irian.ankor.big;
 
 import at.irian.ankor.messaging.AnkorIgnore;
 
@@ -10,7 +10,7 @@ import java.util.*;
  * @author Manfred Geiler
  */
 @SuppressWarnings("UnusedDeclaration")
-public class BigList<E> extends AbstractList<E> {
+public abstract class AbstractBigList<E> extends AbstractList<E> implements BigList<E> {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(Lazy.class);
 
     @AnkorIgnore
@@ -18,12 +18,12 @@ public class BigList<E> extends AbstractList<E> {
 
     private int size;
 
-    public BigList(int size) {
+    public AbstractBigList(int size) {
         this.elements = new TreeMap<Integer, Reference>();
         this.size = size;
     }
 
-    public BigList(Collection<? extends E> c) {
+    public AbstractBigList(Collection<? extends E> c) {
         this(c.size());
         int idx = 0;
         for (E e : c) {
@@ -47,21 +47,24 @@ public class BigList<E> extends AbstractList<E> {
     }
 
     @Override
-    public E get(int index) throws MissingItemException {
+    public E get(int index) {
         Reference elementReference = elements.get(index);
         if (elementReference == null) {
-            throw new MissingItemException("Index:" + index);  //todo  signalMissingItem
+            return getMissingElement(index);
         }
         Object item = elementReference.get();
         if (item instanceof NullDummy) {
             return null;
         } else if (item == null) {
-            throw new MissingItemException("Index:" + index);
+            return getMissingElement(index);
         } else {
             //noinspection unchecked
             return (E)item;
         }
     }
+
+    protected abstract E getMissingElement(int index);
+
 
     @Override
     public E set(int index, E element) {
@@ -133,13 +136,21 @@ public class BigList<E> extends AbstractList<E> {
         this.size = 0;
     }
 
-    public void refreshAll() {
+    @Override
+    public void reset() {
         this.elements.clear();
     }
 
-    private static class NullDummy {}
+    @Override
+    public void cleanup() {
+        for (Map.Entry<Integer, Reference> entry : elements.entrySet()) {
+            if (entry.getValue().get() == null) {
+                entry.setValue(null);
+            }
+        }
+    }
 
-
+    @Override
     public boolean isAvailable(int index) {
         Reference elementReference = elements.get(index);
         if (elementReference == null) {
@@ -148,5 +159,7 @@ public class BigList<E> extends AbstractList<E> {
         Object item = elementReference.get();
         return item instanceof NullDummy || item != null;
     }
+
+    private static class NullDummy {}
 
 }
