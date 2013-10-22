@@ -2,6 +2,7 @@ package at.irian.ankor.delay;
 
 import at.irian.ankor.event.dispatch.EventDispatcher;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.ref.RefContext;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -11,7 +12,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public class FloodControl {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(DelaySupport.class);
 
-    private final Ref ref;
     private final Scheduler scheduler;
     private final EventDispatcher eventDispatcher;
     private final long delay;
@@ -19,9 +19,16 @@ public class FloodControl {
     private final AtomicReference<Cancellable> lastDelayedRef = new AtomicReference<Cancellable>();
 
     public FloodControl(Ref ref, long delay) {
-        this.ref = ref;
-        this.scheduler = ref.context().scheduler();
-        this.eventDispatcher = ref.context().modelContext().getEventDispatcher();
+        this(ref.context(), delay);
+    }
+
+    public FloodControl(RefContext refContext, long delay) {
+        this(refContext.scheduler(), refContext.modelContext().getEventDispatcher(), delay);
+    }
+
+    public FloodControl(Scheduler scheduler, EventDispatcher eventDispatcher, long delay) {
+        this.scheduler = scheduler;
+        this.eventDispatcher = eventDispatcher;
         this.delay = delay;
     }
 
@@ -31,7 +38,7 @@ public class FloodControl {
                 scheduler.schedule(delay, new Runnable() {
                     @Override
                     public void run() {
-                        eventDispatcher.dispatch(new TaskRequestEvent(ref, task));
+                        eventDispatcher.dispatch(new TaskRequestEvent(FloodControl.this, task));
                     }
                 })
             );
