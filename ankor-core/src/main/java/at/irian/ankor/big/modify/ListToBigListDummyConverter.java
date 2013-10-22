@@ -13,17 +13,21 @@ public class ListToBigListDummyConverter {
     public static final String SIZE_KEY = "@size";
     public static final String SUBSTITUTE_KEY = "@subst";
     public static final String INITIAL_ELEMENTS_KEY = "@init";
+    public static final String AHEAD_SEND_SIZE_KEY = "@ahead";
 
-    private int thresholdSize;
-    private int initialSize;
-    private Object missingElementSubstitute;
+    private final int thresholdSize;
+    private final int initialSize;
+    private final Object missingElementSubstitute;
+    private final int aheadSendSize;
 
     public ListToBigListDummyConverter(int thresholdSize,
                                        int initialSize,
-                                       Object missingElementSubstitute) {
+                                       Object missingElementSubstitute,
+                                       int aheadSendSize) {
         this.thresholdSize = thresholdSize;
         this.initialSize = initialSize;
         this.missingElementSubstitute = missingElementSubstitute;
+        this.aheadSendSize = aheadSendSize;
     }
 
     public static ListToBigListDummyConverter createFromAnnotation(AnkorBigList ann) {
@@ -37,8 +41,9 @@ public class ListToBigListDummyConverter {
             }
         }
         return new ListToBigListDummyConverter(ann.thresholdSize(),
-                                              ann.initialSendSize(),
-                                              missingElementSubstitute);
+                                               ann.initialSendSize(),
+                                               missingElementSubstitute,
+                                               ann.aheadSendSize());
     }
 
 
@@ -55,6 +60,7 @@ public class ListToBigListDummyConverter {
         Map<String, Object> bigListAttributes = new LinkedHashMap<String, Object>();
         bigListAttributes.put(SIZE_KEY,  actualCollection.size());
         bigListAttributes.put(SUBSTITUTE_KEY, missingElementSubstitute);
+        bigListAttributes.put(AHEAD_SEND_SIZE_KEY,  aheadSendSize);
 
         if (initialSize > 0) {
             List initialList = new ArrayList(initialSize);

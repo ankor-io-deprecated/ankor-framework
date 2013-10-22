@@ -6,6 +6,8 @@ import at.irian.ankor.delay.FloodControl;
 import at.irian.ankor.messaging.AnkorIgnore;
 import at.irian.ankor.ref.Ref;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -25,13 +27,17 @@ public class MissingPropertyActionFiringBigList<E> extends AbstractBigList<E> {
     private final E missingElementSubstitute;
 
     @AnkorIgnore
+    private final int aheadSendSize;
+
+    @AnkorIgnore
     private final FloodControl floodControl;
 
-    public MissingPropertyActionFiringBigList(int size, Ref listRef, E missingElementSubstitute) {
+    public MissingPropertyActionFiringBigList(int size, Ref listRef, E missingElementSubstitute, int aheadSendSize) {
         super(size);
         this.listRef = listRef;
         this.missingElementSubstitute = missingElementSubstitute;
-        this.floodControl = new FloodControl(listRef, 500);
+        this.aheadSendSize = aheadSendSize;
+        this.floodControl = new FloodControl(listRef, 50);
     }
 
     @Override
@@ -40,8 +46,14 @@ public class MissingPropertyActionFiringBigList<E> extends AbstractBigList<E> {
             floodControl.control(new Runnable() {
                 @Override
                 public void run() {
-                    for (Integer i : pendingRequests) {
-                        listRef.appendIndex(i).fire(new Action(MissingPropertyActionEventListener.ACTION_NAME));
+                    ArrayList<Integer> list = new ArrayList<Integer>(pendingRequests);
+                    Collections.sort(list);
+                    int lastIdx = -1;
+                    for (Integer reqIdx : list) {
+                        if (lastIdx == -1 || reqIdx >= lastIdx + aheadSendSize) {
+                            listRef.appendIndex(reqIdx).fire(new Action(MissingPropertyActionEventListener.ACTION_NAME));
+                            lastIdx = reqIdx;
+                        }
                     }
                 }
             });

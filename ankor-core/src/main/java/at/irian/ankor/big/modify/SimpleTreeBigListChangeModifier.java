@@ -87,7 +87,9 @@ public class SimpleTreeBigListChangeModifier {
     protected List handleBigList(Ref property, List serializedList) {
         int size = getBigListSize(serializedList);
         Object substitute = getBigListMissingElementSubstitute(serializedList);
-        MissingPropertyActionFiringBigList bigList = new MissingPropertyActionFiringBigList(size, property, substitute);
+        int aheadSendSize = getAheadSendSize(serializedList);
+        MissingPropertyActionFiringBigList bigList = new MissingPropertyActionFiringBigList(size, property, substitute,
+                                                                                            aheadSendSize);
         List initialElements = getBigListInitialElements(serializedList);
         for (int i = 0, len = initialElements.size(); i < len && i < size ; i++) {
             bigList.set(i, initialElements.get(i));
@@ -102,6 +104,11 @@ public class SimpleTreeBigListChangeModifier {
 
     private Object getBigListMissingElementSubstitute(List list) {
         return ((Map) list.get(0)).get(SUBSTITUTE_KEY);
+    }
+
+    private int getAheadSendSize(List list) {
+        Object size = ((Map) list.get(0)).get(AHEAD_SEND_SIZE_KEY);
+        return ((Number)size).intValue();
     }
 
     private List getBigListInitialElements(List list) {
