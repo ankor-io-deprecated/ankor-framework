@@ -8,6 +8,7 @@ import at.irian.ankor.messaging.AnkorIgnore;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.TypedRef;
+import at.irian.ankor.viewmodel.ViewModelBase;
 import at.irian.ankor.viewmodel.diff.ListDiff;
 import at.irian.ankorsamples.animals.domain.animal.Animal;
 import at.irian.ankorsamples.animals.domain.animal.AnimalRepository;
@@ -20,10 +21,9 @@ import java.util.List;
 * @author Thomas Spiegl
 */
 @SuppressWarnings("UnusedDeclaration")
-public class AnimalSearchModel {
+public class AnimalSearchModel extends ViewModelBase {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalSearchModel.class);
 
-    private final Ref myRef;
     private final TypedRef<String> panelNameRef;
     private final TypedRef<String> serverStatusRef;
 
@@ -46,7 +46,7 @@ public class AnimalSearchModel {
                              TypedRef<String> panelNameRef,
                              TypedRef<String> serverStatusRef,
                              AnimalRepository animalRepository) {
-        this.myRef = animalSearchModelRef;
+        super(animalSearchModelRef);
         this.panelNameRef = panelNameRef;
         this.serverStatusRef = serverStatusRef;
         this.animalRepository = animalRepository;
@@ -54,7 +54,7 @@ public class AnimalSearchModel {
         this.selectItems = AnimalSelectItems.create(animalRepository.getAnimalTypes());
         this.animals = new ArrayList<>();
         this.reloadFloodControl = new FloodControl(animalSearchModelRef, 500L);
-        AnkorPatterns.initViewModel(this, animalSearchModelRef);
+        AnkorPatterns.initViewModel(this);
     }
 
     public AnimalSearchFilter getFilter() {
@@ -88,7 +88,7 @@ public class AnimalSearchModel {
                 LOG.info("... finished RELOADING");
 
                 // compare old and new list and apply smart changes
-                Ref listRef = myRef.appendPath("animals");
+                Ref listRef = getRef().appendPath("animals");
                 new ListDiff<>(oldAnimalsList, newAnimalsList)
                         .withThreshold(5) // send whole list if 5 changes or more
                         .applyChangesTo(listRef);
@@ -107,8 +107,8 @@ public class AnimalSearchModel {
 
     @ChangeListener(pattern = ".filter.type")
     public void animalTypeChanged() {
-        Ref familyRef = myRef.appendPath("filter.family");
-        Ref familiesRef = myRef.appendPath("selectItems.families");
+        Ref familyRef = getRef().appendPath("filter.family");
+        Ref familiesRef = getRef().appendPath("selectItems.families");
         new AnimalTypeChangeHandler(animalRepository).handleChange(filter.getType(), familyRef, familiesRef);
     }
 

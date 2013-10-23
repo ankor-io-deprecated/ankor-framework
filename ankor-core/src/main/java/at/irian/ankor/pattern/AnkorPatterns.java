@@ -5,6 +5,7 @@ import at.irian.ankor.change.ChangeRequestEvent;
 import at.irian.ankor.delay.TaskRequestEvent;
 import at.irian.ankor.event.dispatch.EventDispatcher;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.viewmodel.RefAware;
 import at.irian.ankor.viewmodel.ViewModelSupport;
 
 /**
@@ -42,4 +43,11 @@ public final class AnkorPatterns {
         ViewModelSupport.invokePostProcessorsOn(viewModelObject, viewModelRef);
     }
 
+    public static void initViewModel(RefAware viewModelObject) {
+        Ref ref = viewModelObject.getRef();
+        if (ref == null) {
+            throw new IllegalArgumentException("View model object " + viewModelObject + " not properly initialized - no Ref assigned yet.");
+        }
+        ViewModelSupport.invokePostProcessorsOn(viewModelObject, ref);
+    }
 }
