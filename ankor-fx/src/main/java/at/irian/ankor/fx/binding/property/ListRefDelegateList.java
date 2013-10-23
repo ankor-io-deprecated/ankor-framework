@@ -25,7 +25,8 @@ public class ListRefDelegateList<T> extends AbstractList<T> {
 
     @Override
     public int size() {
-        return listRef.<List>getValue().size();
+        List list = listRef.getValue();
+        return list != null ? list.size() : 0;
     }
 
     @Override

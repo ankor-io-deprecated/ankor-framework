@@ -38,7 +38,7 @@ public class ListDiff<E> {
     public void applyChangesTo(List<E> destinationList) {
         List<DiffChange<E>> diffChanges = calcDiffChanges();
 
-        if (diffChanges.size() >= threshold) {
+        if (diffChanges == null) {
             destinationList.clear();
             destinationList.addAll(newList);
             return;
@@ -66,7 +66,7 @@ public class ListDiff<E> {
     public void applyChangesTo(Ref listRef) {
         List<DiffChange<E>> diffChanges = calcDiffChanges();
 
-        if (diffChanges.size() >= threshold) {
+        if (diffChanges == null) {
             listRef.setValue(newList);
             return;
         }
@@ -113,11 +113,16 @@ public class ListDiff<E> {
 
         List<DiffChange<E>> diffChanges = calcDiffChanges();
 
-        if (diffChanges.size() >= threshold) {
+        if (diffChanges == null) {
             listRef.signalValueChange();
             return;
         }
 
+        signalChanges(listRef, diffChanges);
+    }
+
+
+    public static <E> void signalChanges(Ref listRef, List<DiffChange<E>> diffChanges) {
         for (int i = 0, len = diffChanges.size(); i < len; i++) {
             DiffChange<E> diffChange = diffChanges.get(i);
             int index = diffChange.getIndex();
@@ -156,9 +161,22 @@ public class ListDiff<E> {
         }
     }
 
+    public List<DiffChange<E>> calcAllDiffChanges() {
+        return internalCalcDiffChanges(Integer.MAX_VALUE);
+    }
 
-    protected List<DiffChange<E>> calcDiffChanges() {
+    /**
+     * @return null if there are more diffs than this ListDiffs threshold
+     */
+    public List<DiffChange<E>> calcDiffChanges() {
+        return internalCalcDiffChanges(threshold);
+    }
 
+    /**
+     * @param threshold  max number of diffs
+     * @return null if there are more diffs than the given threshold
+     */
+    private List<DiffChange<E>> internalCalcDiffChanges(int threshold) {
         List<DiffChange<E>> result = new ArrayList<DiffChange<E>>();
 
         List<E> list1 = oldList;
@@ -190,14 +208,14 @@ public class ListDiff<E> {
             }
 
             if (result.size() >= threshold) {
-                return result;
+                // shortcut return for situations where diff changes wont be used anyway
+                return null;
             }
 
         }
 
         return result;
     }
-
 
 
     protected static <E> List<E> restOf(List<E> list) {

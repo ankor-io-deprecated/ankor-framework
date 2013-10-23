@@ -17,7 +17,7 @@ public class ListDiffTest {
     public void testCalcDiffChanges_0() throws Exception {
         List<Integer> list1 = Arrays.asList(1, 2, 3);
         List<Integer> list2 = Arrays.asList(1, 2, 3);
-        List<DiffChange<Integer>> diffChanges = new ListDiff<Integer>(list1, list2).calcDiffChanges();
+        List<DiffChange<Integer>> diffChanges = new ListDiff<Integer>(list1, list2).calcAllDiffChanges();
         Assert.assertEquals(list2, apply(list1, diffChanges));
         Assert.assertEquals(0, diffChanges.size());
     }
@@ -26,7 +26,7 @@ public class ListDiffTest {
     public void testCalcDiffChanges_1() throws Exception {
         List<Integer> list1 = Arrays.asList(1, 2, 3);
         List<Integer> list2 = Arrays.asList();
-        List<DiffChange<Integer>> diffChanges = new ListDiff<Integer>(list1, list2).calcDiffChanges();
+        List<DiffChange<Integer>> diffChanges = new ListDiff<Integer>(list1, list2).calcAllDiffChanges();
         Assert.assertEquals(list2, apply(list1, diffChanges));
         Assert.assertEquals(3, diffChanges.size());
     }
@@ -35,7 +35,7 @@ public class ListDiffTest {
     public void testCalcDiffChanges_2() throws Exception {
         List<Integer> list1 = Arrays.asList();
         List<Integer> list2 = Arrays.asList(1, 2, 3);
-        List<DiffChange<Integer>> diffChanges = new ListDiff<Integer>(list1, list2).calcDiffChanges();
+        List<DiffChange<Integer>> diffChanges = new ListDiff<Integer>(list1, list2).calcAllDiffChanges();
         Assert.assertEquals(list2, apply(list1, diffChanges));
         Assert.assertEquals(3, diffChanges.size());
     }
@@ -44,7 +44,7 @@ public class ListDiffTest {
     public void testCalcDiffChanges_3() throws Exception {
         List<Integer> list1 = Arrays.asList(1, 2, 3);
         List<Integer> list2 = Arrays.asList(2, 3);
-        List<DiffChange<Integer>> diffChanges = new ListDiff<Integer>(list1, list2).calcDiffChanges();
+        List<DiffChange<Integer>> diffChanges = new ListDiff<Integer>(list1, list2).calcAllDiffChanges();
         Assert.assertEquals(list2, apply(list1, diffChanges));
         Assert.assertEquals(1, diffChanges.size());
     }
@@ -53,7 +53,7 @@ public class ListDiffTest {
     public void testCalcDiffChanges_4() throws Exception {
         List<Integer> list1 = Arrays.asList(1, 2, 3);
         List<Integer> list2 = Arrays.asList(1, 3);
-        List<DiffChange<Integer>> diffChanges = new ListDiff<Integer>(list1, list2).calcDiffChanges();
+        List<DiffChange<Integer>> diffChanges = new ListDiff<Integer>(list1, list2).calcAllDiffChanges();
         Assert.assertEquals(list2, apply(list1, diffChanges));
         Assert.assertEquals(1, diffChanges.size());
     }
@@ -62,7 +62,7 @@ public class ListDiffTest {
     public void testCalcDiffChanges_5() throws Exception {
         List<Integer> list1 = Arrays.asList(1, 2, 3);
         List<Integer> list2 = Arrays.asList(1, 2);
-        List<DiffChange<Integer>> diffChanges = new ListDiff<Integer>(list1, list2).calcDiffChanges();
+        List<DiffChange<Integer>> diffChanges = new ListDiff<Integer>(list1, list2).calcAllDiffChanges();
         Assert.assertEquals(list2, apply(list1, diffChanges));
         Assert.assertEquals(1, diffChanges.size());
     }
@@ -71,7 +71,7 @@ public class ListDiffTest {
     public void testCalcDiffChanges_6() throws Exception {
         List<Integer> list1 = Arrays.asList(1, 2, 3);
         List<Integer> list2 = Arrays.asList(1, 3, 4);
-        List<DiffChange<Integer>> diffChanges = new ListDiff<Integer>(list1, list2).calcDiffChanges();
+        List<DiffChange<Integer>> diffChanges = new ListDiff<Integer>(list1, list2).calcAllDiffChanges();
         Assert.assertEquals(list2, apply(list1, diffChanges));
         Assert.assertEquals(2, diffChanges.size());
     }
@@ -80,7 +80,7 @@ public class ListDiffTest {
     public void testCalcDiffChanges_7() throws Exception {
         List<Integer> list1 = Arrays.asList(1, 2, 3);
         List<Integer> list2 = Arrays.asList(3, 2, 1);
-        List<DiffChange<Integer>> diffChanges = new ListDiff<Integer>(list1, list2).calcDiffChanges();
+        List<DiffChange<Integer>> diffChanges = new ListDiff<Integer>(list1, list2).calcAllDiffChanges();
         Assert.assertEquals(list2, apply(list1, diffChanges));
         Assert.assertEquals(2, diffChanges.size());
     }
@@ -89,7 +89,7 @@ public class ListDiffTest {
     public void testCalcDiffChanges_8() throws Exception {
         List<Integer> list1 = Arrays.asList(1, 2, 3, 4, 5, 6);
         List<Integer> list2 = Arrays.asList(2, 3, 4, 6, 7, 8);
-        List<DiffChange<Integer>> diffChanges = new ListDiff<Integer>(list1, list2).calcDiffChanges();
+        List<DiffChange<Integer>> diffChanges = new ListDiff<Integer>(list1, list2).calcAllDiffChanges();
         Assert.assertEquals(list2, apply(list1, diffChanges));
         Assert.assertEquals(4, diffChanges.size());
     }
@@ -98,7 +98,7 @@ public class ListDiffTest {
     public void testCalcDiffChanges_9() throws Exception {
         List<Integer> list1 = Arrays.asList(1, 1, 1, 1);
         List<Integer> list2 = Arrays.asList(2, 2, 2, 2);
-        List<DiffChange<Integer>> diffChanges = new ListDiff<Integer>(list1, list2).calcDiffChanges();
+        List<DiffChange<Integer>> diffChanges = new ListDiff<Integer>(list1, list2).calcAllDiffChanges();
         Assert.assertEquals(list2, apply(list1, diffChanges));
         Assert.assertEquals(4, diffChanges.size());
     }
@@ -107,7 +107,7 @@ public class ListDiffTest {
     public void testCalcDiffChanges_10() throws Exception {
         List<Integer> list1 = Arrays.asList(1, 1, 1, 1);
         List<Integer> list2 = Arrays.asList(2, 2, 2, 1);
-        List<DiffChange<Integer>> diffChanges = new ListDiff<Integer>(list1, list2).calcDiffChanges();
+        List<DiffChange<Integer>> diffChanges = new ListDiff<Integer>(list1, list2).calcAllDiffChanges();
         Assert.assertEquals(list2, apply(list1, diffChanges));
         Assert.assertEquals(6, diffChanges.size());
     }
@@ -116,7 +116,7 @@ public class ListDiffTest {
     public void testCalcDiffChanges_11() throws Exception {
         List<Integer> list1 = Arrays.asList(1, 1, 1, 1, 1, 1);
         List<Integer> list2 = Arrays.asList(2, 2, 2, 1, 1, 1);
-        List<DiffChange<Integer>> diffChanges = new ListDiff<Integer>(list1, list2).calcDiffChanges();
+        List<DiffChange<Integer>> diffChanges = new ListDiff<Integer>(list1, list2).calcAllDiffChanges();
         Assert.assertEquals(list2, apply(list1, diffChanges));
         Assert.assertEquals(6, diffChanges.size());
     }

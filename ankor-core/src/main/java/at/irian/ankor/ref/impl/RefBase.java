@@ -128,6 +128,7 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
 
     @Override
     public void signal(Change change) {
+        LOG.debug("{} signal {}", this, change);
         ChangeEvent changeEvent = new ChangeEvent(this, change);
         context().modelContext().getEventDispatcher().dispatch(changeEvent);
     }
@@ -152,7 +153,7 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
             } else if (idx < list.size()) {
                 list.add(idx, value);
             } else {
-                // XXX: Sometimes this gets called with out of bounds indices
+                LOG.warn("Could not handle insert change on {} because index {} is out of bounds", this, idx);
             }
         } else if (listOrArray.getClass().isArray()) {
             int idx = asIndex(key);
@@ -180,7 +181,7 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
             if (idx < list.size()) {
                 list.remove(idx);
             } else {
-                // XXX: Sometimes this gets called with out of bounds indices
+                LOG.warn("Could not handle delete change on {} because index {} is out of bounds", this, idx);
             }
         } else if (listOrArrayOrMap.getClass().isArray()) {
             int idx = asIndex(key);
@@ -215,7 +216,7 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
             Iterator iterator = replacementElements.iterator();
             for (int i = 0, len = replacementElements.size(); i < len; i++) {
                 Object elem = iterator.next();
-                if (i == list.size()) {
+                if (fromIdx + i >= list.size()) {
                     list.add(elem);
                 } else {
                     list.set(fromIdx + i, elem);

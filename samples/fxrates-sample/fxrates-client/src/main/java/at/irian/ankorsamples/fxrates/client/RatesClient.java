@@ -25,8 +25,6 @@ public class RatesClient extends javafx.application.Application {
                 .withLocalHost(parseHost("client@localhost:9090"))
                 .withServerHost(parseHost("server@localhost:8080"));
         refFactory = appBuilder.createAndStartClientSystem();
-        // Init Ankor Model
-        refFactory.ref("root").fire(new Action("init"));
         // Launch Java FX App
         launch(args);
     }
@@ -37,6 +35,9 @@ public class RatesClient extends javafx.application.Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        // Init Ankor Model
+        refFactory.ref("root").fire(new Action("init"));
+
         stage.setTitle("FX Rates Sample");
         Pane pane = FXMLLoader.load(getClass().getClassLoader().getResource("rates.fxml"));
         Scene scene = new Scene(pane);

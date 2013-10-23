@@ -4,7 +4,6 @@ import akka.actor.ActorRef;
 import akka.actor.PoisonPill;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
-import akka.routing.RoundRobinRouter;
 import at.irian.ankor.context.ModelContext;
 import com.typesafe.config.Config;
 
@@ -15,8 +14,10 @@ public class ControllerActor extends UntypedActor {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ControllerActor.class);
 
     public static Props props(Config config) {
-        int nrOfInstances = config.getInt("at.irian.ankor.akka.ControllerActor.poolSize");
-        return Props.create(ControllerActor.class).withRouter(new RoundRobinRouter(nrOfInstances));
+//        int nrOfInstances = config.getInt("at.irian.ankor.akka.ControllerActor.poolSize");
+//        return Props.create(ControllerActor.class).withRouter(new RoundRobinRouter(nrOfInstances));
+        // todo   controller must not be pooled, because otherwise the event dispatching order is no longer guaranteed
+        return Props.create(ControllerActor.class);
     }
 
     public static String name() {

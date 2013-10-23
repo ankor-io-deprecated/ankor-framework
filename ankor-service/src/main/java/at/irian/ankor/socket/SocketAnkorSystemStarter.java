@@ -5,6 +5,7 @@ import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.delay.AkkaScheduler;
 import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.event.dispatch.AkkaEventDispatcherFactory;
+import at.irian.ankor.event.dispatch.JavaFxEventDispatcherFactory;
 import at.irian.ankor.messaging.json.simpletree.SimpleTreeJsonMessageMapper;
 import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
 import at.irian.ankor.ref.RefContext;
@@ -128,8 +129,8 @@ public class SocketAnkorSystemStarter {
 
         AnkorSystem clientSystem = builder
                 .withMessageBus(clientMessageLoop.getMessageBus())
+                .withDispatcherFactory(new JavaFxEventDispatcherFactory())
                 .createClient();
-
 
         // start
         clientSystem.start();

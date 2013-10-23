@@ -10,10 +10,7 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Thomas Spiegl
@@ -84,6 +81,7 @@ public class RatesRepository {
         if (currentRate != null) {
             rates.add(getRate(currentRate));
         }
+        Collections.sort(rates);
         return rates;
     }
 

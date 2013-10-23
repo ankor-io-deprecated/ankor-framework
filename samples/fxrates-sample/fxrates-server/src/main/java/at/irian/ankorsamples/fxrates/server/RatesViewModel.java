@@ -1,10 +1,14 @@
 package at.irian.ankorsamples.fxrates.server;
 
+import at.irian.ankor.annotation.AnkorWatched;
 import at.irian.ankor.messaging.AnkorIgnore;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.viewmodel.ViewModelListProperty;
+import at.irian.ankor.viewmodel.ViewModelBase;
+import at.irian.ankor.viewmodel.watch.ExtendedList;
+import at.irian.ankor.viewmodel.watch.ExtendedListWrapper;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -13,19 +17,23 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Thomas Spiegl
  */
-public class RatesViewModel {
+@SuppressWarnings("UnusedDeclaration")
+public class RatesViewModel extends ViewModelBase {
 
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RatesViewModel.class);
 
     @AnkorIgnore
     private final RatesRepository repository;
 
-    private ViewModelListProperty<List<Rate>> rates;
+    @AnkorWatched(diffThreshold = 20)
+    private ExtendedList<Rate> rates;
 
     public RatesViewModel(Ref viewModelRef, RatesRepository repository) {
+        super(viewModelRef);
         this.repository = repository;
-        this.rates = new ViewModelListProperty<>(viewModelRef, "rates");
-        schedulePeriodicRatesUpdate(4);
+        this.rates = new ExtendedListWrapper<>(new ArrayList<Rate>());
+        AnkorPatterns.initViewModel(this);
+        schedulePeriodicRatesUpdate(2);
     }
 
     private void schedulePeriodicRatesUpdate(long seconds) {
@@ -35,7 +43,14 @@ public class RatesViewModel {
             public void run() {
                 try {
                     // update rates
-                    AnkorPatterns.changeValueLater(rates.getRef(), repository.getRates());
+                    final List<Rate> newRates = repository.getRates();
+                    AnkorPatterns.runLater(getRef(), new Runnable() {
+                        @Override
+                        public void run() {
+                            rates.setAll(newRates);
+                        }
+                    });
+
                 } catch (RuntimeException e) {
                     e.printStackTrace();
                 }
@@ -43,7 +58,7 @@ public class RatesViewModel {
         }, 0, seconds, TimeUnit.SECONDS);
     }
 
-    public ViewModelListProperty<List<Rate>> getRates() {
+    public ExtendedList<Rate> getRates() {
         return rates;
     }
 }

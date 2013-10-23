@@ -5,7 +5,8 @@ import java.math.BigDecimal;
 /**
  * @author Thomas Spiegl
  */
-public class Rate {
+@SuppressWarnings("UnusedDeclaration")
+public class Rate implements Comparable<Rate> {
 
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(Rate.class);
     private final String symbol;
@@ -54,6 +55,7 @@ public class Rate {
         return last;
     }
 
+    @SuppressWarnings("RedundantIfStatement")
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -74,5 +76,10 @@ public class Rate {
     @Override
     public int hashCode() {
         return symbol.hashCode();
+    }
+
+    @Override
+    public int compareTo(Rate o) {
+        return symbol.compareTo(o.symbol);
     }
 }
