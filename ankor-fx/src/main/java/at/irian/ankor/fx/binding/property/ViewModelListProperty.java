@@ -5,7 +5,6 @@ import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.listener.RefChangeListener;
 import at.irian.ankor.ref.listener.RefListeners;
-import javafx.application.Platform;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -42,58 +41,16 @@ public class ViewModelListProperty<T> extends SimpleListProperty<T> implements R
             @Override
             public void run() {
                 final DelegateObservableList<T> observableList = (DelegateObservableList<T>) getValue();
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        LOG.debug("refreshing observable list {}, new list size is {}", listRef, observableList.size());
-                        observableList.callObservers(new BulkUpdateChange<>(observableList));
-                    }
-                });
-//                final ObservableList<T> observableList = getValue();
-//                Platform.runLater(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        LOG.debug("refreshing observable list {}, new list size is {}", listRef, observableList.size());
-//                        observableList.callObservers(new BulkUpdateChange<>(observableList));
-//                    }
-//                });
+                LOG.debug("refreshing observable list {} with size {}", listRef, observableList.size());
+                observableList.callObservers(new BulkUpdateChange<>(observableList));
             }
         });
-
-//
-//        floodControl.control(new Runnable() {
-//            @Override
-//            public void run() {
-//
-//                DelegateObservableList<T> observableList = (DelegateObservableList<T>) getValue();
-//                observableList.callObservers();
-//
-////                Platform.runLater(new Runnable() {
-////                    @Override
-////                    public void run() {
-////                        DelegateObservableList<T> observableList = (DelegateObservableList<T>) getValue();
-////                        observableList.callObservers();
-////                        observableList.clear();
-////                        Object value = listRef.getValue();
-////                        if (value != null) {
-////                            if (value instanceof Collection) {
-////                                //noinspection unchecked
-////                                observableList.addAll((Collection<T>) value);
-////                            } else {
-////                                LOG.error("Expected value of type Collection, but value of {} is of type {}", listRef, value.getClass().getName());
-////                            }
-////                        }
-////                    }
-////                });
-//
-//            }
-//        });
     }
 
     @Override
     public void set(ObservableList<T> value) {
         super.set(value);
-        AnkorPatterns.changeValueLater(listRef, value);
+        AnkorPatterns.changeValueLater(listRef, value); // we must not directly access the model context from a non-dispatching thread
     }
 
     private static class BulkUpdateChange<T> extends ListChangeListener.Change<T> {

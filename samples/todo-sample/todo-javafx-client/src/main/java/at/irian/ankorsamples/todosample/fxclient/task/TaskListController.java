@@ -105,7 +105,7 @@ public class TaskListController implements Initializable {
     @ChangeListener(pattern = "root.model.(tasks)")
     public void renderTasks(Ref tasksRef) {
         List<LinkedHashMap<String, Object>> tasks = tasksRef.getValue();
-        Platform.runLater(new TaskLoader(tasks));
+        Platform.runLater(new TaskLoader(tasks));      // todo  runLater still necessary?
     }
 
     @FXML

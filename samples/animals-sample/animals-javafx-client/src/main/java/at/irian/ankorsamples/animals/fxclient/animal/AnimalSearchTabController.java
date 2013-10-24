@@ -92,7 +92,7 @@ public class AnimalSearchTabController extends BaseTabController {
                     public void handle(TableColumn.CellEditEvent<Map, String> t) {
                         int rowNum = t.getTablePosition().getRow();
                         Ref rowNameRef = getTabRef().appendPath(String.format("model.animals[%d].name", rowNum));
-                        AnkorPatterns.changeValueLater(rowNameRef, t.getNewValue());
+                        AnkorPatterns.changeValueLater(rowNameRef, t.getNewValue()); // we must not directly access the model context from a non-dispatching thread
                     }
                 });
 

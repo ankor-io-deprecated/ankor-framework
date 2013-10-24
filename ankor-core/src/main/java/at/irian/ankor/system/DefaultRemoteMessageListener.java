@@ -6,6 +6,7 @@ import at.irian.ankor.context.ModelContextManager;
 import at.irian.ankor.messaging.ActionMessage;
 import at.irian.ankor.messaging.ChangeMessage;
 import at.irian.ankor.messaging.Message;
+import at.irian.ankor.messaging.RemoteMessageListener;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
@@ -21,16 +22,16 @@ import static at.irian.ankor.system.RemoteEvent.createChangeEvent;
  *
 * @author Manfred Geiler
 */
-public class DefaultMessageListener implements ActionMessage.Listener, ChangeMessage.Listener {
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(DefaultMessageListener.class);
+public class DefaultRemoteMessageListener implements RemoteMessageListener {
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(DefaultRemoteMessageListener.class);
 
     private final ModelContextManager modelContextManager;
     private final SessionManager sessionManager;
     private final ModelRootFactory modelRootFactory;
 
-    DefaultMessageListener(ModelContextManager modelContextManager,
-                           SessionManager sessionManager,
-                           ModelRootFactory modelRootFactory) {
+    DefaultRemoteMessageListener(ModelContextManager modelContextManager,
+                                 SessionManager sessionManager,
+                                 ModelRootFactory modelRootFactory) {
         this.modelContextManager = modelContextManager;
         this.sessionManager = sessionManager;
         this.modelRootFactory = modelRootFactory;
@@ -54,7 +55,7 @@ public class DefaultMessageListener implements ActionMessage.Listener, ChangeMes
         if (actionProperty.isRoot() && actionProperty.getValue() == null) {
             // this model root does not yet exist
             Object modelRoot = modelRootFactory.createModelRoot(actionProperty);
-            AnkorPatterns.changeValueLater(actionProperty, modelRoot);
+            AnkorPatterns.changeValueLater(actionProperty, modelRoot); // we must not directly access the model context from a non-dispatching thread
         }
 
         Action action = message.getAction();

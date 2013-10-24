@@ -1,6 +1,7 @@
 package at.irian.ankorsamples.animals.viewmodel.animal;
 
 import at.irian.ankor.annotation.ActionListener;
+import at.irian.ankor.annotation.AnkorWatched;
 import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.big.AnkorBigList;
 import at.irian.ankor.delay.FloodControl;
@@ -9,7 +10,8 @@ import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.TypedRef;
 import at.irian.ankor.viewmodel.ViewModelBase;
-import at.irian.ankor.viewmodel.diff.ListDiff;
+import at.irian.ankor.viewmodel.watch.ExtendedList;
+import at.irian.ankor.viewmodel.watch.ExtendedListWrapper;
 import at.irian.ankorsamples.animals.domain.animal.Animal;
 import at.irian.ankorsamples.animals.domain.animal.AnimalRepository;
 import at.irian.ankorsamples.animals.viewmodel.PanelNameCreator;
@@ -36,11 +38,12 @@ public class AnimalSearchModel extends ViewModelBase {
 
     private AnimalSelectItems selectItems;
 
-    @AnkorBigList( missingElementSubstitute = EmptyAnimal.class,
-                   threshold = 1000,
-                   initialSize = 10,
-                   chunkSize = 10)
-    private List<Animal> animals;
+    @AnkorBigList(missingElementSubstitute = EmptyAnimal.class,
+                  threshold = 1000,
+                  initialSize = 10,
+                  chunkSize = 10)
+    @AnkorWatched(diffThreshold = 20)
+    private ExtendedList<Animal> animals;
 
     public AnimalSearchModel(Ref animalSearchModelRef,
                              TypedRef<String> panelNameRef,
@@ -52,7 +55,7 @@ public class AnimalSearchModel extends ViewModelBase {
         this.animalRepository = animalRepository;
         this.filter = new AnimalSearchFilter();
         this.selectItems = AnimalSelectItems.create(animalRepository.getAnimalTypes());
-        this.animals = new ArrayList<>();
+        this.animals = new ExtendedListWrapper<>(new ArrayList<Animal>());
         this.reloadFloodControl = new FloodControl(animalSearchModelRef, 500L);
         AnkorPatterns.initViewModel(this);
     }
@@ -65,12 +68,8 @@ public class AnimalSearchModel extends ViewModelBase {
         return selectItems;
     }
 
-    public List<Animal> getAnimals() {
+    public ExtendedList<Animal> getAnimals() {
         return animals;
-    }
-
-    public void setAnimals(List<Animal> animals) {
-        this.animals = animals;
     }
 
     @ChangeListener(pattern = {".filter.**"})
@@ -79,19 +78,12 @@ public class AnimalSearchModel extends ViewModelBase {
             @Override
             public void run() {
 
-                // remember old values for later diff
-                List<Animal> oldAnimalsList = animals;
-
                 // get new list from database
                 LOG.info("RELOADING animals ...");
                 List<Animal> newAnimalsList = animalRepository.searchAnimals(filter, 0, Integer.MAX_VALUE);
                 LOG.info("... finished RELOADING");
 
-                // compare old and new list and apply smart changes
-                Ref listRef = getRef().appendPath("animals");
-                new ListDiff<>(oldAnimalsList, newAnimalsList)
-                        .withThreshold(5) // send whole list if 5 changes or more
-                        .applyChangesTo(listRef);
+                animals.setAll(newAnimalsList);
 
                 // reset server status display
                 serverStatusRef.setValue("");

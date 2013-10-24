@@ -3,9 +3,8 @@ package at.irian.ankor.system;
 import at.irian.ankor.context.ModelContextManager;
 import at.irian.ankor.messaging.MessageBus;
 import at.irian.ankor.messaging.MessageFactory;
-import at.irian.ankor.messaging.MessageListener;
+import at.irian.ankor.messaging.RemoteMessageListener;
 import at.irian.ankor.ref.RefContextFactory;
-import at.irian.ankor.session.ModelRootFactory;
 import at.irian.ankor.session.SessionManager;
 
 /**
@@ -26,7 +25,7 @@ public class AnkorSystem {
     private final RefContextFactory refContextFactory;
     private final ModelContextManager modelContextManager;
     private final SessionManager sessionManager;
-    private final MessageListener messageListener;
+    private final RemoteMessageListener remoteMessageListener;
 
     protected AnkorSystem(String systemName,
                           MessageFactory messageFactory,
@@ -34,14 +33,14 @@ public class AnkorSystem {
                           RefContextFactory refContextFactory,
                           ModelContextManager modelContextManager,
                           SessionManager sessionManager,
-                          ModelRootFactory modelRootFactory) {
+                          RemoteMessageListener remoteMessageListener) {
         this.systemName = systemName;
         this.messageFactory = messageFactory;
         this.messageBus = messageBus;
         this.refContextFactory = refContextFactory;
         this.modelContextManager = modelContextManager;
         this.sessionManager = sessionManager;
-        this.messageListener = new DefaultMessageListener(modelContextManager, sessionManager, modelRootFactory);
+        this.remoteMessageListener = remoteMessageListener;
     }
 
     public String getSystemName() {
@@ -76,14 +75,14 @@ public class AnkorSystem {
 
     public void start() {
         LOG.info("Starting {}", this);
-        messageBus.registerMessageListener(messageListener);
+        messageBus.registerMessageListener(remoteMessageListener);
     }
 
 
     @SuppressWarnings("UnusedDeclaration")
     public void stop() {
         LOG.info("Stopping {}", this);
-        messageBus.unregisterMessageListener(messageListener);
+        messageBus.unregisterMessageListener(remoteMessageListener);
     }
 
 }

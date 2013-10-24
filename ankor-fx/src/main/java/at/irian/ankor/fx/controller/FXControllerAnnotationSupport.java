@@ -13,8 +13,7 @@ public final class FXControllerAnnotationSupport {
 
     public static void scan(Ref controllerRef, Object controller) {
         new BeanAnnotationScanner().scan(controller,
-                                         controllerRef
-        );
+                                         controllerRef);
     }
 
 }

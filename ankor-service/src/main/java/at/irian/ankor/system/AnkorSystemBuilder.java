@@ -131,8 +131,7 @@ public class AnkorSystemBuilder {
 
         MessageFactory messageFactory = getServerMessageFactory();
 
-        SessionFactory sessionFactory = new ServerSessionFactory(
-                refContextFactory,
+        SessionFactory sessionFactory = new ServerSessionFactory(refContextFactory,
                                                                  eventDispatcherFactory,
                                                                  messageBus);
         SessionManager sessionManager = new DefaultSessionManager(sessionFactory);
@@ -149,10 +148,16 @@ public class AnkorSystemBuilder {
 
         ModelContextManager modelContextManager = new DefaultModelContextManager(modelContextFactory);
 
-        return new AnkorSystem(systemName, messageFactory, messageBus, refContextFactory,
+        RemoteMessageListener remoteMessageListener = new DefaultRemoteMessageListener(modelContextManager,
+                                                                                       sessionManager,
+                                                                                       modelRootFactory);
+        return new AnkorSystem(systemName,
+                               messageFactory,
+                               messageBus,
+                               refContextFactory,
                                modelContextManager,
                                sessionManager,
-                               modelRootFactory);
+                               remoteMessageListener);
     }
 
     private Modifier getDefaultModifier() {
@@ -202,10 +207,16 @@ public class AnkorSystemBuilder {
 
         ModelContextManager modelContextManager = new SingletonModelContextManager(modelContextId, modelContext);
 
-        return new AnkorSystem(systemName, messageFactory, messageBus, refContextFactory,
+        RemoteMessageListener remoteMessageListener = new DefaultRemoteMessageListener(modelContextManager,
+                                                                                       sessionManager,
+                                                                                       modelRootFactory);
+        return new AnkorSystem(systemName,
+                               messageFactory,
+                               messageBus,
+                               refContextFactory,
                                modelContextManager,
                                sessionManager,
-                               modelRootFactory);
+                               remoteMessageListener);
     }
 
 

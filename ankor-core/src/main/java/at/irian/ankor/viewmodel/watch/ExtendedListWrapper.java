@@ -1,5 +1,7 @@
 package at.irian.ankor.viewmodel.watch;
 
+import at.irian.ankor.messaging.AnkorIgnore;
+
 import java.util.List;
 
 /**
@@ -8,6 +10,7 @@ import java.util.List;
 public class ExtendedListWrapper<E> extends AbstractExtendedList<E> {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ExtendedListWrapper.class);
 
+    @AnkorIgnore
     protected final List<E> wrappedList;
 
     public ExtendedListWrapper(List<E> wrappedList) {
