@@ -1,5 +1,6 @@
 package at.irian.ankorsamples.todosample.fxclient;
 
+import at.irian.ankor.event.dispatch.JavaFxEventDispatcherFactory;
 import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefFactory;
@@ -26,7 +27,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class App extends Application {
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(App.class);
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(App.class);
 
     private static final String DEFAULT_SERVER = "wss://ankor-todo-sample.irian.at";
     private static final String DEFAULT_ENDPOINT = "/websocket/ankor";
@@ -85,6 +86,7 @@ public class App extends Application {
         final AnkorSystemBuilder systemBuilder = new AnkorSystemBuilder()
                 .withName(clientId)
                 .withMessageBus(messageBus)
+                .withDispatcherFactory(new JavaFxEventDispatcherFactory())
                 .withModelContextId("collabTest");
 
         final CountDownLatch latch = new CountDownLatch(1);

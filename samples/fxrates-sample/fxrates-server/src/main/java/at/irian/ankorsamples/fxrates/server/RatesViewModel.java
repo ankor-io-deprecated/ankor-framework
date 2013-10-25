@@ -25,7 +25,7 @@ public class RatesViewModel extends ViewModelBase {
     @AnkorIgnore
     private final RatesRepository repository;
 
-    @AnkorWatched(diffThreshold = 20)
+    @AnkorWatched(diffThreshold = 30)
     private ExtendedList<Rate> rates;
 
     public RatesViewModel(Ref viewModelRef, RatesRepository repository) {
@@ -44,6 +44,7 @@ public class RatesViewModel extends ViewModelBase {
                 try {
                     // update rates
                     final List<Rate> newRates = repository.getRates();
+                    // Run later is necessary because we are outside of Ankor dispatching:
                     AnkorPatterns.runLater(getRef(), new Runnable() {
                         @Override
                         public void run() {

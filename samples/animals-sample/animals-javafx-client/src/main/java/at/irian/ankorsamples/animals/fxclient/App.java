@@ -1,5 +1,6 @@
 package at.irian.ankorsamples.animals.fxclient;
 
+import at.irian.ankor.event.dispatch.JavaFxEventDispatcherFactory;
 import at.irian.ankor.http.ClientHttpMessageLoop;
 import at.irian.ankor.http.ServerHost;
 import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
@@ -153,6 +154,7 @@ public class App extends javafx.application.Application {
         final AnkorSystemBuilder systemBuilder = new AnkorSystemBuilder()
                 .withName(clientId)
                 .withMessageBus(messageBus)
+                .withDispatcherFactory(new JavaFxEventDispatcherFactory())
                 .withModelContextId("collabTest");
 
         final CountDownLatch latch = new CountDownLatch(1);
@@ -289,6 +291,7 @@ public class App extends javafx.application.Application {
                 //.withGlobalEventListener(new FXControllerChangeListener())
                 .withMessageBus(clientMessageLoop.getMessageBus())
                 .withModelContextId("collabTest")
+                .withDispatcherFactory(new JavaFxEventDispatcherFactory())
                 .createClient();
 
         // start
