@@ -39,6 +39,12 @@
             <version>1.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk</artifactId>
+            <version>1.6.2</version>
+        </dependency>
+
         <!-- These are required for ContainerProvider.getWebSocketContainer() to work -->
         <!-- https://blogs.oracle.com/arungupta/entry/websocket_java_client_api_in -->
         <dependency>

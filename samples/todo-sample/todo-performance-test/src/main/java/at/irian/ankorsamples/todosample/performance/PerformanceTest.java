@@ -2,10 +2,13 @@ package at.irian.ankorsamples.todosample.performance;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.ref.Ref;
+import com.amazonaws.services.ec2.AmazonEC2;
+import org.glassfish.tyrus.client.ClientManager;
 
 import javax.websocket.*;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.Socket;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,14 +23,17 @@ public class PerformanceTest {
     private static final String DEFAULT_SERVER = "wss://ankor-todo-sample.irian.at";
     //private static final String DEFAULT_SERVER = "ws://localhost:8080";
     private static final String DEFAULT_ENDPOINT = "/websocket/ankor";
-    private static final int NUM_CONNECTIONS = 500;
+    private static final int NUM_CONNECTIONS = 501;
     private static final int WAIT_MAX = 2000;
     private static final long HEARTBEAT_INTERVAL = 5000;
-    private static final long NEW_CONNECTION_INTERVAL = 500;
+    private static final long NEW_CONNECTION_INTERVAL = 100;
     private final ScheduledExecutorService pool = Executors.newScheduledThreadPool(200);
     private final ScheduledExecutorService timer = Executors.newSingleThreadScheduledExecutor();
     private final AtomicInteger connectedClients = new AtomicInteger(0);
     private Random rand = new Random();
+
+
+    static AmazonEC2 ec2;
 
     public static void main(String[] args) {
         PerformanceTest t = new PerformanceTest();
@@ -37,15 +43,16 @@ public class PerformanceTest {
     public void start() {
         for (int i = 0; i < NUM_CONNECTIONS; i++) {
             final int ii = i;
+            final ClientManager container = ClientManager.createClient();
+            // WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             pool.schedule(new Runnable() {
                 @Override
                 public void run() {
                     try {
                         String uri = DEFAULT_SERVER + DEFAULT_ENDPOINT;
-                        WebSocketContainer container = ContainerProvider.getWebSocketContainer();
                         LOG.debug("Connect to server, nr. {}", ii);
                         container.connectToServer(new DummyEndpoint(), URI.create(uri));
-                    } catch (DeploymentException | IOException e) {
+                    } catch (DeploymentException e) {
                         LOG.error("Retrying nr. {}", ii);
                         pool.schedule(this, NEW_CONNECTION_INTERVAL, TimeUnit.MILLISECONDS);
                     }
@@ -80,6 +87,7 @@ public class PerformanceTest {
                         idReceived = true;
                         id = message;
 
+                        // send init
                         String s = "{\"senderId\":\"SENDER_ID\",\"modelId\":\"MODEL_ID\",\"messageId\":\"SENDER_ID#NUM\",\"property\":\"root\",\"action\":\"init\"}";
                         s = s.replaceAll("SENDER_ID", id);
                         s = s.replaceAll("MODEL_ID", modelId);
@@ -129,10 +137,10 @@ public class PerformanceTest {
     }
 
     class RandomInteraction implements Runnable {
-        private Ref rootRef;
+        private Socket socket;
 
-        public RandomInteraction(Ref rootRef) {
-            this.rootRef = rootRef;
+        public RandomInteraction(Socket socket) {
+            this.socket = socket;
         }
 
         @Override

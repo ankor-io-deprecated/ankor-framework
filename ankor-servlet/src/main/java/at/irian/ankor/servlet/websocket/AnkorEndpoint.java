@@ -41,11 +41,11 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
     /**
      * Must be greater than the clients heartbeat interval.
      */
-    private static final int TIMEOUT = 10000;
+    private static final int TIMEOUT = 30000;
     /**
      * The frequency of timeout checks.
      */
-    private static final int TIMEOUT_CHECK_INTERVAL = 5000;
+    private static final int TIMEOUT_CHECK_INTERVAL = 15000;
 
     private static ScheduledExecutorService timer = Executors.newSingleThreadScheduledExecutor();
 
@@ -56,7 +56,6 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
     private static Set<String> uniqueIds = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
     private String clientId;
     private long lastSeen;
-    private Runnable heartbeat;
 
     public AnkorEndpoint() {
         LOG.info("Creating new Endpoint");
@@ -110,7 +109,7 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
      * @param session The WebSocket session.
      */
     private void watchForTimeout(final Session session) {
-        heartbeat = new Runnable() {
+        Runnable heartbeat = new Runnable() {
 
             private long lastCheck = System.currentTimeMillis();
 
