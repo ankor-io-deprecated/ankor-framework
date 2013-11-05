@@ -1,6 +1,7 @@
 package at.irian.ankor.viewmodel.diff;
 
 import at.irian.ankor.change.Change;
+import at.irian.ankor.event.source.Source;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.impl.RefImplementor;
 
@@ -109,7 +110,7 @@ public class ListDiff<E> {
         }
     }
 
-    public void signalChangesFor(Ref listRef) {
+    public void signalChangesFor(Source source, Ref listRef) {
 
         List<DiffChange<E>> diffChanges = calcDiffChanges();
 
@@ -118,20 +119,20 @@ public class ListDiff<E> {
             return;
         }
 
-        signalChanges(listRef, diffChanges);
+        signalChanges(source, listRef, diffChanges);
     }
 
 
-    public static <E> void signalChanges(Ref listRef, List<DiffChange<E>> diffChanges) {
+    public static <E> void signalChanges(Source source, Ref listRef, List<DiffChange<E>> diffChanges) {
         for (int i = 0, len = diffChanges.size(); i < len; i++) {
             DiffChange<E> diffChange = diffChanges.get(i);
             int index = diffChange.getIndex();
             switch (diffChange.getType()) {
                 case deleteElement:
-                    ((RefImplementor)listRef).signal(Change.deleteChange(index));
+                    ((RefImplementor)listRef).signal(source, Change.deleteChange(index));
                     break;
                 case insertElement:
-                    ((RefImplementor)listRef).signal(Change.insertChange(index, diffChange.getElement()));
+                    ((RefImplementor)listRef).signal(source, Change.insertChange(index, diffChange.getElement()));
                     break;
                 case replaceElement:
                     // examine next elements to combine multiple replaces to one ref.replace call
@@ -148,10 +149,10 @@ public class ListDiff<E> {
                         for (int k = 0; k < j; k++) {
                             replaceElements.add(diffChanges.get(i + k).getElement());
                         }
-                        ((RefImplementor)listRef).signal(Change.replaceChange(index, replaceElements));
+                        ((RefImplementor)listRef).signal(source, Change.replaceChange(index, replaceElements));
                         i = i + j - 1;
                     } else {
-                        ((RefImplementor)listRef.appendIndex(index)).signal(Change.valueChange(diffChange.getElement()));
+                        ((RefImplementor)listRef.appendIndex(index)).signal(source, Change.valueChange(diffChange.getElement()));
                     }
                     break;
                 case none:

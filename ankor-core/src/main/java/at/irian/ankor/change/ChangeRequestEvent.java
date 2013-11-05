@@ -2,6 +2,7 @@ package at.irian.ankor.change;
 
 import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.event.ModelPropertyEvent;
+import at.irian.ankor.event.source.Source;
 import at.irian.ankor.ref.Ref;
 
 /**
@@ -16,18 +17,19 @@ import at.irian.ankor.ref.Ref;
  *
  * @author Manfred Geiler
  */
+@Deprecated  //todo  can't we handle this generally by using "runLater" instead?
 public class ChangeRequestEvent extends ModelPropertyEvent {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ChangeRequestEvent.class);
 
     private final Change change;
 
-    public ChangeRequestEvent(Ref propertyToChange, Change change) {
-        super(propertyToChange);
+    public ChangeRequestEvent(Source source, Ref propertyToChange, Change change) {
+        super(source, propertyToChange);
         this.change = change;
     }
 
     public Ref getPropertyToChange() {
-        return getSourceProperty();
+        return getProperty();
     }
 
     public Change getChange() {

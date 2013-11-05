@@ -1,6 +1,7 @@
 package at.irian.ankor.session;
 
 import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.event.source.CustomSource;
 import at.irian.ankor.messaging.MessageSender;
 import at.irian.ankor.ref.RefContext;
 
@@ -24,7 +25,8 @@ public class ServerSession implements Session {
 
     @Override
     public void init() {
-        refContext.modelContext().getEventDispatcher().dispatch(new SessionInitEvent(this));
+        refContext.modelContext().getEventDispatcher().dispatch(new SessionInitEvent(new CustomSource(this),
+                                                                                     this));
     }
 
     @Override

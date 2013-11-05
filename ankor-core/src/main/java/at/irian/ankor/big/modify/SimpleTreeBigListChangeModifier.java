@@ -112,7 +112,7 @@ public class SimpleTreeBigListChangeModifier {
     }
 
     private List getBigListInitialElements(List list) {
-        List initialList = (List) ((Map) list.get(0)).get(INITIAL_SIZE_KEY);
+        List initialList = (List) ((Map) list.get(0)).get(INITIAL_LIST_KEY);
         if (initialList != null) {
             return initialList;
         } else {

@@ -150,7 +150,8 @@ public class AnkorSystemBuilder {
 
         RemoteMessageListener remoteMessageListener = new DefaultRemoteMessageListener(modelContextManager,
                                                                                        sessionManager,
-                                                                                       modelRootFactory);
+                                                                                       modelRootFactory,
+                                                                                       modifier);
         return new AnkorSystem(systemName,
                                messageFactory,
                                messageBus,
@@ -209,7 +210,8 @@ public class AnkorSystemBuilder {
 
         RemoteMessageListener remoteMessageListener = new DefaultRemoteMessageListener(modelContextManager,
                                                                                        sessionManager,
-                                                                                       modelRootFactory);
+                                                                                       modelRootFactory,
+                                                                                       modifier);
         return new AnkorSystem(systemName,
                                messageFactory,
                                messageBus,
@@ -227,9 +229,6 @@ public class AnkorSystemBuilder {
                                                              Modifier modifier) {
 
         EventListeners eventListeners = new ArrayListEventListeners();
-
-        // remote actions and changes listener
-        eventListeners.add(new RemoteEventListener(modifier));
 
         // action event listener for sending action events to remote partner
         eventListeners.add(new RemoteNotifyActionEventListener(messageFactory, sessionManager, modifier));

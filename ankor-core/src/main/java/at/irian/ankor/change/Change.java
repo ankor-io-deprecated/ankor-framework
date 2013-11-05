@@ -7,8 +7,22 @@ import java.util.Collection;
  */
 public class Change {
 
+    // fields immutable but not marked finally for easier deserialization (todo: deserialization factory)
+
+    /**
+     * Type of this change.
+     */
     private ChangeType type;
+
+    /**
+     * (Optional) key or index of this change for change types {@link ChangeType#insert},
+     * {@link ChangeType#delete}, and {@link ChangeType#replace}.
+     */
     private Object key;
+
+    /**
+     * Value of this change.
+     */
     private Object value;
 
     /**

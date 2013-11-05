@@ -2,6 +2,7 @@ package at.irian.ankor.servlet.polling;
 
 import at.irian.ankor.event.ModelEvent;
 import at.irian.ankor.event.ModelEventListener;
+import at.irian.ankor.event.source.Source;
 
 /**
  * @author Manfred Geiler
@@ -9,7 +10,7 @@ import at.irian.ankor.event.ModelEventListener;
 public class RequestFinishedEvent extends ModelEvent {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RequestFinishedEvent.class);
 
-    public RequestFinishedEvent(Object source) {
+    public RequestFinishedEvent(Source source) {
         super(source);
     }
 

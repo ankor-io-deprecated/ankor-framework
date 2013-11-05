@@ -2,6 +2,7 @@ package at.irian.ankor.action;
 
 import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.event.ModelPropertyEvent;
+import at.irian.ankor.event.source.Source;
 import at.irian.ankor.ref.Ref;
 
 /**
@@ -11,13 +12,13 @@ public class ActionEvent extends ModelPropertyEvent {
 
     private final Action action;
 
-    public ActionEvent(Ref actionProperty, Action action) {
-        super(actionProperty);
+    public ActionEvent(Source source, Ref actionProperty, Action action) {
+        super(source, actionProperty);
         this.action = action;
     }
 
     public Ref getActionProperty() {
-        return getSourceProperty();
+        return getProperty();
     }
 
     public Action getAction() {

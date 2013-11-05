@@ -13,7 +13,7 @@ public class ChangeRequestEventListener implements ModelEventListener {
     public void processChangeRequest(ChangeRequestEvent changeRequestEvent) {
         Ref propertyToChange = changeRequestEvent.getPropertyToChange();
         Change change = changeRequestEvent.getChange();
-        ((RefImplementor)propertyToChange).apply(change);
+        ((RefImplementor)propertyToChange).apply(changeRequestEvent.getSource(), change);
     }
 
     @Override

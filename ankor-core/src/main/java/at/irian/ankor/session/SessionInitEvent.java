@@ -2,6 +2,7 @@ package at.irian.ankor.session;
 
 import at.irian.ankor.event.ModelEvent;
 import at.irian.ankor.event.ModelEventListener;
+import at.irian.ankor.event.source.Source;
 
 /**
  * @author Manfred Geiler
@@ -9,12 +10,15 @@ import at.irian.ankor.event.ModelEventListener;
 public class SessionInitEvent extends ModelEvent {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SessionInitEvent.class);
 
-    public SessionInitEvent(Session session) {
-        super(session);
+    private final Session session;
+
+    public SessionInitEvent(Source source, Session session) {
+        super(source);
+        this.session = session;
     }
 
     public Session getSession() {
-        return (Session)getSource();
+        return session;
     }
 
     @Override

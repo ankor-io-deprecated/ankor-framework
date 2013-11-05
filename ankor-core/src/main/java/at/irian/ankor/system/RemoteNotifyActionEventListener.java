@@ -3,8 +3,8 @@ package at.irian.ankor.system;
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionEvent;
 import at.irian.ankor.action.ActionEventListener;
-import at.irian.ankor.action.RemoteAction;
 import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.event.source.RemoteSource;
 import at.irian.ankor.messaging.Message;
 import at.irian.ankor.messaging.MessageFactory;
 import at.irian.ankor.messaging.modify.Modifier;
@@ -50,8 +50,8 @@ public class RemoteNotifyActionEventListener extends ActionEventListener {
         ModelContext modelContext = actionProperty.context().modelContext();
         Collection<Session> sessions = sessionManager.getAllFor(modelContext);
         for (Session session : sessions) {
-            if (action instanceof RemoteAction) {
-                Session initiatingSession = ((RemoteAction) action).getSession();
+            if (event.getSource() instanceof RemoteSource) {
+                Session initiatingSession = ((RemoteSource) event.getSource()).getSession();
                 if (session.equals(initiatingSession)) {
                     // do not relay remote actions back to the remote system
                     continue;

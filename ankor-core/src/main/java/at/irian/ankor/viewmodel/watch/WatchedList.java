@@ -1,6 +1,7 @@
 package at.irian.ankor.viewmodel.watch;
 
 import at.irian.ankor.change.Change;
+import at.irian.ankor.event.source.LocalSource;
 import at.irian.ankor.ref.CollectionRef;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.impl.RefImplementor;
@@ -45,13 +46,15 @@ public class WatchedList<E> extends ExtendedListWrapper<E> {
     @Override
     public void add(int index, E element) {
         wrappedList.add(index, element);
-        ((RefImplementor)listRef).signal(Change.insertChange(index, element));
+        ((RefImplementor)listRef).signal(new LocalSource(listRef.context().modelContext()),
+                                         Change.insertChange(index, element));
     }
 
     @Override
     public E remove(int index) {
         E removedElement = wrappedList.remove(index);
-        ((RefImplementor)listRef).signal(Change.deleteChange(index));
+        ((RefImplementor)listRef).signal(new LocalSource(listRef.context().modelContext()),
+                                         Change.deleteChange(index));
         return removedElement;
     }
 
@@ -70,7 +73,8 @@ public class WatchedList<E> extends ExtendedListWrapper<E> {
                 added |= wrappedList.add(element);
             }
             if (diffChanges != null) {
-                ListDiff.signalChanges(listRef, diffChanges);
+                ListDiff.signalChanges(new LocalSource(listRef.context().modelContext()),
+                                       listRef, diffChanges);
             } else {
                 listRef.signalValueChange();
             }

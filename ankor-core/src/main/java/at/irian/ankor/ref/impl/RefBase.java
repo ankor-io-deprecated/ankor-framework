@@ -9,6 +9,8 @@ import at.irian.ankor.change.ChangeType;
 import at.irian.ankor.change.OldValuesAwareChangeEvent;
 import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.event.PropertyWatcher;
+import at.irian.ankor.event.source.LocalSource;
+import at.irian.ankor.event.source.Source;
 import at.irian.ankor.path.PathSyntax;
 import at.irian.ankor.ref.*;
 
@@ -30,27 +32,28 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
 
     @Override
     public void setValue(final Object newValue) {
-        apply(Change.valueChange(newValue));
+        apply(new LocalSource(context().modelContext()), Change.valueChange(newValue));
     }
 
     @Override
     public void delete(String key) {
-        apply(Change.deleteChange(key));
+        apply(new LocalSource(context().modelContext()), Change.deleteChange(key));
     }
 
     @Override
     public void delete(int idx) {
-        apply(Change.deleteChange(idx));
+        apply(new LocalSource(context().modelContext()), Change.deleteChange(idx));
     }
 
     @Override
     public void delete() {
-        ((RefImplementor)parent()).apply(Change.deleteChange(propertyName()));
+        ((RefImplementor)parent()).apply(new LocalSource(context().modelContext()),
+                                         Change.deleteChange(propertyName()));
     }
 
     @Override
     public void insert(int idx, Object value) {
-        apply(Change.insertChange(idx, value));
+        apply(new LocalSource(context().modelContext()), Change.insertChange(idx, value));
     }
 
     @Override
@@ -70,16 +73,16 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
             throw new IllegalArgumentException("collection or array of type " + collOrArray.getClass());
         }
 
-        apply(Change.insertChange(size, value));
+        apply(new LocalSource(context().modelContext()), Change.insertChange(size, value));
     }
 
     @Override
     public void replace(int fromIdx, Collection elements) {
-        apply(Change.replaceChange(fromIdx, elements));
+        apply(new LocalSource(context().modelContext()), Change.replaceChange(fromIdx, elements));
     }
 
     @Override
-    public void apply(Change change) {
+    public void apply(Source source, Change change) {
 
         // remember old value of the referenced property
         Object oldValue;
@@ -93,7 +96,7 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
         ChangeType changeType = change.getType();
         switch(changeType) {
             case value:
-                handleValueChange(change.getValue());
+                handleValueChange(oldValue, change.getValue());
                 break;
 
             case insert:
@@ -116,28 +119,31 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
         Map<Ref, Object> oldWatchedValues = getOldWatchedValues();
 
         // fire change event
-        ChangeEvent changeEvent
-                = new OldValuesAwareChangeEvent(this, change, deepCopy(oldValue), oldWatchedValues);
+        ChangeEvent changeEvent = new OldValuesAwareChangeEvent(source, this, change, deepCopy(oldValue), oldWatchedValues);
         context().modelContext().getEventDispatcher().dispatch(changeEvent);
     }
 
     @Override
     public void signalValueChange() {
-        signal(Change.valueChange(getValue()));
+        signal(new LocalSource(context().modelContext()), Change.valueChange(getValue()));
     }
 
     @Override
-    public void signal(Change change) {
+    public void signal(Source source, Change change) {
         LOG.debug("{} signal {}", this, change);
-        ChangeEvent changeEvent = new ChangeEvent(this, change);
+        ChangeEvent changeEvent = new ChangeEvent(source, this, change);
         context().modelContext().getEventDispatcher().dispatch(changeEvent);
     }
 
-    private void handleValueChange(Object newValue) {
-        Class<?> type = getType();
-        if (Wrapper.class.isAssignableFrom(type)) {
-            Object newValueUnwrapped = unwrapIfNecessary(newValue);
-            internalSetWrapperValue(type, newValue, newValueUnwrapped);
+    private void handleValueChange(Object oldValue, Object newValue) {
+        if (oldValue != null || isValid()) {
+            Class<?> type = getType();
+            if (Wrapper.class.isAssignableFrom(type)) {
+                Object newValueUnwrapped = unwrapIfNecessary(newValue);
+                internalSetWrapperValue(type, newValue, newValueUnwrapped);
+            } else {
+                internalSetValue(newValue);
+            }
         } else {
             internalSetValue(newValue);
         }
@@ -201,7 +207,7 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
         } else if (key instanceof String) {
             // neither List nor Array nor Map, than we assume it is a bean and set the corresponding property to null...
             Ref propertyRef = refFactory().ref(pathSyntax().concat(path(), (String) key));
-            ((RefBase)propertyRef).handleValueChange(null);
+            ((RefBase)propertyRef).handleValueChange(null, null);
         } else {
             throw new IllegalArgumentException("list/array/map of type " + listOrArrayOrMap.getClass().getName());
         }
@@ -392,7 +398,8 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
         try {
             val = internalGetValue();
         } catch (InvalidRefException e) {
-            context().modelContext().getEventDispatcher().dispatch(new MissingEvent(this));
+            MissingEvent missingEvent = new MissingEvent(new LocalSource(context().modelContext()), this);
+            context().modelContext().getEventDispatcher().dispatch(missingEvent);
             val = null;  // todo   shall we re-throw the exception instead?
         }
         if (val != null && val instanceof Wrapper) {
@@ -495,7 +502,12 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
 
     @Override
     public void fire(Action action) {
-        context().modelContext().getEventDispatcher().dispatch(new ActionEvent(this, action));
+        fire(new LocalSource(context().modelContext()), action);
+    }
+
+    @Override
+    public void fire(Source source, Action action) {
+        context().modelContext().getEventDispatcher().dispatch(new ActionEvent(source, this, action));
     }
 
     @Override

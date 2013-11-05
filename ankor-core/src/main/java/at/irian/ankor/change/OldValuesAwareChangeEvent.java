@@ -2,6 +2,7 @@ package at.irian.ankor.change;
 
 import at.irian.ankor.base.ObjectUtils;
 import at.irian.ankor.event.ModelEventListener;
+import at.irian.ankor.event.source.Source;
 import at.irian.ankor.ref.Ref;
 
 import java.util.Map;
@@ -15,11 +16,12 @@ public class OldValuesAwareChangeEvent extends ChangeEvent {
     private final Object oldChangedValue;
     private final Map<Ref, Object> oldWatchedValues;
 
-    public OldValuesAwareChangeEvent(Ref changedProperty,
+    public OldValuesAwareChangeEvent(Source source,
+                                     Ref changedProperty,
                                      Change change,
                                      Object oldChangedValue,
                                      Map<Ref, Object> oldWatchedValues) {
-        super(changedProperty, change);
+        super(source, changedProperty, change);
         this.oldChangedValue = oldChangedValue;
         this.oldWatchedValues = oldWatchedValues;
     }

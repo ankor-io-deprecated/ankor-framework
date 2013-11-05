@@ -3,8 +3,8 @@ package at.irian.ankor.system;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.change.ChangeEventListener;
-import at.irian.ankor.change.RemoteChange;
 import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.event.source.RemoteSource;
 import at.irian.ankor.messaging.Message;
 import at.irian.ankor.messaging.MessageFactory;
 import at.irian.ankor.messaging.modify.Modifier;
@@ -57,8 +57,8 @@ public class RemoteNotifyChangeEventListener extends ChangeEventListener impleme
         ModelContext modelContext = changedProperty.context().modelContext();
         Collection<Session> sessions = sessionManager.getAllFor(modelContext);
         for (Session session : sessions) {
-            if (change instanceof RemoteChange) {
-                Session initiatingSession = ((RemoteChange) change).getSession();
+            if (event.getSource() instanceof RemoteSource) {
+                Session initiatingSession = ((RemoteSource)event.getSource()).getSession();
                 if (session.equals(initiatingSession)) {
                     // do not relay remote actions back to the remote system
                     continue;

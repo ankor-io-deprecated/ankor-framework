@@ -3,6 +3,7 @@ package at.irian.ankor.action;
 import at.irian.ankor.annotation.ModelPropertyAnnotationsFinder;
 import at.irian.ankor.big.AnkorBigList;
 import at.irian.ankor.change.Change;
+import at.irian.ankor.event.source.LocalSource;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.impl.RefImplementor;
 
@@ -48,7 +49,8 @@ public class MissingPropertyActionEventListener extends ActionEventListener {
                         List list = maybeCollRef.getValue();
                         List subList = list.subList(fromIndex, Math.min(toIndex, list.size()));
                         Change change = Change.replaceChange(fromIndex, subList);
-                        ((RefImplementor)maybeCollRef).signal(change);
+                        ((RefImplementor)maybeCollRef).signal(new LocalSource(missingProperty.context().modelContext()),
+                                                              change);
                         return;
                     }
                 }
