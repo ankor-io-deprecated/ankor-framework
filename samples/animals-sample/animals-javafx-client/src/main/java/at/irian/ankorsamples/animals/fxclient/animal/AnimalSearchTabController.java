@@ -1,8 +1,8 @@
 package at.irian.ankorsamples.animals.fxclient.animal;
 
 import at.irian.ankor.action.Action;
+import at.irian.ankor.fx.binding.FxRefs;
 import at.irian.ankor.fx.binding.property.ViewModelListProperty;
-import at.irian.ankor.fx.binding.property.ViewModelProperty;
 import at.irian.ankor.fx.controller.FXControllerAnnotationSupport;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
@@ -58,16 +58,15 @@ public class AnimalSearchTabController extends BaseTabController {
 
         bindTableColumns();
 
-        tab.textProperty().bind(new ViewModelProperty<String>(tabRef, "name"));
+        tab.textProperty().bind(FxRefs.observableString(tabRef.appendPath("name")));
 
-        // TODO flood control
-        name.textProperty().bindBidirectional(new ViewModelProperty<String>(filterRef, "name"));
+        name.textProperty().bindBidirectional(FxRefs.stringProperty(filterRef.appendPath("name")));
 
         type.itemsProperty().bind(new ViewModelListProperty<Enum>(selItemsRef, "types"));
-        type.valueProperty().bindBidirectional(new ViewModelProperty<Enum>(filterRef, "type"));
+        type.valueProperty().bindBidirectional(FxRefs.enumProperty(filterRef.appendPath("type")));
 
         family.itemsProperty().bind(new ViewModelListProperty<Enum>(selItemsRef, "families"));
-        family.valueProperty().bindBidirectional(new ViewModelProperty<Enum>(filterRef, "family"));
+        family.valueProperty().bindBidirectional(FxRefs.enumProperty(filterRef.appendPath("family")));
 
         animalTable.itemsProperty().bind(new ViewModelListProperty<Map>(modelRef, "animals"));
 
