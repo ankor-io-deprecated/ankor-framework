@@ -41,7 +41,13 @@ define([
             .ankorBindToggleClass("selected", modelRef.append("filterCompletedSelected"));
 
         $("#toggle-all")
-            .on('click', function() { modelRef.fire("toggleAll") })
+            .on('click', function() {
+                modelRef.fire({
+                    name: "toggleAll",
+                    params: {
+                        toggleAll: $(this).prop("checked")
+                    }})
+            })
             .ankorBindProp("checked", modelRef.append("toggleAll"));
 
         $("#new-todo").on('keyup', function(e) {

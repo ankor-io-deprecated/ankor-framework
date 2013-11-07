@@ -125,7 +125,11 @@ public class TaskListController implements Initializable {
     @FXML
     public void toggleAll(ActionEvent actionEvent) {
         if (!initialized) throw new IllegalStateException("Not initialized! (Response from server not received)");
-        modelRef.fire(new Action("toggleAll"));
+
+        LinkedHashMap<String, Object> params = new LinkedHashMap<>();
+        params.put("toggleAll", toggleAllButton.selectedProperty().get());
+
+        modelRef.fire(new Action("toggleAll", params));
     }
 
     @FXML

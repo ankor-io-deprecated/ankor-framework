@@ -115,7 +115,7 @@ public abstract class AnkorApplication extends Application {
                 }
 
                 /**
-                 * Schedules a heartbeat message every {@link #HEARTBEAT_INTERVAL} milliseconds.
+                 * Schedules a heartbeat message every fixed milliseconds.
                  *
                  * @param session The web socket {@link Session} used for sending the heartbeat messages.
                  */
@@ -125,7 +125,6 @@ public abstract class AnkorApplication extends Application {
                     scheduler.scheduleAtFixedRate(new Runnable() {
                         @Override
                         public void run() {
-                            LOG.info("heart-beat");
                             session.getAsyncRemote().sendText(""); // heartbeat
                         }
                     }, HEARTBEAT_INTERVAL, HEARTBEAT_INTERVAL, TimeUnit.MILLISECONDS);
