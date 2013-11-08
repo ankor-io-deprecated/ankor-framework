@@ -239,7 +239,7 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
 
     @Override
     public final Set<ServerEndpointConfig> getEndpointConfigs(Set<Class<? extends Endpoint>> endpointClasses) {
-        // XXX: Only one WebSocket endpoint url (specified by getPath()) allowed in this servlet.
+        // XXX: Only one WebSocket endpoint url (specified by #getWebSocketUrl()) allowed by this server.
         return Collections.singleton(ServerEndpointConfig.Builder.create(this.getClass(), this.getWebSocketUrl()).build());
     }
 
