@@ -4,6 +4,7 @@ import at.irian.ankor.annotation.ModelPropertyAnnotationsFinder;
 import at.irian.ankor.big.AnkorBigList;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.event.source.LocalSource;
+import at.irian.ankor.event.source.RemoteSource;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.impl.RefImplementor;
 
@@ -33,7 +34,7 @@ public class MissingPropertyActionEventListener extends ActionEventListener {
     @Override
     public void process(ActionEvent event) {
         Action action = event.getAction();
-        if (action instanceof RemoteAction && ACTION_NAME.equals(action.getName())) {
+        if (event.getSource() instanceof RemoteSource && ACTION_NAME.equals(action.getName())) {
             Ref missingProperty = event.getActionProperty();
             LOG.debug("handling missing property request for {}", missingProperty);
 
