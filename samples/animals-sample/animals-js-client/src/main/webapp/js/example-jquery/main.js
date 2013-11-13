@@ -21,14 +21,15 @@ define([
 
     //Setup main UI
     var rootRef = ankorSystem.getRef("root");
-    var tabsRef = rootRef.append("contentPane").append("panels");
+    var contentRef = rootRef.append("contentPane");
+    var panelsRef = contentRef.append("panels");
     rootRef.addPropChangeListener(function() {
         //Connect new tab buttons
         $("#newSearchTab").click(function() {
-            tabsRef.fire("createAnimalSearchPanel");
+            contentRef.fire("createAnimalSearchPanel");
         });
         $("#newDetailTab").click(function() {
-            tabsRef.fire("createAnimalDetailPanel");
+            contentRef.fire("createAnimalDetailPanel");
         });
 
         //Bind userName and serverStatus
@@ -37,25 +38,45 @@ define([
 
         //Initialize tabs
         $("#tabs").tabs();
-        tabsRef.addTreeChangeListener(function(tabRef, message) {
-            //Remove tab
-            if (tabRef.equals(tabsRef) && message.type == message.TYPES["DEL"]) {
-                $("#tabs ul li." + message.key).remove();
-                $("#tabs #tab-" + message.key).remove();
-                $("#tabs").tabs("refresh");
+        var syncPanels = function() {
+            console.log("Syncing panels");
+
+            //Check for existing panels that need to be rendered
+            var panels = panelsRef.getValue();
+            for (var panelId in panels) {
+                if ($("#tabs > ul > li." + panelId).length == 0) {
+                    var panelRef = panelsRef.append(panelId);
+                    var panel = panelRef.getValue();
+                    if (panel.type == "animalDetail") {
+                        new AnimalDetailTab(panelRef);
+                    }
+                    else if (panel.type == "animalSearch") {
+                        new AnimalSearchTab(panelRef);
+                    }
+                }
             }
-            //New tab (if not already exists)
-            else if (tabRef.parent().equals(tabsRef) && $("#tabs ul li." + tabRef.propertyName()).length == 0) {
-                var tab = tabRef.getValue();
-                if (tab.type == "animalDetailTab") {
-                    new AnimalDetailTab(tabRef);
+
+            //Check for rendered panels that need to be removed
+            $("#tabs > ul > li").each(function(index, element) {
+                var tabHeader = $(element);
+                var tabId = tabHeader.attr("data-tabid");
+                var tabBody = $("#tabs #tab-" + tabId);
+
+                if (!(tabId in panels)) {
+                    tabHeader.remove();
+                    tabBody.remove();
+                    $("#tabs").tabs("refresh");
                 }
-                else if (tab.type == "animalSearchTab") {
-                    new AnimalSearchTab(tabRef);
-                }
+            });
+        };
+        syncPanels();
+        panelsRef.addTreeChangeListener(function(panelRef, message) {
+            if (panelRef.equals(panelsRef) || panelRef.parent().equals(panelsRef)) {
+                syncPanels();
             }
         });
     });
+
 
     //Send Ankor Init Message
     rootRef.fire("init");

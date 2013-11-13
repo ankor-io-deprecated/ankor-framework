@@ -43,7 +43,6 @@ define([
         if (options && options.emptyOption != undefined) {
             emptyOption = options.emptyOption;
         }
-
         return ref.addPropChangeListener(function() {
             while (select.length > 0) {
                 select.remove(0);
@@ -55,7 +54,10 @@ define([
                 option.value = "";
                 select.add(option);
             }
-            for (var i = 0, selectItem; (selectItem = selectItems[i]); i++) {
+            for (var i = 0, selectItem; (selectItem = selectItems[i]) !== undefined; i++) {
+                if (selectItem === null) {
+                    selectItem = "";
+                }
                 var option = document.createElement("option");
                 option.text = selectItem;
                 option.value = selectItem;

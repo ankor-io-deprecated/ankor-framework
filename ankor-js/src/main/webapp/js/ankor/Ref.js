@@ -1,7 +1,8 @@
 define([
     "./messages/ActionMessage",
-    "./messages/ChangeMessage"
-], function(ActionMessage, ChangeMessage) {
+    "./messages/ChangeMessage",
+    "./BigList"
+], function(ActionMessage, ChangeMessage, BigList) {
     var Ref = function(ankorSystem, path) {
         this.ankorSystem = ankorSystem;
         this.segments = [];
@@ -72,10 +73,10 @@ define([
     Ref.prototype.getValue = function() {
         var value = this.ankorSystem.model;
         for (var i = 0, segment; (segment = this.segments[i]); i++) {
-            if (segment.property != undefined) {
+            if (segment.property != undefined && value != undefined) {
                 value = value[segment.property];
             }
-            else if (segment.index != undefined) {
+            else if (segment.index != undefined && value != undefined) {
                 value = value[segment.index];
             }
         }
@@ -101,7 +102,7 @@ define([
     //Removes this ref from the parent (regardless of map or array)
     Ref.prototype.del = function(omitMessage) {
         var parentRef = this.parent();
-        var model = parentRef.getValue();
+        var model = parentRef.getValue(); //Todo: don't use getValue -> could be a biglist...
         var propertyName = this.propertyName();
         var message = new ChangeMessage(this.ankorSystem.senderId, this.ankorSystem.modelId, null, parentRef.path(), ChangeMessage.prototype.TYPES["DEL"], propertyName, null);
 

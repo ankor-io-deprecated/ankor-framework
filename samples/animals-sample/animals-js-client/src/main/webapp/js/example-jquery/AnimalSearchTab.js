@@ -10,7 +10,7 @@ define([
         var tab = ref.getValue();
 
         //Create tab header
-        $("#tabs ul").append("<li class='" + tab.id + "'><a href='#tab-" + tab.id + "'><span></span></a><a href='#' class='close'>x</a></li>");
+        $("#tabs ul").append("<li class='" + tab.id + "' data-tabid='" + tab.id + "'><a href='#tab-" + tab.id + "'><span></span></a><a href='#' class='close'>x</a></li>");
         $("#tabs ul li." + tab.id + " span").ankorBindInnerHTML(ref.append("name"));
         $("#tabs ul li." + tab.id + " a.close").click(function() {
             ref.del();
@@ -25,11 +25,11 @@ define([
         var body = $("#tabs #tab-" + tab.id);
         body.find("input.name").ankorBindInputValue(ref.append("model.filter.name"));
         body.find("select.type").ankorBindSelectItems(ref.append("model.selectItems.types"), {
-            emptyOption: true
+            emptyOption: false
         });
         body.find("select.type").ankorBindInputValue(ref.append("model.filter.type"));
         body.find("select.family").ankorBindSelectItems(ref.append("model.selectItems.families"), {
-            emptyOption: true
+            emptyOption: false
         });
         body.find("select.family").ankorBindInputValue(ref.append("model.filter.family"));
         body.find("button.save").click(function() {
@@ -39,6 +39,8 @@ define([
         //Table rendering
         var listeners = [];
         ref.append("model.animals").addPropChangeListener(function(ref) {
+            console.log(ref.getValue());
+            return;
             var rows = ref.getValue();
             var tbody = body.find("tbody");
 
