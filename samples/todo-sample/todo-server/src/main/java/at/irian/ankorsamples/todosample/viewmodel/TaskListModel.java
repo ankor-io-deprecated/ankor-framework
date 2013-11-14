@@ -1,4 +1,4 @@
-package at.irian.ankorsamples.todosample.viewmodel.task;
+package at.irian.ankorsamples.todosample.viewmodel;
 
 import at.irian.ankor.annotation.ActionListener;
 import at.irian.ankor.annotation.ChangeListener;

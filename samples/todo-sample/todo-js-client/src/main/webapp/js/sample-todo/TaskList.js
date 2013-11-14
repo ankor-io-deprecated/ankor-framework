@@ -46,7 +46,7 @@ define([
                     name: "toggleAll",
                     params: {
                         toggleAll: $(this).prop("checked")
-                    }})
+                    }});
             })
             .ankorBindProp("checked", modelRef.append("toggleAll"));
 

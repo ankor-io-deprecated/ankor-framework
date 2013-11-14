@@ -7,7 +7,7 @@ import at.irian.ankor.fx.binding.property.ViewModelProperty;
 import at.irian.ankor.fx.controller.FXControllerAnnotationSupport;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorsamples.todosample.fxclient.App;
-import at.irian.ankorsamples.todosample.viewmodel.task.TaskModel;
+import at.irian.ankorsamples.todosample.viewmodel.TaskModel;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;

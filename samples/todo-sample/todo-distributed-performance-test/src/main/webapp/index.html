@@ -5,7 +5,15 @@
     <title>Todo Sample Performance Test</title>
 </head>
 <body>
+    <p>Connected clients: <span id="num-clients">0</span></p>
+    <label for="num-simulated-clients">Number of simulated clients per real client:</label>
+    <input id="num-simulated-clients" type="number" value="8"/>
+    <br/>
+    <label for="ramp-up-rate">Time between connects:</label>
+    <input id="ramp-up-rate" type="number" value="250"/>
+    <br/>
     <button id="button">Start Test</button>
+    <p>Overall report: <span id="report"></span></p>
     <script src="js/index.js"></script>
 </body>
 </html>

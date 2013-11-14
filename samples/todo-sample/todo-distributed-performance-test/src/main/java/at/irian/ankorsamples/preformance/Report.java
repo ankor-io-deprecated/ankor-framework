@@ -1,16 +1,17 @@
 package at.irian.ankorsamples.preformance;
 
-class ReportJSON {
-    private String type;
+public class Report {
+    private String type = Report.class.getSimpleName();
     private double avg;
     private double std;
     private int failures;
+    private int[] responseTimes;
 
-    String getType() {
+    public String getType() {
         return type;
     }
 
-    void setType(String type) {
+    public void setType(String type) {
         this.type = type;
     }
 
@@ -36,6 +37,14 @@ class ReportJSON {
 
     public void setFailures(int failures) {
         this.failures = failures;
+    }
+
+    public int[] getResponseTimes() {
+        return responseTimes;
+    }
+
+    public void setResponseTimes(int[] responseTimes) {
+        this.responseTimes = responseTimes;
     }
 }
 

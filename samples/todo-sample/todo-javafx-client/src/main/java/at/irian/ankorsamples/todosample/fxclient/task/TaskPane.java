@@ -3,7 +3,7 @@ package at.irian.ankorsamples.todosample.fxclient.task;
 import at.irian.ankor.action.Action;
 import at.irian.ankor.fx.binding.property.ViewModelProperty;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankorsamples.todosample.viewmodel.task.TaskModel;
+import at.irian.ankorsamples.todosample.viewmodel.TaskModel;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
