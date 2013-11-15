@@ -33,7 +33,7 @@ public class RefProperty<T> extends ObservableRef<T> implements Property<T> {
 
     @Override
     public void bind(ObservableValue<? extends T> observableValue) {
-        if (observable == null) {
+        if (observableValue == null) {
             throw new NullPointerException("Cannot bind to null");
         }
         if (!observableValue.equals(this.observable)) {

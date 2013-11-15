@@ -3,7 +3,7 @@ package at.irian.ankorsamples.animals.fxclient;
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionBuilder;
 import at.irian.ankor.annotation.ChangeListener;
-import at.irian.ankor.fx.binding.property.ViewModelProperty;
+import at.irian.ankor.fx.binding.FxRefs;
 import at.irian.ankor.fx.controller.FXControllerAnnotationSupport;
 import at.irian.ankor.ref.Ref;
 import javafx.event.ActionEvent;
@@ -58,9 +58,9 @@ public class MainController implements Initializable {
         Ref rootRef = refFactory().ref("root");
         Ref tabsRef = rootRef.appendPath("contentPane.panels");
 
-        userName.textProperty().bind(new ViewModelProperty<String>(rootRef, "userName"));
+        userName.textProperty().bind(FxRefs.observableString(rootRef.appendPath("userName")));
 
-        serverStatus.textProperty().bind(new ViewModelProperty<String>(rootRef, "serverStatus"));
+        serverStatus.textProperty().bind(FxRefs.observableString(rootRef.appendPath("serverStatus")));
 
         Map<String,?> tabs = tabsRef.getValue();
         for (String tabId : tabs.keySet()) {

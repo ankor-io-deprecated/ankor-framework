@@ -10,8 +10,10 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * @author Manfred Geiler
+ * @deprecated  use {@link at.irian.ankor.fx.binding.value.ObservableRef} or {@link RefProperty}
+ * @see at.irian.ankor.fx.binding.FxRefs
  */
+@Deprecated
 public class DelegateObservableList<T> extends AbstractList<T> implements ObservableList<T> {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(DelegateObservableList.class);
 

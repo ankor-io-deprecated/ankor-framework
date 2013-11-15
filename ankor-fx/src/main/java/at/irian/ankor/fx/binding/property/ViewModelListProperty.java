@@ -11,6 +11,11 @@ import javafx.collections.ObservableList;
 
 import java.util.List;
 
+/**
+ * @deprecated  use {@link at.irian.ankor.fx.binding.value.ObservableRef} or {@link RefProperty}
+ * @see at.irian.ankor.fx.binding.FxRefs
+ */
+@Deprecated
 public class ViewModelListProperty<T> extends SimpleListProperty<T> implements RefChangeListener {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ViewModelListProperty.class);
 

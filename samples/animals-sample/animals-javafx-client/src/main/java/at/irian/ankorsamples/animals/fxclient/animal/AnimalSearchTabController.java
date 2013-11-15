@@ -2,7 +2,6 @@ package at.irian.ankorsamples.animals.fxclient.animal;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.fx.binding.FxRefs;
-import at.irian.ankor.fx.binding.property.ViewModelListProperty;
 import at.irian.ankor.fx.controller.FXControllerAnnotationSupport;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
@@ -62,13 +61,13 @@ public class AnimalSearchTabController extends BaseTabController {
 
         name.textProperty().bindBidirectional(FxRefs.stringProperty(filterRef.appendPath("name")));
 
-        type.itemsProperty().bind(new ViewModelListProperty<Enum>(selItemsRef, "types"));
+        type.itemsProperty().bind(FxRefs.<Enum>observableList(selItemsRef.appendPath("types")));
         type.valueProperty().bindBidirectional(FxRefs.enumProperty(filterRef.appendPath("type")));
 
-        family.itemsProperty().bind(new ViewModelListProperty<Enum>(selItemsRef, "families"));
+        family.itemsProperty().bind(FxRefs.<Enum>observableList(selItemsRef.appendPath("families")));
         family.valueProperty().bindBidirectional(FxRefs.enumProperty(filterRef.appendPath("family")));
 
-        animalTable.itemsProperty().bind(new ViewModelListProperty<Map>(modelRef, "animals"));
+        animalTable.itemsProperty().bind(FxRefs.<Map>observableList(modelRef.appendPath("animals")));
 
         save.setOnAction(new EventHandler<ActionEvent>() {
             @Override

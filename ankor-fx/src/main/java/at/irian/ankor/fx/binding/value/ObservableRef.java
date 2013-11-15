@@ -1,8 +1,8 @@
 package at.irian.ankor.fx.binding.value;
 
-import at.irian.ankor.change.ChangeEvent;
+import at.irian.ankor.change.Change;
 import at.irian.ankor.change.ChangeEventListener;
-import at.irian.ankor.event.source.CustomSource;
+import at.irian.ankor.change.ChangeType;
 import at.irian.ankor.ref.Ref;
 import com.sun.javafx.binding.ExpressionHelper;
 import javafx.beans.InvalidationListener;
@@ -10,6 +10,10 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
 /**
+ * A JavaFX ObservableValue backed by a Ankor Ref.
+ * The value of this observable is directly retrieved from the underlying Ref.
+ * Listeners of this observable get notified when the value of the underlying Ref changes.
+ *
  * @author Manfred Geiler
  */
 public class ObservableRef<T> implements ObservableValue<T> {
@@ -22,19 +26,10 @@ public class ObservableRef<T> implements ObservableValue<T> {
 
     public ObservableRef(Ref ref) {
         this.ref = ref;
-        this.changeEventListener = new ChangeEventListener(ref) {
+        this.changeEventListener = new ObservableChangeEventListener(ref, this) {
             @Override
-            public void process(ChangeEvent event) {
-                if (event.getSource() instanceof CustomSource) {
-                    if (((CustomSource) event.getSource()).getCustomSourceObject() == ObservableRef.this) {
-                        // ignore this change event because it originates from this Observable itself
-                        return;
-                    }
-                }
-                Ref changedProperty = event.getChangedProperty();
-                Ref watchedProperty = getWatchedProperty();
-                if (watchedProperty.equals(changedProperty) || watchedProperty.isAncestorOf(changedProperty)) {
-                    // the observed ref itself or a property in the ancestor tree has changed...
+            protected void handleChange(Ref changedProperty, Change change) {
+                if (changedProperty.equals(ObservableRef.this.ref) && change.getType() == ChangeType.value) {
                     ExpressionHelper.fireValueChangedEvent(helper);
                 }
             }

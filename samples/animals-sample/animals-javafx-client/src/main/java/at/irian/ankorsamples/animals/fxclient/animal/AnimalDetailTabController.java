@@ -2,11 +2,12 @@ package at.irian.ankorsamples.animals.fxclient.animal;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.annotation.ChangeListener;
-import at.irian.ankor.fx.binding.property.ViewModelListProperty;
-import at.irian.ankor.fx.binding.property.ViewModelProperty;
+import at.irian.ankor.fx.binding.FxRefs;
+import at.irian.ankor.fx.binding.convert.ReverseBooleanConverter;
 import at.irian.ankor.fx.controller.FXControllerAnnotationSupport;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorsamples.animals.fxclient.BaseTabController;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -40,19 +41,23 @@ public class AnimalDetailTabController extends BaseTabController {
         Ref animalRef = modelRef.appendPath("animal");
         Ref selItemsRef = modelRef.appendPath("selectItems");
 
-        tab.textProperty().bind(new ViewModelProperty<String>(tabRef, "name"));
+        ObservableValue<Boolean> disableProperty = FxRefs.observable(modelRef.appendPath("editable"),
+                                                                     ReverseBooleanConverter.instance());
 
-        name.textProperty().bindBidirectional(new ViewModelProperty<String>(animalRef, "name"));
+        tab.textProperty().bind(FxRefs.observableString(tabRef.appendPath("name")));
 
-        name.editableProperty().bind(new ViewModelProperty<Boolean>(modelRef, "editable"));
+        name.textProperty().bindBidirectional(FxRefs.stringProperty(animalRef.appendPath("name")));
+        name.disableProperty().bind(disableProperty);
 
-        nameStatus.textProperty().bind(new ViewModelProperty<String>(modelRef, "nameStatus"));
+        nameStatus.textProperty().bind(FxRefs.observableString(modelRef.appendPath("nameStatus")));
 
-        type.itemsProperty().bind(new ViewModelListProperty<Enum>(selItemsRef, "types"));
-        type.valueProperty().bindBidirectional(new ViewModelProperty<Enum>(animalRef, "type"));
+        type.itemsProperty().bind(FxRefs.<Enum>observableList(selItemsRef.appendPath("types")));
+        type.valueProperty().bindBidirectional(FxRefs.enumProperty(animalRef.appendPath("type")));
+        type.disableProperty().bind(disableProperty);
 
-        family.itemsProperty().bind(new ViewModelListProperty<Enum>(selItemsRef, "families"));
-        family.valueProperty().bindBidirectional(new ViewModelProperty<Enum>(animalRef, "family"));
+        family.itemsProperty().bind(FxRefs.<Enum>observableList(selItemsRef.appendPath("families")));
+        family.valueProperty().bindBidirectional(FxRefs.enumProperty(animalRef.appendPath("family")));
+        family.disableProperty().bind(disableProperty);
 
         name.requestFocus();
     }

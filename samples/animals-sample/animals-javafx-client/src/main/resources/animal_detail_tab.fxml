@@ -7,13 +7,17 @@
 <Tab fx:id="tab" closable="true" xmlns:fx="http://javafx.com/fxml" fx:controller="at.irian.ankorsamples.animals.fxclient.animal.AnimalDetailTabController">
   <VBox prefHeight="350.0" prefWidth="519.0" spacing="10.0">
     <GridPane alignment="TOP_LEFT" hgap="10.0" vgap="5.0">
-      <Label text="Name" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-      <TextField fx:id="name" prefWidth="208.5" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-      <Text fx:id="nameStatus" fill="#cc3100" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
-      <Label text="Type" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-      <ComboBox fx:id="type" prefWidth="209.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-      <Label text="Family" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-      <ComboBox fx:id="family" prefWidth="209.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+      <Label text="Name"                          GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+      <TextField fx:id="name" prefWidth="208.5"   GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+      <Text fx:id="nameStatus" fill="#cc3100"     GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+
+      <Label text="Type"                            GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+      <ComboBox fx:id="type" prefWidth="209.0"      GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+      <Label text="Family"                          GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+      <ComboBox fx:id="family" prefWidth="209.0"    GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
       <Button onAction="#save" text="Save" GridPane.columnIndex="1" GridPane.rowIndex="3" />
     </GridPane>
     <padding>
