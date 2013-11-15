@@ -3,7 +3,7 @@ package at.irian.ankorsamples.animals.fxclient;
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionBuilder;
 import at.irian.ankor.annotation.ChangeListener;
-import at.irian.ankor.fx.binding.FxRefs;
+import at.irian.ankor.fx.binding.fxref.FxRefs;
 import at.irian.ankor.fx.controller.FXControllerAnnotationSupport;
 import at.irian.ankor.ref.Ref;
 import javafx.event.ActionEvent;

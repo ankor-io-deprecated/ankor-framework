@@ -8,7 +8,7 @@ import javafx.beans.property.SimpleObjectProperty;
 
 /**
  * @deprecated  use {@link at.irian.ankor.fx.binding.value.ObservableRef} or {@link RefProperty}
- * @see at.irian.ankor.fx.binding.FxRefs
+ * @see at.irian.ankor.fx.binding.fxref.FxRefs
  */
 @Deprecated
 public class ViewModelProperty<T> extends SimpleObjectProperty<T> implements RefChangeListener {

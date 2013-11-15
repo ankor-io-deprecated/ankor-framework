@@ -1,4 +1,4 @@
-package at.irian.ankor.ref.el;
+package at.irian.ankor.fx.binding.fxref;
 
 import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.context.ModelContext;
@@ -15,15 +15,15 @@ import java.util.List;
 /**
  * @author Manfred Geiler
  */
-public class ELRefContextFactory implements RefContextFactory {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ELRefContextFactory.class);
+class FxRefContextFactory implements RefContextFactory {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(FxRefContextFactory.class);
 
     private final BeanResolver beanResolver;
     private final List<ViewModelPostProcessor> viewModelPostProcessors;
     private final Scheduler scheduler;
     private final ModelRootFactory modelRootFactory;
 
-    public ELRefContextFactory(BeanResolver beanResolver,
+    public FxRefContextFactory(BeanResolver beanResolver,
                                List<ViewModelPostProcessor> viewModelPostProcessors,
                                Scheduler scheduler,
                                ModelRootFactory modelRootFactory) {
@@ -36,10 +36,10 @@ public class ELRefContextFactory implements RefContextFactory {
     @Override
     public RefContext createRefContextFor(ModelContext modelContext) {
         ELSupport elSupport = new AnkorELSupport(modelContext, beanResolver, modelRootFactory);
-        return ELRefContext.create(elSupport,
-                                   modelContext,
-                                   viewModelPostProcessors,
-                                   scheduler);
+        return DefaultFxRefContext.create(elSupport,
+                                          modelContext,
+                                          viewModelPostProcessors,
+                                          scheduler);
     }
 
 }

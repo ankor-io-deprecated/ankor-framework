@@ -413,7 +413,7 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
     protected abstract Class<?> getType();
 
     @Override
-    public RefContextImplementor context() {
+    public RefContext context() {
         return refContext;
     }
 

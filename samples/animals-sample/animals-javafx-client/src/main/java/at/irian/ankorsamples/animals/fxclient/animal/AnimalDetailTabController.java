@@ -2,10 +2,10 @@ package at.irian.ankorsamples.animals.fxclient.animal;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.annotation.ChangeListener;
-import at.irian.ankor.fx.binding.FxRefs;
 import at.irian.ankor.fx.binding.convert.ReverseBooleanConverter;
+import at.irian.ankor.fx.binding.fxref.FxRef;
+import at.irian.ankor.fx.binding.fxref.FxRefs;
 import at.irian.ankor.fx.controller.FXControllerAnnotationSupport;
-import at.irian.ankor.ref.Ref;
 import at.irian.ankorsamples.animals.fxclient.BaseTabController;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -34,22 +34,22 @@ public class AnimalDetailTabController extends BaseTabController {
     }
 
     public void initialize() {
-        Ref tabRef = getTabRef();
+        FxRef tabRef = getTabRef();
         FXControllerAnnotationSupport.scan(tabRef, this);
 
-        Ref modelRef = tabRef.appendPath("model");
-        Ref animalRef = modelRef.appendPath("animal");
-        Ref selItemsRef = modelRef.appendPath("selectItems");
+        FxRef modelRef = tabRef.appendPath("model");
+        FxRef animalRef = modelRef.appendPath("animal");
+        FxRef selItemsRef = modelRef.appendPath("selectItems");
 
         ObservableValue<Boolean> disableProperty = FxRefs.observable(modelRef.appendPath("editable"),
                                                                      ReverseBooleanConverter.instance());
 
-        tab.textProperty().bind(FxRefs.observableString(tabRef.appendPath("name")));
+        tab.textProperty().bind(tabRef.appendPath("name").<String>fxObservable());
 
-        name.textProperty().bindBidirectional(FxRefs.stringProperty(animalRef.appendPath("name")));
+        name.textProperty().bindBidirectional(animalRef.appendPath("name").<String>fxProperty());
         name.disableProperty().bind(disableProperty);
 
-        nameStatus.textProperty().bind(FxRefs.observableString(modelRef.appendPath("nameStatus")));
+        nameStatus.textProperty().bind(modelRef.appendPath("nameStatus").<String>fxObservable());
 
         type.itemsProperty().bind(FxRefs.<Enum>observableList(selItemsRef.appendPath("types")));
         type.valueProperty().bindBidirectional(FxRefs.enumProperty(animalRef.appendPath("type")));

@@ -21,7 +21,8 @@ import at.irian.ankor.messaging.modify.PassThroughModifier;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefContextFactory;
-import at.irian.ankor.ref.el.ELRefContextFactory;
+import at.irian.ankor.ref.RefContextFactoryProvider;
+import at.irian.ankor.ref.el.ELRefContextFactoryProvider;
 import at.irian.ankor.session.*;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
 import com.typesafe.config.Config;
@@ -54,6 +55,8 @@ public class AnkorSystemBuilder {
 
     private List<ModelEventListener> customGlobalEventListeners;
 
+    private RefContextFactoryProvider refContextFactoryProvider;
+
     public AnkorSystemBuilder() {
         this.systemName = null;
         this.config = ConfigFactory.load();
@@ -64,6 +67,7 @@ public class AnkorSystemBuilder {
         this.scheduler = null;
         this.customGlobalEventListeners = new ArrayList<ModelEventListener>();
         this.modelContextFactory = null;
+        this.refContextFactoryProvider = new ELRefContextFactoryProvider();
     }
 
     public AnkorSystemBuilder withName(String name) {
@@ -116,6 +120,11 @@ public class AnkorSystemBuilder {
         return this;
     }
 
+    public AnkorSystemBuilder withRefContextFactoryProvider(RefContextFactoryProvider refContextFactoryProvider) {
+        this.refContextFactoryProvider = refContextFactoryProvider;
+        return this;
+    }
+
     public AnkorSystem createServer() {
 
         String systemName = getServerSystemName();
@@ -124,10 +133,11 @@ public class AnkorSystemBuilder {
 
         ModelRootFactory modelRootFactory = getServerModelRootFactory();
 
-        RefContextFactory refContextFactory = new ELRefContextFactory(getServerBeanResolver(),
-                                                                      getServerViewModelPostProcessors(),
-                                                                      getScheduler(),
-                                                                      modelRootFactory);
+        RefContextFactory refContextFactory =
+                refContextFactoryProvider.createRefContextFactory(getServerBeanResolver(),
+                                                                  getServerViewModelPostProcessors(),
+                                                                  getScheduler(),
+                                                                  modelRootFactory);
 
         MessageFactory messageFactory = getServerMessageFactory();
 
@@ -176,10 +186,11 @@ public class AnkorSystemBuilder {
 
         ModelRootFactory modelRootFactory = getClientModelRootFactory();
 
-        RefContextFactory refContextFactory = new ELRefContextFactory(getClientBeanResolver(),
-                                                                      null,
-                                                                      getScheduler(),
-                                                                      modelRootFactory);
+        RefContextFactory refContextFactory =
+                refContextFactoryProvider.createRefContextFactory(getClientBeanResolver(),
+                                                                  null,
+                                                                  getScheduler(),
+                                                                  modelRootFactory);
 
         MessageFactory messageFactory = getClientMessageFactory();
 
@@ -417,4 +428,5 @@ public class AnkorSystemBuilder {
     public MessageFactory getClientMessageFactory() {
         return new MessageFactory(getClientSystemName(), getMessageIdGenerator());
     }
+
 }

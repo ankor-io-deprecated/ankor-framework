@@ -1,10 +1,7 @@
 package at.irian.ankor.ref.el;
 
-import at.irian.ankor.el.ELUtils;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefFactory;
-
-import javax.el.ValueExpression;
 
 /**
  * @author Manfred Geiler
@@ -12,28 +9,17 @@ import javax.el.ValueExpression;
 public class ELRefFactory implements RefFactory {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ELRefFactory.class);
 
-    private final ELRefContext refContext;
+    private ELRefContext elRefContext;
 
-    ELRefFactory(ELRefContext refContext) {
-        this.refContext = refContext;
+    protected ELRefFactory() {}
+
+    protected void setRefContext(ELRefContext elRefContext) {
+        this.elRefContext = elRefContext;
     }
 
     @Override
     public Ref ref(String path) {
-        return ref(refContext, path);
+        return new ELRef(elRefContext, ValueExpressionHelper.createValueExpression(elRefContext, path));
     }
-
-
-    private static Ref ref(ELRefContext elRefContext, String path) {
-        ValueExpression ve = createValueExpressionFor(elRefContext, path);
-        return new ELRef(elRefContext, ve);
-    }
-
-    private static ValueExpression createValueExpressionFor(ELRefContext elRefContext, String path) {
-        return elRefContext.getExpressionFactory().createValueExpression(elRefContext.createELContext(),
-                                                                         ELUtils.pathToExpr(path),
-                                                                         Object.class);
-    }
-
 
 }

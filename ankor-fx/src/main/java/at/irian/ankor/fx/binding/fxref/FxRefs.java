@@ -1,4 +1,4 @@
-package at.irian.ankor.fx.binding;
+package at.irian.ankor.fx.binding.fxref;
 
 import at.irian.ankor.fx.binding.convert.RefValueConverter;
 import at.irian.ankor.fx.binding.property.RefProperty;
@@ -10,6 +10,8 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 
 /**
+ * Convenient methods for obtaining an JavaFX Observable or Property directly from an Ankor Ref.
+ *
  * @author Manfred Geiler
  */
 @SuppressWarnings("UnusedDeclaration")

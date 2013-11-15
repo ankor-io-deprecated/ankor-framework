@@ -13,7 +13,7 @@ import java.util.List;
 
 /**
  * @deprecated  use {@link at.irian.ankor.fx.binding.value.ObservableRef} or {@link RefProperty}
- * @see at.irian.ankor.fx.binding.FxRefs
+ * @see at.irian.ankor.fx.binding.fxref.FxRefs
  */
 @Deprecated
 public class ViewModelListProperty<T> extends SimpleListProperty<T> implements RefChangeListener {

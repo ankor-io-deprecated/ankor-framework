@@ -1,7 +1,7 @@
 package at.irian.ankorsamples.animals.fxclient.animal;
 
 import at.irian.ankor.action.Action;
-import at.irian.ankor.fx.binding.FxRefs;
+import at.irian.ankor.fx.binding.fxref.FxRefs;
 import at.irian.ankor.fx.controller.FXControllerAnnotationSupport;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
