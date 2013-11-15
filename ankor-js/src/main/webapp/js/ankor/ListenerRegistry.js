@@ -36,7 +36,7 @@ define(function() {
         var listeners = this._resolveListenersForRef(this.treeListeners, ref);
         while (listeners) {
             //Trigger listeners on this level
-            console.log("Firing TREE ", listeners.ref.path());
+            //console.log("Firing TREE ", listeners.ref.path());
             for (var id in listeners.listeners) {
                 var listener = listeners.listeners[id];
                 listener(ref, message);
@@ -59,7 +59,7 @@ define(function() {
             if (!listeners.ref.isValid()) continue;
 
             //Trigger listeners on this level
-            console.log("Firing PROP ", listeners.ref.path());
+            //console.log("Firing PROP ", listeners.ref.path());
             for (var id in listeners.listeners) {
                 var listener = listeners.listeners[id];
                 listener(listeners.ref, message);
@@ -85,7 +85,7 @@ define(function() {
                     filterObsoleteListeners(childListeners);
                 }
                 else {
-                    console.log("Invalidating Listener", childListeners.ref.path());
+                    //console.log("Invalidating Listener", childListeners.ref.path());
                     delete listeners.children[segmentString];
                 }
             }
@@ -98,24 +98,22 @@ define(function() {
         var resolvedListeners = listeners;
         var currentRef = listeners.ref;
         for (var i = 0, segment; (segment = ref.segments[i]); i++) {
-            var segmentString = null;
-            if (segment.property != undefined) {
-                segmentString = segment.property;
-                currentRef = currentRef.append(segment.property);
+            if (segment.type == "property") {
+                currentRef = currentRef.append(segment.key);
             }
-            else if (segment.index != undefined) {
-                segmentString = "[" + segment.index + "]";
-                currentRef = currentRef.appendIndex(segment.index);
+            else if (segment.type == "index") {
+                currentRef = currentRef.appendIndex(segment.key);
             }
 
-            if (!(segmentString in resolvedListeners.children)) {
-                resolvedListeners.children[segmentString] = {
+            var key = segment.key.toString();
+            if (!(key in resolvedListeners.children)) {
+                resolvedListeners.children[key] = {
                     children: {},
                     listeners: {},
                     ref: currentRef
                 }
             }
-            resolvedListeners = resolvedListeners.children[segmentString];
+            resolvedListeners = resolvedListeners.children[key];
         }
         return resolvedListeners;
     };
