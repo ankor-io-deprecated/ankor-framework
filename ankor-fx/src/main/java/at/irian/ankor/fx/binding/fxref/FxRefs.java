@@ -1,6 +1,7 @@
 package at.irian.ankor.fx.binding.fxref;
 
-import at.irian.ankor.fx.binding.convert.RefValueConverter;
+import at.irian.ankor.converter.BidirectionalConverter;
+import at.irian.ankor.converter.Converter;
 import at.irian.ankor.fx.binding.property.RefProperty;
 import at.irian.ankor.fx.binding.value.ObservableRef;
 import at.irian.ankor.fx.binding.value.ObservableValueListRef;
@@ -24,12 +25,11 @@ public final class FxRefs {
         return new ObservableRef<>(ref);
     }
 
-    public static <R,T> ObservableValue<T> observable(Ref ref, final RefValueConverter<R,T> converter)  {
+    public static <R,T> ObservableValue<T> observable(Ref ref, final Converter<R,T> converter)  {
         return new ObservableRef<T>(ref) {
             @Override
             public T getValue() {
-                //noinspection unchecked
-                return converter.getConvertedValue((R)ref.getValue());
+                return converter.convertTo((R) ref.getValue());
             }
         };
     }
@@ -59,6 +59,20 @@ public final class FxRefs {
         return new RefProperty<>(ref);
     }
 
+    public static <T> RefProperty<T> property(Ref ref, final BidirectionalConverter<Object, T> converter) {
+        return new RefProperty<T>(ref) {
+            @Override
+            public T getValue() {
+                return converter.convertTo(super.getValue());
+            }
+
+            protected void setRefValue(Object newValue) {
+                //noinspection unchecked
+                super.setRefValue(converter.convertFrom((T)newValue));
+            }
+        };
+    }
+
     public static Property<String> stringProperty(Ref ref)  {
         return new RefProperty<>(ref);
     }
@@ -70,4 +84,5 @@ public final class FxRefs {
     public static Property<Enum> enumProperty(Ref ref)  {
         return new RefProperty<>(ref);
     }
+
 }

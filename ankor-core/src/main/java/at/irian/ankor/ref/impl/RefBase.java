@@ -7,6 +7,7 @@ import at.irian.ankor.change.Change;
 import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.change.ChangeType;
 import at.irian.ankor.change.OldValuesAwareChangeEvent;
+import at.irian.ankor.converter.Converter;
 import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.event.PropertyWatcher;
 import at.irian.ankor.event.source.LocalSource;
@@ -25,9 +26,15 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RefBase.class);
 
     private final RefContextImplementor refContext;
+    private final Converter converter;
 
     protected RefBase(RefContextImplementor refContext) {
+        this(refContext, null);
+    }
+
+    protected RefBase(RefContextImplementor refContext, Converter converter) {
         this.refContext = refContext;
+        this.converter = converter;
     }
 
     @Override

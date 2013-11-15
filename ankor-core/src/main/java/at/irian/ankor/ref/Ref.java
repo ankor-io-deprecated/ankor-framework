@@ -16,6 +16,5 @@ public interface Ref extends TypedRef<Object> {
      */
     <T> T getValue();
 
-
     <T> TypedRef<T> toTypedRef();
 }

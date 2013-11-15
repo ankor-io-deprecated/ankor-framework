@@ -4,7 +4,6 @@ import at.irian.ankor.action.Action;
 import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.fx.binding.convert.ReverseBooleanConverter;
 import at.irian.ankor.fx.binding.fxref.FxRef;
-import at.irian.ankor.fx.binding.fxref.FxRefs;
 import at.irian.ankor.fx.controller.FXControllerAnnotationSupport;
 import at.irian.ankorsamples.animals.fxclient.BaseTabController;
 import javafx.beans.value.ObservableValue;
@@ -41,8 +40,7 @@ public class AnimalDetailTabController extends BaseTabController {
         FxRef animalRef = modelRef.appendPath("animal");
         FxRef selItemsRef = modelRef.appendPath("selectItems");
 
-        ObservableValue<Boolean> disableProperty = FxRefs.observable(modelRef.appendPath("editable"),
-                                                                     ReverseBooleanConverter.instance());
+        ObservableValue<Boolean> disableProperty = modelRef.appendPath("editable").fxProperty(ReverseBooleanConverter.instance());
 
         tab.textProperty().bind(tabRef.appendPath("name").<String>fxObservable());
 
@@ -51,12 +49,12 @@ public class AnimalDetailTabController extends BaseTabController {
 
         nameStatus.textProperty().bind(modelRef.appendPath("nameStatus").<String>fxObservable());
 
-        type.itemsProperty().bind(FxRefs.<Enum>observableList(selItemsRef.appendPath("types")));
-        type.valueProperty().bindBidirectional(FxRefs.enumProperty(animalRef.appendPath("type")));
+        type.itemsProperty().bind(selItemsRef.appendPath("types").<Enum>fxObservableList());
+        type.valueProperty().bindBidirectional(animalRef.appendPath("type").<Enum>fxProperty());
         type.disableProperty().bind(disableProperty);
 
-        family.itemsProperty().bind(FxRefs.<Enum>observableList(selItemsRef.appendPath("families")));
-        family.valueProperty().bindBidirectional(FxRefs.enumProperty(animalRef.appendPath("family")));
+        family.itemsProperty().bind(selItemsRef.appendPath("families").<Enum>fxObservableList());
+        family.valueProperty().bindBidirectional(animalRef.appendPath("family").<Enum>fxProperty());
         family.disableProperty().bind(disableProperty);
 
         name.requestFocus();

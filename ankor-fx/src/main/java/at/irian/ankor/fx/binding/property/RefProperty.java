@@ -26,7 +26,7 @@ public class RefProperty<T> extends ObservableRef<T> implements Property<T> {
         this.observableChangeListener = new ChangeListener<T>() {
             @Override
             public void changed(ObservableValue<? extends T> observableValue, T oldValue, T newValue) {
-                setRefValueLater(newValue);
+                setRefValue(newValue);
             }
         };
     }
@@ -56,10 +56,10 @@ public class RefProperty<T> extends ObservableRef<T> implements Property<T> {
         if (isBound()) {
             throw new RuntimeException("A bound value cannot be set.");
         }
-        setRefValueLater(newValue);
+        setRefValue(newValue);
     }
 
-    private void setRefValueLater(final T newValue) {
+    protected void setRefValue(final Object newValue) {
         AnkorPatterns.runLater(this.ref, new Runnable() {
             @Override
             public void run() {

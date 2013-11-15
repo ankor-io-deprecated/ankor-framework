@@ -1,10 +1,12 @@
 package at.irian.ankor.fx.binding.fxref;
 
+import at.irian.ankor.converter.BidirectionalConverter;
+import at.irian.ankor.converter.Converter;
 import at.irian.ankor.fx.binding.property.RefProperty;
-import at.irian.ankor.fx.binding.value.ObservableRef;
 import at.irian.ankor.ref.el.ELRef;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 
 import javax.el.ValueExpression;
 
@@ -68,14 +70,30 @@ class DefaultFxRef extends ELRef implements FxRef {
         return (FxRefContext) super.context();
     }
 
+
     @Override
     public <T> ObservableValue<T> fxObservable() {
-        return new ObservableRef<>(this);
+        return FxRefs.observable(this);
+    }
+
+    @Override
+    public <R,T> ObservableValue<T> fxObservable(final Converter<R, T> converter) {
+        return FxRefs.observable(this, converter);
+    }
+
+    @Override
+    public <E> ObservableValue<ObservableList<E>> fxObservableList() {
+        return FxRefs.observableList(this);
     }
 
     @Override
     public <T> Property<T> fxProperty() {
-        return new RefProperty<>(this);
+        return FxRefs.property(this);
     }
 
+    @Override
+    public <R,T> RefProperty<T> fxProperty(final BidirectionalConverter<R, T> converter) {
+        //noinspection unchecked
+        return FxRefs.property(this, (BidirectionalConverter<Object, T>) converter);
+    }
 }
