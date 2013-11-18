@@ -57,8 +57,10 @@ define([
             for (var i = page * rowsPerPage; i < Math.min(tableSize, page * rowsPerPage + rowsPerPage); i++) {
                 var rowRef = animalsRef.appendIndex(i);
                 var row = rowRef.getValue();
-                tbody.append("<tr><td><input type='text' value='" + row.name + "'></td><td>" + (row.type || "") + "</td><td>" + (row.family || "") + "</td></tr>");
+                tbody.append("<tr><td><input type='text' value='" + row.name + "'></td><td><span class='type'></span></td><td><span class='family'></span></td></tr>");
                 listeners.push(tbody.find("tr:last-child input").ankorBindInputValue(rowRef.append("name")));
+                listeners.push(tbody.find("tr:last-child span.type").ankorBindInnerHTML(rowRef.append("type")));
+                listeners.push(tbody.find("tr:last-child span.family").ankorBindInnerHTML(rowRef.append("family")));
             }
 
             //Update paging button state
