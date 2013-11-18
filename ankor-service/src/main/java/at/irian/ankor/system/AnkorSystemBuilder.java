@@ -5,7 +5,6 @@ import at.irian.ankor.annotation.AnnotationViewModelPostProcessor;
 import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.big.modify.ClientSideBigListModifier;
 import at.irian.ankor.big.modify.ServerSideBigListModifier;
-import at.irian.ankor.change.ChangeRequestEventListener;
 import at.irian.ankor.context.*;
 import at.irian.ankor.delay.Scheduler;
 import at.irian.ankor.delay.SimpleScheduler;
@@ -249,9 +248,6 @@ public class AnkorSystemBuilder {
 
         // global change event listener for cleaning up obsolete model context listeners
         eventListeners.add(new ListenerCleanupChangeEventListener());
-
-        // global change request event listener
-        eventListeners.add(new ChangeRequestEventListener());
 
         // global task request event listener
         eventListeners.add(new TaskRequestEventListener());
