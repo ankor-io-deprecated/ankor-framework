@@ -55,8 +55,6 @@ public class AnimalSearchTabController extends BaseTabController {
         Ref filterRef = tabRef.appendPath("model.filter");
         Ref selItemsRef = tabRef.appendPath("model.selectItems");
 
-        bindTableColumns();
-
         tab.textProperty().bind(FxRefs.observableString(tabRef.appendPath("name")));
 
         name.textProperty().bindBidirectional(FxRefs.stringProperty(filterRef.appendPath("name")));
@@ -67,21 +65,8 @@ public class AnimalSearchTabController extends BaseTabController {
         family.itemsProperty().bind(FxRefs.<Enum>observableList(selItemsRef.appendPath("families")));
         family.valueProperty().bindBidirectional(FxRefs.enumProperty(filterRef.appendPath("family")));
 
+        // bind table
         animalTable.itemsProperty().bind(FxRefs.<Map>observableList(modelRef.appendPath("animals")));
-
-        save.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                tabRef.appendPath("model").fire(new Action("save"));
-            }
-        });
-
-        name.requestFocus();
-    }
-
-    @SuppressWarnings("unchecked")
-    private void bindTableColumns() {
-
         animalName.setCellValueFactory(new MapValueFactory<String>("name"));
         animalName.setCellFactory(TextFieldTableCell.<Map>forTableColumn());
         animalName.setOnEditCommit(
@@ -90,12 +75,19 @@ public class AnimalSearchTabController extends BaseTabController {
                     public void handle(TableColumn.CellEditEvent<Map, String> t) {
                         int rowNum = t.getTablePosition().getRow();
                         Ref rowNameRef = getTabRef().appendPath(String.format("model.animals[%d].name", rowNum));
-                        AnkorPatterns.changeValueLater(rowNameRef, t.getNewValue()); // we must not directly access the model context from a non-dispatching thread
+                        AnkorPatterns.changeValueLater(rowNameRef,
+                                                       t.getNewValue()); // we must not directly access the model context from a non-dispatching thread
                     }
                 });
 
         animalType.setCellValueFactory(new MapValueFactory<String>("type"));
         animalFamily.setCellValueFactory(new MapValueFactory<String>("family"));
+
+        // set focus to "name" input control
+        name.requestFocus();
     }
 
+    public void save(@SuppressWarnings("UnusedParameters") ActionEvent actionEvent) {
+        getTabRef().appendPath("model").fire(new Action("save"));
+    }
 }

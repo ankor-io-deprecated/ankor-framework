@@ -65,8 +65,7 @@ public class AnimalDetailTabController extends BaseTabController {
         LOG.debug("Animal name changed changed to " + getTabRef().appendPath("model.animal.name").getValue());
     }
 
-    @FXML
-    protected void save(@SuppressWarnings("UnusedParameters") ActionEvent event) {
+    public void save(@SuppressWarnings("UnusedParameters") ActionEvent event) {
         getTabRef().appendPath("model").fire(new Action("save"));
     }
 
