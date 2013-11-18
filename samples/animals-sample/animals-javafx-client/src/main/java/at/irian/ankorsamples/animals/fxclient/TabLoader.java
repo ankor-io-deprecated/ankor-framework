@@ -27,22 +27,23 @@ public class TabLoader {
         this.tabId = tabId;
     }
 
-    public void showTab(final TabPane tabPane) {
+    public void loadTabTo(final TabPane tabPane) {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
+                Tab tab;
                 try {
-                    Tab tab = (Tab) loader().load();
-                    tabPane.getTabs().add(tab);
-                    tabPane.getSelectionModel().select(tab);
+                    tab = (Tab) fxmlLoader().load();
                 } catch (IOException e) {
-                    throw new IllegalStateException("cannot load animal_search_tab.fxml", e);
+                    throw new IllegalStateException("cannot load " + tabType.getFxmlResource(), e);
                 }
+                tabPane.getTabs().add(tab);
+                tabPane.getSelectionModel().select(tab);
             }
         });
     }
 
-    private FXMLLoader loader() {
+    private FXMLLoader fxmlLoader() {
         final FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource(tabType.getFxmlResource()));
         loader.setControllerFactory(new Callback<Class<?>, Object>() {
             @Override
