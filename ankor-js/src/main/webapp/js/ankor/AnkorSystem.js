@@ -1,7 +1,8 @@
 define([
     "./ListenerRegistry",
+    "./Model",
     "./Ref"
-], function(ListenerRegistry, Ref) {
+], function(ListenerRegistry, Model, Ref) {
     var AnkorSystem = function(options) {
         if (!options.utils) {
             throw new Error("AnkorSystem missing utils");
@@ -15,7 +16,7 @@ define([
         this.senderId = this.utils.uuid();
         this.modelId = options.modelId || this.utils.uuid();
         this.transport = options.transport;
-        this.model = {};
+        this.model = new Model(this.getRef(""));
         this.listenerRegistry = new ListenerRegistry(this);
 
         this.transport.init(this);
@@ -51,7 +52,7 @@ define([
         }
         else if (message.type == message.TYPES["REPLACE"]) {
             for(var i = 0; i < message.value.length; i++) {
-                ref.appendIndex(message.key + i).setValue(message.value[i]);
+                ref.appendIndex(message.key + i).setValue(message.value[i], true);
             }
         }
     };
