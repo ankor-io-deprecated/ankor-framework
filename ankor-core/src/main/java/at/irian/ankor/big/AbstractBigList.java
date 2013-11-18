@@ -112,12 +112,12 @@ public abstract class AbstractBigList<E> extends AbstractList<E> implements BigL
         NavigableMap<Integer, Reference> tailMap = elements.tailMap(index, false);
         List<Map.Entry<Integer, Reference>> copyOfTailMapEntries
                 = new ArrayList<Map.Entry<Integer, Reference>>(tailMap.entrySet());
-        //tailMap.clear();
         Reference removed = elements.remove(index);
         for (Map.Entry<Integer, Reference> entry : copyOfTailMapEntries) {
             Integer idx = entry.getKey();
+            Reference value = entry.getValue(); // !!! never inline this entry.getValue() call because entries seem to get reused in elements map causing nasty side effects...
             elements.remove(idx);
-            elements.put(idx - 1, entry.getValue());
+            elements.put(idx - 1, value);
         }
         this.size--;
         adjustSize();
