@@ -26,19 +26,24 @@ define(function() {
         var listenerId = "#" + listenerCounter++;
         listeners.listeners[listenerId] = cb;
         return {
-            remove: this.ankorSystem.utils.hitch(this, function() {
+            remove: function() {
                 delete listeners.listeners[listenerId];
-            })
+            }
         };
     };
     ListenerRegistry.prototype.triggerListeners = function(ref, message) {
         //Trigger treeChangeListeners
-        var listeners = this._resolveListenersForRef(this.treeListeners, ref);
+        var id, listeners, listener;
+
+        listeners = this._resolveListenersForRef(this.treeListeners, ref);
         while (listeners) {
             //Trigger listeners on this level
             //console.log("Firing TREE ", listeners.ref.path());
-            for (var id in listeners.listeners) {
-                var listener = listeners.listeners[id];
+            for (id in listeners.listeners) {
+                if (!listeners.listeners.hasOwnProperty(id)) {
+                    continue;
+                }
+                listener = listeners.listeners[id];
                 listener(ref, message);
             }
 
@@ -54,21 +59,43 @@ define(function() {
         var listenersToTrigger = [
             this._resolveListenersForRef(this.propListeners, ref)
         ];
+        var listenersToCleanup = {};
         while (listenersToTrigger.length > 0) {
-            var listeners = listenersToTrigger.shift();
-            if (!listeners.ref.isValid()) continue;
+            listeners = listenersToTrigger.shift();
+            if (!listeners.ref.isValid()) {
+                var refToCleanup = listeners.ref.parent();
+                while (!refToCleanup.isValid()) {
+                    refToCleanup = refToCleanup.parent();
+                }
+                listenersToCleanup[refToCleanup.path()] = refToCleanup;
+                continue;
+            }
 
             //Trigger listeners on this level
             //console.log("Firing PROP ", listeners.ref.path());
-            for (var id in listeners.listeners) {
-                var listener = listeners.listeners[id];
+            for (id in listeners.listeners) {
+                if (!listeners.listeners.hasOwnProperty(id)) {
+                    continue;
+                }
+                listener = listeners.listeners[id];
                 listener(listeners.ref, message);
             }
 
             //Add child listeners to the listenersToTriggerList
             for (var childName in listeners.children) {
+                if (!listeners.children.hasOwnProperty(childName)) {
+                    continue;
+                }
                 listenersToTrigger.push(listeners.children[childName]);
             }
+        }
+
+        //Cleanup found invalid listeners
+        for (var path in listenersToCleanup) {
+            if (!listenersToCleanup.hasOwnProperty(path)) {
+                continue;
+            }
+            this.removeInvalidListeners(listenersToCleanup[path]);
         }
     };
     ListenerRegistry.prototype.removeInvalidListeners = function(ref) {
@@ -77,6 +104,9 @@ define(function() {
             //Check every child if it's still valid
             var segmentStrings = [];
             for (var segmentString in listeners.children) {
+                if (!listeners.children.hasOwnProperty(segmentString)) {
+                    continue;
+                }
                 segmentStrings.push(segmentString);
             }
             for (var i = 0, segmentString; (segmentString = segmentStrings[i]); i++) {

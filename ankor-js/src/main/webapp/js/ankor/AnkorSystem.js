@@ -27,7 +27,7 @@ define([
     };
 
     AnkorSystem.prototype.addListener = function(type, ref, cb) {
-        this.listenerRegistry.addListener(type, ref, cb);
+        return this.listenerRegistry.addListener(type, ref, cb);
     };
 
     AnkorSystem.prototype.triggerListeners = function(ref, message) {
@@ -45,10 +45,10 @@ define([
             ref.setValue(message.value, true);
         }
         else if (message.type == message.TYPES["DEL"]) {
-            ref.append(message.key).del(true);
+            ref.append(message.key.toString()).del(true);
         }
         else if (message.type == message.TYPES["INSERT"]) {
-            ref.insert(message.key, message.value, true);
+            ref.insert(message.key.toString(), message.value, true);
         }
         else if (message.type == message.TYPES["REPLACE"]) {
             for(var i = 0; i < message.value.length; i++) {

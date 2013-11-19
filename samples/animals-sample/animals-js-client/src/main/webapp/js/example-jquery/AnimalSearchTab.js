@@ -80,10 +80,21 @@ define([
             body.find(".totalPages").html(Math.ceil(tableSize / rowsPerPage));
             body.find(".currentPage").html(page + 1);
         };
-        animalsRef.addPropChangeListener(function(ref) {
-            body.find(".tableSize").html(animalsRef.size());
-            page = 0;
-            updatePage();
+        animalsRef.addPropChangeListener(function(ref, message) {
+            var tableSize = animalsRef.size();
+            body.find(".tableSize").html(tableSize);
+            if (message.type == message.TYPES.VALUE) {
+                page = 0;
+                updatePage();
+            }
+            else {
+                var maxPage = Math.floor(tableSize / rowsPerPage);
+                var newPage = Math.min(page, maxPage);
+                if (newPage != page || newPage == maxPage) {
+                    page = newPage;
+                    updatePage();
+                }
+            }
         });
         body.find(".prev").click(function() {
             page--;
