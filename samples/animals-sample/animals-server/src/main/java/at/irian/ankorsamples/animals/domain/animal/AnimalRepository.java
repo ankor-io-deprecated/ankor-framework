@@ -143,4 +143,15 @@ public class AnimalRepository {
         }
         return null;
     }
+
+    public void deleteAnimal(String uuid) {
+        Iterator<Animal> iterator = animals.iterator();
+        while (iterator.hasNext()) {
+            Animal next = iterator.next();
+            if (next.getUuid().equals(uuid)) {
+                iterator.remove();
+                break;
+            }
+        }
+    }
 }

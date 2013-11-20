@@ -1,6 +1,7 @@
 package at.irian.ankorsamples.animals.viewmodel;
 
 import at.irian.ankor.annotation.ActionListener;
+import at.irian.ankor.annotation.Param;
 import at.irian.ankor.messaging.AnkorIgnore;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
@@ -65,7 +66,6 @@ public class ContentPane {
     public void createAnimalDetailPanel() {
         String panelId = createNextPanelId();
         Ref panelsRef = myRef.appendPath("panels");
-        //Ref panelRef = panelsRef.appendLiteralKey(panelId);
         Ref panelRef = panelsRef.appendPath(panelId);
 
         AnimalDetailModel model = new AnimalDetailModel(panelRef.appendPath("model"),
@@ -74,6 +74,24 @@ public class ContentPane {
                                                         animalRepository,
                                                         new Animal());
         Panel<AnimalDetailModel> panel = new Panel<>(panelId, panelRef, "New Animal", "animalDetail",
+                                                     model);
+
+        panelRef.setValue(panel);
+    }
+
+    @ActionListener(name = "edit", pattern = "**.<AnimalSearchModel>")
+    public void createAnimalDetailPanel(@Param("uuid") String uuid) {
+        String panelId = createNextPanelId();
+        Ref panelsRef = myRef.appendPath("panels");
+        Ref panelRef = panelsRef.appendPath(panelId);
+
+        Animal animal = animalRepository.findAnimal(uuid);
+        AnimalDetailModel model = new AnimalDetailModel(panelRef.appendPath("model"),
+                                                        panelRef.appendPath("name").<String>toTypedRef(),
+                                                        serverStatusRef,
+                                                        animalRepository,
+                                                        animal);
+        Panel<AnimalDetailModel> panel = new Panel<>(panelId, panelRef, "Edit Animal " + animal.getName(), "animalDetail",
                                                      model);
 
         panelRef.setValue(panel);
