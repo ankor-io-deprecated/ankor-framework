@@ -1,0 +1,17 @@
+{
+    senderId: "testSystem",
+    modelId: "1",
+    messageId: "testClient#1",
+    property: "root.next",
+    action: {
+        name: "initParams",
+        params: {
+            stringParam: "test",
+            intParam: 1,
+            booleanParam: true,
+            arrayParam: [1,2,3,4],
+            listParam: [1,2,3,4],
+            doubleParam: 8.8
+        }
+    }
+}

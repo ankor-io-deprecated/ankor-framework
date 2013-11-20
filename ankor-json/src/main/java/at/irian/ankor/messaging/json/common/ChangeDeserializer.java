@@ -1,4 +1,4 @@
-package at.irian.ankor.messaging.json.simpletree;
+package at.irian.ankor.messaging.json.common;
 
 import at.irian.ankor.change.Change;
 import at.irian.ankor.change.ChangeType;
@@ -18,9 +18,9 @@ import java.util.Map;
 /**
  * @author Manfred Geiler
  */
-class SimpleTreeChangeDeserializer extends StdDeserializer<Change> {
+public class ChangeDeserializer extends StdDeserializer<Change> {
 
-    SimpleTreeChangeDeserializer() {
+    public ChangeDeserializer() {
         super(Change.class);
     }
 

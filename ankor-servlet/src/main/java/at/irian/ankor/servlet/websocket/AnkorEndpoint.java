@@ -27,13 +27,13 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * This is the base class of a WebSocket endpoint that communicates with a {@link AnkorSystem}.
+ * This is the base class of a WebSocket endpoint that communicates with a {@link AnkorSystem}.<br>
  * It is meant be deployed on a web server (e.g. GlassFish) that supports JSR 365 (javax.websocket).
- *
+ * <p>
  * This class handles new WebSocket connections on a fixed url ("/websockets/ankor").
  * It passes incoming messages to the AnkorSystem and registers the connection with the AnkorSystem, so that
  * outgoing messages will be sent the the clients.
- *
+ * <p>
  * As a user you need to subtype this class and override the {@link #getModelRoot(at.irian.ankor.ref.Ref)} method.
  *
  * @author Florian Klampfer

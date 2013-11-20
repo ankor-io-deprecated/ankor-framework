@@ -7,7 +7,7 @@ import at.irian.ankor.messaging.MessageArrayDeserializer;
 import at.irian.ankor.messaging.MessageArraySerializer;
 import at.irian.ankor.messaging.MessageMapper;
 import at.irian.ankor.messaging.json.common.ActionDeserializer;
-import at.irian.ankor.messaging.json.common.ActionSerializer;
+import at.irian.ankor.messaging.json.common.ChangeDeserializer;
 import at.irian.ankor.messaging.json.common.MessageDeserializer;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -43,12 +43,14 @@ public class SimpleTreeJsonMessageMapper implements MessageMapper<String>,
                 new SimpleModule("ViewDataJsonMessageMapperModule",
                                  new Version(1, 0, 0, null, null, null));
         module.addDeserializer(Message.class, new MessageDeserializer());
-        module.addDeserializer(Change.class, new SimpleTreeChangeDeserializer());
-        module.addSerializer(Action.class, new ActionSerializer());
+        module.addDeserializer(Change.class, new ChangeDeserializer());
         module.addDeserializer(Action.class, new ActionDeserializer());
+//        module.addSerializer(Action.class, new ActionSerializer());
+//        module.addDeserializer(Action.class, new ActionDeserializer());
 
         mapper = new ObjectMapper();
-        //mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+//        mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+//        mapper.setVisibility(PropertyAccessor.GETTER, Visibility.NONE);
         mapper.registerModule(module);
 
         mapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
@@ -57,9 +59,11 @@ public class SimpleTreeJsonMessageMapper implements MessageMapper<String>,
 
         mapper.configure(JsonGenerator.Feature.QUOTE_FIELD_NAMES, false);
 
+        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
 
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        //mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
 
         //mapper.enableDefaultTypingAsProperty(ObjectMapper.DefaultTyping.JAVA_LANG_OBJECT, "@javaType");
     }
