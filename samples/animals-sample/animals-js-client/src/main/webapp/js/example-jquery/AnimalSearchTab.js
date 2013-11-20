@@ -57,8 +57,10 @@ define([
             for (var i = page * rowsPerPage; i < Math.min(tableSize, page * rowsPerPage + rowsPerPage); i++) {
                 var rowRef = animalsRef.appendIndex(i);
                 var row = rowRef.getValue();
-                tbody.append("<tr><td><input type='text' value='" + row.name + "'></td><td>" + (row.type || "") + "</td><td>" + (row.family || "") + "</td></tr>");
+                tbody.append("<tr><td><input type='text' value='" + row.name + "'></td><td><span class='type'></span></td><td><span class='family'></span></td></tr>");
                 listeners.push(tbody.find("tr:last-child input").ankorBindInputValue(rowRef.append("name")));
+                listeners.push(tbody.find("tr:last-child span.type").ankorBindInnerHTML(rowRef.append("type")));
+                listeners.push(tbody.find("tr:last-child span.family").ankorBindInnerHTML(rowRef.append("family")));
             }
 
             //Update paging button state
@@ -78,10 +80,21 @@ define([
             body.find(".totalPages").html(Math.ceil(tableSize / rowsPerPage));
             body.find(".currentPage").html(page + 1);
         };
-        animalsRef.addPropChangeListener(function(ref) {
-            body.find(".tableSize").html(animalsRef.size());
-            page = 0;
-            updatePage();
+        animalsRef.addPropChangeListener(function(ref, message) {
+            var tableSize = animalsRef.size();
+            body.find(".tableSize").html(tableSize);
+            if (message.type == message.TYPES.VALUE) {
+                page = 0;
+                updatePage();
+            }
+            else {
+                var maxPage = Math.floor(tableSize / rowsPerPage);
+                var newPage = Math.min(page, maxPage);
+                if (newPage != page || newPage == maxPage) {
+                    page = newPage;
+                    updatePage();
+                }
+            }
         });
         body.find(".prev").click(function() {
             page--;

@@ -126,6 +126,11 @@ define([
         //Apply value to model
         this.ankorSystem.model.setValue(this.segments, value);
 
+        //Cleanup listeners
+        if (value === null) {
+            this.ankorSystem.removeInvalidListeners(this.parent());
+        }
+
         //Trigger listeners
         var message = new ChangeMessage(this.ankorSystem.senderId, this.ankorSystem.modelId, null, this.path(), ChangeMessage.prototype.TYPES["VALUE"], null, value);
         this.ankorSystem.triggerListeners(this, message);
@@ -138,10 +143,14 @@ define([
 
     //Removes this ref from the parent (regardless of map or array)
     Ref.prototype.del = function(omitMessage) {
+        //Apply change to model
         this.ankorSystem.model.del(this.segments);
 
-        //Trigger listeners
+        //Cleanup listeners
         var parentRef = this.parent();
+        this.ankorSystem.removeInvalidListeners(parentRef);
+
+        //Trigger listeners
         var message = new ChangeMessage(this.ankorSystem.senderId, this.ankorSystem.modelId, null, parentRef.path(), ChangeMessage.prototype.TYPES["DEL"], this.propertyName(), null);
         this.ankorSystem.triggerListeners(parentRef, message);
 
@@ -149,9 +158,6 @@ define([
         if (!omitMessage) {
             this.ankorSystem.transport.sendMessage(message);
         }
-
-        //Cleanup listeners
-        this.ankorSystem.removeInvalidListeners(parentRef);
     };
 
     Ref.prototype.insert = function(index, value, omitMessage) {

@@ -24,13 +24,17 @@ define(function() {
         //Throw an error if this is a set on a subproperty for not loaded elements
         var key = pathSegments[0].key;
         if (pathSegments.length > 1 && !(key in this.model.model)) {
-            throw  new Error("Can't set on BigList when item not loaded");
+            //throw  new Error("Can't set on BigList when item not loaded");
+            return; //Silently ignore
         }
 
         //Update cache infos
         if (pathSegments.length == 1) {
             if (!(key in this.model.model)) {
                 this._cacheOrder.push(key);
+            }
+            else {
+                this._touchCache(key);
             }
         }
 
@@ -49,7 +53,7 @@ define(function() {
             for (var i = 0; i < this._size; i++) {
                 tempArray.push(this.getValue([{ type: "index", key: i }]));
             }
-            return tempArray
+            return tempArray;
         }
         else {
             var key = pathSegments[0].key;
@@ -64,6 +68,9 @@ define(function() {
                 this.model.model[key] = this._substitute;
                 tempSubstitute = true;
                 this._requestMissing(key);
+            }
+            else {
+                this._touchCache(key);
             }
 
             //Run model.getValue
@@ -111,13 +118,123 @@ define(function() {
     BigList.prototype.del = function(pathSegments) {
         //console.log("BIGLIST del", this.model.baseRef.append(pathSegments).path());
 
-        throw new Error("BigList.del not implemented yet");
+        var key = parseInt(pathSegments[0].key);
+
+        if (pathSegments.length == 1) {
+            //Remove item from model if currently cached
+            if (key in this.model.model) {
+                delete this.model.model[key];
+            }
+
+            //Update size
+            this._size--;
+
+            //Update indices of @model
+            var newModel = {};
+            for (var modelKey in this.model.model) {
+                if (!this.model.model.hasOwnProperty(modelKey)) {
+                    continue;
+                }
+
+                var newKey = parseInt(modelKey);
+                if (newKey > key) {
+                    newKey--;
+                }
+                newModel[newKey] = this.model.model[modelKey];
+            }
+            this.model.model = newModel;
+
+            //Update indices of @_loadQueue
+            var newLoadQueue = [];
+            for (var i = 0; i < this._loadQueue.length; i++) {
+                var loadKey = this._loadQueue[i];
+                if (loadKey < key) {
+                    newLoadQueue.push(loadKey);
+                }
+                else if (loadKey > key) {
+                    newLoadQueue.push(loadKey - 1);
+                }
+            }
+            this._loadQueue = newLoadQueue;
+
+            //Update indices of @_cacheOrder
+            var newCacheOrder = [];
+            for (var i = 0; i < this._cacheOrder.length; i++) {
+                var cacheKey = this._cacheOrder[i];
+                if (cacheKey < key) {
+                    newCacheOrder.push(cacheKey);
+                }
+                else if (cacheKey > key) {
+                    newCacheOrder.push(cacheKey - 1);
+                }
+            }
+            this._cacheOrder = newCacheOrder;
+        }
+        else if (key in this.model.model) {
+            //If del for a subpath and item is currently cached -> delegate to model
+            this.model.del(pathSegments);
+        }
     };
 
     BigList.prototype.insert = function(pathSegments, index, value) {
         //console.log("BIGLIST insert", this.model.baseRef.append(pathSegments).path(), index, value);
 
-        throw new Error("BigList.insert not implemented yet");
+        index = parseInt(index);
+
+        if (pathSegments.length == 0) {
+            //Update size
+            this._size++;
+
+            //Update indices of @model
+            var newModel = {};
+            for (var modelKey in this.model.model) {
+                if (!this.model.model.hasOwnProperty(modelKey)) {
+                    continue;
+                }
+
+                var newKey = parseInt(modelKey);
+                if (newKey >= index) {
+                    newKey++;
+                }
+                newModel[newKey] = this.model.model[modelKey];
+            }
+            this.model.model = newModel;
+
+            //Update indices of @_loadQueue
+            var newLoadQueue = [];
+            for (var i = 0; i < this._loadQueue.length; i++) {
+                var loadKey = this._loadQueue[i];
+                if (loadKey < index) {
+                    newLoadQueue.push(loadKey);
+                }
+                else if (loadKey >= index) {
+                    newLoadQueue.push(loadKey + 1);
+                }
+            }
+            this._loadQueue = newLoadQueue;
+
+            //Update indices of @_cacheOrder
+            var newCacheOrder = [];
+            for (var i = 0; i < this._cacheOrder.length; i++) {
+                var cacheKey = this._cacheOrder[i];
+                if (cacheKey < index) {
+                    newCacheOrder.push(cacheKey);
+                }
+                else if (cacheKey >= index) {
+                    newCacheOrder.push(cacheKey + 1);
+                }
+            }
+            this._cacheOrder = newCacheOrder;
+
+            //Insert new item
+            this.setValue([{
+                type: "index",
+                key: index
+            }], value)
+        }
+        else if (pathSegments[0].key in this.model.model) {
+            this.model.insert(pathSegments, index, value);
+        }
     };
 
     BigList.prototype.size = function(pathSegments) {
@@ -130,7 +247,32 @@ define(function() {
     };
 
     BigList.prototype._cleanupCache = function() {
-        //Todo: Would this need events for changed properties? -> Probably yes since it's like setting the subst again
+        while (this._cacheOrder.length > this._cacheSize) {
+            var index = this._cacheOrder.shift();
+            delete this.model.model[index];
+        }
+    };
+
+    BigList.prototype._touchCache = function(key) {
+        //Find index of key in cacheOrder array
+        var index = null;
+        if (Array.prototype.indexOf) {
+            index = this._cacheOrder.indexOf(key);
+        }
+        else {
+            for (var i = 0; i < this._cacheOrder.length; i++) {
+                if (this._cacheOrder[i] == key) {
+                    index = i;
+                    break;
+                }
+            }
+        }
+
+        //Remove index from cacheOrder arraay
+        this._cacheOrder.splice(index, 1);
+
+        //Re-add at back
+        this._cacheOrder.push(key);
     };
 
     BigList.prototype._requestMissing = function(index) {
@@ -143,16 +285,26 @@ define(function() {
 
     BigList.prototype._loadMissing = function() {
         //Calc indices that really have to be loaded based on chunk size
-        var indicesToLoad = {};
+        var indicesToLoad = [];
+        var lastAddedIndex = null;
+
+        //Sort by numerical index
+        this._loadQueue.sort(function(lhs, rhs) {
+            return lhs - rhs;
+        });
+
+        //Step through queued indices from min to max and check if last indicesToLoad entry covers current index with given chunk size
         for (var i = 0; i < this._loadQueue.length; i++) {
             var index = this._loadQueue[i];
-            var baseIndex = Math.floor(index / this._chunk) * this._chunk;
-            indicesToLoad[baseIndex] = true;
+            if (lastAddedIndex == null || index > lastAddedIndex + this._chunk - 1) {
+                lastAddedIndex = index;
+                indicesToLoad.push(index);
+            }
         }
 
         //Send actions for indicesToLoad
-        for (index in indicesToLoad) {
-            this.model.baseRef.appendIndex(index).fire("@missingProperty");
+        for (var i = 0; i < indicesToLoad.length; i++) {
+            this.model.baseRef.appendIndex(indicesToLoad[i]).fire("@missingProperty");
         }
 
         //Reset loadQueue & timer

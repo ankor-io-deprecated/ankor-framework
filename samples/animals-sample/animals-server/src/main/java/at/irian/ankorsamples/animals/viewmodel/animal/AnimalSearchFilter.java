@@ -2,6 +2,7 @@ package at.irian.ankorsamples.animals.viewmodel.animal;
 
 import at.irian.ankorsamples.animals.domain.animal.AnimalFamily;
 import at.irian.ankorsamples.animals.domain.animal.AnimalType;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
 * @author Thomas Spiegl
@@ -9,8 +10,13 @@ import at.irian.ankorsamples.animals.domain.animal.AnimalType;
 @SuppressWarnings("UnusedDeclaration")
 public class AnimalSearchFilter {
 
+    @JsonInclude(JsonInclude.Include.ALWAYS)
     private String name;
+
+    @JsonInclude(JsonInclude.Include.ALWAYS)
     private AnimalType type;
+
+    @JsonInclude(JsonInclude.Include.ALWAYS)
     private AnimalFamily family;
 
     public String getName() {

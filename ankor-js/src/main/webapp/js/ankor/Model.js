@@ -80,7 +80,9 @@ define([
         var valid = true;
         var value = this.model;
 
-        for (var i = 0, segment; (segment = pathSegments[i]); i++) {
+        for (var i = 0; i < pathSegments.length; i++) {
+            var segment = pathSegments[i];
+
             //If parent is null (and therefore the current child can't exist) or child is undefined, then set valid to false
             if (value === null || value[segment.key] === undefined) {
                 valid = false;
@@ -118,15 +120,15 @@ define([
 
         //We haven't delegated to BigList, so now remove the value
         var lastSegment = pathSegments[pathSegments.length - 1];
-        if (lastSegment.type == "property") {
-            delete parentModel[lastSegment.key];
-        }
-        else if (lastSegment.type == "index") {
+        if (parentModel instanceof Array) {
             parentModel.splice(lastSegment.key, 1);
+        }
+        else {
+            delete parentModel[lastSegment.key];
         }
     };
 
-    Model.prototype.insert = function(pathSegments, index, value) {
+    Model.prototype.insert = function(pathSegments, index, insertValue) {
         var value = this.model;
         for (var i = 0, segment; (segment = pathSegments[i]); i++) {
             if (value != undefined) {
@@ -135,7 +137,8 @@ define([
 
             //Check for BigList
             if (value instanceof BigList) {
-                value.insert(pathSegments.slice(i+1, pathSegments.length), index, value);
+                value.insert(pathSegments.slice(i+1, pathSegments.length), index, insertValue);
+                return;
             }
         }
 
@@ -143,7 +146,7 @@ define([
             throw new Error("Insert only works for Arrays");
         }
 
-        value.splice(index, 0, value);
+        value.splice(index, 0, insertValue);
     };
 
     Model.prototype.size = function(pathSegments) {

@@ -2,21 +2,52 @@ define([
     "jquery"
 ], function(jquery) {
     jquery.fn.ankorBindInnerHTML = function(ref) {
+        //Helper variables and functions
         var element = this.first();
+        var updateInnerHTML = function() {
+            var value = ref.getValue();
+            if (value === undefined || value === null) {
+                value = "";
+            }
+            element.html(value);
+        };
+
+        //Init current value
+        updateInnerHTML();
+
+        //Change listeners
         return ref.addPropChangeListener(function() {
-            element.html(ref.getValue());
+            updateInnerHTML();
         });
     };
     jquery.fn.ankorBindInputValue = function(ref) {
+        //Helper variables and functions
         var element = this.first();
         var lastSentValue = null;
-        var updateValue = function() {
+        var updateRefValue = function() {
             if (element.val() != lastSentValue) {
                 lastSentValue = element.val();
                 ref.setValue(element.val());
-            }            
+            }
         };
-        element.change(updateValue);
+        var updateInputValue = function() {
+            //Using continuation for setting value so that e.g. ankorBindSelectItems has the chance to create the select options first, before the value is then selected
+            setTimeout(function() {
+                var value = ref.getValue();
+                if (value === undefined || value === null) {
+                    value = "";
+                }
+                element.val(value);
+            }, 0);
+        };
+
+        //Init current value
+        updateInputValue();
+
+        //Change listeners
+        //Listen for onChange
+        element.change(updateRefValue);
+        //Listen for onKeyDown (with flood control timer)
         var keyTimer = null;
         element.keydown(function() {
             if (keyTimer) {
@@ -25,25 +56,23 @@ define([
             }
             keyTimer = setTimeout(function() {
                 keyTimer = null;
-                updateValue();
+                updateRefValue();
             }, 200);
         });
+        //List for ankor prop changes
         return ref.addPropChangeListener(function() {
-            //Using continuation for setting value so that e.g. ankorBindSelectItems has the chance to create the select options first, before the value is then selected
-            setTimeout(function() {
-                element.val(ref.getValue());
-            }, 0);
+            updateInputValue();
         });
     };
     jquery.fn.ankorBindSelectItems = function(ref, options) {
+        //Helper variables and functions
         var element = this.first();
         var select = element.get(0);
-
         var emptyOption = false;
         if (options && options.emptyOption != undefined) {
             emptyOption = options.emptyOption;
         }
-        return ref.addPropChangeListener(function() {
+        var updateSelectOptions = function() {
             while (select.length > 0) {
                 select.remove(0);
             }
@@ -63,6 +92,14 @@ define([
                 option.value = selectItem;
                 select.add(option);
             }
+        };
+
+        //Init current value
+        updateSelectOptions();
+
+        //Change listeners
+        return ref.addPropChangeListener(function() {
+            updateSelectOptions();
         });
     };
 
