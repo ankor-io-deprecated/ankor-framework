@@ -7,12 +7,18 @@ import at.irian.ankor.session.ModelRootFactory;
 
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
+import java.beans.PropertyEditorManager;
+import java.util.Locale;
 
 /**
  * @author Manfred Geiler
  */
 public class AnkorELSupport implements ELSupport {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnkorELSupport.class);
+
+    static {
+        PropertyEditorManager.registerEditor(Locale.class, LocalePropertyEditor.class);
+    }
 
     private final ExpressionFactory expressionFactory;
     private final ModelContext modelContext;

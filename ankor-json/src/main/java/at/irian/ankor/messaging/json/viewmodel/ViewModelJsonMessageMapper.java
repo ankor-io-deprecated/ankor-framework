@@ -51,6 +51,7 @@ public class ViewModelJsonMessageMapper implements MessageMapper<String>,
         module.addDeserializer(Message.class, new MessageDeserializer());
         module.addDeserializer(Action.class, new ActionDeserializer());
         module.addDeserializer(Change.class, new ChangeDeserializer());
+        //module.addDeserializer(Locale.class, new LocaleDeserializer());
         module.addSerializer(Wrapper.class, new WrapperSerializer());
 
         // do always ignore Refs (ie. do never serialize Refs)
