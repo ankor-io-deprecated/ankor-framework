@@ -20,16 +20,23 @@ public class ObservableRef<T> implements ObservableValue<T> {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ObservableRef.class);
 
     protected final Ref ref;
+    private final T defaultValue;
     private final ChangeEventListener changeEventListener;
 
     private ExpressionHelper<T> helper = null;
 
     public ObservableRef(Ref ref) {
+        this(ref, null);
+    }
+
+    public ObservableRef(Ref ref, T defaultValue) {
         this.ref = ref;
+        this.defaultValue = defaultValue;
         this.changeEventListener = new ObservableChangeEventListener(ref, this) {
             @Override
             protected void handleChange(Ref changedProperty, Change change) {
-                if (changedProperty.equals(ObservableRef.this.ref) && change.getType() == ChangeType.value) {
+                if (change.getType() == ChangeType.value
+                    && (changedProperty.equals(ObservableRef.this.ref) || changedProperty.isAncestorOf(ObservableRef.this.ref))) {
                     ExpressionHelper.fireValueChangedEvent(helper);
                 }
             }
@@ -59,7 +66,11 @@ public class ObservableRef<T> implements ObservableValue<T> {
 
     @Override
     public T getValue() {
-        return ref.getValue();
+        try {
+            return ref.getValue();
+        } catch (IllegalStateException e) {
+            return defaultValue;
+        }
     }
 
     protected void finalize() throws Throwable {

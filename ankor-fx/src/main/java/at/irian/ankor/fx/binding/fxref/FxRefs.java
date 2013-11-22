@@ -126,17 +126,22 @@ public final class FxRefs {
                         // ignore
                         return;
                     }
-                    Object newValue = event.getChange().getValue();
-                    for (Toggle toggle : toggleGroup.getToggles()) {
-                        if (ObjectUtils.nullSafeEquals(toggle.getUserData(), newValue)) {
-                            toggleGroup.selectToggle(toggle);
-                            toggle.setSelected(true);
-                            break;
-                        }
-                    }
+                    toggleToNewValue(toggleGroup, event.getChange().getValue());
                 }
             }
         });
+        toggleToNewValue(toggleGroup, ref.getValue());
+    }
+
+    private static void toggleToNewValue(ToggleGroup toggleGroup, Object newValue) {
+        for (Toggle toggle : toggleGroup.getToggles()) {
+            if (ObjectUtils.nullSafeEquals(toggle.getUserData(), newValue)) {
+                if (!toggle.isSelected()) {
+                    toggleGroup.selectToggle(toggle);
+                }
+                break;
+            }
+        }
     }
 
 }

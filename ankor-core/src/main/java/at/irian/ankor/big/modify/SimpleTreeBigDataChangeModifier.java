@@ -1,6 +1,7 @@
 package at.irian.ankor.big.modify;
 
 import at.irian.ankor.big.MissingPropertyActionFiringBigList;
+import at.irian.ankor.big.MissingPropertyActionFiringBigMap;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.ref.Ref;
 
@@ -9,13 +10,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static at.irian.ankor.big.modify.ListToBigListDummyConverter.*;
-
 /**
  * @author Manfred Geiler
  */
-public class SimpleTreeBigListChangeModifier {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SimpleTreeBigListChangeModifier.class);
+public class SimpleTreeBigDataChangeModifier {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SimpleTreeBigDataChangeModifier.class);
 
     public Change modify(Change change, Ref changedProperty) {
         Object value = change.getValue();
@@ -27,6 +26,8 @@ public class SimpleTreeBigListChangeModifier {
             return null;
         } else if (isBigList(value)) {
             return handleBigList(property, (List) value);
+        } else if (isBigMap(value)) {
+            return handleBigMap(property, (Map) value);
         } else if (value instanceof List) {
             return handleList(property, (List) value);
         } else if (value instanceof Map) {
@@ -73,7 +74,7 @@ public class SimpleTreeBigListChangeModifier {
             if (((Collection) value).size() == 1) {
                 Object firstEntry = ((Collection) value).iterator().next();
                 if (firstEntry instanceof Map) {
-                    Object size = ((Map) firstEntry).get(SIZE_KEY);
+                    Object size = ((Map) firstEntry).get(ListToBigListDummyConverter.SIZE_KEY);
                     if (size != null && size instanceof Number) {
                         return true;
                     }
@@ -88,8 +89,7 @@ public class SimpleTreeBigListChangeModifier {
         int size = getBigListSize(serializedList);
         Object substitute = getBigListMissingElementSubstitute(serializedList);
         int chunkSize = getChunkSize(serializedList);
-        MissingPropertyActionFiringBigList bigList = new MissingPropertyActionFiringBigList(size, property, substitute,
-                                                                                            chunkSize);
+        List bigList = new MissingPropertyActionFiringBigList(size, property, substitute, chunkSize);
         List initialElements = getBigListInitialElements(serializedList);
         for (int i = 0, len = initialElements.size(); i < len && i < size ; i++) {
             bigList.set(i, initialElements.get(i));
@@ -98,26 +98,64 @@ public class SimpleTreeBigListChangeModifier {
     }
 
     private int getBigListSize(List list) {
-        Object size = ((Map) list.get(0)).get(SIZE_KEY);
+        Object size = ((Map) list.get(0)).get(ListToBigListDummyConverter.SIZE_KEY);
         return ((Number)size).intValue();
     }
 
     private Object getBigListMissingElementSubstitute(List list) {
-        return ((Map) list.get(0)).get(SUBSTITUTE_KEY);
+        return ((Map) list.get(0)).get(ListToBigListDummyConverter.SUBSTITUTE_KEY);
     }
 
     private int getChunkSize(List list) {
-        Object size = ((Map) list.get(0)).get(CHUNK_SIZE_KEY);
+        Object size = ((Map) list.get(0)).get(ListToBigListDummyConverter.CHUNK_SIZE_KEY);
         return ((Number)size).intValue();
     }
 
     private List getBigListInitialElements(List list) {
-        List initialList = (List) ((Map) list.get(0)).get(INITIAL_LIST_KEY);
+        List initialList = (List) ((Map) list.get(0)).get(ListToBigListDummyConverter.INITIAL_LIST_KEY);
         if (initialList != null) {
             return initialList;
         } else {
             return Collections.emptyList();
         }
+    }
+
+
+
+    private boolean isBigMap(Object value) {
+        if (value instanceof Map) {
+            Object size = ((Map) value).get(MapToBigMapDummyConverter.SIZE_KEY);
+            if (size != null && size instanceof Number) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected Map handleBigMap(Ref property, Map serializedMap) {
+        int size = getBigMapSize(serializedMap);
+        Object substitute = getBigMapMissingValueSubstitute(serializedMap);
+        Map bigMap = new MissingPropertyActionFiringBigMap(size, property, false, substitute);
+        for (Map.Entry entry : (Iterable<? extends Map.Entry>) serializedMap.entrySet()) {
+            Object key = entry.getKey();
+            if (!isSpecialBigMapKey(key)) {
+                bigMap.put(key, entry.getValue());
+            }
+        }
+        return bigMap;
+    }
+
+    private boolean isSpecialBigMapKey(Object key) {
+        return MapToBigMapDummyConverter.SIZE_KEY.equals(key) || MapToBigMapDummyConverter.SUBSTITUTE_KEY.equals(key);
+    }
+
+    private int getBigMapSize(Map map) {
+        return ((Number) map.get(MapToBigMapDummyConverter.SIZE_KEY)).intValue();
+    }
+
+    private Object getBigMapMissingValueSubstitute(Map map) {
+        return map.get(MapToBigMapDummyConverter.SUBSTITUTE_KEY);
     }
 
 }

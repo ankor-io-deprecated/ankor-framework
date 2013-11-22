@@ -1,5 +1,6 @@
 package at.irian.ankorsamples.animals.fxclient;
 
+import at.irian.ankor.fx.controller.AnkorFXMLLoader;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Tab;
@@ -44,7 +45,8 @@ public class TabLoader {
     }
 
     private FXMLLoader fxmlLoader() {
-        final FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource(tabType.getFxmlResource()));
+        AnkorFXMLLoader loader = new AnkorFXMLLoader(getClass().getClassLoader().getResource(tabType.getFxmlResource()),
+                                                     App.refFactory().ref("root.resources"));
         loader.setControllerFactory(new Callback<Class<?>, Object>() {
             @Override
             public Object call(Class<?> controllerClass) {

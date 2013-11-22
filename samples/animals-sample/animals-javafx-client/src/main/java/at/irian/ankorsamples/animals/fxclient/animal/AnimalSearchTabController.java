@@ -3,8 +3,8 @@ package at.irian.ankorsamples.animals.fxclient.animal;
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionBuilder;
 import at.irian.ankor.fx.binding.fxref.FxRef;
-import at.irian.ankor.fx.binding.fxref.FxRefs;
 import at.irian.ankor.fx.controller.FXControllerAnnotationSupport;
+import at.irian.ankor.fx.controller.I18nSupport;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorsamples.animals.fxclient.BaseTabController;
@@ -18,6 +18,8 @@ import javafx.scene.layout.HBox;
 import javafx.util.Callback;
 
 import java.util.Map;
+
+import static at.irian.ankorsamples.animals.fxclient.App.refFactory;
 
 /**
  * @author Thomas Spiegl
@@ -58,18 +60,18 @@ public class AnimalSearchTabController extends BaseTabController {
         FXControllerAnnotationSupport.scan(tabRef, this);
 
         FxRef modelRef = tabRef.appendPath("model");
-        Ref filterRef = tabRef.appendPath("model.filter");
-        Ref selItemsRef = tabRef.appendPath("model.selectItems");
+        FxRef filterRef = tabRef.appendPath("model.filter");
+        FxRef selItemsRef = tabRef.appendPath("model.selectItems");
 
-        tab.textProperty().bind(FxRefs.observableString(tabRef.appendPath("name")));
+        tab.textProperty().bind(tabRef.appendPath("name").<String>fxObservable());
 
-        name.textProperty().bindBidirectional(FxRefs.stringProperty(filterRef.appendPath("name")));
+        name.textProperty().bindBidirectional(filterRef.appendPath("name").<String>fxProperty());
 
-        type.itemsProperty().bind(FxRefs.<Enum>observableList(selItemsRef.appendPath("types")));
-        type.valueProperty().bindBidirectional(FxRefs.enumProperty(filterRef.appendPath("type")));
+        type.itemsProperty().bind(selItemsRef.appendPath("types").<Enum>fxObservableList());
+        type.valueProperty().bindBidirectional(filterRef.appendPath("type").<Enum>fxProperty());
 
-        family.itemsProperty().bind(FxRefs.<Enum>observableList(selItemsRef.appendPath("families")));
-        family.valueProperty().bindBidirectional(FxRefs.enumProperty(filterRef.appendPath("family")));
+        family.itemsProperty().bind(selItemsRef.appendPath("families").<Enum>fxObservableList());
+        family.valueProperty().bindBidirectional(filterRef.appendPath("family").<Enum>fxProperty());
 
         // bind table
         animalTable.itemsProperty().bind(modelRef.appendPath("animals").<Map>fxObservableList());
@@ -110,7 +112,10 @@ public class AnimalSearchTabController extends BaseTabController {
 
     private void createCellButtons(TableCell<Map, String> cell, final String uuid) {
 
-        Button deleteButton = new Button("delete");
+        I18nSupport i18nSupport = new I18nSupport(refFactory().ref("root.resources"));
+
+        Button deleteButton = new Button("%Delete");
+        i18nSupport.bindTextProperty(deleteButton);
         deleteButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
@@ -118,7 +123,8 @@ public class AnimalSearchTabController extends BaseTabController {
             }
         });
 
-        Button editButton = new Button("edit");
+        Button editButton = new Button("%Edit");
+        i18nSupport.bindTextProperty(editButton);
         editButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {

@@ -48,6 +48,8 @@ public class MainController implements Initializable {
     public void modelRootChanged() {
         final FxRef rootRef = refFactory().ref("root");
 
+//        label_Animal.setProperty(rootRef.appendPath("labels").appendLiteralKey("Animal").fxProperty());
+
         // bind user name
         userName.textProperty().bind(rootRef.appendPath("userName").<String>fxObservable());
 
@@ -56,16 +58,12 @@ public class MainController implements Initializable {
 
         // bind locale
         final FxRef localeRef = rootRef.appendPath("locale");
-        String currentLocale = localeRef.getValue();
         List<String> supportedLocales = rootRef.appendPath("supportedLocales").getValue();
         final ToggleGroup localesGroup = new ToggleGroup();
         for (String locale : supportedLocales) {
             ToggleButton tb = new ToggleButton(locale);
             tb.setToggleGroup(localesGroup);
             tb.setUserData(locale);
-            if (locale.equals(currentLocale)) {
-                tb.setSelected(true);
-            }
             localesBox.getChildren().add(tb);
         }
         FxRefs.bindToggleGroup(localesGroup, localeRef);

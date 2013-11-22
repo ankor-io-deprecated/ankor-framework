@@ -8,14 +8,14 @@ import at.irian.ankor.ref.Ref;
 /**
  * @author Manfred Geiler
  */
-public class ClientSideBigListModifier extends AbstractModifier implements Modifier {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ServerSideBigListModifier.class);
+public class ClientSideBigDataModifier extends AbstractModifier implements Modifier {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ClientSideBigDataModifier.class);
 
-    private final SimpleTreeBigListChangeModifier bigListModifier;
+    private final SimpleTreeBigDataChangeModifier bigDataModifier;
 
-    public ClientSideBigListModifier(Modifier parent) {
+    public ClientSideBigDataModifier(Modifier parent) {
         super(parent);
-        this.bigListModifier = new SimpleTreeBigListChangeModifier();
+        this.bigDataModifier = new SimpleTreeBigDataChangeModifier();
     }
 
     @Override
@@ -26,7 +26,7 @@ public class ClientSideBigListModifier extends AbstractModifier implements Modif
 
     @Override
     public Change modifyAfterReceive(Change change, Ref changedProperty) {
-        change = bigListModifier.modify(change, changedProperty);
+        change = bigDataModifier.modify(change, changedProperty);
         return super.modifyAfterReceive(change, changedProperty);
     }
 

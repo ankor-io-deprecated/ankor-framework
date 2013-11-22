@@ -22,7 +22,11 @@ public class RefProperty<T> extends ObservableRef<T> implements Property<T> {
     private ObservableValue<? extends T> observable = null;
 
     public RefProperty(Ref ref) {
-        super(ref);
+        this(ref, null);
+    }
+
+    public RefProperty(Ref ref, T defaultValue) {
+        super(ref, defaultValue);
         this.observableChangeListener = new ChangeListener<T>() {
             @Override
             public void changed(ObservableValue<? extends T> observableValue, T oldValue, T newValue) {

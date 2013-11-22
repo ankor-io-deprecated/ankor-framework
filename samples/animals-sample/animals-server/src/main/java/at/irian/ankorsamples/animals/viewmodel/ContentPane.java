@@ -22,6 +22,7 @@ public class ContentPane {
 
     private final Ref myRef;
     private final TypedRef<String> serverStatusRef;
+    private final Ref resourcesRef;
 
     @AnkorIgnore private final AnimalRepository animalRepository;
 
@@ -30,9 +31,10 @@ public class ContentPane {
 
     protected ContentPane(Ref contentPaneRef,
                           TypedRef<String> serverStatusRef,
-                          AnimalRepository animalRepository) {
+                          Ref resourcesRef, AnimalRepository animalRepository) {
         this.myRef = contentPaneRef;
         this.serverStatusRef = serverStatusRef;
+        this.resourcesRef = resourcesRef;
         this.animalRepository = animalRepository;
         this.panelIdCounter = 0;
         this.panels = new HashMap<>();
@@ -48,10 +50,10 @@ public class ContentPane {
 
         AnimalSearchModel model = new AnimalSearchModel(panelRef.appendPath("model"),
                                                         panelRef.appendPath("name").<String>toTypedRef(),
-                                                        serverStatusRef, animalRepository);
+                                                        serverStatusRef, resourcesRef, animalRepository);
         model.reloadAnimals();
 
-        Panel<AnimalSearchModel> panel = new Panel<>(panelId, panelRef, "Animal Search", "animalSearch",
+        Panel<AnimalSearchModel> panel = new Panel<>(panelId, panelRef, model.getPanelName(), "animalSearch",
                                                      model);
 
         panelRef.setValue(panel);
@@ -72,8 +74,8 @@ public class ContentPane {
                                                         panelRef.appendPath("name").<String>toTypedRef(),
                                                         serverStatusRef,
                                                         animalRepository,
-                                                        new Animal());
-        Panel<AnimalDetailModel> panel = new Panel<>(panelId, panelRef, "New Animal", "animalDetail",
+                                                        resourcesRef, new Animal());
+        Panel<AnimalDetailModel> panel = new Panel<>(panelId, panelRef, model.getPanelName(), "animalDetail",
                                                      model);
 
         panelRef.setValue(panel);
@@ -90,8 +92,8 @@ public class ContentPane {
                                                         panelRef.appendPath("name").<String>toTypedRef(),
                                                         serverStatusRef,
                                                         animalRepository,
-                                                        animal);
-        Panel<AnimalDetailModel> panel = new Panel<>(panelId, panelRef, "Edit Animal " + animal.getName(), "animalDetail",
+                                                        resourcesRef, animal);
+        Panel<AnimalDetailModel> panel = new Panel<>(panelId, panelRef, model.getPanelName(), "animalDetail",
                                                      model);
 
         panelRef.setValue(panel);

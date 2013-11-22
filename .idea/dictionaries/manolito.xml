@@ -15,6 +15,7 @@
       <w>loopback</w>
       <w>matchers</w>
       <w>pluggable</w>
+      <w>recurse</w>
       <w>synchronizer</w>
       <w>unregister</w>
     </words>

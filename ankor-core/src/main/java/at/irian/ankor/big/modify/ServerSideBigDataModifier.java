@@ -8,14 +8,14 @@ import at.irian.ankor.ref.Ref;
 /**
  * @author Manfred Geiler
  */
-public class ServerSideBigListModifier extends AbstractModifier implements Modifier {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ServerSideBigListModifier.class);
+public class ServerSideBigDataModifier extends AbstractModifier implements Modifier {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ServerSideBigDataModifier.class);
 
-    private final AnnotationAwareBigListChangeModifier bigListModifier;
+    private final AnnotationAwareBigDataChangeModifier bigListModifier;
 
-    public ServerSideBigListModifier(Modifier parent) {
+    public ServerSideBigDataModifier(Modifier parent) {
         super(parent);
-        this.bigListModifier = new AnnotationAwareBigListChangeModifier();
+        this.bigListModifier = new AnnotationAwareBigDataChangeModifier();
     }
 
     @Override

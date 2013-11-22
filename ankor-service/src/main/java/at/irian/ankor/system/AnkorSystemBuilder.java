@@ -3,8 +3,8 @@ package at.irian.ankor.system;
 import at.irian.ankor.action.MissingPropertyActionEventListener;
 import at.irian.ankor.annotation.AnnotationViewModelPostProcessor;
 import at.irian.ankor.base.BeanResolver;
-import at.irian.ankor.big.modify.ClientSideBigListModifier;
-import at.irian.ankor.big.modify.ServerSideBigListModifier;
+import at.irian.ankor.big.modify.ClientSideBigDataModifier;
+import at.irian.ankor.big.modify.ServerSideBigDataModifier;
 import at.irian.ankor.context.*;
 import at.irian.ankor.delay.Scheduler;
 import at.irian.ankor.delay.SimpleScheduler;
@@ -146,7 +146,7 @@ public class AnkorSystemBuilder {
         SessionManager sessionManager = new DefaultSessionManager(sessionFactory);
 
         Modifier defaultModifier = getDefaultModifier();
-        Modifier modifier = new ServerSideBigListModifier(defaultModifier);
+        Modifier modifier = new ServerSideBigDataModifier(defaultModifier);
 
         EventListeners globalEventListeners = getGlobalEventListeners(messageFactory,
                                                                       sessionManager,
@@ -197,7 +197,7 @@ public class AnkorSystemBuilder {
 
         SingletonSessionManager sessionManager = new SingletonSessionManager();
         Modifier defaultModifier = getDefaultModifier();
-        Modifier modifier = new ClientSideBigListModifier(defaultModifier);
+        Modifier modifier = new ClientSideBigDataModifier(defaultModifier);
 
         EventListeners globalEventListeners = getGlobalEventListeners(messageFactory,
                                                                       sessionManager,

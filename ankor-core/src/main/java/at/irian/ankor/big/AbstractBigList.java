@@ -18,12 +18,12 @@ public abstract class AbstractBigList<E> extends AbstractList<E> implements BigL
 
     private int size;
 
-    public AbstractBigList(int size) {
+    protected AbstractBigList(int size) {
         this.elements = new TreeMap<Integer, Reference>();
         this.size = size;
     }
 
-    public AbstractBigList(Collection<? extends E> c) {
+    protected AbstractBigList(Collection<? extends E> c) {
         this(c.size());
         int idx = 0;
         for (E e : c) {
@@ -153,11 +153,7 @@ public abstract class AbstractBigList<E> extends AbstractList<E> implements BigL
     @Override
     public boolean isAvailable(int index) {
         Reference elementReference = elements.get(index);
-        if (elementReference == null) {
-            return false;
-        }
-        Object item = elementReference.get();
-        return item instanceof NullDummy || item != null;
+        return elementReference != null && elementReference.get() != null;
     }
 
     private static class NullDummy {}

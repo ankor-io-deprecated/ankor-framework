@@ -4,17 +4,18 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
-<BorderPane layoutX="0.0" layoutY="0.0" prefHeight="580.0" prefWidth="710.0" xmlns:fx="http://javafx.com/fxml" fx:controller="at.irian.ankorsamples.animals.fxclient.MainController">
+<BorderPane layoutX="0.0" layoutY="0.0" prefHeight="580.0" prefWidth="710.0" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="at.irian.ankorsamples.animals.fxclient.MainController">
 
     <top>
         <HBox alignment="TOP_LEFT">
             <MenuBar minHeight="21.0" prefHeight="25.0" prefWidth="590.0">
-                <Menu mnemonicParsing="false" text="Animal">
-                    <MenuItem mnemonicParsing="false" onAction="#openAnimalSearchTab" text="Animal Search"/>
-                    <MenuItem mnemonicParsing="false" onAction="#openAnimalDetailTab" text="New Animal"/>
+                <Menu mnemonicParsing="false" text="%Animal" >
+                    <MenuItem mnemonicParsing="false" onAction="#openAnimalSearchTab" text="%SearchAnimals" />
+                    <MenuItem mnemonicParsing="false" onAction="#openAnimalDetailTab" text="%NewAnimal" />
                 </Menu>
-                <Menu mnemonicParsing="false" text="Help">
-                    <MenuItem mnemonicParsing="false" text="About"/>
+                <Menu mnemonicParsing="false" text="%Help">
+                    <MenuItem mnemonicParsing="false" text="%About"/>
                 </Menu>
             </MenuBar>
             <HBox fx:id="localesBox" prefWidth="100.0"/>
@@ -30,9 +31,9 @@
             <BorderPane.margin>
                 <Insets />
             </BorderPane.margin>
-            <Text text="User: " />
+            <Text text="%User_" />
             <Text fx:id="userName" fill="#3385ff" />
-            <Text text="Server says: " />
+            <Text text="%ServerSays_" />
             <Text fx:id="serverStatus" fill="#cc3100" />
         </HBox>
     </bottom>

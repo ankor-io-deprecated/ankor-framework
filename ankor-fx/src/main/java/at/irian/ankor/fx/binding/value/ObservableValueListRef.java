@@ -18,7 +18,7 @@ public class ObservableValueListRef<T> extends ObservableRef<ObservableList<T>> 
     private final ObservableList<T> observableList;
 
     public ObservableValueListRef(Ref ref) {
-        super(ref);
+        super(ref, null);
         this.observableList = new ObservableListRef<>(ref);
     }
 

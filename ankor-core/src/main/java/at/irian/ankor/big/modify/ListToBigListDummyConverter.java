@@ -37,7 +37,7 @@ public class ListToBigListDummyConverter {
             try {
                 missingElementSubstitute = missingElementSubstituteType.newInstance();
             } catch (Exception e) {
-                throw new RuntimeException("Unable to instantiate " + missingElementSubstitute);
+                throw new RuntimeException("Unable to instantiate " + missingElementSubstituteType);
             }
         }
         return new ListToBigListDummyConverter(ann.threshold(),
@@ -53,7 +53,7 @@ public class ListToBigListDummyConverter {
             return null;
         }
 
-        if (actualCollection.size() <= thresholdSize) {
+        if (actualCollection.size() < thresholdSize) {
             return actualCollection;
         }
 

@@ -38,6 +38,7 @@ public class MissingPropertyActionEventListener extends ActionEventListener {
             Ref missingProperty = event.getActionProperty();
             LOG.debug("handling missing property request for {}", missingProperty);
 
+            // special AnkorBigList handling
             if (!missingProperty.isRoot()) {
                 Ref maybeCollRef = missingProperty.parent();
                 AnkorBigList bigListAnnotation = new ModelPropertyAnnotationsFinder()
@@ -57,6 +58,7 @@ public class MissingPropertyActionEventListener extends ActionEventListener {
                 }
             }
 
+            // default behaviour
             missingProperty.signalValueChange();
         }
     }

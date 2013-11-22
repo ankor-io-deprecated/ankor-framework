@@ -2,16 +2,18 @@ package at.irian.ankor.big.modify;
 
 import at.irian.ankor.annotation.ModelPropertyAnnotationsFinder;
 import at.irian.ankor.big.AnkorBigList;
+import at.irian.ankor.big.AnkorBigMap;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.ref.Ref;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * @author Manfred Geiler
  */
-class AnnotationAwareBigListChangeModifier {
+class AnnotationAwareBigDataChangeModifier {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(BigListAwareSendReceiveModifier.class);
 
     public Change modify(Change change, Ref changedProperty) {
@@ -47,6 +49,11 @@ class AnnotationAwareBigListChangeModifier {
             ListToBigListDummyConverter converter
                     = ListToBigListDummyConverter.createFromAnnotation((AnkorBigList) annotation);
             return converter.convert((Collection) value);
+        }
+        if (annotation instanceof AnkorBigMap) {
+            MapToBigMapDummyConverter converter
+                    = MapToBigMapDummyConverter.createFromAnnotation((AnkorBigMap) annotation);
+            return converter.convert((Map) value);
         }
         return value;
     }

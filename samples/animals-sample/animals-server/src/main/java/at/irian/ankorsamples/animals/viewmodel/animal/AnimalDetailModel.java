@@ -26,6 +26,7 @@ public class AnimalDetailModel {
     private final TypedRef<String> serverStatusRef;
 
     private final Ref myRef;
+    private final Ref resourcesRef;
 
     private Animal animal;
 
@@ -39,8 +40,9 @@ public class AnimalDetailModel {
                              TypedRef<String> panelNameRef,
                              TypedRef<String> serverStatusRef,
                              AnimalRepository animalRepository,
-                             Animal animal) {
+                             Ref resourcesRef, Animal animal) {
         this.myRef = myRef;
+        this.resourcesRef = resourcesRef;
         this.animal = animal;
         this.selectItems = AnimalSelectItems.create(animalRepository.getAnimalTypes());
         this.animalRepository = animalRepository;
@@ -53,10 +55,10 @@ public class AnimalDetailModel {
 
     @ChangeListener(pattern = ".animal.name")
     public void onNameChanged() {
+
+        panelNameRef.setValue(getPanelName());
+
         String name = animal.getName();
-
-        panelNameRef.setValue(new PanelNameCreator().createName("New Animal", name));
-
         if (animalRepository.isAnimalNameAlreadyExists(name)) {
             myRef.appendPath("nameStatus").setValue("name already exists");
         } else if (name.length() > AnimalRepository.MAX_NAME_LEN) {
@@ -64,6 +66,16 @@ public class AnimalDetailModel {
         } else {
             myRef.appendPath("nameStatus").setValue("ok");
         }
+    }
+
+    @ChangeListener(pattern = "root.locale")
+    public void onLocaleChanged() {
+        panelNameRef.setValue(getPanelName());
+    }
+
+    public String getPanelName() {
+        String name = animal.getName();
+        return new PanelNameCreator().createName(resourcesRef.appendLiteralKey("EditAnimal").<String>getValue(), name);
     }
 
     @ChangeListener(pattern = ".animal.type")

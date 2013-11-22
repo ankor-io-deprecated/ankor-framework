@@ -3,6 +3,7 @@ package at.irian.ankorsamples.animals.fxclient;
 import at.irian.ankor.event.dispatch.JavaFxEventDispatcherFactory;
 import at.irian.ankor.fx.binding.fxref.FxRefContextFactoryProvider;
 import at.irian.ankor.fx.binding.fxref.FxRefFactory;
+import at.irian.ankor.fx.controller.AnkorFXMLLoader;
 import at.irian.ankor.http.ClientHttpMessageLoop;
 import at.irian.ankor.http.ServerHost;
 import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
@@ -16,7 +17,6 @@ import at.irian.ankor.socket.SocketAnkorSystemStarter;
 import at.irian.ankor.socket.SocketMessageLoop;
 import at.irian.ankor.system.AnkorSystem;
 import at.irian.ankor.system.AnkorSystemBuilder;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -202,7 +202,11 @@ public class App extends javafx.application.Application {
 
     private void startFXClient(Stage primaryStage) throws IOException {
         primaryStage.setTitle("Ankor FX Sample");
-        Pane myPane = FXMLLoader.load(getClass().getClassLoader().getResource("main.fxml"));
+
+        AnkorFXMLLoader fxmlLoader = new AnkorFXMLLoader();
+        fxmlLoader.setLocation(getClass().getClassLoader().getResource("main.fxml"));
+        fxmlLoader.setResourcesRef(refFactory.ref("root.resources"));
+        Pane myPane = (Pane) fxmlLoader.load();
 
         Scene myScene = new Scene(myPane);
         myScene.getStylesheets().add("style.css");

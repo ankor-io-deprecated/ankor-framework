@@ -29,6 +29,7 @@ public class AnimalSearchModel extends ViewModelBase {
 
     private final TypedRef<String> panelNameRef;
     private final TypedRef<String> serverStatusRef;
+    private final Ref resourcesRef;
 
     @AnkorIgnore
     private final AnimalRepository animalRepository;
@@ -49,10 +50,12 @@ public class AnimalSearchModel extends ViewModelBase {
     public AnimalSearchModel(Ref animalSearchModelRef,
                              TypedRef<String> panelNameRef,
                              TypedRef<String> serverStatusRef,
+                             Ref resourcesRef,
                              AnimalRepository animalRepository) {
         super(animalSearchModelRef);
         this.panelNameRef = panelNameRef;
         this.serverStatusRef = serverStatusRef;
+        this.resourcesRef = resourcesRef;
         this.animalRepository = animalRepository;
         this.filter = new AnimalSearchFilter();
         this.selectItems = AnimalSelectItems.create(animalRepository.getAnimalTypes());
@@ -96,10 +99,14 @@ public class AnimalSearchModel extends ViewModelBase {
         animals.setAll(newAnimalsList);
     }
 
-    @ChangeListener(pattern = ".filter.name")
-    public void onNameChanged() {
+    @ChangeListener(pattern = {".filter.name", "root.locale"})
+    public void onNameOrLocaleChanged() {
+        panelNameRef.setValue(getPanelName());
+    }
+
+    public String getPanelName() {
         String name = filter.getName();
-        panelNameRef.setValue(new PanelNameCreator().createName("Animal Search", name));
+        return new PanelNameCreator().createName(resourcesRef.appendLiteralKey("SearchForAnimal").<String>getValue(), name);
     }
 
     @ChangeListener(pattern = ".filter.type")
