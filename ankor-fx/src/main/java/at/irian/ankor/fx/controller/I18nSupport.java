@@ -24,7 +24,7 @@ public class I18nSupport {
         if (textProperty != null) {
             String text = textProperty.getValue();
             if (text != null && text.startsWith("%")) {
-                LOG.debug("Binding text property of {} to resource {}", textProperty, text);
+                LOG.trace("Binding text property of {} to resource {}", textProperty, text);
                 textProperty.bind(getObservableResource(text.substring(1)));
             }
         }
@@ -48,7 +48,7 @@ public class I18nSupport {
     }
 
     private ObservableValue<String> getObservableResource(String key) {
-        return new ObservableRef<>(resourcesRef.appendLiteralKey(key), "?" + key + "?");
+        return ObservableRef.createObservableValue(resourcesRef.appendLiteralKey(key), "?" + key + "?");
     }
 
 }

@@ -31,11 +31,12 @@ public final class FxRefs {
     private FxRefs() {}
 
     public static <T> ObservableValue<T> observable(Ref ref)  {
-        return new ObservableRef<>(ref);
+        return ObservableRef.createObservableValue(ref);
     }
 
     public static <R,T> ObservableValue<T> observable(Ref ref, final Converter<R,T> converter)  {
-        return new ObservableRef<T>(ref) {
+        // todo  use static create factory method
+        return new ObservableRef<T>(ref, null) {
             @Override
             public T getValue() {
                 return converter.convertTo((R) ref.getValue());
@@ -44,32 +45,33 @@ public final class FxRefs {
     }
 
     public static ObservableValue<String> observableString(Ref ref)  {
-        return new ObservableRef<>(ref);
+        return ObservableRef.createObservableValue(ref);
     }
 
     public static ObservableValue<Integer> observableInteger(Ref ref)  {
-        return new ObservableRef<>(ref);
+        return ObservableRef.createObservableValue(ref);
     }
 
     public static ObservableValue<Enum> observableEnum(Ref ref)  {
-        return new ObservableRef<>(ref);
+        return ObservableRef.createObservableValue(ref);
     }
 
     public static ObservableValue<Boolean> observableBoolean(Ref ref)  {
-        return new ObservableRef<>(ref);
+        return ObservableRef.createObservableValue(ref);
     }
 
     public static <E> ObservableValue<ObservableList<E>> observableList(Ref ref)  {
-        return new ObservableValueListRef<>(ref);
+        return ObservableValueListRef.createObservableValueList(ref);
     }
 
 
     public static <T> Property<T> property(Ref ref)  {
-        return new RefProperty<>(ref);
+        return RefProperty.createProperty(ref);
     }
 
     public static <T> RefProperty<T> property(Ref ref, final BidirectionalConverter<Object, T> converter) {
-        return new RefProperty<T>(ref) {
+        // todo  use static create factory method
+        return new RefProperty<T>(ref, null) {
             @Override
             public T getValue() {
                 return converter.convertTo(super.getValue());
@@ -83,15 +85,15 @@ public final class FxRefs {
     }
 
     public static Property<String> stringProperty(Ref ref)  {
-        return new RefProperty<>(ref);
+        return RefProperty.createProperty(ref);
     }
 
     public static Property<Integer> integerProperty(Ref ref)  {
-        return new RefProperty<>(ref);
+        return RefProperty.createProperty(ref);
     }
 
     public static Property<Enum> enumProperty(Ref ref)  {
-        return new RefProperty<>(ref);
+        return RefProperty.createProperty(ref);
     }
 
 

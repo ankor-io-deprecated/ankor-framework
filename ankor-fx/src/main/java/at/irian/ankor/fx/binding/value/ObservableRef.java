@@ -3,11 +3,13 @@ package at.irian.ankor.fx.binding.value;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.change.ChangeEventListener;
 import at.irian.ankor.change.ChangeType;
+import at.irian.ankor.fx.binding.cache.FxCacheSupport;
 import at.irian.ankor.ref.Ref;
 import com.sun.javafx.binding.ExpressionHelper;
 import javafx.beans.InvalidationListener;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.util.Callback;
 
 /**
  * A JavaFX ObservableValue backed by a Ankor Ref.
@@ -17,7 +19,7 @@ import javafx.beans.value.ObservableValue;
  * @author Manfred Geiler
  */
 public class ObservableRef<T> implements ObservableValue<T> {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ObservableRef.class);
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ObservableRef.class);
 
     protected final Ref ref;
     private final T defaultValue;
@@ -25,11 +27,7 @@ public class ObservableRef<T> implements ObservableValue<T> {
 
     private ExpressionHelper<T> helper = null;
 
-    public ObservableRef(Ref ref) {
-        this(ref, null);
-    }
-
-    public ObservableRef(Ref ref, T defaultValue) {
+    protected ObservableRef(Ref ref, T defaultValue) {
         this.ref = ref;
         this.defaultValue = defaultValue;
         this.changeEventListener = new ObservableChangeEventListener(ref, this) {
@@ -43,6 +41,23 @@ public class ObservableRef<T> implements ObservableValue<T> {
         };
         this.ref.context().modelContext().getEventListeners().add(this.changeEventListener);
     }
+
+
+    public static <T> ObservableValue<T> createObservableValue(Ref ref) {
+        return createObservableValue(ref, null);
+    }
+
+    public static <T>  ObservableValue<T> createObservableValue(Ref ref, final T defaultValue) {
+        return FxCacheSupport.getBindingCache(ref)
+                             .getObservableValue(ref, defaultValue, new Callback<Ref, ObservableValue<T>>() {
+                                 @Override
+                                 public ObservableValue<T> call(Ref ref) {
+                                     LOG.debug("Creating ObservableValue for {}", ref);
+                                     return new ObservableRef<>(ref, defaultValue);
+                                 }
+                             });
+    }
+
 
     @Override
     public void addListener(ChangeListener<? super T> changeListener) {

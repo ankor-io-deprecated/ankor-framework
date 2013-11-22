@@ -3,6 +3,7 @@ package at.irian.ankor.fx.binding.value;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.change.ChangeEventListener;
 import at.irian.ankor.event.source.CustomSource;
+import at.irian.ankor.fx.binding.cache.FxCacheSupport;
 import at.irian.ankor.ref.CollectionRef;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.impl.RefImplementor;
@@ -10,6 +11,7 @@ import com.sun.javafx.collections.ListListenerHelper;
 import javafx.beans.InvalidationListener;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.util.Callback;
 
 import java.util.*;
 
@@ -21,7 +23,7 @@ import java.util.*;
  * @author Manfred Geiler
  */
 public class ObservableListRef<E> extends AbstractList<E> implements ObservableList<E> {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ObservableListRef.class);
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ObservableListRef.class);
 
     protected final CollectionRef listRef;
     private final FxListChangeHelper<E> changeHelper;
@@ -29,7 +31,7 @@ public class ObservableListRef<E> extends AbstractList<E> implements ObservableL
 
     private ListListenerHelper<E> listenerHelper = null;
 
-    public ObservableListRef(Ref ref) {
+    protected ObservableListRef(Ref ref) {
         this.listRef = ref.toCollectionRef();
         this.changeHelper = new FxListChangeHelper<>(this);
         this.changeEventListener = new ObservableChangeEventListener(ref, this) {
@@ -53,6 +55,19 @@ public class ObservableListRef<E> extends AbstractList<E> implements ObservableL
         };
         this.listRef.context().modelContext().getEventListeners().add(this.changeEventListener);
     }
+
+
+    public static <T> ObservableList<T> createObservableList(Ref ref) {
+        return FxCacheSupport.getBindingCache(ref)
+                             .getObservableList(ref, null, new Callback<Ref, ObservableList<T>>() {
+                                 @Override
+                                 public ObservableList<T> call(Ref ref) {
+                                     LOG.debug("Creating ObservableList for {}", ref);
+                                     return new ObservableListRef<>(ref);
+                                 }
+                             });
+    }
+
 
     @Override
     public void addListener(InvalidationListener invalidationlistener) {

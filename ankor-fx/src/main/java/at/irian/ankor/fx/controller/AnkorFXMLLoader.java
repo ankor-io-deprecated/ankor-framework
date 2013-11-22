@@ -53,7 +53,7 @@ public class AnkorFXMLLoader extends FXMLLoader {
 
     private void doPostProcess(Object node) {
 
-        LOG.info("Post processing {} ...", node);
+        LOG.debug("Post processing {} ...", node);
 
         if (i18nSupport != null) {
             i18nSupport.bindTextProperty(node);
@@ -95,7 +95,7 @@ public class AnkorFXMLLoader extends FXMLLoader {
 
     private void recurse(List<? extends Object> childNodes) {
         if (childNodes != null) {
-            LOG.info(" ... {} children:", childNodes.size());
+            LOG.trace(" ... {} children:", childNodes.size());
             for (Object childNode : childNodes) {
                 doPostProcess(childNode);
             }
