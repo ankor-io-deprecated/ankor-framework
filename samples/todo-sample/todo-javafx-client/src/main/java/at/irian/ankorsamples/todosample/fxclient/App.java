@@ -1,9 +1,10 @@
 package at.irian.ankorsamples.todosample.fxclient;
 
 import at.irian.ankor.event.dispatch.JavaFxEventDispatcherFactory;
+import at.irian.ankor.fx.binding.fxref.FxRefContextFactoryProvider;
+import at.irian.ankor.fx.binding.fxref.FxRefFactory;
 import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
 import at.irian.ankor.ref.RefContext;
-import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.servlet.websocket.messaging.WebSocketMessageBus;
 import at.irian.ankor.servlet.websocket.session.WebSocketRemoteSystem;
 import at.irian.ankor.session.SingletonSessionManager;
@@ -34,7 +35,7 @@ public class App extends Application {
 
     public static final int HEARTBEAT_INTERVAL = 25;
 
-    private static RefFactory refFactory;
+    private static FxRefFactory refFactory;
     private static HostServices services;
 
 
@@ -59,7 +60,7 @@ public class App extends Application {
         AnkorSystem clientSystem = createWebSocketClientSystem(server, endpoint);
 
         RefContext clientRefContext = ((SingletonSessionManager) clientSystem.getSessionManager()).getSession().getRefContext();
-        refFactory = clientRefContext.refFactory();
+        refFactory = (FxRefFactory) clientRefContext.refFactory();
         services = getHostServices();
 
         startFXClient(primaryStage);
@@ -87,6 +88,7 @@ public class App extends Application {
                 .withName(clientId)
                 .withMessageBus(messageBus)
                 .withDispatcherFactory(new JavaFxEventDispatcherFactory())
+                .withRefContextFactoryProvider(new FxRefContextFactoryProvider())
                 .withModelContextId("collabTest");
 
         final CountDownLatch latch = new CountDownLatch(1);
@@ -134,7 +136,7 @@ public class App extends Application {
         return services;
     }
 
-    public static RefFactory refFactory() {
+    public static FxRefFactory refFactory() {
         return refFactory;
     }
 }

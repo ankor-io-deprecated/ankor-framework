@@ -2,8 +2,7 @@ package at.irian.ankorsamples.todosample.fxclient.task;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.annotation.ChangeListener;
-import at.irian.ankor.fx.binding.property.ViewModelIntegerProperty;
-import at.irian.ankor.fx.binding.property.ViewModelProperty;
+import at.irian.ankor.fx.binding.fxref.FxRef;
 import at.irian.ankor.fx.controller.FXControllerAnnotationSupport;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorsamples.todosample.fxclient.App;
@@ -51,7 +50,7 @@ public class TaskListController implements Initializable {
     public Node footerTop;
     @FXML
     public Node footerBottom;
-    private Ref modelRef;
+    private FxRef modelRef;
     private boolean initialized = false;
     private HashMap<Integer, TaskPane> cache = new HashMap<>();
 
@@ -66,38 +65,30 @@ public class TaskListController implements Initializable {
     public void initialize() {
         initialized = true;
 
-        Ref rootRef = refFactory().ref("root");
+        FxRef rootRef = refFactory().ref("root");
         modelRef = rootRef.appendPath("model");
-        Ref tasksRef = modelRef.appendPath("tasks");
-
-        ViewModelIntegerProperty itemsLeft = new ViewModelIntegerProperty(modelRef, "itemsLeft");
-        ViewModelProperty<String> itemsLeftText = new ViewModelProperty<>(modelRef, "itemsLeftText");
-        ViewModelProperty<Boolean> footerVisibility = new ViewModelProperty<>(modelRef, "footerVisibility");
-        ViewModelProperty<Boolean> toggleAll = new ViewModelProperty<>(modelRef, "toggleAll");
-        ViewModelProperty<String> itemsCompleteText = new ViewModelProperty<>(modelRef, "itemsCompleteText");
-        ViewModelProperty<Boolean> clearButtonVisibility = new ViewModelProperty<>(modelRef, "clearButtonVisibility");
-        ViewModelProperty<Boolean> filterAllSelected = new ViewModelProperty<>(modelRef, "filterAllSelected");
-        ViewModelProperty<Boolean> filterActiveSelected = new ViewModelProperty<>(modelRef, "filterActiveSelected");
-        ViewModelProperty<Boolean> filterCompletedSelected = new ViewModelProperty<>(modelRef, "filterCompletedSelected");
+        FxRef tasksRef = modelRef.appendPath("tasks");
 
         SimpleStringProperty itemsLeftAsString = new SimpleStringProperty();
-        Bindings.bindBidirectional(itemsLeftAsString, itemsLeft, new NumberStringConverter());
+        Bindings.bindBidirectional(itemsLeftAsString,
+                                   modelRef.appendPath("itemsLeft").<Number>fxProperty(),
+                                   new NumberStringConverter());
 
         todoCountNum.textProperty().bind(itemsLeftAsString);
-        todoCountText.textProperty().bind(itemsLeftText);
+        todoCountText.textProperty().bind(modelRef.appendPath("itemsLeftText").<String>fxProperty());
 
-        footerTop.visibleProperty().bind(footerVisibility);
-        footerBottom.visibleProperty().bind(footerVisibility);
+        footerTop.visibleProperty().bind(modelRef.appendPath("footerVisibility").<Boolean>fxProperty());
+        footerBottom.visibleProperty().bind(modelRef.appendPath("footerVisibility").<Boolean>fxProperty());
 
-        toggleAllButton.visibleProperty().bind(footerVisibility);
-        toggleAllButton.selectedProperty().bindBidirectional(toggleAll);
+        toggleAllButton.visibleProperty().bind(modelRef.appendPath("footerVisibility").<Boolean>fxProperty());
+        toggleAllButton.selectedProperty().bindBidirectional(modelRef.appendPath("toggleAll").<Boolean>fxProperty());
 
-        clearButton.textProperty().bind(itemsCompleteText);
-        clearButton.visibleProperty().bind(clearButtonVisibility);
+        clearButton.textProperty().bind(modelRef.appendPath("itemsCompleteText").<String>fxProperty());
+        clearButton.visibleProperty().bind(modelRef.appendPath("clearButtonVisibility").<Boolean>fxProperty());
 
-        filterAll.selectedProperty().bindBidirectional(filterAllSelected);
-        filterActive.selectedProperty().bindBidirectional(filterActiveSelected);
-        filterCompleted.selectedProperty().bindBidirectional(filterCompletedSelected);
+        filterAll.selectedProperty().bindBidirectional(modelRef.appendPath("filterAllSelected").<Boolean>fxProperty());
+        filterActive.selectedProperty().bindBidirectional(modelRef.appendPath("filterActiveSelected").<Boolean>fxProperty());
+        filterCompleted.selectedProperty().bindBidirectional(modelRef.appendPath("filterCompletedSelected").<Boolean>fxProperty());
 
         renderTasks(tasksRef);
     }
@@ -164,7 +155,7 @@ public class TaskListController implements Initializable {
 
                     TaskPane node;
                     if (cache.get(index) == null) {
-                        Ref itemRef = modelRef.appendPath("tasks").appendIndex(index);
+                        FxRef itemRef = modelRef.appendPath("tasks").appendIndex(index);
                         cache.put(index, new TaskPane(itemRef));
                     }
                     node = cache.get(index);
