@@ -1,7 +1,25 @@
 (function () {
-    var master = new WebSocket("ws://ankor-todo-sample.irian.at:8181/performance/master");
+    var path = location.host + "/performance/master";
+    if (window.location.protocol == 'http:') {
+        path = 'ws://' + path;
+    } else {
+        path = 'wss://' + path;
+    }
+    var master = new WebSocket(path);
     var worker = new Worker("/performance/js/worker.js");
     var button = document.getElementById("button");
+
+    var startHeartbeat = function(socket) {
+        var heartbeat = function () {
+            console.log("\u2665-beat");
+            socket.send("");
+
+            setTimeout(heartbeat, 25000);
+        };
+
+        console.log("Starting heartbeat");
+        setTimeout(heartbeat, self.heartbeatInterval);
+    };
 
     master.onopen = function () {
         console.log("Minion waiting for command");
@@ -17,7 +35,9 @@
 
         window.onbeforeunload = function () {
             master.close();
-        }
+        };
+
+        startHeartbeat(master);
     };
 
     worker.onmessage = function (e) {

@@ -8,21 +8,35 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @ServerEndpoint("/master")
-@SuppressWarnings("unused")
 public class Master {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(Master.class);
-    private static Set<Session> minions = Collections.newSetFromMap(new ConcurrentHashMap<Session, Boolean>(0, 0.9f, 1));
+    private static final long TIMEOUT = 30000;
+    private static final long TIMEOUT_CHECK_INTERVAL = 30000;
+    private static Map<Session, Long> minions = new ConcurrentHashMap<>(0, 0.9f, 1);
     private static ObjectMapper mapper = new ObjectMapper();
     private static Map<Session, Report> reports;
     private static int numClientsPerMinion;
     private static int numMinions;
+    private static ScheduledExecutorService timer = Executors.newSingleThreadScheduledExecutor();
+
+    static {
+        timer.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                watchForTimeout();
+            }
+        }, TIMEOUT_CHECK_INTERVAL, TIMEOUT_CHECK_INTERVAL, TimeUnit.MILLISECONDS);
+    }
 
     public static void startTest(WorkLoad workLoad) {
         try {
             String s = mapper.writeValueAsString(workLoad);
-            for (Session minion : minions) {
+            for (Session minion : minions.keySet()) {
                 if (minion.isOpen()) {
                     minion.getBasicRemote().sendText(s);
                 } else {
@@ -40,14 +54,16 @@ public class Master {
         }
     }
 
-    private static void sendPing(Session minion) {
-        if (minion.isOpen()) {
-            String data = "You There?";
-            ByteBuffer payload = ByteBuffer.wrap(data.getBytes());
-            try {
-                minion.getBasicRemote().sendPing(payload);
-            } catch (IOException e) {
-                e.printStackTrace();
+    private static void sendPing() {
+        for (Session session : minions.keySet()) {
+            if (session.isOpen()) {
+                String data = "You There?";
+                ByteBuffer payload = ByteBuffer.wrap(data.getBytes());
+                try {
+                    session.getBasicRemote().sendPing(payload);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -72,23 +88,39 @@ public class Master {
         return sum / (n - 1);
     }
 
-    @OnOpen
-    public void onOpen(Session session) {
-        minions.add(session);
-        int currentMinions = minions.size();
-        LOG.info("Current minions: {}", currentMinions);
-        broadcast(session);
+    private static void watchForTimeout() {
+        timer.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                for (Session session : minions.keySet()) {
+                    long now = System.currentTimeMillis();
+                    long lastSeen = minions.get(session);
+                    if (now - lastSeen > TIMEOUT) {
+                        if (session.isOpen()) {
+                            try {
+                                session.close(new CloseReason(CloseReason.CloseCodes.GOING_AWAY, "Timeout"));
+                            } catch (IOException e) {
+                                LOG.error("Error while closing the connection after timeout");
+                            }
+                        }
+                    }
+                }
+            }
+        }, TIMEOUT_CHECK_INTERVAL, TIMEOUT_CHECK_INTERVAL, TimeUnit.MILLISECONDS);
     }
 
-    private void broadcast(Session session) {
+    @OnOpen
+    public void onOpen(Session session) {
+        minions.put(session, System.currentTimeMillis());
+        int currentMinions = minions.size();
+        LOG.info("Current minions: {}", currentMinions);
+        broadcastNumConnected(session);
+    }
+
+    private void broadcastNumConnected(Session session) {
         for (Session s : session.getOpenSessions()) {
             s.getAsyncRemote().sendText(String.format("{ \"numClients\": %d }", minions.size()));
         }
-    }
-
-    @OnMessage
-    public void onMessage(Session session, PongMessage pong) {
-        // TODO
     }
 
     @OnMessage
@@ -105,10 +137,16 @@ public class Master {
             } else if (msg.contains("WorkLoad")) {
                 WorkLoad workLoad = mapper.readValue(msg, WorkLoad.class);
                 startTest(workLoad);
+            } else if (isHeartbeat(msg)) {
+                minions.put(session, System.currentTimeMillis());
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private boolean isHeartbeat(String msg) {
+        return msg.trim().equals("");
     }
 
     private void reportStats(Report report) {
@@ -150,7 +188,7 @@ public class Master {
 
         try {
             String s = mapper.writeValueAsString(report);
-            for (Session session : minions) {
+            for (Session session : minions.keySet()) {
                 session.getAsyncRemote().sendText(s);
             }
         } catch (IOException e) {
@@ -163,7 +201,7 @@ public class Master {
         minions.remove(session);
         int currentMinions = minions.size();
         LOG.info("Current minions: {}", currentMinions);
-        broadcast(session);
+        broadcastNumConnected(session);
     }
 
 }

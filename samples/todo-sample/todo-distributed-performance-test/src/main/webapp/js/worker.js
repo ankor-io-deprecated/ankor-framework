@@ -14,7 +14,7 @@ var requests = [
         return '{"senderId":"' + id + '","modelId":"' + id + '","messageId":"' + id + '#3","property":"root.model","action":{"name":"newTask","params":{"title":"3"}}}';
     },
     function (id) {
-        return '{"senderId":"' + id + '","modelId":"' + id + '","messageId":"' + id + '#4","property":"root.model.tasks[0].numCompleted","change":{"type":"value","key":null,"value":true}}';
+        return '{"senderId":"' + id + '","modelId":"' + id + '","messageId":"' + id + '#4","property":"root.model.tasks[0].completed","change":{"type":"value","key":null,"value":true}}';
     },
     function (id) {
         return '{"senderId":"' + id + '","modelId":"' + id + '","messageId":"' + id + '#5","property":"root.model","action":"clearTasks"}';
@@ -43,7 +43,7 @@ var checkResponse = function (res, paths) {
     return false;
 };
 
-var numCompleted;
+var completed;
 function test(socket, responseTimes) {
     var id = null;
     var step = 0;
@@ -64,15 +64,15 @@ function test(socket, responseTimes) {
                 responseTimes.push(responseTime);
             }
             if (countdown == 0) {
-                postMessage("Client " + numCompleted + " completed step " + step);
+                postMessage("Client " + completed + " completed step " + step);
                 step++;
                 if (step < requests.length) {
                     countdown = responseRefs[step].length; // expecting 5 return messages
                     start = new Date().getTime();
                     socket.send(requests[step](id));
                 } else {
-                    postMessage("Client " + numCompleted + " completed sequence");
-                    numCompleted++;
+                    postMessage("Client " + completed + " completed sequence");
+                    completed++;
                     socket.close();
                 }
             }
@@ -122,13 +122,13 @@ onmessage = function (e) {
         }
     };
 
-    numCompleted = 0;
+    completed = 0;
     rampUp();
 
     setTimeout(function () {
         var res = {
             type: "Report",
-            failures: n - numCompleted,
+            failures: n - completed,
             avg: 0,
             std: 0,
             responseTimes: responseTimes
