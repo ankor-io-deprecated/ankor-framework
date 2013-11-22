@@ -19,6 +19,7 @@ class DefaultModelContext implements ModelContext, DispatchThreadAware {
     private final EventListeners eventListeners;
     private EventDispatcher eventDispatcher;
     private Map<String, Object> modelRoots;
+    private Map<String, Object> attributes;
 
     private volatile Thread dispatchThread;
 
@@ -26,6 +27,7 @@ class DefaultModelContext implements ModelContext, DispatchThreadAware {
         this.id = id;
         this.eventListeners = eventListeners;
         this.modelRoots = new HashMap<String, Object>();
+        this.attributes = null;
     }
 
     public static ModelContext create(EventDispatcherFactory eventDispatcherFactory,
@@ -90,4 +92,11 @@ class DefaultModelContext implements ModelContext, DispatchThreadAware {
         return dispatchThread;
     }
 
+    public Map<String, Object> getAttributes() {
+        if (attributes == null) {
+            //todo  do we have a concurrency issue here?
+            attributes = new HashMap<String, Object>();
+        }
+        return attributes;
+    }
 }
