@@ -1,6 +1,6 @@
 (function () {
-    var master = new WebSocket("ws://localhost:8080/master");
-    var worker = new Worker("/js/worker.js");
+    var master = new WebSocket("ws://ankor-todo-sample.irian.at:8181/performance/master");
+    var worker = new Worker("/performance/js/worker.js");
     var button = document.getElementById("button");
 
     master.onopen = function () {
