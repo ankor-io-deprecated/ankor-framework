@@ -47,6 +47,7 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
     private static final int TIMEOUT_CHECK_INTERVAL = 15000;
     private static Logger LOG = LoggerFactory.getLogger(AnkorEndpoint.class);
     private static ScheduledExecutorService timer = Executors.newSingleThreadScheduledExecutor();
+    private static volatile boolean created = false;
     private static AnkorSystem ankorSystem;
     private static WebSocketMessageBus webSocketMessageBus;
     private static Set<String> uniqueIds = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
@@ -56,18 +57,15 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
     public AnkorEndpoint() {
         LOG.info("Creating new Endpoint");
 
-        /*
-         * XXX: This class gets created for every new WebSocket connection,
-         * so using a cheap "singleton" for the ankorSystem to prevent reinitialization.
-         *
-         * This also means that the Ankor system will be created only when the first client connects to the server,
-         * resulting in a short lag, so maybe have the AnkorSystem in a servlet and reference it from here?
-         */
-        if (ankorSystem == null) {
-            startAnkorSystem();
+        if (!created) {
+            synchronized (AnkorEndpoint.class) {
+                if (!created) {
+                    startAnkorSystem();
+                    watchForTimeout();
+                    created = true;
+                }
+            }
         }
-
-        watchForTimeout();
     }
 
     @Override
@@ -222,7 +220,7 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
 
     @Override
     public final Set<ServerEndpointConfig> getEndpointConfigs(Set<Class<? extends Endpoint>> endpointClasses) {
-        // XXX: Only one WebSocket endpoint url (specified by #getWebSocketUrl()) allowed by this server.
+        // XXX: Only one WebSocket endpoint url (specified by #getWebSocketUrl()) allowed by this servlet.
         return Collections.singleton(ServerEndpointConfig.Builder.create(this.getClass(), this.getWebSocketUrl()).build());
     }
 
