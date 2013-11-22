@@ -14,11 +14,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class WebSocketMessageBus extends MessageBus<String> {
-    private static int EXPECTED_CONCURRENT_REQUESTS = 2;
-
     private static Logger LOG = LoggerFactory.getLogger(WebSocketMessageBus.class);
-    private Map<String, WebSocketRemoteSystem> remoteSystems =
-            new ConcurrentHashMap<String, WebSocketRemoteSystem>(1, 0.9f, EXPECTED_CONCURRENT_REQUESTS);
+    private Map<String, WebSocketRemoteSystem> remoteSystems = new ConcurrentHashMap<String, WebSocketRemoteSystem>(0, 0.9f, 1);
 
     public WebSocketMessageBus(ViewModelJsonMessageMapper mapper) {
         super(mapper, mapper);

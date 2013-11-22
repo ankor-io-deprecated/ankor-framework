@@ -37,7 +37,6 @@ import java.util.concurrent.*;
  * @author Florian Klampfer
  */
 public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.Whole<String>, ServerApplicationConfig {
-
     /**
      * Must be greater than the clients heartbeat interval.
      */
@@ -46,16 +45,13 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
      * The frequency of timeout checks.
      */
     private static final int TIMEOUT_CHECK_INTERVAL = 15000;
-
-    private static ScheduledExecutorService timer = Executors.newSingleThreadScheduledExecutor();
-
     private static Logger LOG = LoggerFactory.getLogger(AnkorEndpoint.class);
+    private static ScheduledExecutorService timer = Executors.newSingleThreadScheduledExecutor();
     private static AnkorSystem ankorSystem;
     private static WebSocketMessageBus webSocketMessageBus;
-    private static ExecutorService pool = Executors.newCachedThreadPool();
     private static Set<String> uniqueIds = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
     private String clientId;
-    private long lastSeen;
+    private WebSocketRemoteSystem remoteSystem;
 
     public AnkorEndpoint() {
         LOG.info("Creating new Endpoint");
@@ -70,6 +66,8 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
         if (ankorSystem == null) {
             startAnkorSystem();
         }
+
+        watchForTimeout();
     }
 
     @Override
@@ -90,11 +88,12 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
             session.getBasicRemote().sendText(clientId);
             LOG.info("New client connected {}", clientId);
 
-            webSocketMessageBus.addRemoteSystem(new WebSocketRemoteSystem(clientId, session));
+            remoteSystem = new WebSocketRemoteSystem(clientId, session);
+            webSocketMessageBus.addRemoteSystem(remoteSystem);
             LOG.info("Number of connected clients: {}", webSocketMessageBus.getKnownRemoteSystems().size());
 
-            lastSeen = System.currentTimeMillis();
-            watchForTimeout(session);
+            remoteSystem.setLastSeen(System.currentTimeMillis());
+            // watchForTimeout(session);
 
             session.addMessageHandler(this);
         } catch (IOException e) {
@@ -105,46 +104,30 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
     /**
      * This checks if a (heartbeat) message has been received within the last {@code TIMEOUT} milliseconds,
      * otherwise the WebSocket connection is closed and the Ankor session is invalidated.
-     *
-     * @param session The WebSocket session.
      */
-    private void watchForTimeout(final Session session) {
-        Runnable heartbeat = new Runnable() {
+    private void watchForTimeout() {
 
-            private long lastCheck = System.currentTimeMillis();
-
+        timer.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                long now = System.currentTimeMillis();
+                for (RemoteSystem rs : webSocketMessageBus.getKnownRemoteSystems()) {
+                    WebSocketRemoteSystem remoteSystem = (WebSocketRemoteSystem) rs;
+                    long now = System.currentTimeMillis();
+                    long lastSeen = remoteSystem.getLastSeen();
+                    Session session = remoteSystem.getClient();
 
-                if ((now - lastCheck) - TIMEOUT_CHECK_INTERVAL > TIMEOUT_CHECK_INTERVAL) {
-                    LOG.error("Deviation from check interval greater than check interval itself: {}", (now - lastCheck) - TIMEOUT_CHECK_INTERVAL);
-                }
-
-                lastCheck = now;
-
-                if (now - lastSeen > TIMEOUT) {
-                    // the invalidation should be on another thread to keep this one running
-                    pool.submit(new Runnable() {
-                        public void run() {
-                            if (session.isOpen()) {
-                                try {
-                                    session.close(new CloseReason(CloseReason.CloseCodes.GOING_AWAY, "Timeout"));
-                                } catch (IOException e) {
-                                    LOG.error("Error while closing the connection after timeout");
-                                }
-                            } else {
-                                LOG.info("Session is closed, no longer checking for timeouts");
+                    if (now - lastSeen > TIMEOUT) {
+                        if (session.isOpen()) {
+                            try {
+                                session.close(new CloseReason(CloseReason.CloseCodes.GOING_AWAY, "Timeout"));
+                            } catch (IOException e) {
+                                LOG.error("Error while closing the connection after timeout");
                             }
                         }
-                    });
-                } else {
-                    timer.schedule(this, TIMEOUT_CHECK_INTERVAL, TimeUnit.MILLISECONDS);
+                    }
                 }
             }
-        };
-
-        timer.schedule(heartbeat, TIMEOUT_CHECK_INTERVAL, TimeUnit.MILLISECONDS);
+        }, TIMEOUT_CHECK_INTERVAL, TIMEOUT_CHECK_INTERVAL, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -156,7 +139,7 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
             webSocketMessageBus.receiveSerializedMessage(message);
         }
 
-        lastSeen = System.currentTimeMillis();
+        remoteSystem.setLastSeen(System.currentTimeMillis());
     }
 
     private boolean isHeartbeat(String message) {
