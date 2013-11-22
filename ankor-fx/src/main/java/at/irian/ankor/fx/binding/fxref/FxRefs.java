@@ -7,6 +7,8 @@ import at.irian.ankor.change.ChangeEventListener;
 import at.irian.ankor.converter.BidirectionalConverter;
 import at.irian.ankor.converter.Converter;
 import at.irian.ankor.event.source.CustomSource;
+import at.irian.ankor.fx.binding.convert.ConvertedObservableValue;
+import at.irian.ankor.fx.binding.convert.ConvertedProperty;
 import at.irian.ankor.fx.binding.property.RefProperty;
 import at.irian.ankor.fx.binding.value.ObservableRef;
 import at.irian.ankor.fx.binding.value.ObservableValueListRef;
@@ -34,16 +36,6 @@ public final class FxRefs {
         return ObservableRef.createObservableValue(ref);
     }
 
-    public static <R,T> ObservableValue<T> observable(Ref ref, final Converter<R,T> converter)  {
-        // todo  use static create factory method
-        return new ObservableRef<T>(ref, null) {
-            @Override
-            public T getValue() {
-                return converter.convertTo((R) ref.getValue());
-            }
-        };
-    }
-
     public static ObservableValue<String> observableString(Ref ref)  {
         return ObservableRef.createObservableValue(ref);
     }
@@ -67,21 +59,6 @@ public final class FxRefs {
 
     public static <T> Property<T> property(Ref ref)  {
         return RefProperty.createProperty(ref);
-    }
-
-    public static <T> RefProperty<T> property(Ref ref, final BidirectionalConverter<Object, T> converter) {
-        // todo  use static create factory method
-        return new RefProperty<T>(ref, null) {
-            @Override
-            public T getValue() {
-                return converter.convertTo(super.getValue());
-            }
-
-            protected void setRefValue(Object newValue) {
-                //noinspection unchecked
-                super.setRefValue(converter.convertFrom((T)newValue));
-            }
-        };
     }
 
     public static Property<String> stringProperty(Ref ref)  {
@@ -146,4 +123,13 @@ public final class FxRefs {
         }
     }
 
+
+
+    public static <A,B> ObservableValue<B> convert(ObservableValue<A> observableValue, Converter<A,B> converter)  {
+        return new ConvertedObservableValue<>(observableValue, converter);
+    }
+
+    public static <A,B> Property<B> convert(Property<A> property, BidirectionalConverter<A,B> converter)  {
+        return new ConvertedProperty<>(property, converter);
+    }
 }

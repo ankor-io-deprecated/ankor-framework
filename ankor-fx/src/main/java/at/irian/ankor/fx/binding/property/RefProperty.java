@@ -20,8 +20,7 @@ public class RefProperty<T> extends ObservableRef<T> implements Property<T> {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RefProperty.class);
 
     private final ChangeListener<T> observableChangeListener;
-
-    private ObservableValue<? extends T> observable = null;
+    private ObservableValue<? extends T> boundObservable = null;
 
     protected RefProperty(Ref ref, T defaultValue) {
         super(ref, defaultValue);
@@ -54,18 +53,19 @@ public class RefProperty<T> extends ObservableRef<T> implements Property<T> {
         if (observableValue == null) {
             throw new NullPointerException("Cannot bind to null");
         }
-        if (!observableValue.equals(this.observable)) {
+        if (!observableValue.equals(this.boundObservable)) {
             unbind();
             setValue(observableValue.getValue());
-            this.observable = observableValue;
-            this.observable.addListener(observableChangeListener);
+            this.boundObservable = observableValue;
+            this.boundObservable.addListener(observableChangeListener);
         }
     }
 
+    @Override
     public void unbind() {
-        if (observable != null) {
-            observable.removeListener(observableChangeListener);
-            observable = null;
+        if (boundObservable != null) {
+            boundObservable.removeListener(observableChangeListener);
+            boundObservable = null;
         }
     }
 
@@ -98,7 +98,7 @@ public class RefProperty<T> extends ObservableRef<T> implements Property<T> {
     }
 
     public boolean isBound() {
-        return observable != null;
+        return boundObservable != null;
     }
 
     public Object getBean() {
