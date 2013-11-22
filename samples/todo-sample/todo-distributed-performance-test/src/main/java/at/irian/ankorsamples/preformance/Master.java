@@ -15,14 +15,15 @@ import java.util.concurrent.TimeUnit;
 @ServerEndpoint("/master")
 public class Master {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(Master.class);
-    private static final long TIMEOUT = 30000;
-    private static final long TIMEOUT_CHECK_INTERVAL = 30000;
+    private static final long TIMEOUT = 10000;
+    private static final long TIMEOUT_CHECK_INTERVAL = 10000;
     private static Map<Session, Long> minions = new ConcurrentHashMap<>(0, 0.9f, 1);
     private static ObjectMapper mapper = new ObjectMapper();
     private static Map<Session, Report> reports;
     private static int numClientsPerMinion;
     private static int numMinions;
     private static ScheduledExecutorService timer = Executors.newSingleThreadScheduledExecutor();
+    private static volatile boolean testInProgress = false;
 
     static {
         timer.scheduleAtFixedRate(new Runnable() {
@@ -49,6 +50,14 @@ public class Master {
 
             LOG.info("Sending test data to {} connected clients", numMinions);
             reports = new ConcurrentHashMap<>(numMinions, 0.9f, 1);
+
+            timer.schedule(new Runnable() {
+                @Override
+                public void run() {
+                    testInProgress = false;
+                    reportOverallStats();
+                }
+            }, 5000 + workLoad.getN() * (workLoad.getRampUpRate() + 500), TimeUnit.MILLISECONDS);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -129,14 +138,17 @@ public class Master {
             if (msg.contains("Report")) {
                 Report report = mapper.readValue(msg, Report.class);
                 reportStats(report);
-
                 reports.put(session, report);
-                if (reports.size() == numMinions) {
-                    reportOverallStats();
-                }
             } else if (msg.contains("WorkLoad")) {
                 WorkLoad workLoad = mapper.readValue(msg, WorkLoad.class);
-                startTest(workLoad);
+                if (!testInProgress) {
+                    synchronized (Master.class) {
+                        if (!testInProgress) {
+                            startTest(workLoad);
+                            testInProgress = true;
+                        }
+                    }
+                }
             } else if (isHeartbeat(msg)) {
                 minions.put(session, System.currentTimeMillis());
             }
@@ -157,7 +169,7 @@ public class Master {
                 report.getResponseTimes());
     }
 
-    private void reportOverallStats() {
+    private static void reportOverallStats() {
         List<Integer> responseTimes = new ArrayList<>();
         int failures = 0;
         for (Report r : reports.values()) {

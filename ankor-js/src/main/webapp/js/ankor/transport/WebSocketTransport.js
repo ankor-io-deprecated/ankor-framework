@@ -72,7 +72,7 @@ define([
                 };
 
                 console.log("Starting heartbeat");
-                setTimeout(heartbeat, self.heartbeatInterval);
+                heartbeat();
 
                 // close the connection before closing the tab/browser.
                 // if this doesn't fire, the dead client will be detected by the timeout
