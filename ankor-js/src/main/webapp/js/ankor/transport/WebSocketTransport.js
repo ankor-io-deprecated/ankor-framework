@@ -16,10 +16,8 @@ define([
          * Sends pending messages after the connection has be established.
          */
         this._sendPendingMessages = function () {
-            var jsonMessages = BaseTransport.buildJsonMessages(this.outgoingMessages);
-            while (jsonMessages.length > 0) {
-                var jsonMessage = jsonMessages.pop();
-                this._sendMessageInner(jsonMessage);
+            for (var i = 0, message; (message = this.outgoingMessages[i]); i++) {
+                this._sendMessageInner(message);
             }
             this.outgoingMessages = [];
         };
@@ -27,10 +25,10 @@ define([
         /**
          * Private method to prevent code duplication.
          */
-        this._sendMessageInner = function (jsonMessage) {
-            var msg = this.utils.jsonStringify(jsonMessage);
-            console.log('WebSocket send message ', msg);
-            this.socket.send(msg);
+        this._sendMessageInner = function (message) {
+            var jsonMessage = this.utils.jsonStringify(this.encodeMessage(message));
+            console.log('WebSocket send message ', jsonMessage);
+            this.socket.send(jsonMessage);
         }
     };
 
@@ -80,9 +78,10 @@ define([
                 console.log('Info: WebSocket closed.');
             };
 
-            this.socket.onmessage = function (message) {
-                console.log('WebSocket received messages');
-                self.receiveIncomingMessage(message.data);
+            this.socket.onmessage = function (jsonMessage) {
+                var message = self.decodeMessage(self.utils.jsonParse(jsonMessage.data));
+                console.log('WebSocket received messages', jsonMessage.data);
+                self.receiveMessage(message);
             };
         }
     };
@@ -90,8 +89,7 @@ define([
     WebSocketTransport.prototype.sendMessage = function (message) {
         BaseTransport.prototype.sendMessage.call(this, message);
         if (this._isReady) {
-            var jsonMessages = BaseTransport.buildJsonMessages(this.outgoingMessages);
-            this._sendMessageInner(jsonMessages.pop());
+            this._sendMessageInner(message);
             this.outgoingMessages = [];
         }
     };

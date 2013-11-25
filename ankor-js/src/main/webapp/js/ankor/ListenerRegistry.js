@@ -14,13 +14,13 @@ define(function() {
             ref: this.ankorSystem.getRef("")
         };
     };
-    ListenerRegistry.prototype.addListener = function(type, ref, cb) {
+    ListenerRegistry.prototype.addListener = function(type, path, cb) {
         var listeners = null;
         if (type == "propChange") {
-            listeners = this._resolveListenersForRef(this.propListeners, ref);
+            listeners = this._resolveListenersForPath(this.propListeners, path);
         }
         else if (type == "treeChange") {
-            listeners = this._resolveListenersForRef(this.treeListeners, ref);
+            listeners = this._resolveListenersForPath(this.treeListeners, path);
         }
 
         var listenerId = "#" + listenerCounter++;
@@ -31,11 +31,11 @@ define(function() {
             }
         };
     };
-    ListenerRegistry.prototype.triggerListeners = function(ref, message) {
+    ListenerRegistry.prototype.triggerListeners = function(path, event) {
         //Trigger treeChangeListeners
         var id, listeners, listener;
 
-        listeners = this._resolveListenersForRef(this.treeListeners, ref);
+        listeners = this._resolveListenersForPath(this.treeListeners, path);
         while (listeners) {
             //Trigger listeners on this level
             //console.log("Firing TREE ", listeners.ref.path());
@@ -44,22 +44,22 @@ define(function() {
                     continue;
                 }
                 listener = listeners.listeners[id];
-                listener(ref, message);
+                listener(listeners.ref, event);
             }
 
             //Go up one level
-            var currentRef = listeners.ref;
+            var currentPath = listeners.ref.path;
             listeners = null;
-            if (currentRef.segments.length > 0) {
-                listeners = this._resolveListenersForRef(this.treeListeners, currentRef.parent())
+            if (currentPath.segments.length > 0) {
+                listeners = this._resolveListenersForPath(this.treeListeners, currentPath.parent())
             }
         }
 
         //Trigger propChangeListeners
         var listenersToTrigger = [
-            this._resolveListenersForRef(this.propListeners, ref)
+            this._resolveListenersForPath(this.propListeners, path)
         ];
-        var listenersToCleanup = {};
+        var pathsToCleanup = {};
         while (listenersToTrigger.length > 0) {
             listeners = listenersToTrigger.shift();
             if (!listeners.ref.isValid()) {
@@ -67,7 +67,7 @@ define(function() {
                 while (!refToCleanup.isValid()) {
                     refToCleanup = refToCleanup.parent();
                 }
-                listenersToCleanup[refToCleanup.path()] = refToCleanup;
+                pathsToCleanup[refToCleanup.path.toString()] = refToCleanup.path;
                 continue;
             }
 
@@ -78,7 +78,7 @@ define(function() {
                     continue;
                 }
                 listener = listeners.listeners[id];
-                listener(listeners.ref, message);
+                listener(listeners.ref, event);
             }
 
             //Add child listeners to the listenersToTriggerList
@@ -91,25 +91,26 @@ define(function() {
         }
 
         //Cleanup found invalid listeners
-        for (var path in listenersToCleanup) {
-            if (!listenersToCleanup.hasOwnProperty(path)) {
+        for (var pathString in pathsToCleanup) {
+            if (!pathsToCleanup.hasOwnProperty(pathString)) {
                 continue;
             }
-            this.removeInvalidListeners(listenersToCleanup[path]);
+            this.removeInvalidListeners(pathsToCleanup[pathString]);
         }
     };
-    ListenerRegistry.prototype.removeInvalidListeners = function(ref) {
-        //Removes all listeners that are descendants of the given ref that are no longer valid (for a ref that points nowhere)
+    ListenerRegistry.prototype.removeInvalidListeners = function(path) {
+        //Removes all listeners that are descendants of the given path that are no longer valid (for a ref that points nowhere)
         var filterObsoleteListeners = function(listeners) {
             //Check every child if it's still valid
-            var segmentStrings = [];
-            for (var segmentString in listeners.children) {
+            var segmentString,
+                segmentStrings = [];
+            for (segmentString in listeners.children) {
                 if (!listeners.children.hasOwnProperty(segmentString)) {
                     continue;
                 }
                 segmentStrings.push(segmentString);
             }
-            for (var i = 0, segmentString; (segmentString = segmentStrings[i]); i++) {
+            for (var i = 0; (segmentString = segmentStrings[i]); i++) {
                 var childListeners = listeners.children[segmentString];
                 if (childListeners.ref.isValid()) {
                     filterObsoleteListeners(childListeners);
@@ -121,17 +122,17 @@ define(function() {
             }
         };
 
-        filterObsoleteListeners(this._resolveListenersForRef(this.propListeners, ref));
-        filterObsoleteListeners(this._resolveListenersForRef(this.treeListeners, ref));
+        filterObsoleteListeners(this._resolveListenersForPath(this.propListeners, path));
+        filterObsoleteListeners(this._resolveListenersForPath(this.treeListeners, path));
     };
-    ListenerRegistry.prototype._resolveListenersForRef = function(listeners, ref) {
+    ListenerRegistry.prototype._resolveListenersForPath = function(listeners, path) {
         var resolvedListeners = listeners;
         var currentRef = listeners.ref;
-        for (var i = 0, segment; (segment = ref.segments[i]); i++) {
-            if (segment.type == "property") {
+        for (var i = 0, segment; (segment = path.segments[i]); i++) {
+            if (segment.isProperty()) {
                 currentRef = currentRef.append(segment.key);
             }
-            else if (segment.type == "index") {
+            else if (segment.isIndex()) {
                 currentRef = currentRef.appendIndex(segment.key);
             }
 

@@ -1,117 +1,34 @@
 define([
-    "./messages/ActionMessage",
-    "./messages/ChangeMessage"
-], function(ActionMessage, ChangeMessage) {
+    "./events/BaseEvent",
+    "./events/ChangeEvent",
+    "./events/ActionEvent"
+], function(BaseEvent, ChangeEvent, ActionEvent) {
     var Ref = function(ankorSystem, path) {
         this.ankorSystem = ankorSystem;
-        this.segments = [];
-
-        //Parse path into segments
-        if (path instanceof Array) {
-            this.segments = path;
-        }
-        else {
-            this.segments = this._parsePath(path);
-        }
+        this.path = path;
     };
 
     //////////////////
     // PATH METHODS //
     //////////////////
-
-    Ref.prototype._parsePath = function(path) {
-        var segments = [];
-        var pathSegments = path.split(".");
-        for (var i = 0, pathSegment; (pathSegment = pathSegments[i]); i++) {
-            var keyIndex = pathSegment.indexOf("[");
-            if (keyIndex == -1) {
-                segments.push({
-                    type: "property",
-                    key: pathSegment
-                });
-            }
-            else {
-                var propertyName = pathSegment.substr(0, keyIndex);
-                var keys = pathSegment.substring(keyIndex + 1, pathSegment.length - 1).split("][");
-
-                segments.push({
-                    type: "property",
-                    key: propertyName
-                });
-
-                for (var j = 0, key; (key = keys[j]); j++) {
-                    if (key.indexOf("'") != -1 || key.indexOf('"') != -1) {
-                        segments.push({
-                            type: "property",
-                            key: key.substring(1, key.length -1)
-                        });
-                    }
-                    else {
-                        segments.push({
-                            type: "index",
-                            key: parseInt(key)
-                        });
-                    }
-                }
-            }
-        }
-        return segments;
-    };
-
-    Ref.prototype.path = function() {
-        var path = "";
-        for (var i = 0, segment; (segment = this.segments[i]); i++) {
-            if (segment.type == "property") {
-                if (i != 0) {
-                    path += ".";
-                }
-                path += segment.key;
-            }
-            else if (segment.type == "index") {
-                path += "[" + segment.key + "]";
-            }
-        }
-        return path;
-    };
-
     Ref.prototype.append = function(path) {
-        var segments = null;
-
-        if (path instanceof Array) {
-            segments = path;
-        }
-        else {
-            segments = this._parsePath(path);
-        }
-
-        return new Ref(this.ankorSystem, this.segments.concat(segments));
+        return new Ref(this.ankorSystem, this.path.append(path));
     };
 
     Ref.prototype.appendIndex = function(index) {
-        var segments = this.segments.slice(0);
-        segments.push({
-            type: "index",
-            key: index
-        });
-        return new Ref(this.ankorSystem, segments);
+        return new Ref(this.ankorSystem, this.path.appendIndex(index));
     };
 
     Ref.prototype.parent = function() {
-        var segments = this.segments.slice(0);
-        segments.pop();
-        return new Ref(this.ankorSystem, segments);
+        return new Ref(this.ankorSystem, this.path.parent())
     };
 
     Ref.prototype.propertyName = function() {
-        return this.segments[this.segments.length - 1].key;
+        return this.path.propertyName();
     };
 
     Ref.prototype.equals = function(ref) {
-        return this.path() == ref.path();
-    };
-
-    Ref.prototype.isDescendantOf = function(ref) {
-        return this.path().indexOf(ref.path()) == 0;
+        return this.path.equals(ref.path);
     };
 
     ///////////////////
@@ -119,66 +36,87 @@ define([
     ///////////////////
 
     Ref.prototype.getValue = function() {
-        return this.ankorSystem.model.getValue(this.segments);
+        return this.ankorSystem.model.getValue(this.path);
     };
 
-    Ref.prototype.setValue = function(value, omitMessage) {
+    Ref.prototype.setValue = function(value, eventOrEventSource) {
         //Apply value to model
-        this.ankorSystem.model.setValue(this.segments, value);
+        this.ankorSystem.model.setValue(this.path, value);
 
         //Cleanup listeners
         if (value === null) {
-            this.ankorSystem.removeInvalidListeners(this.parent());
+            this.ankorSystem.removeInvalidListeners(this.path.parent());
+        }
+
+        //Event logic
+        var event = eventOrEventSource;
+        var sendEvent = false;
+        if (!(event instanceof BaseEvent)) {
+            sendEvent = true;
+            event = new ChangeEvent(this.path, eventOrEventSource, ChangeEvent.TYPE.VALUE, null, value);
         }
 
         //Trigger listeners
-        var message = new ChangeMessage(this.ankorSystem.senderId, this.ankorSystem.modelId, null, this.path(), ChangeMessage.prototype.TYPES["VALUE"], null, value);
-        this.ankorSystem.triggerListeners(this, message);
+        this.ankorSystem.triggerListeners(this.path, event);
 
         //Send message
-        if (!omitMessage) {
-            this.ankorSystem.transport.sendMessage(message);
+        if (sendEvent) {
+            this.ankorSystem.transport.sendEvent(event);
         }
     };
 
     //Removes this ref from the parent (regardless of map or array)
-    Ref.prototype.del = function(omitMessage) {
+    Ref.prototype.del = function(eventOrEventSource) {
         //Apply change to model
-        this.ankorSystem.model.del(this.segments);
+        this.ankorSystem.model.del(this.path);
 
         //Cleanup listeners
-        var parentRef = this.parent();
-        this.ankorSystem.removeInvalidListeners(parentRef);
+        var parentPath = this.path.parent();
+        this.ankorSystem.removeInvalidListeners(parentPath);
+
+        //Event logic
+        var event = eventOrEventSource;
+        var sendEvent = false;
+        if (!(event instanceof BaseEvent)) {
+            sendEvent = true;
+            event = new ChangeEvent(parentPath, eventOrEventSource, ChangeEvent.TYPE.DEL, this.propertyName(), null);
+        }
 
         //Trigger listeners
-        var message = new ChangeMessage(this.ankorSystem.senderId, this.ankorSystem.modelId, null, parentRef.path(), ChangeMessage.prototype.TYPES["DEL"], this.propertyName(), null);
-        this.ankorSystem.triggerListeners(parentRef, message);
+        this.ankorSystem.triggerListeners(parentPath, event);
 
         //Send message
-        if (!omitMessage) {
-            this.ankorSystem.transport.sendMessage(message);
+        if (sendEvent) {
+            this.ankorSystem.transport.sendEvent(event);
         }
     };
 
-    Ref.prototype.insert = function(index, value, omitMessage) {
-        this.ankorSystem.model.insert(this.segments, index, value);
+    Ref.prototype.insert = function(index, value, eventOrEventSource) {
+        this.ankorSystem.model.insert(this.path, index, value);
+
+        //Event logic
+        var event = eventOrEventSource;
+        var sendEvent = false;
+        if (!(event instanceof BaseEvent)) {
+            sendEvent = true;
+            event = new ChangeEvent(this.path, eventOrEventSource, ChangeEvent.TYPE.INSERT, index, value);
+        }
 
         //Trigger listeners
-        var message = new ChangeMessage(this.ankorSystem.senderId, this.ankorSystem.modelId, null, this.path(), ChangeMessage.prototype.TYPES["INSERT"], index, value);
-        this.ankorSystem.triggerListeners(this, message);
+        this.ankorSystem.triggerListeners(this.path, event);
 
         //Send message
-        if (!omitMessage) {
-            this.ankorSystem.transport.sendMessage(message);
+        if (sendEvent) {
+            this.ankorSystem.transport.sendEvent(event);
         }
     };
 
     Ref.prototype.size = function() {
-        return this.ankorSystem.model.size(this.segments);
+        return this.ankorSystem.model.size(this.path);
     };
 
     Ref.prototype.isValid = function() {
-        return this.ankorSystem.model.isValid(this.segments);
+        return this.ankorSystem.model.isValid(this.path);
     };
 
     ///////////////////
@@ -186,16 +124,16 @@ define([
     ///////////////////
 
     Ref.prototype.fire = function(actionName) {
-        var message = new ActionMessage(this.ankorSystem.senderId, this.ankorSystem.modelId, null, this.path(), actionName);
-        this.ankorSystem.transport.sendMessage(message);
+        var event = new ActionEvent(this.path, null, actionName);
+        this.ankorSystem.transport.sendEvent(event);
     };
 
     Ref.prototype.addPropChangeListener = function(cb) {
-        return this.ankorSystem.addListener("propChange", this, cb);
+        return this.ankorSystem.addListener("propChange", this.path, cb);
     };
 
     Ref.prototype.addTreeChangeListener = function(cb) {
-        return this.ankorSystem.addListener("treeChange", this, cb);
+        return this.ankorSystem.addListener("treeChange", this.path, cb);
     };
 
     return Ref;

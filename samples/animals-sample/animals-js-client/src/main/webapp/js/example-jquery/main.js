@@ -70,7 +70,7 @@ define([
             });
         };
         syncPanels();
-        panelsRef.addTreeChangeListener(function(panelRef, message) {
+        panelsRef.addTreeChangeListener(function(panelRef, event) {
             if (panelRef.equals(panelsRef) || panelRef.parent().equals(panelsRef)) {
                 syncPanels();
             }
