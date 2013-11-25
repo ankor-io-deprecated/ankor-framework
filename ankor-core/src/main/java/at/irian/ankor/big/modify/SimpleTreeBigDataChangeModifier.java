@@ -89,12 +89,8 @@ public class SimpleTreeBigDataChangeModifier {
         int size = getBigListSize(serializedList);
         Object substitute = getBigListMissingElementSubstitute(serializedList);
         int chunkSize = getChunkSize(serializedList);
-        List bigList = new MissingPropertyActionFiringBigList(size, property, substitute, chunkSize);
         List initialElements = getBigListInitialElements(serializedList);
-        for (int i = 0, len = initialElements.size(); i < len && i < size ; i++) {
-            bigList.set(i, initialElements.get(i));
-        }
-        return bigList;
+        return new MissingPropertyActionFiringBigList(size, property, substitute, chunkSize, initialElements);
     }
 
     private int getBigListSize(List list) {

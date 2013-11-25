@@ -19,14 +19,19 @@ public abstract class AbstractBigList<E> extends AbstractList<E> implements BigL
     private int size;
 
     protected AbstractBigList(int size) {
-        this.elements = new TreeMap<Integer, Reference>();
-        this.size = size;
+        this(size, Collections.<E>emptyList());
     }
 
     protected AbstractBigList(Collection<? extends E> c) {
-        this(c.size());
+        this(c.size(), c);
+    }
+
+    protected AbstractBigList(int size, Collection<? extends E> initialElements) {
+        this.size = size;
+        this.elements = new TreeMap<Integer, Reference>();
+
         int idx = 0;
-        for (E e : c) {
+        for (E e : initialElements) {
             elements.put(idx++, createReferenceFor(e));
         }
     }
