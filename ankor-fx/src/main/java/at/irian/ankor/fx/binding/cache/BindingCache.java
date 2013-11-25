@@ -4,6 +4,7 @@ import at.irian.ankor.ref.Ref;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.util.Callback;
 
 import java.util.HashMap;
@@ -18,6 +19,7 @@ public class BindingCache {
     private final Map<CacheKey,ObservableValue<?>> observableValuesCache = new HashMap<>();
     private final Map<CacheKey,Property<?>> propertiesCache = new HashMap<>();
     private final Map<CacheKey,ObservableList<?>> observableListCache = new HashMap<>();
+    private final Map<CacheKey,ObservableMap<?,?>> observableMapCache = new HashMap<>();
     private final Map<CacheKey,ObservableValue<ObservableList<?>>> observableValueListCache = new HashMap<>();
 
 
@@ -66,6 +68,16 @@ public class BindingCache {
         return result;
     }
 
+    @SuppressWarnings("unchecked")
+    public <K, V> ObservableMap<K, V> getObservableMap(Ref ref, Object defaultValue, Callback<Ref, ObservableMap<K, V>> creator) {
+        CacheKey key = getKey(ref, defaultValue);
+        ObservableMap result = observableMapCache.get(key);
+        if (result == null) {
+            result = creator.call(ref);
+            observableMapCache.put(key, result);
+        }
+        return result;
+    }
 
     public CacheKey getKey(Ref ref, Object defaultValue) {
         return new CacheKey(ref, defaultValue);

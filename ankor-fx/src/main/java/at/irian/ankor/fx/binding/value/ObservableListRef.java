@@ -2,37 +2,35 @@ package at.irian.ankor.fx.binding.value;
 
 import at.irian.ankor.change.Change;
 import at.irian.ankor.change.ChangeEventListener;
-import at.irian.ankor.event.source.CustomSource;
 import at.irian.ankor.fx.binding.cache.FxCacheSupport;
-import at.irian.ankor.ref.CollectionRef;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.ref.impl.RefImplementor;
+import at.irian.ankor.util.RefList;
 import com.sun.javafx.collections.ListListenerHelper;
 import javafx.beans.InvalidationListener;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.util.Callback;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * A JavaFX ObservableList backed by a Ankor Ref that references a List.
  * The list items of this observable list are directly retrieved from the underlying "collection" Ref.
- * Listeners of this observable get notified whenever the referenced list changes.
+ * Listeners of this observable get notified whenever the referenced list's content changes.
  *
  * @author Manfred Geiler
  */
-public class ObservableListRef<E> extends AbstractList<E> implements ObservableList<E> {
+public class ObservableListRef<E> extends RefList<E> implements ObservableList<E> {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ObservableListRef.class);
 
-    protected final CollectionRef listRef;
     private final FxListChangeHelper<E> changeHelper;
     private final ChangeEventListener changeEventListener;
 
     private ListListenerHelper<E> listenerHelper = null;
 
     protected ObservableListRef(Ref ref) {
-        this.listRef = ref.toCollectionRef();
+        super(ref);
         this.changeHelper = new FxListChangeHelper<>(this);
         this.changeEventListener = new ObservableChangeEventListener(ref, this) {
             @Override
@@ -90,43 +88,8 @@ public class ObservableListRef<E> extends AbstractList<E> implements ObservableL
     }
 
 
-    @Override
-    public E get(int i) {
-        return listRef.appendIndex(i).getValue();
-    }
 
-    @Override
-    public int size() {
-        List list = listRef.getValue();
-        return list != null ? list.size() : 0;
-    }
-
-
-    @Override
-    public void add(int index, E element) {
-        ((RefImplementor)listRef).apply(new CustomSource(this), Change.insertChange(index, element));
-    }
-
-    @Override
-    public E remove(int index) {
-        E oldValue = get(index);
-        ((RefImplementor)listRef).apply(new CustomSource(this), Change.deleteChange(index));
-        return oldValue;
-    }
-
-    @Override
-    public E set(int index, E element) {
-        E oldVal = listRef.appendIndex(index).getValue();
-        ((RefImplementor)listRef).apply(new CustomSource(this),
-                                        Change.replaceChange(index, Collections.singleton(element)));
-        return oldVal;
-    }
-
-
-
-
-
-
+    // ObservableList extensions
 
     @SuppressWarnings("unchecked")
     @Override
@@ -175,6 +138,9 @@ public class ObservableListRef<E> extends AbstractList<E> implements ObservableL
         }
     }
 
+
+
+    // misc
 
     protected void finalize() throws Throwable {
         this.listRef.context().modelContext().getEventListeners().remove(this.changeEventListener);
