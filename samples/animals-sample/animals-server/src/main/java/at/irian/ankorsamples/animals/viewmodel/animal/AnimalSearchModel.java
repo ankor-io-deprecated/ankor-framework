@@ -41,7 +41,7 @@ public class AnimalSearchModel extends ViewModelBase {
     private AnimalSelectItems selectItems;
 
     @AnkorBigList(missingElementSubstitute = EmptyAnimal.class,
-                  threshold = 1000,
+                  threshold = 500,
                   initialSize = 10,
                   chunkSize = 10)
     @AnkorWatched(diffThreshold = 20)
