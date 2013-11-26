@@ -1,7 +1,8 @@
 define([
     "./ModelInterface",
-    "./BigList"
-],function(ModelInterface, BigList) {
+    "./BigList",
+    "./BigMap"
+],function(ModelInterface, BigList, BigMap) {
     //Class that holds a model, and applies basic operations with a given path (in segments as used in Ref)
     var Model = function(baseRef) {
         this.baseRef = baseRef;
@@ -62,12 +63,17 @@ define([
             }
         }
         else if (value instanceof Object) {
-            model[name] = {};
-            for (var key in value) {
-                if (!value.hasOwnProperty(key)) {
-                    continue;
+            if ("@subst" in value && "@size" in value) {
+                model[name] = new BigMap(value, new Model(this.baseRef.append(currentPath)));
+            }
+            else {
+                model[name] = {};
+                for (var key in value) {
+                    if (!value.hasOwnProperty(key)) {
+                        continue;
+                    }
+                    this._applyValue(model[name], key, value[key], currentPath.append(key));
                 }
-                this._applyValue(model[name], key, value[key], currentPath.append(key));
             }
         }
         else {

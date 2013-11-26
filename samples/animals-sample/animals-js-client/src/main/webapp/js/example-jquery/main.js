@@ -36,6 +36,9 @@ define([
         $("#userName").ankorBindInnerHTML(rootRef.append("userName"));
         $("#serverStatus").ankorBindInnerHTML(rootRef.append("serverStatus"));
 
+        //Init i18n
+        updateI18n(false);
+
         //Initialize tabs
         $("#tabs").tabs();
         var syncPanels = function() {
@@ -68,6 +71,9 @@ define([
                     $("#tabs").tabs("refresh");
                 }
             });
+
+            //Update i18n for newly created dom elements
+            updateI18n(false);
         };
         syncPanels();
         panelsRef.addTreeChangeListener(function(panelRef, event) {
@@ -77,7 +83,12 @@ define([
         });
     });
 
-
     //Send Ankor Init Message
     rootRef.fire("init");
+
+    //I18N Helper
+    var i18nRef = ankorSystem.getRef("root.resources");
+    var updateI18n = function(refresh) {
+        $.ankorStringMap("data-ankor-i18n", i18nRef, refresh);
+    }
 });
