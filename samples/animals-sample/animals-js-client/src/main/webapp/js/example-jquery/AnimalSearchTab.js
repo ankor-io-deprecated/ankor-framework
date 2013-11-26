@@ -80,10 +80,10 @@ define([
             body.find(".totalPages").html(Math.ceil(tableSize / rowsPerPage));
             body.find(".currentPage").html(page + 1);
         };
-        animalsRef.addPropChangeListener(function(ref, message) {
+        animalsRef.addPropChangeListener(function(ref, event) {
             var tableSize = animalsRef.size();
             body.find(".tableSize").html(tableSize);
-            if (message.type == message.TYPES.VALUE) {
+            if (event.type == event.TYPE.VALUE) {
                 page = 0;
                 updatePage();
             }

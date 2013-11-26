@@ -1,74 +1,73 @@
 define([
+    "./ModelInterface",
     "./BigList"
-],function(BigList) {
+],function(ModelInterface, BigList) {
     //Class that holds a model, and applies basic operations with a given path (in segments as used in Ref)
     var Model = function(baseRef) {
         this.baseRef = baseRef;
         this.model = {};
     };
 
-    Model.prototype.getValue = function(pathSegments) {
-        //Resolve value in model (or delegate to BigList if encountered during path resolving)
+    Model.prototype = new ModelInterface();
+
+    Model.prototype.getValue = function(path) {
+        //Resolve value in model (or delegate to ModelInterface if encountered during path resolving)
         var value = this.model;
-        for (var i = 0, segment; (segment = pathSegments[i]); i++) {
+        for (var i = 0, segment; (segment = path.segments[i]); i++) {
             if (value != undefined) {
                 value = value[segment.key];
             }
 
-            //Check for BigList
-            if (value instanceof BigList) {
-                return value.getValue(pathSegments.slice(i+1, pathSegments.length));
+            //Check for embedded ModelInterface and delegate
+            if (value instanceof ModelInterface) {
+                return value.getValue(path.slice(i+1));
             }
         }
         return value;
     };
 
-    Model.prototype.setValue = function(pathSegments, value) {
-        //Resolve parent (and delegate set if BigList is found along the way)
-        var propertyName = pathSegments[pathSegments.length - 1].key;
-        var parentPathSegments = pathSegments.slice(0, -1);
+    Model.prototype.setValue = function(path, value) {
+        //Resolve parent (and delegate set if ModelInterface is found along the way)
+        var parentPath = path.parent();
         var parentModel = this.model;
-        for (var i = 0, segment; (segment = parentPathSegments[i]); i++) {
+        for (var i = 0, segment; (segment = parentPath.segments[i]); i++) {
             parentModel = parentModel[segment.key];
 
             //Check current parentValue
             if (parentModel === undefined || parentModel === null) {
                 throw new Error("setValue encountered undefined or null in path");
             }
-            else if (parentModel instanceof BigList) {
-                var remainingSegments = pathSegments.slice(i+1, pathSegments.length);
-                parentModel.setValue(remainingSegments, value);
+            //Check for embedded ModelInterface and delegate
+            else if (parentModel instanceof ModelInterface) {
+                parentModel.setValue(path.slice(i+1), value);
                 return;
             }
         }
 
         //We now have a parentModel (and haven't delegated the set), so apply the value (recursively)
-        this._applyValue(parentModel, propertyName, value, pathSegments);
+        this._applyValue(parentModel, path.propertyName(), value, path);
     };
 
     //Helper for setValue to recursively apply values to the model that instantiates BigLists as needed
-    Model.prototype._applyValue = function(model, name, value, currentPathSegments) {
+    Model.prototype._applyValue = function(model, name, value, currentPath) {
         if (value instanceof Array) {
             if (value.length == 1 && (value[0] instanceof Object) && "@chunk" in value[0] && "@init" in value[0] && "@size" in value[0] && "@subst" in value[0]) {
-                model[name] = new BigList(value[0], new Model(this.baseRef.append(currentPathSegments)));
+                model[name] = new BigList(value[0], new Model(this.baseRef.append(currentPath)));
             }
             else {
                 model[name] = [];
                 for (var i = 0; i < value.length; i++) {
-                    this._applyValue(model[name], i, value[i], currentPathSegments.concat([{
-                        type: "index",
-                        key: i
-                    }]));
+                    this._applyValue(model[name], i, value[i], currentPath.appendIndex(i));
                 }
             }
         }
         else if (value instanceof Object) {
             model[name] = {};
             for (var key in value) {
-                this._applyValue(model[name], key, value[key], currentPathSegments.concat([{
-                    type: "property",
-                    key: key
-                }]));
+                if (!value.hasOwnProperty(key)) {
+                    continue;
+                }
+                this._applyValue(model[name], key, value[key], currentPath.append(key));
             }
         }
         else {
@@ -76,13 +75,11 @@ define([
         }
     };
 
-    Model.prototype.isValid = function(pathSegments) {
+    Model.prototype.isValid = function(path) {
         var valid = true;
         var value = this.model;
 
-        for (var i = 0; i < pathSegments.length; i++) {
-            var segment = pathSegments[i];
-
+        for (var i = 0, segment; (segment = path.segments[i]); i++) {
             //If parent is null (and therefore the current child can't exist) or child is undefined, then set valid to false
             if (value === null || value[segment.key] === undefined) {
                 valid = false;
@@ -92,34 +89,35 @@ define([
             //Set new (current) value
             value = value[segment.key];
 
-            //Check for BigList
-            if (value instanceof BigList) {
-                return value.isValid(pathSegments.slice(i+1, pathSegments.length));
+            //Check for embedded ModelInterface and delegate
+            if (value instanceof ModelInterface) {
+                return value.isValid(path.slice(i+1));
             }
         }
 
         return valid;
     };
 
-    Model.prototype.del = function(pathSegments) {
-        //Resolve parent (and delegate del if BigList is found along the way)
-        var parentPathSegments = pathSegments.slice(0, -1);
+    Model.prototype.del = function(path) {
+        //Resolve parent (and delegate del if ModelInterface is found along the way)
+        var parentPath = path.parent();
         var parentModel = this.model;
-        for (var i = 0, segment; (segment = parentPathSegments[i]); i++) {
+        for (var i = 0, segment; (segment = parentPath.segments[i]); i++) {
             parentModel = parentModel[segment.key];
 
             //Check current parentValue
             if (parentModel === undefined || parentModel === null) {
                 throw new Error("del encountered undefined or null in path");
             }
-            else if (parentModel instanceof BigList) {
-                parentModel.del(pathSegments.slice(i+1, pathSegments.length));
+            //Check for embedded ModelInterface and delegate
+            else if (parentModel instanceof ModelInterface) {
+                parentModel.del(path.slice(i+1));
                 return;
             }
         }
 
-        //We haven't delegated to BigList, so now remove the value
-        var lastSegment = pathSegments[pathSegments.length - 1];
+        //We haven't delegated to ModelInterface, so now remove the value
+        var lastSegment = path.segments[path.segments.length - 1];
         if (parentModel instanceof Array) {
             parentModel.splice(lastSegment.key, 1);
         }
@@ -128,16 +126,16 @@ define([
         }
     };
 
-    Model.prototype.insert = function(pathSegments, index, insertValue) {
+    Model.prototype.insert = function(path, index, insertValue) {
         var value = this.model;
-        for (var i = 0, segment; (segment = pathSegments[i]); i++) {
+        for (var i = 0, segment; (segment = path.segments[i]); i++) {
             if (value != undefined) {
                 value = value[segment.key];
             }
 
-            //Check for BigList
-            if (value instanceof BigList) {
-                value.insert(pathSegments.slice(i+1, pathSegments.length), index, insertValue);
+            //Check for embedded ModelInterface and delegate
+            if (value instanceof ModelInterface) {
+                value.insert(path.slice(i+1), index, insertValue);
                 return;
             }
         }
@@ -149,18 +147,18 @@ define([
         value.splice(index, 0, insertValue);
     };
 
-    Model.prototype.size = function(pathSegments) {
+    Model.prototype.size = function(path) {
         var value = this.model;
 
         //Resolve value and delegate if BigList
-        for (var i = 0, segment; (segment = pathSegments[i]); i++) {
+        for (var i = 0, segment; (segment = path.segments[i]); i++) {
             if (value != undefined) {
                 value = value[segment.key];
             }
 
-            //Check for BigList
-            if (value instanceof BigList) {
-                return value.size(pathSegments.slice(i+1, pathSegments.length));
+            //Check for embedded ModelInterface and delegate
+            if (value instanceof ModelInterface) {
+                return value.size(path.slice(i+1));
             }
         }
 

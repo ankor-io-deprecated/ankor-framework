@@ -1,8 +1,10 @@
 define([
     "./ListenerRegistry",
     "./Model",
-    "./Ref"
-], function(ListenerRegistry, Model, Ref) {
+    "./Path",
+    "./Ref",
+    "./events/ChangeEvent"
+], function(ListenerRegistry, Model, Path, Ref, ChangeEvent) {
     var AnkorSystem = function(options) {
         if (!options.utils) {
             throw new Error("AnkorSystem missing utils");
@@ -22,37 +24,42 @@ define([
         this.transport.init(this);
     };
 
-    AnkorSystem.prototype.getRef = function(path) {
-        return new Ref(this, path);
-    };
-
-    AnkorSystem.prototype.addListener = function(type, ref, cb) {
-        return this.listenerRegistry.addListener(type, ref, cb);
-    };
-
-    AnkorSystem.prototype.triggerListeners = function(ref, message) {
-        this.listenerRegistry.triggerListeners(ref, message);
-    };
-
-    AnkorSystem.prototype.removeInvalidListeners = function(ref) {
-        this.listenerRegistry.removeInvalidListeners(ref);
-    };
-
-    AnkorSystem.prototype.processIncomingMessage = function(message) {
-        var ref = this.getRef(message.property);
-
-        if (message.type == message.TYPES["VALUE"]) {
-            ref.setValue(message.value, true);
+    AnkorSystem.prototype.getRef = function(pathOrString) {
+        if (!(pathOrString instanceof Path)) {
+            pathOrString = new Path(pathOrString);
         }
-        else if (message.type == message.TYPES["DEL"]) {
-            ref.append(message.key.toString()).del(true);
-        }
-        else if (message.type == message.TYPES["INSERT"]) {
-            ref.insert(message.key.toString(), message.value, true);
-        }
-        else if (message.type == message.TYPES["REPLACE"]) {
-            for(var i = 0; i < message.value.length; i++) {
-                ref.appendIndex(message.key + i).setValue(message.value[i], true);
+        return new Ref(this, pathOrString);
+    };
+
+    AnkorSystem.prototype.addListener = function(type, path, cb) {
+        return this.listenerRegistry.addListener(type, path, cb);
+    };
+
+    AnkorSystem.prototype.triggerListeners = function(path, event) {
+        this.listenerRegistry.triggerListeners(path, event);
+    };
+
+    AnkorSystem.prototype.removeInvalidListeners = function(path) {
+        this.listenerRegistry.removeInvalidListeners(path);
+    };
+
+    AnkorSystem.prototype.onIncomingEvent = function(event) {
+        var ref = this.getRef(event.path);
+
+        if (event instanceof ChangeEvent) {
+            if (event.type === ChangeEvent.TYPE.VALUE) {
+                ref.setValue(event.value, event);
+            }
+            else if (event.type === ChangeEvent.TYPE.DEL) {
+                ref.append(event.key.toString()).del(event);
+            }
+            else if (event.type === ChangeEvent.TYPE.INSERT) {
+                ref.insert(event.key.toString(), event.value, event);
+            }
+            else if (event.type === ChangeEvent.TYPE.REPLACE) {
+                for(var i = 0; i < event.value.length; i++) {
+                    ref.appendIndex(event.key + i).setValue(event.value[i], event);
+                }
             }
         }
     };
