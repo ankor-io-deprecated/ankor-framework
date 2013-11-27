@@ -109,9 +109,9 @@ define([
 
     var stringMapId = 0;
     var stringMapBuffer = {};
-    $.ankorStringMap = function(attribute, ref, refresh) {
+    $.ankorStringMap = function(attribute, ref) {
         //Get or create stringMapBuffer for this attribute/ref combination
-        var stringMapKey = attribute + "@" + ref.path.toString();
+        var stringMapKey = ref.path.toString() + "@" + attribute;
         if (!(stringMapKey in stringMapBuffer)) {
             stringMapBuffer[stringMapKey] = {};
         }
@@ -139,13 +139,13 @@ define([
                     element.innerHTML = stringRef.getValue() || "";
                 };
                 var listener = stringRef.addPropChangeListener(updateElement);
+
                 el.data("ankorStringMapId", elementId);
                 buffer[elementId] = {
                     element: element,
                     listener: listener,
                     updateFn: updateElement
                 };
-
                 updateElement();
             }
             //Otherwise remove from potential cleanup list
@@ -155,13 +155,10 @@ define([
         });
 
         //Clean up no longer used bindings...
-        console.log(toCleanup);
         for (key in toCleanup) {
-            console.log("CLEANING UP", key);
             if (!toCleanup.hasOwnProperty(key)) {
                 continue;
             }
-            console.log("CLEANING UP", key);
             toCleanup[key].listener.remove();
             delete buffer[key];
         }

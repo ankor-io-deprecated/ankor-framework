@@ -28,6 +28,7 @@ define(function() {
         return {
             remove: function() {
                 delete listeners.listeners[listenerId];
+                //Todo: Maybe clean up listener trees that no longer have any listeners...
             }
         };
     };

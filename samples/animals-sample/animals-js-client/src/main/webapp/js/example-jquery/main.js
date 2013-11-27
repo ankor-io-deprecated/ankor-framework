@@ -36,8 +36,10 @@ define([
         $("#userName").ankorBindInnerHTML(rootRef.append("userName"));
         $("#serverStatus").ankorBindInnerHTML(rootRef.append("serverStatus"));
 
-        //Init i18n
-        updateI18n(false);
+        //Bind locale
+        var selectLanguage = $("select.language");
+        selectLanguage.ankorBindSelectItems(rootRef.append("supportedLocales"), { emptyOption: false });
+        selectLanguage.ankorBindInputValue(rootRef.append("locale"));
 
         //Initialize tabs
         $("#tabs").tabs();
@@ -72,8 +74,8 @@ define([
                 }
             });
 
-            //Update i18n for newly created dom elements
-            updateI18n(false);
+            //Update i18n (After every panelSync currently is perfect for updating new/changed UI
+            $.ankorStringMap("data-ankor-i18n", ankorSystem.getRef("root.resources"));
         };
         syncPanels();
         panelsRef.addTreeChangeListener(function(panelRef, event) {
@@ -85,10 +87,4 @@ define([
 
     //Send Ankor Init Message
     rootRef.fire("init");
-
-    //I18N Helper
-    var i18nRef = ankorSystem.getRef("root.resources");
-    var updateI18n = function(refresh) {
-        $.ankorStringMap("data-ankor-i18n", i18nRef, refresh);
-    }
 });
