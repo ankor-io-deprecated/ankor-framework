@@ -3,6 +3,8 @@ package at.irian.ankor.context;
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.event.dispatch.EventDispatcher;
 
+import java.util.Map;
+
 /**
  * @author Manfred Geiler
  */
@@ -19,4 +21,7 @@ public interface ModelContext {
     EventDispatcher getEventDispatcher();
 
     void close();
+
+    Map<String,Object> getAttributes();
+
 }

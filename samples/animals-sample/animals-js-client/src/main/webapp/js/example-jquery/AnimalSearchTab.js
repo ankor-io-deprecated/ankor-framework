@@ -10,7 +10,7 @@ define([
         var tab = ref.getValue();
 
         //Create tab header
-        $("#tabs ul").append("<li class='" + tab.id + "'><a href='#tab-" + tab.id + "'><span></span></a><a href='#' class='close'>x</a></li>");
+        $("#tabs ul").append("<li class='" + tab.id + "' data-tabid='" + tab.id + "'><a href='#tab-" + tab.id + "'><span></span></a><a href='#' class='close'>x</a></li>");
         $("#tabs ul li." + tab.id + " span").ankorBindInnerHTML(ref.append("name"));
         $("#tabs ul li." + tab.id + " a.close").click(function() {
             ref.del();
@@ -25,22 +25,26 @@ define([
         var body = $("#tabs #tab-" + tab.id);
         body.find("input.name").ankorBindInputValue(ref.append("model.filter.name"));
         body.find("select.type").ankorBindSelectItems(ref.append("model.selectItems.types"), {
-            emptyOption: true
+            emptyOption: false
         });
         body.find("select.type").ankorBindInputValue(ref.append("model.filter.type"));
         body.find("select.family").ankorBindSelectItems(ref.append("model.selectItems.families"), {
-            emptyOption: true
+            emptyOption: false
         });
         body.find("select.family").ankorBindInputValue(ref.append("model.filter.family"));
         body.find("button.save").click(function() {
             ref.append("model").fire("save");
         });
 
-        //Table rendering
+        //Table handling
+        var animalsRef = ref.append("model.animals");
         var listeners = [];
-        ref.append("model.animals").addPropChangeListener(function(ref) {
-            var rows = ref.getValue();
+        var page = 0;
+        var rowsPerPage = 10;
+
+        var updatePage = function() {
             var tbody = body.find("tbody");
+            var tableSize = animalsRef.size();
 
             //Cleanup
             tbody.html("");
@@ -50,10 +54,55 @@ define([
             listeners = [];
 
             //Render new table
-            for (var i = 0, row; (row = rows[i]); i++) {
-                tbody.append("<tr><td><input type='text' value='" + row.name + "'></td><td>" + row.type + "</td><td>" + row.family + "</td></tr>");
-                listeners.push(tbody.find("tr:last-child input").ankorBindInputValue(ref.appendIndex(i).append("name")));
+            for (var i = page * rowsPerPage; i < Math.min(tableSize, page * rowsPerPage + rowsPerPage); i++) {
+                var rowRef = animalsRef.appendIndex(i);
+                var row = rowRef.getValue();
+                tbody.append("<tr><td><input type='text' value='" + row.name + "'></td><td><span class='type'></span></td><td><span class='family'></span></td></tr>");
+                listeners.push(tbody.find("tr:last-child input").ankorBindInputValue(rowRef.append("name")));
+                listeners.push(tbody.find("tr:last-child span.type").ankorBindInnerHTML(rowRef.append("type")));
+                listeners.push(tbody.find("tr:last-child span.family").ankorBindInnerHTML(rowRef.append("family")));
             }
+
+            //Update paging button state
+            if (page == 0) {
+                body.find(".prev").attr("disabled", "true");
+            }
+            else {
+                body.find(".prev").removeAttr("disabled");
+            }
+            if (page < Math.floor(tableSize / rowsPerPage)) {
+                body.find(".next").removeAttr("disabled");
+            }
+            else {
+                body.find(".next").attr("disabled", "true");
+            }
+
+            body.find(".totalPages").html(Math.ceil(tableSize / rowsPerPage));
+            body.find(".currentPage").html(page + 1);
+        };
+        animalsRef.addPropChangeListener(function(ref, event) {
+            var tableSize = animalsRef.size();
+            body.find(".tableSize").html(tableSize);
+            if (event.type == event.TYPE.VALUE) {
+                page = 0;
+                updatePage();
+            }
+            else {
+                var maxPage = Math.floor(tableSize / rowsPerPage);
+                var newPage = Math.min(page, maxPage);
+                if (newPage != page || newPage == maxPage) {
+                    page = newPage;
+                    updatePage();
+                }
+            }
+        });
+        body.find(".prev").click(function() {
+            page--;
+            updatePage();
+        });
+        body.find(".next").click(function() {
+            page++;
+            updatePage();
         });
 
         //Refresh tabs and select newly created tab

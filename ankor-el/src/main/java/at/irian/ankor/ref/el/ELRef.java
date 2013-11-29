@@ -26,14 +26,14 @@ public class ELRef extends RefBase {
         // check if we are correctly running in an event dispatcher thread
         new DispatchThreadChecker(context().modelContext()).check();
 
-        ve.setValue(context().createELContext(), newValue);
+        ve.setValue(elRefContext().createELContext(), newValue);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     protected <T> T internalGetValue() {
         try {
-            return (T)ve.getValue(context().createELContext());
+            return (T)ve.getValue(elRefContext().createELContext());
         } catch (IllegalStateException e) {
             LOG.warn("unable to get value of " + this, e);
             return null;
@@ -42,13 +42,13 @@ public class ELRef extends RefBase {
 
     @Override
     protected Class<?> getType() {
-        return ve.getType(context().createELContext());
+        return ve.getType(elRefContext().createELContext());
     }
 
     @Override
     public boolean isValid() {
         try {
-            ve.getValueReference(context().createELContext());
+            ve.getValueReference(elRefContext().createELContext());
         } catch (PropertyNotFoundException e) {
             return false;
         }
@@ -65,8 +65,7 @@ public class ELRef extends RefBase {
         return !context().pathSyntax().isHasParent(path());
     }
 
-    @Override
-    public ELRefContext context() {
+    protected ELRefContext elRefContext() {
         return (ELRefContext)super.context();
     }
 

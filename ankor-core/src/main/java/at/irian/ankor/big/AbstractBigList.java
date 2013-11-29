@@ -18,15 +18,20 @@ public abstract class AbstractBigList<E> extends AbstractList<E> implements BigL
 
     private int size;
 
-    public AbstractBigList(int size) {
-        this.elements = new TreeMap<Integer, Reference>();
-        this.size = size;
+    protected AbstractBigList(int size) {
+        this(size, Collections.<E>emptyList());
     }
 
-    public AbstractBigList(Collection<? extends E> c) {
-        this(c.size());
+    protected AbstractBigList(Collection<? extends E> c) {
+        this(c.size(), c);
+    }
+
+    protected AbstractBigList(int size, Collection<? extends E> initialElements) {
+        this.size = size;
+        this.elements = new TreeMap<Integer, Reference>();
+
         int idx = 0;
-        for (E e : c) {
+        for (E e : initialElements) {
             elements.put(idx++, createReferenceFor(e));
         }
     }
@@ -112,12 +117,12 @@ public abstract class AbstractBigList<E> extends AbstractList<E> implements BigL
         NavigableMap<Integer, Reference> tailMap = elements.tailMap(index, false);
         List<Map.Entry<Integer, Reference>> copyOfTailMapEntries
                 = new ArrayList<Map.Entry<Integer, Reference>>(tailMap.entrySet());
-        //tailMap.clear();
         Reference removed = elements.remove(index);
         for (Map.Entry<Integer, Reference> entry : copyOfTailMapEntries) {
             Integer idx = entry.getKey();
+            Reference value = entry.getValue(); // !!! never inline this entry.getValue() call because entries seem to get reused in elements map causing nasty side effects...
             elements.remove(idx);
-            elements.put(idx - 1, entry.getValue());
+            elements.put(idx - 1, value);
         }
         this.size--;
         adjustSize();
@@ -153,11 +158,7 @@ public abstract class AbstractBigList<E> extends AbstractList<E> implements BigL
     @Override
     public boolean isAvailable(int index) {
         Reference elementReference = elements.get(index);
-        if (elementReference == null) {
-            return false;
-        }
-        Object item = elementReference.get();
-        return item instanceof NullDummy || item != null;
+        return elementReference != null && elementReference.get() != null;
     }
 
     private static class NullDummy {}

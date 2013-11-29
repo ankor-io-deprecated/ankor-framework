@@ -14,15 +14,17 @@ import java.lang.reflect.Method;
 public class AnnotationChangeEventListener extends ChangeEventListener {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnnotationChangeEventListener.class);
 
+    private final Ref beanRef;
     private final WeakReference<Object> beanReference;
     private final RefMatcher[] matchers;
     private final Method method;
 
-    public AnnotationChangeEventListener(Ref watchedProperty,
+    public AnnotationChangeEventListener(Ref beanRef,
                                          Object bean,
                                          RefMatcher[] matchers,
                                          Method method) {
-        super(watchedProperty);
+        super(beanRef.root());
+        this.beanRef = beanRef;
         this.beanReference = new WeakReference<Object>(bean);
         this.matchers = matchers;
         this.method = method;
@@ -31,12 +33,11 @@ public class AnnotationChangeEventListener extends ChangeEventListener {
     @Override
     public void process(ChangeEvent event) {
         Object bean = beanReference.get();
-        Ref watchedProperty = getWatchedProperty();
-        if (bean != null && watchedProperty.isValid()) {
+        if (bean != null && beanRef.isValid()) {
 
             Ref changedProperty = event.getChangedProperty();
 
-            RefMatcher.Result match = match(changedProperty, watchedProperty, matchers);
+            RefMatcher.Result match = match(changedProperty, beanRef, matchers);
             if (match != null) {
                 try {
                     method.invoke(bean, match.getBackRefs().toArray());

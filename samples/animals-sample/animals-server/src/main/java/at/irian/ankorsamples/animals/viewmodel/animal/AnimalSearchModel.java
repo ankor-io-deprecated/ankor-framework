@@ -3,6 +3,7 @@ package at.irian.ankorsamples.animals.viewmodel.animal;
 import at.irian.ankor.annotation.ActionListener;
 import at.irian.ankor.annotation.AnkorWatched;
 import at.irian.ankor.annotation.ChangeListener;
+import at.irian.ankor.annotation.Param;
 import at.irian.ankor.big.AnkorBigList;
 import at.irian.ankor.delay.FloodControl;
 import at.irian.ankor.messaging.AnkorIgnore;
@@ -28,6 +29,7 @@ public class AnimalSearchModel extends ViewModelBase {
 
     private final TypedRef<String> panelNameRef;
     private final TypedRef<String> serverStatusRef;
+    private final Ref resourcesRef;
 
     @AnkorIgnore
     private final AnimalRepository animalRepository;
@@ -39,7 +41,7 @@ public class AnimalSearchModel extends ViewModelBase {
     private AnimalSelectItems selectItems;
 
     @AnkorBigList(missingElementSubstitute = EmptyAnimal.class,
-                  threshold = 1000,
+                  threshold = 500,
                   initialSize = 10,
                   chunkSize = 10)
     @AnkorWatched(diffThreshold = 20)
@@ -48,10 +50,12 @@ public class AnimalSearchModel extends ViewModelBase {
     public AnimalSearchModel(Ref animalSearchModelRef,
                              TypedRef<String> panelNameRef,
                              TypedRef<String> serverStatusRef,
+                             Ref resourcesRef,
                              AnimalRepository animalRepository) {
         super(animalSearchModelRef);
         this.panelNameRef = panelNameRef;
         this.serverStatusRef = serverStatusRef;
+        this.resourcesRef = resourcesRef;
         this.animalRepository = animalRepository;
         this.filter = new AnimalSearchFilter();
         this.selectItems = AnimalSelectItems.create(animalRepository.getAnimalTypes());
@@ -78,12 +82,7 @@ public class AnimalSearchModel extends ViewModelBase {
             @Override
             public void run() {
 
-                // get new list from database
-                LOG.info("RELOADING animals ...");
-                List<Animal> newAnimalsList = animalRepository.searchAnimals(filter, 0, Integer.MAX_VALUE);
-                LOG.info("... finished RELOADING");
-
-                animals.setAll(newAnimalsList);
+                reloadAnimalsImmediately();
 
                 // reset server status display
                 serverStatusRef.setValue("");
@@ -91,15 +90,28 @@ public class AnimalSearchModel extends ViewModelBase {
         });
     }
 
-    @ChangeListener(pattern = ".filter.name")
-    public void onNameChanged() {
+    private void reloadAnimalsImmediately() {
+        // get new list from database
+        LOG.info("RELOADING animals ...");
+        List<Animal> newAnimalsList = animalRepository.searchAnimals(filter, 0, Integer.MAX_VALUE);
+        LOG.info("... finished RELOADING");
+
+        animals.setAll(newAnimalsList);
+    }
+
+    @ChangeListener(pattern = {".filter.name", "root.locale"})
+    public void onNameOrLocaleChanged() {
+        panelNameRef.setValue(getPanelName());
+    }
+
+    public String getPanelName() {
         String name = filter.getName();
-        panelNameRef.setValue(new PanelNameCreator().createName("Animal Search", name));
+        return new PanelNameCreator().createName(resourcesRef.appendLiteralKey("SearchForAnimal").<String>getValue(), name);
     }
 
     @ChangeListener(pattern = ".filter.type")
     public void animalTypeChanged() {
-        Ref familyRef = getRef().appendPath("filter.family");
+        Ref familyRef = getRef().appendPath("filter.fam+ily");
         Ref familiesRef = getRef().appendPath("selectItems.families");
         new AnimalTypeChangeHandler(animalRepository).handleChange(filter.getType(), familyRef, familiesRef);
     }
@@ -119,6 +131,13 @@ public class AnimalSearchModel extends ViewModelBase {
             }
         }
         serverStatusRef.setValue(status);
+    }
+
+    @ActionListener(name = "delete")
+    public void delete(@Param("uuid") String uuid) {
+        animalRepository.deleteAnimal(uuid);
+        reloadAnimalsImmediately();
+        serverStatusRef.setValue("Animal deleted");
     }
 
     public static class EmptyAnimal extends Animal {

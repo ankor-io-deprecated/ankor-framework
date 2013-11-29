@@ -14,20 +14,35 @@ define([
         // Sends pending messages after the connection has been established
         // will assign the server created id to the pending messages
         this._sendPendingMessages = function () {
+/*<<<<<<< HEAD
             var jsonMessages = BaseTransport.buildJsonMessages(this.outgoingMessages);
             while (jsonMessages.length > 0) {
                 var jsonMessage = jsonMessages.pop();
                 jsonMessage.senderId = this.ankorSystem.senderId;
                 this._sendMessageInner(jsonMessage);
+=======*/
+            for (var i = 0, message; (message = this.outgoingMessages[i]); i++) {
+                this._sendMessageInner(message);
+//>>>>>>> master
             }
             this.outgoingMessages = [];
         };
 
+/*<<<<<<< HEAD
         // Private method to prevent code duplication
         this._sendMessageInner = function (jsonMessage) {
             var msg = this.utils.jsonStringify(jsonMessage);
             console.log('WebSocket send message ', msg);
             this.socket.send(msg);
+=======*/
+        /**
+         * Private method to prevent code duplication.
+         */
+        this._sendMessageInner = function (message) {
+            var jsonMessage = this.utils.jsonStringify(this.encodeMessage(message));
+            console.log('WebSocket send message ', jsonMessage);
+            this.socket.send(jsonMessage);
+//>>>>>>> master
         }
     };
 
@@ -85,6 +100,7 @@ define([
                 console.log('Info: WebSocket closed.');
             };
 
+/*<<<<<<< HEAD
             this.socket.onmessage = function (message) {
                 console.log('WebSocket received messages');
 
@@ -99,6 +115,12 @@ define([
                 } else {
                     self.receiveIncomingMessage(message.data);
                 }
+=======*/
+            this.socket.onmessage = function (jsonMessage) {
+                var message = self.decodeMessage(self.utils.jsonParse(jsonMessage.data));
+                console.log('WebSocket received messages', jsonMessage.data);
+                self.receiveMessage(message);
+//>>>>>>> master
             };
         }
     };
@@ -106,8 +128,7 @@ define([
     WebSocketTransport.prototype.sendMessage = function (message) {
         BaseTransport.prototype.sendMessage.call(this, message);
         if (this._isReady) {
-            var jsonMessages = BaseTransport.buildJsonMessages(this.outgoingMessages);
-            this._sendMessageInner(jsonMessages.pop());
+            this._sendMessageInner(message);
             this.outgoingMessages = [];
         }
     };

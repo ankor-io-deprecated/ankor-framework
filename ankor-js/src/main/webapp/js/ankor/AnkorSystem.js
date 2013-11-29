@@ -1,8 +1,10 @@
 define([
-    "./Ref"
-], function(Ref) {
-    var listenerCounter = 0;
-
+    "./ListenerRegistry",
+    "./Model",
+    "./Path",
+    "./Ref",
+    "./events/ChangeEvent"
+], function(ListenerRegistry, Model, Path, Ref, ChangeEvent) {
     var AnkorSystem = function(options) {
         if (!options.utils) {
             throw new Error("AnkorSystem missing utils");
@@ -16,116 +18,48 @@ define([
         this.senderId = this.utils.uuid();
         this.modelId = options.modelId || this.utils.uuid();
         this.transport = options.transport;
-        this.model = {};
-        this.propListeners = {};
-        this.treeListeners = {};
+        this.model = new Model(this.getRef(""));
+        this.listenerRegistry = new ListenerRegistry(this);
 
         this.transport.init(this);
     };
 
-    AnkorSystem.prototype.getRef = function(path) {
-        return new Ref(this, path);
+    AnkorSystem.prototype.getRef = function(pathOrString) {
+        if (!(pathOrString instanceof Path)) {
+            pathOrString = new Path(pathOrString);
+        }
+        return new Ref(this, pathOrString);
     };
 
-    AnkorSystem.prototype.addListener = function(type, ref, cb) {
-        var listeners = null;
-        if (type == "propChange") {
-            listeners = this.propListeners;
-        }
-        else if (type == "treeChange") {
-            listeners = this.treeListeners;
-        }
-        var path = ref.path();
-        if (!(path in listeners)) {
-            listeners[path] = {
-                ref: ref,
-                listeners: {}
-            };
-        }
-        var listenerId = "#" + listenerCounter++;
-        listeners[path].listeners[listenerId] = cb;
-        return {
-            remove: this.utils.hitch(this, function() {
-                delete listeners[path].listeners[listenerId];
-            })
-        };
+    AnkorSystem.prototype.addListener = function(type, path, cb) {
+        return this.listenerRegistry.addListener(type, path, cb);
     };
 
-    AnkorSystem.prototype.triggerListeners = function(ref, message) {
-        //Trigger propChangeListeners
-        var path = ref.path();
-        var listeners = this.propListeners[path];
-        if (listeners) {
-            for (var id in listeners.listeners) {
-                var listener = listeners.listeners[id];
-                listener(ref, message);
+    AnkorSystem.prototype.triggerListeners = function(path, event) {
+        this.listenerRegistry.triggerListeners(path, event);
+    };
+
+    AnkorSystem.prototype.removeInvalidListeners = function(path) {
+        this.listenerRegistry.removeInvalidListeners(path);
+    };
+
+    AnkorSystem.prototype.onIncomingEvent = function(event) {
+        var ref = this.getRef(event.path);
+
+        if (event instanceof ChangeEvent) {
+            if (event.type === ChangeEvent.TYPE.VALUE) {
+                ref.setValue(event.value, event);
             }
-        }
-
-        //Trigger TreeChangeListeners
-        var treeRef = ref;
-        while (path) {
-            var listeners = this.treeListeners[path];
-            if (listeners) {
-                for (var id in listeners.listeners) {
-                    var listener = listeners.listeners[id];
-                    listener(ref, message);
+            else if (event.type === ChangeEvent.TYPE.DEL) {
+                ref.append(event.key.toString()).del(event);
+            }
+            else if (event.type === ChangeEvent.TYPE.INSERT) {
+                ref.insert(event.key.toString(), event.value, event);
+            }
+            else if (event.type === ChangeEvent.TYPE.REPLACE) {
+                for(var i = 0; i < event.value.length; i++) {
+                    ref.appendIndex(event.key + i).setValue(event.value[i], event);
                 }
-            }
-            treeRef = treeRef.parent();
-            path = treeRef.path();
-        }
-
-        //Recursion for child properties
-        var value = ref.getValue();
-        if (value instanceof Array) {
-            for (var i = 0; (i < value.length); i++) {
-                this.triggerListeners(ref.appendIndex(i), message);
-            }
-        }
-        else if (typeof value == "object") {
-            for (var propertyName in value) {
-                this.triggerListeners(ref.append(propertyName), message);
-            }
-        }
-    };
-
-    //Removes all listeners that are descendants of the given ref that are no longer valid (for a ref that points nowhere)
-    AnkorSystem.prototype.removeInvalidListeners = function(ref) {
-        var filterObsoleteListeners = function(listeners) {
-            for (var path in listeners) {
-                var listener = listeners[path];
-                if (listener.ref.isDescendantOf(ref) && !listener.ref.isValid()) {
-                    listener.listeners = null;
-                    delete listeners[path];
-                }
-            }
-        };
-
-        filterObsoleteListeners(this.propListeners);
-        filterObsoleteListeners(this.treeListeners);
-    };
-
-    AnkorSystem.prototype.processIncomingMessage = function(message) {
-        var ref = this.getRef(message.property);
-
-        if (message.type == message.TYPES["VALUE"]) {
-            ref.setValue(message.value, true);
-        }
-        else if (message.type == message.TYPES["DEL"]) {
-            if (ref.getValue() instanceof Array) {
-                ref.appendIndex(message.key).del(true);
-            }
-            else {
-                ref.append(message.key).del(true);
-            }
-        }
-        else if (message.type == message.TYPES["INSERT"]) {
-            ref.insert(message.key, message.value, true);
-        }
-        else if (message.type == message.TYPES["REPLACE"]) {
-            for(var i = 0; i < message.value.length; i++) {
-                ref.appendIndex(message.key + i).setValue(message.value[i]);
             }
         }
     };

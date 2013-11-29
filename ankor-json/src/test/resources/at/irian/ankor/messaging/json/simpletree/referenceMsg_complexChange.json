@@ -1,0 +1,41 @@
+{
+    senderId: "server",
+    modelId: "1",
+    messageId: "server#3",
+    property: "root.tabs.A1",
+    change: {
+    	type:"value",
+        value: {
+            id: "A1",
+            type: "animalSearchTab",
+            model: {
+                filter: {
+                    name: null,
+                    type: null,
+                    family: null
+                },
+                selectItems: {
+                    types: [
+                        "Fish",
+                        "Bird",
+                        "Mammal"
+                    ],
+                    families: [
+                        
+                    ]
+                },
+                animals: {
+                    paginator: {
+                        first: 0,
+                        maxResults: 5,
+                        count: 0
+                    },
+                    rows: [
+                        
+                    ]
+                }
+            },
+            name: "Animal Search"
+        }
+    }
+}

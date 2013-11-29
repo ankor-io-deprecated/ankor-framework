@@ -1,12 +1,14 @@
 package at.irian.ankorsamples.animals.fxclient;
 
 import at.irian.ankor.event.dispatch.JavaFxEventDispatcherFactory;
+import at.irian.ankor.fx.binding.fxref.FxRefContextFactoryProvider;
+import at.irian.ankor.fx.binding.fxref.FxRefFactory;
+import at.irian.ankor.fx.controller.AnkorFXMLLoader;
 import at.irian.ankor.http.ClientHttpMessageLoop;
 import at.irian.ankor.http.ServerHost;
 import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
-import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.servlet.websocket.messaging.WebSocketMessageBus;
 import at.irian.ankor.servlet.websocket.session.WebSocketRemoteSystem;
 import at.irian.ankor.session.ModelRootFactory;
@@ -15,7 +17,6 @@ import at.irian.ankor.socket.SocketAnkorSystemStarter;
 import at.irian.ankor.socket.SocketMessageLoop;
 import at.irian.ankor.system.AnkorSystem;
 import at.irian.ankor.system.AnkorSystemBuilder;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -39,7 +40,7 @@ public class App extends javafx.application.Application {
     private static final String DEFAULT_CLIENT = "client@localhost:9090";
     private static final int NUMBER_OF_CLIENTS = 3;
 
-    private static RefFactory refFactory;
+    private static FxRefFactory refFactory;
 
     private enum Mode {
         clientServer,
@@ -130,12 +131,7 @@ public class App extends javafx.application.Application {
             createHttpClientSystem(client, server);
             startFXClient(primaryStage);
         } else if (mode == Mode.webSocketClient) {
-            String client = params.get("client");
-            if (client == null) {
-                client = DEFAULT_CLIENT;
-            }
-
-            createWebSocketClientSystem(client, server);
+            createWebSocketClientSystem(server);
             startFXClient(primaryStage);
 
         } else {
@@ -143,7 +139,7 @@ public class App extends javafx.application.Application {
         }
     }
 
-    private void createWebSocketClientSystem(String client, String server) throws Exception {
+    private void createWebSocketClientSystem(String server) throws Exception {
         final int HEARTBEAT_INTERVAL = 25;
 
         String host = server.split("@")[1];
@@ -155,6 +151,7 @@ public class App extends javafx.application.Application {
                 .withName(clientId)
                 .withMessageBus(messageBus)
                 .withDispatcherFactory(new JavaFxEventDispatcherFactory())
+                .withRefContextFactoryProvider(new FxRefContextFactoryProvider())
                 .withModelContextId("collabTest");
 
         final CountDownLatch latch = new CountDownLatch(1);
@@ -197,7 +194,7 @@ public class App extends javafx.application.Application {
 
         if (latch.await(10, TimeUnit.SECONDS)) {
             RefContext clientRefContext = ((SingletonSessionManager) clientSystem[0].getSessionManager()).getSession().getRefContext();
-            refFactory = clientRefContext.refFactory();
+            refFactory = (FxRefFactory) clientRefContext.refFactory();
         } else {
             throw new Exception("WebSocket could not connect to " + uri);
         }
@@ -205,7 +202,11 @@ public class App extends javafx.application.Application {
 
     private void startFXClient(Stage primaryStage) throws IOException {
         primaryStage.setTitle("Ankor FX Sample");
-        Pane myPane = FXMLLoader.load(getClass().getClassLoader().getResource("main.fxml"));
+
+        AnkorFXMLLoader fxmlLoader = new AnkorFXMLLoader();
+        fxmlLoader.setLocation(getClass().getClassLoader().getResource("main.fxml"));
+        fxmlLoader.setResourcesRef(refFactory.ref("root.resources"));
+        Pane myPane = (Pane) fxmlLoader.load();
 
         Scene myScene = new Scene(myPane);
         myScene.getStylesheets().add("style.css");
@@ -246,14 +247,14 @@ public class App extends javafx.application.Application {
         SocketAnkorSystemStarter appBuilder = new SocketAnkorSystemStarter()
                 .withModelRootFactory(new MyModelRootFactory())
                 .withLocalHost(clientHost)
-                //.withGlobalEventListener(new FXControllerChangeListener())
-                .withServerHost(parseHost(server));
+                .withServerHost(parseHost(server))
+                .withRefContextFactoryProvider(new FxRefContextFactoryProvider());
 
-        refFactory = appBuilder.createAndStartClientSystem();
+        refFactory = (FxRefFactory) appBuilder.createAndStartClientSystem();
 
     }
 
-    public static RefFactory refFactory() {
+    public static FxRefFactory refFactory() {
         return refFactory;
     }
 
@@ -288,10 +289,10 @@ public class App extends javafx.application.Application {
 
         AnkorSystem clientSystem = new AnkorSystemBuilder()
                 .withName(clientId)
-                //.withGlobalEventListener(new FXControllerChangeListener())
                 .withMessageBus(clientMessageLoop.getMessageBus())
                 .withModelContextId("collabTest")
                 .withDispatcherFactory(new JavaFxEventDispatcherFactory())
+                .withRefContextFactoryProvider(new FxRefContextFactoryProvider())
                 .createClient();
 
         // start
@@ -299,7 +300,7 @@ public class App extends javafx.application.Application {
         clientMessageLoop.start(true);
 
         RefContext clientRefContext = ((SingletonSessionManager)clientSystem.getSessionManager()).getSession().getRefContext();
-        refFactory = clientRefContext.refFactory();
+        refFactory = (FxRefFactory) clientRefContext.refFactory();
     }
 
 

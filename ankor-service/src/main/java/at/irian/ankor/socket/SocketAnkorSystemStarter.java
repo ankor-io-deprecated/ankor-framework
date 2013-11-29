@@ -9,7 +9,9 @@ import at.irian.ankor.event.dispatch.JavaFxEventDispatcherFactory;
 import at.irian.ankor.messaging.json.simpletree.SimpleTreeJsonMessageMapper;
 import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
 import at.irian.ankor.ref.RefContext;
+import at.irian.ankor.ref.RefContextFactoryProvider;
 import at.irian.ankor.ref.RefFactory;
+import at.irian.ankor.ref.el.ELRefContextFactoryProvider;
 import at.irian.ankor.session.ModelRootFactory;
 import at.irian.ankor.session.SingletonSessionManager;
 import at.irian.ankor.system.AnkorSystem;
@@ -49,6 +51,8 @@ public class SocketAnkorSystemStarter {
 
     private ModelEventListener globalEventListener;
 
+    private RefContextFactoryProvider refContextFactoryProvider = new ELRefContextFactoryProvider();
+
     public SocketAnkorSystemStarter withModelRootFactory(ModelRootFactory modelRootFactory) {
         this.modelRootFactory = modelRootFactory;
         return this;
@@ -71,6 +75,11 @@ public class SocketAnkorSystemStarter {
 
     public SocketAnkorSystemStarter withGlobalEventListener(ModelEventListener globalEventListener) {
         this.globalEventListener = globalEventListener;
+        return this;
+    }
+
+    public SocketAnkorSystemStarter withRefContextFactoryProvider(RefContextFactoryProvider refContextFactoryProvider) {
+        this.refContextFactoryProvider = refContextFactoryProvider;
         return this;
     }
 
@@ -106,10 +115,10 @@ public class SocketAnkorSystemStarter {
                 .withBeanResolver(beanResolver)
                 .withModelRootFactory(modelRootFactory)
                 .withMessageBus(serverMessageLoop.getMessageBus())
-//              .withDispatcherFactory(new SynchronisedEventDispatcherFactory())
                 .withDispatcherFactory(new AkkaEventDispatcherFactory(ankorActorSystem))
                 .withGlobalEventListener(globalEventListener)
                 .withScheduler(new AkkaScheduler(ankorActorSystem))
+                .withRefContextFactoryProvider(refContextFactoryProvider)
                 .createServer();
 
         serverSystem.start();
@@ -130,6 +139,7 @@ public class SocketAnkorSystemStarter {
         AnkorSystem clientSystem = builder
                 .withMessageBus(clientMessageLoop.getMessageBus())
                 .withDispatcherFactory(new JavaFxEventDispatcherFactory())
+                .withRefContextFactoryProvider(refContextFactoryProvider)
                 .createClient();
 
         // start

@@ -13,6 +13,7 @@ import java.util.ArrayList;
  *
  * @author Manfred Geiler
  */
+@SuppressWarnings("UnusedDeclaration")
 public final class RefListeners {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RefListeners.class);
 
@@ -52,6 +53,9 @@ public final class RefListeners {
         ((RefContextImplementor)ref.context()).eventListeners().add(new PropRefActionEventListener(ref, listener));
     }
 
+    public static void removeListener(Ref ref, RefListener listener) {
+        removeListener(ref.context(), listener);
+    }
 
     public static void removeListener(RefContext refContext, RefListener listener) {
         ArrayList<ModelEventListener> eventListenersToRemove = null;

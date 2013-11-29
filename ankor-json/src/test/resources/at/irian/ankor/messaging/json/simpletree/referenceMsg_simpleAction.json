@@ -1,0 +1,9 @@
+{
+    "senderId": "testSystem",
+    "modelId": "1",
+    "messageId": "testClient#1",
+    "property": "root.next",
+    "action": {
+        name: "init"
+    }
+}

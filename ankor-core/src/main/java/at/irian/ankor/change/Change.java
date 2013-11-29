@@ -7,21 +7,27 @@ import java.util.Collection;
  */
 public class Change {
 
-    private ChangeType type;
-    private Object key;
-    private Object value;
+    /**
+     * Type of this change.
+     */
+    private final ChangeType type;
 
     /**
-     * for deserialization only
+     * (Optional) key or index of this change for change types {@link ChangeType#insert},
+     * {@link ChangeType#delete}, and {@link ChangeType#replace}.
      */
-    protected Change() {}
+    private final Object key;
+
+    /**
+     * Value of this change.
+     */
+    private final Object value;
 
     protected Change(ChangeType type, Object key, Object value) {
         this.type = type;
         this.key = key;
         this.value = value;
     }
-
 
     public static Change valueChange(Object newValue) {
         return new Change(ChangeType.value, null, newValue);

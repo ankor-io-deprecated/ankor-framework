@@ -1,11 +1,12 @@
 package at.irian.ankorsamples.todosample.fxclient.task;
 
 import at.irian.ankor.action.Action;
-import at.irian.ankor.fx.binding.property.ViewModelProperty;
+import at.irian.ankor.fx.binding.fxref.FxRef;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorsamples.todosample.viewmodel.TaskModel;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
@@ -26,6 +27,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings({"PointlessBooleanExpression", "UnusedDeclaration"})
 public class TaskPane extends AnchorPane {
 
     private Ref itemRef;
@@ -36,12 +38,12 @@ public class TaskPane extends AnchorPane {
     @FXML public Button deleteButton;
     @FXML public TextField titleTextField;
 
-    private ViewModelProperty<String> title;
-    private ViewModelProperty<Boolean> completed;
-    private ViewModelProperty<Boolean> editing;
+    private Property<String> title;
+    private Property<Boolean> completed;
+    private Property<Boolean> editing;
     private SimpleStringProperty helper = new SimpleStringProperty();
 
-    public TaskPane(Ref itemRef) {
+    public TaskPane(FxRef itemRef) {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("task.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
@@ -52,9 +54,9 @@ public class TaskPane extends AnchorPane {
         }
 
         this.itemRef = itemRef;
-        title = new ViewModelProperty<>(itemRef, "title");
-        completed = new ViewModelProperty<>(itemRef, "completed");
-        editing = new ViewModelProperty<>(itemRef, "editing");
+        title = itemRef.appendPath("title").fxProperty();
+        completed = itemRef.appendPath("completed").fxProperty();
+        editing = itemRef.appendPath("editing").fxProperty();
 
         titleTextField.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
@@ -78,7 +80,7 @@ public class TaskPane extends AnchorPane {
         titleTextField.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observableValue, Boolean newValue, Boolean oldValue) {
-                if (newValue == false) {
+                if (newValue == false) {       // todo  newValue <--> oldValue !
                     setEditable(false);
                 }
             }
@@ -88,7 +90,7 @@ public class TaskPane extends AnchorPane {
         completedButton.selectedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observableValue, Boolean newValue, Boolean oldValue) {
-                if (newValue == false) {
+                if (newValue == false) {        // todo  newValue <--> oldValue !
                     titleTextField.getStyleClass().remove("default");
                     titleTextField.getStyleClass().add("strike-through");
                 } else {
@@ -107,9 +109,10 @@ public class TaskPane extends AnchorPane {
         this.model = model;
     }
 
+    @SuppressWarnings("UnusedParameters")
     @FXML
     public void delete(ActionEvent actionEvent) {
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("index", index);
         itemRef.root().appendPath("model").fire(new Action("deleteTask", params));
     }
@@ -163,9 +166,9 @@ public class TaskPane extends AnchorPane {
         completed.unbindBidirectional(selectedProperty());
         editing.unbindBidirectional(editableProperty());
 
-        title = new ViewModelProperty<>(itemRef, "title");
-        completed = new ViewModelProperty<>(itemRef, "completed");
-        editing = new ViewModelProperty<>(itemRef, "editing");
+//        title = new ViewModelProperty<>(itemRef, "title");
+//        completed = new ViewModelProperty<>(itemRef, "completed");
+//        editing = new ViewModelProperty<>(itemRef, "editing");
 
         helper = new SimpleStringProperty();
         helper.bindBidirectional(title);

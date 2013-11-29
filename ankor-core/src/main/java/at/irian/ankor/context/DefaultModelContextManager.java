@@ -18,6 +18,9 @@ public class DefaultModelContextManager implements ModelContextManager {
 
     @Override
     public ModelContext getOrCreate(String modelContextId) {
+        if (modelContextId == null) {
+            throw new NullPointerException("modelContextId may not be null");
+        }
         ModelContext modelContext = modelContextMap.get(modelContextId);
         if (modelContext == null) {
             synchronized (modelContextMap) {

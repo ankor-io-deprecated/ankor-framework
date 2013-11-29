@@ -2,6 +2,7 @@ package at.irian.ankor.change;
 
 import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.event.ModelPropertyEvent;
+import at.irian.ankor.event.source.Source;
 import at.irian.ankor.ref.Ref;
 
 /**
@@ -12,13 +13,13 @@ public class ChangeEvent extends ModelPropertyEvent {
 
     private final Change change;
 
-    public ChangeEvent(Ref changedProperty, Change change) {
-        super(changedProperty);
+    public ChangeEvent(Source source, Ref changedProperty, Change change) {
+        super(source, changedProperty);
         this.change = change;
     }
 
     public Ref getChangedProperty() {
-        return (Ref)source;
+        return getProperty();
     }
 
     public Change getChange() {

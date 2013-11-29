@@ -36,10 +36,10 @@ public class ELRefContextFactory implements RefContextFactory {
     @Override
     public RefContext createRefContextFor(ModelContext modelContext) {
         ELSupport elSupport = new AnkorELSupport(modelContext, beanResolver, modelRootFactory);
-        return new ELRefContext(elSupport,
-                                modelContext,
-                                viewModelPostProcessors,
-                                scheduler);
+        return ELRefContext.create(elSupport,
+                                   modelContext,
+                                   viewModelPostProcessors,
+                                   scheduler);
     }
 
 }

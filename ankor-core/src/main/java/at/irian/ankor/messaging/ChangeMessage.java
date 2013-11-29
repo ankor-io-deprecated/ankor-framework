@@ -32,7 +32,6 @@ public class ChangeMessage extends Message {
         return change;
     }
 
-    @SuppressWarnings("RedundantIfStatement")
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -44,11 +43,7 @@ public class ChangeMessage extends Message {
 
         ChangeMessage that = (ChangeMessage) o;
 
-        if (!change.equals(that.change)) {
-            return false;
-        }
-
-        return true;
+        return change.equals(that.change);
     }
 
     @Override

@@ -2,11 +2,11 @@ package at.irian.ankorsamples.animals.fxclient.animal;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.annotation.ChangeListener;
-import at.irian.ankor.fx.binding.property.ViewModelListProperty;
-import at.irian.ankor.fx.binding.property.ViewModelProperty;
+import at.irian.ankor.fx.binding.convert.ReverseBooleanConverter;
+import at.irian.ankor.fx.binding.fxref.FxRef;
 import at.irian.ankor.fx.controller.FXControllerAnnotationSupport;
-import at.irian.ankor.ref.Ref;
 import at.irian.ankorsamples.animals.fxclient.BaseTabController;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -33,26 +33,29 @@ public class AnimalDetailTabController extends BaseTabController {
     }
 
     public void initialize() {
-        Ref tabRef = getTabRef();
+        FxRef tabRef = getTabRef();
         FXControllerAnnotationSupport.scan(tabRef, this);
 
-        Ref modelRef = tabRef.appendPath("model");
-        Ref animalRef = modelRef.appendPath("animal");
-        Ref selItemsRef = modelRef.appendPath("selectItems");
+        FxRef modelRef = tabRef.appendPath("model");
+        FxRef animalRef = modelRef.appendPath("animal");
+        FxRef selItemsRef = modelRef.appendPath("selectItems");
 
-        tab.textProperty().bind(new ViewModelProperty<String>(tabRef, "name"));
+        ObservableValue<Boolean> disableProperty = modelRef.appendPath("editable").fxProperty(ReverseBooleanConverter.instance());
 
-        name.textProperty().bindBidirectional(new ViewModelProperty<String>(animalRef, "name"));
+        tab.textProperty().bind(tabRef.appendPath("name").<String>fxObservable());
 
-        name.editableProperty().bind(new ViewModelProperty<Boolean>(modelRef, "editable"));
+        name.textProperty().bindBidirectional(animalRef.appendPath("name").<String>fxProperty());
+        name.disableProperty().bind(disableProperty);
 
-        nameStatus.textProperty().bind(new ViewModelProperty<String>(modelRef, "nameStatus"));
+        nameStatus.textProperty().bind(modelRef.appendPath("nameStatus").<String>fxObservable());
 
-        type.itemsProperty().bind(new ViewModelListProperty<Enum>(selItemsRef, "types"));
-        type.valueProperty().bindBidirectional(new ViewModelProperty<Enum>(animalRef, "type"));
+        type.itemsProperty().bind(selItemsRef.appendPath("types").<Enum>fxObservableList());
+        type.valueProperty().bindBidirectional(animalRef.appendPath("type").<Enum>fxProperty());
+        type.disableProperty().bind(disableProperty);
 
-        family.itemsProperty().bind(new ViewModelListProperty<Enum>(selItemsRef, "families"));
-        family.valueProperty().bindBidirectional(new ViewModelProperty<Enum>(animalRef, "family"));
+        family.itemsProperty().bind(selItemsRef.appendPath("families").<Enum>fxObservableList());
+        family.valueProperty().bindBidirectional(animalRef.appendPath("family").<Enum>fxProperty());
+        family.disableProperty().bind(disableProperty);
 
         name.requestFocus();
     }
@@ -62,8 +65,7 @@ public class AnimalDetailTabController extends BaseTabController {
         LOG.debug("Animal name changed changed to " + getTabRef().appendPath("model.animal.name").getValue());
     }
 
-    @FXML
-    protected void save(@SuppressWarnings("UnusedParameters") ActionEvent event) {
+    public void save(@SuppressWarnings("UnusedParameters") ActionEvent event) {
         getTabRef().appendPath("model").fire(new Action("save"));
     }
 

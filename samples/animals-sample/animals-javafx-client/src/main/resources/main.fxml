@@ -2,42 +2,44 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
-<BorderPane layoutX="0.0" layoutY="0.0" prefHeight="580.0" prefWidth="710.0" xmlns:fx="http://javafx.com/fxml" fx:controller="at.irian.ankorsamples.animals.fxclient.MainController">
-  <bottom>
-    <HBox alignment="TOP_LEFT" minHeight="39.0" prefHeight="39.0001220703125" prefWidth="710.0" spacing="10.0" style="-fx-padding: 15;&#10;-fx-background-color: #333333,&#10; linear-gradient(#f3f3f3 0%, #ced3da 100%);&#10;-fx-background-insets: 0, 0 0 1 0;">
-      <BorderPane.margin>
+<BorderPane layoutX="0.0" layoutY="0.0" prefHeight="580.0" prefWidth="710.0" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="at.irian.ankorsamples.animals.fxclient.MainController">
+
+    <top>
+        <HBox alignment="TOP_LEFT">
+            <MenuBar minHeight="21.0" prefHeight="25.0" prefWidth="590.0">
+                <Menu mnemonicParsing="false" text="%Animal" >
+                    <MenuItem mnemonicParsing="false" onAction="#openAnimalSearchTab" text="%SearchAnimals" />
+                    <MenuItem mnemonicParsing="false" onAction="#openAnimalDetailTab" text="%NewAnimal" />
+                </Menu>
+                <Menu mnemonicParsing="false" text="%Help">
+                    <MenuItem mnemonicParsing="false" text="%About"/>
+                </Menu>
+            </MenuBar>
+            <HBox fx:id="localesBox" prefWidth="100.0"/>
+        </HBox>
+    </top>
+
+    <center>
+        <TabPane fx:id="tabPane" prefHeight="494.0" prefWidth="710.0" tabClosingPolicy="ALL_TABS" />
+    </center>
+
+    <bottom>
+        <HBox alignment="TOP_LEFT" minHeight="39.0" prefHeight="39.0001220703125" prefWidth="710.0" spacing="10.0" style="-fx-padding: 15;&#10;-fx-background-color: #333333,&#10; linear-gradient(#f3f3f3 0%, #ced3da 100%);&#10;-fx-background-insets: 0, 0 0 1 0;">
+            <BorderPane.margin>
+                <Insets />
+            </BorderPane.margin>
+            <Text text="%User_" />
+            <Text fx:id="userName" fill="#3385ff" />
+            <Text text="%ServerSays_" />
+            <Text fx:id="serverStatus" fill="#cc3100" />
+        </HBox>
+    </bottom>
+
+    <padding>
         <Insets />
-      </BorderPane.margin>
-      <Text text="User: " />
-      <Text fx:id="userName" fill="#3385ff" />
-      <Text text="Server says: " />
-      <Text fx:id="serverStatus" fill="#cc3100" />
-    </HBox>
-  </bottom>
-  <center>
-    <TabPane fx:id="tabPane" prefHeight="494.0" prefWidth="710.0" tabClosingPolicy="ALL_TABS" />
-  </center>
-  <padding>
-    <Insets />
-  </padding>
-  <top>
-    <MenuBar minHeight="21.0" prefHeight="25.0" prefWidth="690.0">
-      <menus>
-        <Menu mnemonicParsing="false" text="Animal">
-          <items>
-            <MenuItem mnemonicParsing="false" onAction="#openAnimalSearchTab" text="Animal Search" />
-            <MenuItem mnemonicParsing="false" onAction="#openAnimalDetailTab" text="New Animal" />
-          </items>
-        </Menu>
-        <Menu mnemonicParsing="false" text="Help">
-          <items>
-            <MenuItem mnemonicParsing="false" text="About" />
-          </items>
-        </Menu>
-      </menus>
-    </MenuBar>
-  </top>
+    </padding>
+
 </BorderPane>

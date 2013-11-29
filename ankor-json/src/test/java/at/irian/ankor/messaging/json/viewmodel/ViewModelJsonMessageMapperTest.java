@@ -1,13 +1,19 @@
 package at.irian.ankor.messaging.json.viewmodel;
 
 import at.irian.ankor.action.Action;
+import at.irian.ankor.action.CloseAction;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.context.ModelContext;
-import at.irian.ankor.event.EventListeners;
-import at.irian.ankor.event.dispatch.EventDispatcher;
 import at.irian.ankor.messaging.*;
-import junit.framework.Assert;
+import com.google.common.collect.Maps;
+import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Manfred Geiler
@@ -19,37 +25,11 @@ public class ViewModelJsonMessageMapperTest {
     private MessageFactory messageFactory;
     private ViewModelJsonMessageMapper msgMapper;
 
-    @org.junit.Before
+    @Before
     public void setUp() throws Exception {
-        modelContext = new ModelContext() {
-            @Override
-            public String getId() {
-                return "mc1";
-            }
+        modelContext = mock(ModelContext.class);
+        when(modelContext.getId()).thenReturn("mc1");
 
-            @Override
-            public EventListeners getEventListeners() {
-                return null;
-            }
-
-            @Override
-            public Object getModelRoot(String rootName) {
-                return null;
-            }
-
-            @Override
-            public void setModelRoot(String rootName, Object modelRoot) {
-            }
-
-            @Override
-            public EventDispatcher getEventDispatcher() {
-                return null;
-            }
-
-            @Override
-            public void close() {
-            }
-        };
         messageFactory = new MessageFactory("test", new CounterMessageIdGenerator(""));
         msgMapper = new ViewModelJsonMessageMapper();
     }
@@ -58,46 +38,73 @@ public class ViewModelJsonMessageMapperTest {
     public void testSimpleAction() throws Exception {
         Action action = new Action("test");
         Message msg = messageFactory.createActionMessage(modelContext, "context.model", action);
-        String json = msgMapper.serialize(msg);
-        LOG.info("JSON: {}", json);
 
-        Message desMsg = msgMapper.deserialize(json);
-        LOG.info("Message: {}", desMsg);
+        Message desMsg = serializeAndDeserialize(msg);
 
-        Assert.assertEquals(ActionMessage.class, desMsg.getClass());
+        assertEquals(ActionMessage.class, desMsg.getClass());
         ActionMessage actionMsg = (ActionMessage) desMsg;
-        Assert.assertEquals(Action.class, actionMsg.getAction().getClass());
-        Action simpleAction = actionMsg.getAction();
-        Assert.assertEquals("test", simpleAction.getName());
+        assertEquals(Action.class, actionMsg.getAction().getClass());
+        assertEquals("test", actionMsg.getAction().getName());
     }
 
     @Test
-    public void testChange() throws Exception {
+    public void testActionWithParams() throws Exception {
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("key", "value");
+        Action action = new Action("test", params);
+        Message msg = messageFactory.createActionMessage(modelContext, "context.model", action);
+
+        Message desMsg = serializeAndDeserialize(msg);
+
+        assertEquals(ActionMessage.class, desMsg.getClass());
+        ActionMessage actionMsg = (ActionMessage) desMsg;
+        assertEquals(Action.class, actionMsg.getAction().getClass());
+
+        assertEquals("test", actionMsg.getAction().getName());
+        assertEquals("value", actionMsg.getAction().getParams().get("key"));
+    }
+
+    @Test
+    public void testCloseAction() throws Exception {
+        CloseAction action = new CloseAction();
+
+        Message msg = messageFactory.createActionMessage(modelContext, "context.model", action);
+        Message desMsg = serializeAndDeserialize(msg);
+
+        assertEquals(ActionMessage.class, desMsg.getClass());
+        ActionMessage actionMsg = (ActionMessage) desMsg;
+        assertEquals(CloseAction.class, actionMsg.getAction().getClass());
+        CloseAction closeAction = (CloseAction) actionMsg.getAction();
+        assertEquals(CloseAction.CLOSE_ACTION_NAME, closeAction.getName());
+    }
+
+    private Message serializeAndDeserialize(Message msg) {
+        String json = msgMapper.serialize(msg);
+        LOG.info("JSON: {}", json);
+
+        Message desMsg = msgMapper.deserialize(json);
+        LOG.info("Message: {}", desMsg);
+        return desMsg;
+    }
+
+    @Test
+    public void testValueChange() throws Exception {
         Message msg = messageFactory.createChangeMessage(modelContext, "root.test1", Change.valueChange("new-value"));
-        String json = msgMapper.serialize(msg);
-        LOG.info("JSON: {}", json);
+        Message desMsg = serializeAndDeserialize(msg);
 
-        Message desMsg = msgMapper.deserialize(json);
-        LOG.info("Message: {}", desMsg);
-
-        Assert.assertEquals(ChangeMessage.class, desMsg.getClass());
+        assertEquals(ChangeMessage.class, desMsg.getClass());
         ChangeMessage changeMsg = (ChangeMessage) desMsg;
-        Assert.assertEquals("root.test1", changeMsg.getProperty());
+        assertEquals("root.test1", changeMsg.getProperty());
     }
 
     @Test
-    public void testChangeRoot() throws Exception {
+    public void testValueChangeRoot() throws Exception {
         Message msg = messageFactory.createChangeMessage(modelContext, "root", Change.valueChange("new-value"));
-        String json = msgMapper.serialize(msg);
-        LOG.info("JSON: {}", json);
+        Message desMsg = serializeAndDeserialize(msg);
 
-        Message desMsg = msgMapper.deserialize(json);
-        LOG.info("Message: {}", desMsg);
-
-        Assert.assertEquals(ChangeMessage.class, desMsg.getClass());
+        assertEquals(ChangeMessage.class, desMsg.getClass());
         ChangeMessage changeMsg = (ChangeMessage) desMsg;
-        Assert.assertEquals("root", changeMsg.getProperty());
+        assertEquals("root", changeMsg.getProperty());
     }
-
 
 }

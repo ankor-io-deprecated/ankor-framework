@@ -1,7 +1,7 @@
 package at.irian.ankorsamples.animals.fxclient;
 
+import at.irian.ankor.fx.binding.fxref.FxRef;
 import at.irian.ankor.pattern.AnkorPatterns;
-import at.irian.ankor.ref.Ref;
 import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -27,7 +27,7 @@ public abstract class BaseTabController implements Initializable {
         this.tabId = tabId;
     }
 
-    public Ref getTabRef() {
+    public FxRef getTabRef() {
         return refFactory().ref(String.format("root.contentPane.panels.%s", tabId));
     }
 

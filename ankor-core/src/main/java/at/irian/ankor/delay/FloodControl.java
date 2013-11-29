@@ -1,6 +1,7 @@
 package at.irian.ankor.delay;
 
 import at.irian.ankor.event.dispatch.EventDispatcher;
+import at.irian.ankor.event.source.CustomSource;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 
@@ -38,7 +39,7 @@ public class FloodControl {
                 scheduler.schedule(delay, new Runnable() {
                     @Override
                     public void run() {
-                        eventDispatcher.dispatch(new TaskRequestEvent(FloodControl.this, task));
+                        eventDispatcher.dispatch(new TaskRequestEvent(new CustomSource(FloodControl.this), task));
                     }
                 })
             );

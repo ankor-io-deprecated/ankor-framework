@@ -1,13 +1,11 @@
 package at.irian.ankorsamples.fxrates.client;
 
-import at.irian.ankor.fx.binding.property.ViewModelListProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.MapValueFactory;
 
 import java.net.URL;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 import static at.irian.ankorsamples.fxrates.client.RatesClient.rootRef;
@@ -32,7 +30,7 @@ public class RatesController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
-        ratesTable.itemsProperty().bind(new ViewModelListProperty<Map<String, Object>>(rootRef(), "rates"));
+        ratesTable.itemsProperty().bind(rootRef().appendPath("rates").fxObservableList());
 
         symbol.setCellValueFactory(new MapValueFactory<String>("symbol"));
         ask.setCellValueFactory(new MapValueFactory<String>("ask"));

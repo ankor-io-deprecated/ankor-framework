@@ -12,7 +12,7 @@ public class ListToBigListDummyConverter {
 
     public static final String SIZE_KEY = "@size";
     public static final String SUBSTITUTE_KEY = "@subst";
-    public static final String INITIAL_SIZE_KEY = "@init";
+    public static final String INITIAL_LIST_KEY = "@init";
     public static final String CHUNK_SIZE_KEY = "@chunk";
 
     private final int thresholdSize;
@@ -37,7 +37,7 @@ public class ListToBigListDummyConverter {
             try {
                 missingElementSubstitute = missingElementSubstituteType.newInstance();
             } catch (Exception e) {
-                throw new RuntimeException("Unable to instantiate " + missingElementSubstitute);
+                throw new RuntimeException("Unable to instantiate " + missingElementSubstituteType);
             }
         }
         return new ListToBigListDummyConverter(ann.threshold(),
@@ -53,7 +53,7 @@ public class ListToBigListDummyConverter {
             return null;
         }
 
-        if (actualCollection.size() <= thresholdSize) {
+        if (actualCollection.size() < thresholdSize) {
             return actualCollection;
         }
 
@@ -69,7 +69,7 @@ public class ListToBigListDummyConverter {
                 //noinspection unchecked
                 initialList.add(iterator.next());
             }
-            bigListAttributes.put(INITIAL_SIZE_KEY, initialList);
+            bigListAttributes.put(INITIAL_LIST_KEY, initialList);
         }
 
         List<Map<String,Object>> dummyList = Collections.singletonList(bigListAttributes);

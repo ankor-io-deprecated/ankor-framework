@@ -7,7 +7,6 @@ public enum TabType {
 
     animalSearch("createAnimalSearchPanel", "animal_search_tab.fxml"),
     animalDetail("createAnimalDetailPanel", "animal_detail_tab.fxml"),
-
     ;
 
     private final String actionName;

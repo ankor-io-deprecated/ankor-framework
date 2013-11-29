@@ -24,18 +24,33 @@ public class ELRefContext implements RefContext, RefContextImplementor {
     private final ELSupport elSupport;
     private final ModelContext modelContext;
     private final List<ViewModelPostProcessor> viewModelPostProcessors;
-    private final ELRefFactory refFactory;
     private final Scheduler scheduler;
+    private final RefFactory refFactory;
 
-    ELRefContext(ELSupport elSupport,
-                 ModelContext modelContext,
-                 List<ViewModelPostProcessor> viewModelPostProcessors,
-                 Scheduler scheduler) {
+    protected ELRefContext(ELSupport elSupport,
+                           ModelContext modelContext,
+                           List<ViewModelPostProcessor> viewModelPostProcessors,
+                           Scheduler scheduler,
+                           RefFactory refFactory) {
         this.elSupport = elSupport;
-        this.scheduler = scheduler;
         this.modelContext = modelContext;
         this.viewModelPostProcessors = viewModelPostProcessors;
-        this.refFactory = new ELRefFactory(this);
+        this.scheduler = scheduler;
+        this.refFactory = refFactory;
+    }
+
+    protected static ELRefContext create(ELSupport elSupport,
+                                         ModelContext modelContext,
+                                         List<ViewModelPostProcessor> viewModelPostProcessors,
+                                         Scheduler scheduler) {
+        ELRefFactory refFactory = new ELRefFactory();
+        ELRefContext refContext = new ELRefContext(elSupport,
+                                                   modelContext,
+                                                   viewModelPostProcessors,
+                                                   scheduler,
+                                                   refFactory);
+        refFactory.setRefContext(refContext); // bi-directional relation - not nice but no idea by now how to make it nice...  ;-)
+        return refContext;
     }
 
     @Override

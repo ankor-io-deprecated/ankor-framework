@@ -1,5 +1,7 @@
 package at.irian.ankor.event;
 
+import at.irian.ankor.event.source.Source;
+
 import java.util.EventObject;
 
 /**
@@ -8,8 +10,13 @@ import java.util.EventObject;
 public abstract class ModelEvent extends EventObject {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelEvent.class);
 
-    public ModelEvent(Object source) {
+    protected ModelEvent(Source source) {
         super(source);
+    }
+
+    @Override
+    public Source getSource() {
+        return (Source)super.getSource();
     }
 
     public abstract boolean isAppropriateListener(ModelEventListener listener);

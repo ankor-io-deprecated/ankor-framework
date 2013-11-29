@@ -25,7 +25,7 @@ import java.util.UUID;
 import java.util.concurrent.*;
 
 /**
- * This is the base class of a WebSocket endpoint that communicates with a {@link AnkorSystem}.
+ * This is the base class of a WebSocket endpoint that communicates with a {@link AnkorSystem}.<br>
  * It is meant be deployed on a web server (e.g. GlassFish) that supports JSR 365 (javax.websocket).
  * <p/>
  * This class handles new WebSocket connections on a fixed url ("/websockets/ankor").

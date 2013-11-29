@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AnkorBigList {
     /**
-     * @return minimal size of the list for switching to "big list" mode
+     * @return minimal size of the list for switching to "big list" mode; a value of "-1" means "always" use a BigList
      */
     int threshold() default -1;
 

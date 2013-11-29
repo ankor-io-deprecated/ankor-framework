@@ -3,12 +3,13 @@ package at.irian.ankor.messaging.json.viewmodel;
 import at.irian.ankor.action.Action;
 import at.irian.ankor.base.Wrapper;
 import at.irian.ankor.big.json.AnkorSerializerModifier;
+import at.irian.ankor.change.Change;
 import at.irian.ankor.messaging.Message;
 import at.irian.ankor.messaging.MessageArrayDeserializer;
 import at.irian.ankor.messaging.MessageArraySerializer;
 import at.irian.ankor.messaging.MessageMapper;
 import at.irian.ankor.messaging.json.common.ActionDeserializer;
-import at.irian.ankor.messaging.json.common.ActionSerializer;
+import at.irian.ankor.messaging.json.common.ChangeDeserializer;
 import at.irian.ankor.messaging.json.common.MessageDeserializer;
 import at.irian.ankor.ref.TypedRef;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -48,8 +49,8 @@ public class ViewModelJsonMessageMapper implements MessageMapper<String>,
 
         // custom serializers/deserializers
         module.addDeserializer(Message.class, new MessageDeserializer());
-        module.addSerializer(Action.class, new ActionSerializer());
         module.addDeserializer(Action.class, new ActionDeserializer());
+        module.addDeserializer(Change.class, new ChangeDeserializer());
         module.addSerializer(Wrapper.class, new WrapperSerializer());
 
         // do always ignore Refs (ie. do never serialize Refs)

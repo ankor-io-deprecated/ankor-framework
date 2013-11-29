@@ -1,8 +1,9 @@
 package at.irian.ankorsamples.fxrates.client;
 
 import at.irian.ankor.action.Action;
-import at.irian.ankor.ref.Ref;
-import at.irian.ankor.ref.RefFactory;
+import at.irian.ankor.fx.binding.fxref.FxRef;
+import at.irian.ankor.fx.binding.fxref.FxRefContextFactoryProvider;
+import at.irian.ankor.fx.binding.fxref.FxRefFactory;
 import at.irian.ankor.socket.SocketAnkorSystemStarter;
 import at.irian.ankor.socket.SocketMessageLoop;
 import javafx.fxml.FXMLLoader;
@@ -17,19 +18,20 @@ public class RatesClient extends javafx.application.Application {
 
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(Client.class);
 
-    private static RefFactory refFactory;
+    private static FxRefFactory refFactory;
 
     public static void main(String[] args) {
         // Ankor Client System
         SocketAnkorSystemStarter appBuilder = new SocketAnkorSystemStarter()
                 .withLocalHost(parseHost("client@localhost:9090"))
-                .withServerHost(parseHost("server@localhost:8080"));
-        refFactory = appBuilder.createAndStartClientSystem();
+                .withServerHost(parseHost("server@localhost:8080"))
+                .withRefContextFactoryProvider(new FxRefContextFactoryProvider());
+        refFactory = (FxRefFactory) appBuilder.createAndStartClientSystem();
         // Launch Java FX App
         launch(args);
     }
 
-    public static Ref rootRef() {
+    public static FxRef rootRef() {
         return refFactory.ref("root");
     }
 

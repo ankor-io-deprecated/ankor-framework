@@ -1,5 +1,8 @@
 package at.irian.ankor.action;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 import java.util.Collections;
 import java.util.Map;
 
@@ -13,14 +16,10 @@ import java.util.Map;
 public class Action {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(Action.class);
 
-    private String name;
+    private final String name;
 
-    private Map<String, Object> params;
-
-    /**
-     * for deserialization only
-     */
-    protected Action() {}
+    @JsonInclude(Include.NON_EMPTY)
+    private final Map<String, Object> params;
 
     public Action(String name) {
         this(name, null);
@@ -28,9 +27,11 @@ public class Action {
 
     public Action(String name, Map<String, Object> params) {
         this.name = name;
-        this.params = params != null && !params.isEmpty()
-                      ? Collections.unmodifiableMap(params)
-                      : null;
+        if (params != null && !params.isEmpty()) {
+            this.params = Collections.unmodifiableMap(params);
+        } else {
+            this.params = Collections.emptyMap();
+        }
     }
 
     public String getName() {
@@ -38,7 +39,7 @@ public class Action {
     }
 
     public Map<String, Object> getParams() {
-        return params != null ? params : Collections.<String, Object>emptyMap();
+        return params;
     }
 
     @Override
@@ -66,7 +67,7 @@ public class Action {
     public String toString() {
         return "Action{" +
                "name='" + name + '\'' +
-               ", params=" + getParams() +
+               ", params=" + params +
                '}';
     }
 }

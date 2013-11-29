@@ -1,5 +1,7 @@
 package at.irian.ankorsamples.animals.domain.animal;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.UUID;
 
 /**
@@ -10,8 +12,14 @@ public class Animal {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(Animal.class);
 
     private final String uuid;
+
+    @JsonInclude(JsonInclude.Include.ALWAYS)
     private String name;
+
+    @JsonInclude(JsonInclude.Include.ALWAYS)
     private AnimalType type;
+
+    @JsonInclude(JsonInclude.Include.ALWAYS)
     private AnimalFamily family;
 
     public Animal() {

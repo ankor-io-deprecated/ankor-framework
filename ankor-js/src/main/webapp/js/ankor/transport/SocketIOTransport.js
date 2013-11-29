@@ -1,9 +1,7 @@
 define([
     "./BaseTransport",
-    "../messages/ActionMessage",
-    "../messages/ChangeMessage",
     "socketIO"
-], function(BaseTransport, ActionMessage, ChangeMessage, io) {
+], function(BaseTransport, io) {
     var SocketIOTransport = function(endpoint, options) {
         BaseTransport.call(this);
         this.endpoint = endpoint;
@@ -23,7 +21,7 @@ define([
                 this._sendMessageInner(jsonMessage);
             }
             this.outgoingMessages = [];
-        }
+        };
 
         /**
          * Private method to prevent code duplication.

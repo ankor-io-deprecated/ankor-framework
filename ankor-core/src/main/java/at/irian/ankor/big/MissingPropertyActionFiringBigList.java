@@ -8,6 +8,7 @@ import at.irian.ankor.ref.Ref;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -32,12 +33,14 @@ public class MissingPropertyActionFiringBigList<E> extends AbstractBigList<E> {
     @AnkorIgnore
     private final FloodControl floodControl;
 
-    public MissingPropertyActionFiringBigList(int size, Ref listRef, E missingElementSubstitute, int chunkSize) {
-        super(size);
+    public MissingPropertyActionFiringBigList(int size, Ref listRef, E missingElementSubstitute, int chunkSize,
+                                              List<E> initialElements) {
+        super(size, initialElements);
         this.listRef = listRef;
         this.missingElementSubstitute = missingElementSubstitute;
         this.chunkSize = chunkSize;
         this.floodControl = new FloodControl(listRef, 50);
+
     }
 
     @Override

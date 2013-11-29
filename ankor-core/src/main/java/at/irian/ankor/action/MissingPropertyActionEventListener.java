@@ -3,6 +3,8 @@ package at.irian.ankor.action;
 import at.irian.ankor.annotation.ModelPropertyAnnotationsFinder;
 import at.irian.ankor.big.AnkorBigList;
 import at.irian.ankor.change.Change;
+import at.irian.ankor.event.source.LocalSource;
+import at.irian.ankor.event.source.RemoteSource;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.impl.RefImplementor;
 
@@ -32,10 +34,11 @@ public class MissingPropertyActionEventListener extends ActionEventListener {
     @Override
     public void process(ActionEvent event) {
         Action action = event.getAction();
-        if (action instanceof RemoteAction && ACTION_NAME.equals(action.getName())) {
+        if (event.getSource() instanceof RemoteSource && ACTION_NAME.equals(action.getName())) {
             Ref missingProperty = event.getActionProperty();
             LOG.debug("handling missing property request for {}", missingProperty);
 
+            // special AnkorBigList handling
             if (!missingProperty.isRoot()) {
                 Ref maybeCollRef = missingProperty.parent();
                 AnkorBigList bigListAnnotation = new ModelPropertyAnnotationsFinder()
@@ -48,12 +51,14 @@ public class MissingPropertyActionEventListener extends ActionEventListener {
                         List list = maybeCollRef.getValue();
                         List subList = list.subList(fromIndex, Math.min(toIndex, list.size()));
                         Change change = Change.replaceChange(fromIndex, subList);
-                        ((RefImplementor)maybeCollRef).signal(change);
+                        ((RefImplementor)maybeCollRef).signal(new LocalSource(missingProperty.context().modelContext()),
+                                                              change);
                         return;
                     }
                 }
             }
 
+            // default behaviour
             missingProperty.signalValueChange();
         }
     }

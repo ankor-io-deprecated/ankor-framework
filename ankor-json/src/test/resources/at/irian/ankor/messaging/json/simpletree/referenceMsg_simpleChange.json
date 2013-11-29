@@ -1,0 +1,10 @@
+{
+    senderId: "testSystem",
+    modelId: "1",
+    messageId: "testClient#1",
+    property: "changed.path",
+    change: {
+    	type: "value",
+        value: 14
+    }
+}

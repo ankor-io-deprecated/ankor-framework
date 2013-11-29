@@ -36,7 +36,7 @@ public class ClientSocketMessageLoop<S> extends SocketMessageLoop<S> {
                                                                                           localHost.getPort()));
         messageSenderToServer.sendMessage(connectMsg);
 
-        super.start(daemon);    //To change body of overridden methods use File | Settings | File Templates.
+        super.start(daemon);
     }
 
 }

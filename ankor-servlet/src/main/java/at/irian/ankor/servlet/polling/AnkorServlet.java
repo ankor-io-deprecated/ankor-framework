@@ -2,6 +2,7 @@ package at.irian.ankor.servlet.polling;
 
 import at.irian.ankor.context.ModelContext;
 import at.irian.ankor.event.EventListeners;
+import at.irian.ankor.event.source.CustomSource;
 import at.irian.ankor.messaging.Message;
 import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
 import at.irian.ankor.system.AnkorSystem;
@@ -97,7 +98,7 @@ public class AnkorServlet extends HttpServlet {
                 }
             });
 
-            modelContext.getEventDispatcher().dispatch(new RequestFinishedEvent(this));
+            modelContext.getEventDispatcher().dispatch(new RequestFinishedEvent(new CustomSource(this)));
         }
 
         boolean interrupted = false;

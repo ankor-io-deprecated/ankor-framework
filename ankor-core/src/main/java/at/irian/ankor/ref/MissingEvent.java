@@ -2,6 +2,7 @@ package at.irian.ankor.ref;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionEvent;
+import at.irian.ankor.event.source.Source;
 
 /**
  * Specialized action event that signals a missing view model property (i.e. an invalid Ref),
@@ -13,7 +14,7 @@ public class MissingEvent extends ActionEvent {
 
     public static final String ACTION_NAME = "propertyMissing";
 
-    public MissingEvent(Ref actionProperty) {
-        super(actionProperty, new Action(ACTION_NAME));
+    public MissingEvent(Source source, Ref actionProperty) {
+        super(source, actionProperty, new Action(ACTION_NAME));
     }
 }

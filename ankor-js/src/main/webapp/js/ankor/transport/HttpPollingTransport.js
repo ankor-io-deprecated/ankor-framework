@@ -1,8 +1,6 @@
 define([
-    "./BaseTransport",
-    "../messages/ActionMessage",
-    "../messages/ChangeMessage",
-], function(BaseTransport, ActionMessage, ChangeMessage) {
+    "./BaseTransport"
+], function(BaseTransport) {
     var HttpPollingTransport = function(endpoint, options) {
         BaseTransport.call(this);
 
@@ -34,7 +32,10 @@ define([
         this.outgoingMessages = [];
 
         //Build JSON of messages
-        var jsonMessages = BaseTransport.buildJsonMessages(this.inFlight)
+        var jsonMessages = [];
+        for (var i = 0, message; (message = this.inFlight[i]); i++) {
+            jsonMessages.push(this.encodeMessage(message));
+        }
 
         //Ajax request
         this.utils.xhrPost(this.endpoint, {
@@ -42,7 +43,7 @@ define([
             messages: this.utils.jsonStringify(jsonMessages)
         }, this.utils.hitch(this, function(err, response) {
             try {
-                var messages = this.utils.jsonParse(response);
+                var parsedMessages = this.utils.jsonParse(response);
             }
             catch (e) {
                 err = e;
@@ -54,11 +55,9 @@ define([
                 this.outgoingMessages = this.inFlight.concat(this.outgoingMessages);
             }
             else {
-                for (var i = 0, message; (message = messages[i]); i++) {
-                    if (message.change != undefined) {
-                        var messageObject = new ChangeMessage(message.senderId, message.modelId, message.messageId, message.property, message.change.type, message.change.key, message.change.value);
-                        this.processIncomingMessage(messageObject);
-                    }
+                for (var i = 0, parsedMessage; (parsedMessage = parsedMessages[i]); i++) {
+                    var message = this.decodeMessage(parsedMessage);
+                    this.receiveMessage(message);
                 }
             }
             this.inFlight = null;
