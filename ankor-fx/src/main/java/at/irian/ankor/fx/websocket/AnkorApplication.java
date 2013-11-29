@@ -87,6 +87,10 @@ public abstract class AnkorApplication extends Application {
                 .withRefContextFactoryProvider(new FxRefContextFactoryProvider())
                 .withDispatcherFactory(new JavaFxEventDispatcherFactory());
 
+        if (getModelContextId() != null) {
+            systemBuilder.withModelContextId(getModelContextId());
+        }
+
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
 
         try {
@@ -145,5 +149,9 @@ public abstract class AnkorApplication extends Application {
         }
 
         return clientSystem[0];
+    }
+
+    protected String getModelContextId() {
+        return null;
     }
 }

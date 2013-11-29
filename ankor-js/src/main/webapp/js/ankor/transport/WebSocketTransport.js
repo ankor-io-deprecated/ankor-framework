@@ -21,9 +21,7 @@ define([
             this.outgoingMessages = [];
         };
 
-        /**
-         * Private method to prevent code duplication.
-         */
+         //Private method to prevent code duplication.
         this._sendMessageInner = function (message) {
             var jsonMessage = this.utils.jsonStringify(this.encodeMessage(message));
             console.log('WebSocket send message ', jsonMessage);
