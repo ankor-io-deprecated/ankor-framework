@@ -111,7 +111,7 @@ public class AnimalSearchModel extends ViewModelBase {
 
     @ChangeListener(pattern = ".filter.type")
     public void animalTypeChanged() {
-        Ref familyRef = getRef().appendPath("filter.fam+ily");
+        Ref familyRef = getRef().appendPath("filter.family");
         Ref familiesRef = getRef().appendPath("selectItems.families");
         new AnimalTypeChangeHandler(animalRepository).handleChange(filter.getType(), familyRef, familiesRef);
     }
