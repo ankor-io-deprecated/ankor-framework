@@ -4,21 +4,20 @@ import at.irian.ankor.event.dispatch.JavaFxEventDispatcherFactory;
 import at.irian.ankor.fx.binding.fxref.FxRefContextFactoryProvider;
 import at.irian.ankor.fx.binding.fxref.FxRefFactory;
 import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
-import at.irian.ankor.servlet.websocket.messaging.WebSocketMessageBus;
-import at.irian.ankor.servlet.websocket.session.WebSocketRemoteSystem;
 import at.irian.ankor.session.SingletonSessionManager;
 import at.irian.ankor.system.AnkorSystem;
 import at.irian.ankor.system.AnkorSystemBuilder;
+import at.irian.ankor.websocket.AnkorClientEndpoint;
+import at.irian.ankor.websocket.WebSocketMessageBus;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
-import javax.websocket.*;
+import javax.websocket.ContainerProvider;
+import javax.websocket.DeploymentException;
+import javax.websocket.WebSocketContainer;
 import java.io.IOException;
 import java.net.URI;
-import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -27,11 +26,9 @@ import java.util.concurrent.TimeUnit;
  * @author Florian Klampfer
  */
 public abstract class AnkorApplication extends Application {
-    public static final int HEARTBEAT_INTERVAL = 5000;
     public static final int CONNECT_TIMEOUT = 10000;
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnkorApplication.class);
     private static FxRefFactory refFactory;
-    private ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
     public static void main(String[] args) {
         launch(args);
@@ -56,6 +53,15 @@ public abstract class AnkorApplication extends Application {
     protected abstract String getWebSocketUri();
 
     /**
+     * You can use this to make two clients share the state of an app.
+     *
+     * @return An optional id for the model context.
+     */
+    protected String getModelContextId() {
+        return null;
+    }
+
+    /**
      * Use this method to start the JavaFX application after the web socket connection has been established.
      * This is basically the new {@link #start} method.
      *
@@ -69,20 +75,13 @@ public abstract class AnkorApplication extends Application {
      * This methods blocks until the connection has been established or the time limit is reached.
      *
      * @param uri Uri used for the web socket connection.
-     * @return
-     * @throws IOException         when there's an io error while connecting.
-     * @throws DeploymentException when
+     * @return A running AnkorSystem
+     * @throws IOException when there's an io error while connecting.
      */
-    private AnkorSystem createWebSocketClientSystem(String uri) throws IOException {
-
-        final String clientId = UUID.randomUUID().toString();
-
-        final CountDownLatch latch = new CountDownLatch(2);
-
-        final AnkorSystem[] clientSystem = new AnkorSystem[1];
-        final WebSocketMessageBus messageBus = new WebSocketMessageBus(new ViewModelJsonMessageMapper());
-        final AnkorSystemBuilder systemBuilder = new AnkorSystemBuilder()
-                .withName(clientId)
+    private AnkorSystem createWebSocketClientSystem(String uri) throws IOException, DeploymentException, InterruptedException {
+        AnkorSystem clientSystem;
+        WebSocketMessageBus messageBus = new WebSocketMessageBus(new ViewModelJsonMessageMapper());
+        AnkorSystemBuilder systemBuilder = new AnkorSystemBuilder()
                 .withMessageBus(messageBus)
                 .withRefContextFactoryProvider(new FxRefContextFactoryProvider())
                 .withDispatcherFactory(new JavaFxEventDispatcherFactory());
@@ -91,67 +90,17 @@ public abstract class AnkorApplication extends Application {
             systemBuilder.withModelContextId(getModelContextId());
         }
 
+        CountDownLatch latch = new CountDownLatch(2);
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+        container.connectToServer(new AnkorClientEndpoint(systemBuilder, messageBus, latch), URI.create(uri));
 
-        try {
-            container.connectToServer(new Endpoint() {
-
-                @Override
-                public void onOpen(final Session session, EndpointConfig config) {
-
-                    session.addMessageHandler(new MessageHandler.Whole<String>() {
-                        private boolean idReceived = false;
-
-                        @Override
-                        public void onMessage(String message) {
-                            if (!idReceived) {
-                                systemBuilder.withName(message);
-                                messageBus.addRemoteSystem(new WebSocketRemoteSystem(message, session));
-                                latch.countDown();
-
-                                idReceived = true;
-                            } else {
-                                messageBus.receiveSerializedMessage(message);
-                            }
-                        }
-                    });
-
-                    startHeartbeat(session);
-                    latch.countDown();
-                }
-
-                /**
-                 * Schedules a heartbeat message every fixed milliseconds.
-                 *
-                 * @param session The web socket {@link Session} used for sending the heartbeat messages.
-                 */
-                private void startHeartbeat(final Session session) {
-                    LOG.info("Starting heartbeat");
-
-                    scheduler.scheduleAtFixedRate(new Runnable() {
-                        @Override
-                        public void run() {
-                            session.getAsyncRemote().sendText(""); // heartbeat
-                        }
-                    }, HEARTBEAT_INTERVAL, HEARTBEAT_INTERVAL, TimeUnit.MILLISECONDS);
-                }
-
-            }, URI.create(uri));
-
-            if (latch.await(CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)) {
-                (clientSystem[0] = systemBuilder.createClient()).start();
-            } else {
-                LOG.error("Could not connect to {} within {} milliseconds", uri, CONNECT_TIMEOUT);
-                throw new IOException("Could not connect within time");
-            }
-
-        } catch (DeploymentException | InterruptedException ignored) {
+        if (latch.await(CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)) {
+            (clientSystem = systemBuilder.createClient()).start();
+        } else {
+            LOG.error("Could not connect to {} within {} milliseconds", uri, CONNECT_TIMEOUT);
+            throw new IOException("Could not connect within time");
         }
 
-        return clientSystem[0];
-    }
-
-    protected String getModelContextId() {
-        return null;
+        return clientSystem;
     }
 }
