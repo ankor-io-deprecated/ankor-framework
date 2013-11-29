@@ -10,155 +10,94 @@
         {% include "tutorial/tutorial_fx_menu.html" %}
     </div><!--/span-->
     <div class="span9">
-        {% include "tutorial/tutorial_fx_head.html" with tutorial_title='First Application' %}
+        {% include "tutorial/tutorial_fx_head.html" with tutorial_title='Starting the Application' %}
 
-        <h3>The Application</h3>
-        <p>Let's start with a simple Ankor Application. A JavaFX Client connects to our Ankor Server and displays
-            a list of phone models. We'll explain how to setup the application, write the first
-            View Model and bind the model to your UI components.</p>
-        {% load staticfiles %}
-        <img src="{% static 'images/tutorial/fx-step-1-1.png' %}"  width="50%" height="50%" >
+        <h3>Starting the Application</h3>
+        <p>When creating an Ankor JavaFX application you have two choices. You can either extend then <code>AnkorApplication</code> class
+            which starts the Ankor system for you or you can set up your Ankor system manually using a builder.
+            <br/>
+            Both ways work the same and the rest of the tutorial does not depend on
+            your choice. However, chose the first option if you want to get going and the second if you'd like to get your
+            hands dirty.</p>
 
-        <h3>Boot the Application</h3>
-        <p>The initial load of both client and server is done by a Boot class.
-            See the following code snippets for details.</p>
         <ul class="nav nav-tabs">
-            <li class="active" ><a href="#tab1_1" data-toggle="tab">Boot.class</a></li>
-            <li><a href="#tab1_2" data-toggle="tab">PhonecatServer.class</a></li>
-            <li><a href="#tab1_3" data-toggle="tab">PhonecatClient.class</a></li>
+            <li class="active" ><a href="#tab11" data-toggle="tab">AnkorApplication</a></li>
+            <li><a href="#tab12" data-toggle="tab">javafx.application.Application</a></li>
         </ul>
+
         <div class="tab-content">
-            <div class="tab-pane active" id="tab1_1">
-        <pre class="prettyprint">
-/**
- * Utility to start JavaFX Client and Ankor Server
- */
-public class Boot {
+            <div class="tab-pane active" id="tab11">
+                <pre class="prettyprint">
+public class App extends AnkorApplication {
 
-    public static void main(String... args) {
-        new PhonecatServer().startServer(); // start server thread
-        new PhonecatClient().startClient(); // start client thread
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    @Override
+    protected void startFXClient(Stage stage) throws Exception {
+        stage.setTitle("Ankor Todo Sample");
+        Pane myPane = FXMLLoader.load(getClass().getClassLoader().getResource("tasks.fxml"));
+
+        Scene myScene = new Scene(myPane);
+        myScene.getStylesheets().add("style.css");
+        stage.setScene(myScene);
+        stage.show();
+    }
+
+    @Override
+    protected String getWebSocketUri() {
+        return "wss://ankor-todo-sample.irian.at/websocket/ankor";
     }
 }
-        </pre>
+                </pre>
+                <p>The <code>AnkorApplication</code> class does all the plumbing and wiring for you. When you enter the
+                <code>startFXClient</code> method a WebSocket connection has already been set up, the Ankor system
+                    has received an id from the server and sends heartbeat messages to the server.</p>
             </div>
-            <div class="tab-pane" id="tab1_2">
-<pre class="prettyprint">
-/**
- * Start Ankor Server
- */
-public class PhonecatServer {
+            <div class="tab-pane" id="tab12">
+                <pre class="prettyprint">
+public class App extends javafx.application.Application {
 
-    // A simple repository which we load Phone Models from
-    private PhoneRepository phoneRepository;
-
-    public void startServer() {
-        phoneRepository = new PhoneRepository();
-
-        // Start the AnkorServer
-        new SocketAnkorSystemStarter()
-                .withModelRootFactory(new MyModelRootFactory())
-                .withLocalHost(new SocketMessageLoop.Host("server", "localhost", 9090))
-                .createAndStartServerSystem(false);
+    public static void main(String[] args) {
+        launch(args);
     }
 
-    /**
-     * Factory to create our Phonecat specific ModelRoot instance
-     */
-    private class MyModelRootFactory implements ModelRootFactory {
-        public Object createModelRoot(Ref rootRef) {
-            return new ModelRoot(rootRef, phoneRepository);
-        }
+    @Override
+    public void start(Stage stage) throws Exception {
+        AnkorSystemBuilder appBuilder = new AnkorSystemBuilder()
+                .withMessageBus(new WebSocketMessageBus(new ViewModelJsonMessageMapper()))
+                .withRefContextFactoryProvider(new FxRefContextFactoryProvider())
+                .withDispatcherFactory(new JavaFxEventDispatcherFactory());
+
+        AnkorSystem app = appBuilder.createWebSocketClient("ws://localhost:8080/websocket/ankor").start();
+
+        refFactory = (FxRefFactory) ((SingletonSessionManager) app.getSessionManager())
+                    .getSession().getRefContext().refFactory();
+
+        stage.setTitle("Ankor Todo Sample");
+        Pane myPane = FXMLLoader.load(getClass().getClassLoader().getResource("tasks.fxml"));
+
+        Scene myScene = new Scene(myPane);
+        myScene.getStylesheets().add("style.css");
+        stage.setScene(myScene);
+        stage.show();
+    }
+
+    private static FxRefFactory refFactory;
+
+    // we will need access to the refFactory later
+    public static FxRefFactory refFactory() {
+        return refFactory;
     }
 }
-</pre>
+                </pre>
             </div>
-            <div class="tab-pane" id="tab1_3">
-        <pre class="prettyprint">
-/**
- * Start Client AnkorSystem and launch JavaFX UI
- */
-public class PhonecatClient extends javafx.application.Application {
+        </div>
 
-    public void startClient() {
-        // Setup local AnkorSystem and connect to remote AnkorServer
-        SocketAnkorSystemStarter appBuilder = new SocketAnkorSystemStarter()
-                .withModelRootFactory(new MyModelRootFactory())
-                .withLocalHost(new SocketMessageLoop.Host("client", "localhost", 9091))
-                .withServerHost(new SocketMessageLoop.Host("server", "localhost", 9090));
-        // Store the RefFactory to static instance variable
-        // Use the RefFactory to get access to View Model Data
-        REF_FACTORY = appBuilder.createAndStartClientSystem();
-        launch(); // Launch JavaFX client
-    }
+        <p>For now we are connecting to an existing Ankor server but we'll be soon learning how to set up our own.</p>
+        <p>You can now start this app and see if it throws any errors. If everything works header over to step 2.</p>
 
-    private static RefFactory REF_FACTORY;
-
-}
-        </pre>
-            </div>
-            <p>To run the application type <code>mvn install exec:java</code> in boot directory.</p>
-
-            <h3>View Model</h3>
-            <ul>
-                <li>represents the UI state (Data: domain objects, value objects),</li>
-                <li>implements UI Behaviour (ChangeListener, ActionListener),</li>
-                <li>and uses services to access underlying application or domain objects (in our example it's the PhoneRepository).</li>
-            </ul>
-            <p class="alert alert-info">The View Model is always part of the server implementation.
-            Just the data part of it, the View Model Data (VMD), will be synchronized with the Client to be bound to. On Client side
-                the VMD is bound to UI Components.</p>
-            <p>We'll explain how the client side binding works later on. For now let's take a closer look at the View Model
-            implementation.</p>
-            <ul class="nav nav-tabs">
-                <li class="active" ><a href="#tab2_1" data-toggle="tab">ModelRoot.class</a></li>
-                <li><a href="#tab2_2" data-toggle="tab">SearchPhoneModel.class</a></li>
-            </ul>
-            <div class="tab-content">
-                <div class="tab-pane active" id="tab2_1">
-            <pre class="prettyprint">
-/**
- * Model Root of our Phonecat Application. Will be created by MyModelRootFactory
- */
-public class ModelRoot extends ViewModelBase {
-
-    private SearchPhoneModel searchPhoneModel;
-
-    /**
-     * ModelRoot will be created by the MyModelRootFactory.
-     * @param viewModelRef The Reference of the ModelRoot
-     * @param phoneRepository The PhoneRepository has the basic read operations for Phone Models
-     */
-    public ModelRoot(Ref viewModelRef, PhoneRepository phoneRepository) {
-        super(viewModelRef);
-        this.searchPhoneModel = new SearchPhoneModel(viewModelRef.append("searchPhoneModel"), phoneRepository);
-    }
-
-    /**
-     * Getter to get access to the Phone Model via javax.el
-     */
-    public SearchPhoneModel getSearchPhoneModel() {
-        return searchPhoneModel;
-    }
-}
-            </pre>
-                </div>
-            </div>
-
-
-
-            <p>
-                The ModelRoot is created by the ModelRootFactory (see PhonecatServer.class). The
-                Factory method <code>createModelRoot(Ref rootRef)</code> will be called on first access to
-                the View Model Root by the AnkorSystem. The ModelRoot constructor as 2 arguments
-                <ul>
-                    <li>Ref: Representing this View Model. We'll explain this concept later on.</li>
-                    <li>PhoneRepository: Provides access to our phone store.</li>
-                </ul>
-            </p>
-            <p></p>
-
-        </div><!--/tab-content-->
     </div><!--/span9-->
 </div><!--/row-->
 

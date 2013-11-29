@@ -34,17 +34,41 @@ body {
 .marketing {
     margin: 60px 0;
 }
+
 .marketing p + h4 {
     margin-top: 28px;
 }
 
-
-/* Customize the navbar links to be fill the entire space of the .navbar */
 .navbar .nav li a {
     text-align: center;
     border-left: 1px solid rgba(255,255,255,.75);
     border-right: 1px solid rgba(0,0,0,.1);
 }
+
 .navbar .nav li:first-child a {
     border-left: 1px solid rgba(0,0,0,.1);;
+}
+
+a {
+    cursor: pointer;
+}
+
+.tab-content {
+    padding: 10px 10px 0px;
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    border-top: none;
+    margin-bottom: 20px;
+}
+
+.nav-tabs {
+    margin-bottom: 0;
+}
+
+.nav-tabs > li.active a {
+    background-color: #f5f5f5;
+}
+
+.nav-tabs > li.active:hover a {
+    background-color: #f5f5f5;
 }
