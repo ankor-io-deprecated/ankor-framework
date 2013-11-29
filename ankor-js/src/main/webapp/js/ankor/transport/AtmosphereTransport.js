@@ -76,7 +76,6 @@ define([
         var self = this;
 
         // Ankor has to wait until atmosphere establishes a connection before sending the "init" Action.
-        // XXX: See SocketIOTransport for better solution
         var pushOrWait = function() {
             if (self.isReady) {
                 var jsonMessages = BaseTransport.buildJsonMessages(self.outgoingMessages);

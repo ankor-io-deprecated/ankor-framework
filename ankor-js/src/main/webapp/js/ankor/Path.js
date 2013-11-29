@@ -56,12 +56,15 @@ define([
     };
 
     Path.prototype.append = function(path) {
-        var segments = null;
+        var segments = [];
 
         if (path instanceof Path) {
             segments = path.segments;
         }
-        else {
+        else if (path instanceof Array) {
+            segments = path;
+        }
+        else if (typeof path == "string") {
             segments = parseSegments(path);
         }
 

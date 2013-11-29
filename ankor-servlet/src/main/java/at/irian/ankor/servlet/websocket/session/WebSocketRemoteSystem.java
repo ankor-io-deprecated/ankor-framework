@@ -5,13 +5,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.websocket.Session;
-import java.io.IOException;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class WebSocketRemoteSystem implements RemoteSystem {
     private static Logger LOG = LoggerFactory.getLogger(WebSocketRemoteSystem.class);
 
     private String id;
     private Session client;
+    private AtomicLong lastSeen = new AtomicLong();
 
     public WebSocketRemoteSystem(String id, Session client) {
         this.id = id;
@@ -23,12 +24,15 @@ public class WebSocketRemoteSystem implements RemoteSystem {
         return id;
     }
 
-    public void sendMessage(String msg) {
-        LOG.debug("Send serialized message {} to client {}", msg, client.getId());
-        try {
-            client.getBasicRemote().sendText(msg);
-        } catch (IOException e) {
-            LOG.error("Error while sending message.");
-        }
+    public Session getClient() {
+        return client;
+    }
+
+    public long getLastSeen() {
+        return lastSeen.get();
+    }
+
+    public void setLastSeen(long lastSeen) {
+        this.lastSeen.set(lastSeen);
     }
 }

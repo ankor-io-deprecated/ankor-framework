@@ -17,14 +17,14 @@ define([
         this._substitute = config["@subst"];
 
         for (var i = 0; i < config["@init"].length; i++) {
-            this.setValue(this.model.baseRef.path.appendIndex(i), config["@init"][i]);
+            this.setValue(new Path("").appendIndex(i), config["@init"][i]);
         }
     };
 
     BigList.prototype = new ModelInterface();
 
     BigList.prototype.getValue = function(path) {
-        //console.log("BIGLIST getValue", this.model.baseRef.append(pathSegments).path());
+        //console.log("BIGLIST getValue", this.model.baseRef.path.append(path).toString());
 
         if (path.segments.length == 0) {
             var tempArray = [];
@@ -65,7 +65,7 @@ define([
     };
 
     BigList.prototype.setValue = function(path, value) {
-        //console.log("BIGLIST setValue", this.model.baseRef.append(pathSegments).path(), value);
+        //console.log("BIGLIST setValue", this.model.baseRef.path.append(path).toString(), value);
 
         //Throw an error if this is a set on a subproperty for not loaded elements
         var key = path.segments[0].key;

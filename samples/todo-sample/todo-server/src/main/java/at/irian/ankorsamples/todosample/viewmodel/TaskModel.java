@@ -1,4 +1,4 @@
-package at.irian.ankorsamples.todosample.viewmodel.task;
+package at.irian.ankorsamples.todosample.viewmodel;
 
 import at.irian.ankor.messaging.AnkorIgnore;
 import at.irian.ankorsamples.todosample.domain.task.Task;

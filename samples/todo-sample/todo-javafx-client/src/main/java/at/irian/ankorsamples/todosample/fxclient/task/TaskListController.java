@@ -6,7 +6,7 @@ import at.irian.ankor.fx.binding.fxref.FxRef;
 import at.irian.ankor.fx.controller.FXControllerAnnotationSupport;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorsamples.todosample.fxclient.App;
-import at.irian.ankorsamples.todosample.viewmodel.task.TaskModel;
+import at.irian.ankorsamples.todosample.viewmodel.TaskModel;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
@@ -96,7 +96,7 @@ public class TaskListController implements Initializable {
     @ChangeListener(pattern = "root.model.(tasks)")
     public void renderTasks(Ref tasksRef) {
         List<LinkedHashMap<String, Object>> tasks = tasksRef.getValue();
-        Platform.runLater(new TaskLoader(tasks));      // todo  runLater still necessary?
+        Platform.runLater(new TaskLoaderRunnable(tasks));      // todo  runLater still necessary?
     }
 
     @FXML
@@ -116,7 +116,11 @@ public class TaskListController implements Initializable {
     @FXML
     public void toggleAll(ActionEvent actionEvent) {
         if (!initialized) throw new IllegalStateException("Not initialized! (Response from server not received)");
-        modelRef.fire(new Action("toggleAll"));
+
+        LinkedHashMap<String, Object> params = new LinkedHashMap<>();
+        params.put("toggleAll", toggleAllButton.selectedProperty().get());
+
+        modelRef.fire(new Action("toggleAll", params));
     }
 
     @FXML
@@ -135,11 +139,11 @@ public class TaskListController implements Initializable {
         App.getServices().showDocument("http://todomvc.com/");
     }
 
-    private class TaskLoader implements Runnable {
+    private class TaskLoaderRunnable implements Runnable {
 
         private List<LinkedHashMap<String, Object>> tasks;
 
-        public TaskLoader(List<LinkedHashMap<String, Object>> tasks) {
+        public TaskLoaderRunnable(List<LinkedHashMap<String, Object>> tasks) {
             this.tasks = tasks;
         }
 

@@ -1,6 +1,6 @@
 package at.irian.ankorsamples.todosample.domain.task;
 
-import at.irian.ankorsamples.todosample.viewmodel.task.Filter;
+import at.irian.ankorsamples.todosample.viewmodel.Filter;
 
 import java.util.ArrayList;
 import java.util.List;

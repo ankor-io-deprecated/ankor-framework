@@ -27,12 +27,16 @@ define([
         var updateRefValue = function() {
             if (element.val() != lastSentValue) {
                 lastSentValue = element.val();
-                ref.setValue(element.val());
+                ref.setValue(element.val(), element); //Use element as eventSource
             }
         };
-        var updateInputValue = function() {
+        var updateInputValue = function(event) {
             //Using continuation for setting value so that e.g. ankorBindSelectItems has the chance to create the select options first, before the value is then selected
             setTimeout(function() {
+                //Check if eventSource is own element
+                if (event && event.eventSource == element) {
+                    return;
+                }
                 var value = ref.getValue();
                 if (value === undefined || value === null) {
                     value = "";
@@ -60,8 +64,8 @@ define([
             }, 200);
         });
         //List for ankor prop changes
-        return ref.addPropChangeListener(function() {
-            updateInputValue();
+        return ref.addPropChangeListener(function(ref, event) {
+            updateInputValue(event);
         });
     };
     jquery.fn.ankorBindSelectItems = function(ref, options) {
@@ -101,6 +105,63 @@ define([
         return ref.addPropChangeListener(function() {
             updateSelectOptions();
         });
+    };
+
+    var stringMapId = 0;
+    var stringMapBuffer = {};
+    $.ankorStringMap = function(attribute, ref) {
+        //Get or create stringMapBuffer for this attribute/ref combination
+        var stringMapKey = ref.path.toString() + "@" + attribute;
+        if (!(stringMapKey in stringMapBuffer)) {
+            stringMapBuffer[stringMapKey] = {};
+        }
+        var buffer = stringMapBuffer[stringMapKey];
+
+        //Create list of existing bound elements
+        var key;
+        var toCleanup = {};
+        for (key in buffer) {
+            if (!buffer.hasOwnProperty(key)) {
+                continue;
+            }
+            toCleanup[key] = buffer[key];
+        }
+
+        //Step through all found dom elements
+        $("[" + attribute + "]").each(function(index, element) {
+            //Only set up if there's no ankorStringMapId assigned yet
+            if (!$(element).data("ankorStringMapId")) {
+                var el = $(element);
+                var elementId = "#" + stringMapId++;
+                var stringKey = el.attr(attribute);
+                var stringRef = ref.append(stringKey);
+                var updateElement = function() {
+                    element.innerHTML = stringRef.getValue() || "";
+                };
+                var listener = stringRef.addPropChangeListener(updateElement);
+
+                el.data("ankorStringMapId", elementId);
+                buffer[elementId] = {
+                    element: element,
+                    listener: listener,
+                    updateFn: updateElement
+                };
+                updateElement();
+            }
+            //Otherwise remove from potential cleanup list
+            else {
+                delete toCleanup[$(element).data("ankorStringMapId")];
+            }
+        });
+
+        //Clean up no longer used bindings...
+        for (key in toCleanup) {
+            if (!toCleanup.hasOwnProperty(key)) {
+                continue;
+            }
+            toCleanup[key].listener.remove();
+            delete buffer[key];
+        }
     };
 
     $.fn.ankorBind1 = function(functionName, ref) {

@@ -1,4 +1,4 @@
-package at.irian.ankorsamples.todosample.viewmodel.task;
+package at.irian.ankorsamples.todosample.viewmodel;
 
 public enum Filter {
     all,

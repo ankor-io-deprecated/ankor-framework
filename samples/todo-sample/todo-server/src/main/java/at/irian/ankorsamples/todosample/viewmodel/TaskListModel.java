@@ -1,4 +1,4 @@
-package at.irian.ankorsamples.todosample.viewmodel.task;
+package at.irian.ankorsamples.todosample.viewmodel;
 
 import at.irian.ankor.annotation.ActionListener;
 import at.irian.ankor.annotation.ChangeListener;
@@ -154,7 +154,7 @@ public class TaskListModel {
     }
 
     @ActionListener
-    public void toggleAll() {
+    public void toggleAll(@Param("toggleAll") final boolean toggleAll) {
         LOG.info("Setting completed of all tasks to {}", toggleAll);
 
         for (Task t : taskRepository.getTasks()) {

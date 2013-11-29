@@ -3,7 +3,6 @@ package at.irian.ankorsamples.todosample.viewmodel;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorsamples.todosample.domain.task.TaskRepository;
-import at.irian.ankorsamples.todosample.viewmodel.task.TaskListModel;
 
 public class ModelRoot {
 
