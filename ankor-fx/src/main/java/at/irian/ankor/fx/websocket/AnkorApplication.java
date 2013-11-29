@@ -1,8 +1,9 @@
 package at.irian.ankor.fx.websocket;
 
 import at.irian.ankor.event.dispatch.JavaFxEventDispatcherFactory;
+import at.irian.ankor.fx.binding.fxref.FxRefContextFactoryProvider;
+import at.irian.ankor.fx.binding.fxref.FxRefFactory;
 import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
-import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.servlet.websocket.messaging.WebSocketMessageBus;
 import at.irian.ankor.servlet.websocket.session.WebSocketRemoteSystem;
 import at.irian.ankor.session.SingletonSessionManager;
@@ -29,22 +30,22 @@ public abstract class AnkorApplication extends Application {
     public static final int HEARTBEAT_INTERVAL = 5000;
     public static final int CONNECT_TIMEOUT = 10000;
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnkorApplication.class);
-    private static RefFactory refFactory;
+    private static FxRefFactory refFactory;
     private ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
     public static void main(String[] args) {
         launch(args);
     }
 
-    public static RefFactory refFactory() {
+    public static FxRefFactory refFactory() {
         return refFactory;
     }
 
     @Override
     public final void start(Stage primaryStage) throws Exception {
         AnkorSystem clientSystem = createWebSocketClientSystem(getWebSocketUri());
-        refFactory = ((SingletonSessionManager) clientSystem.getSessionManager()).getSession().getRefContext()
-                .refFactory();
+        refFactory = (FxRefFactory) ((SingletonSessionManager) clientSystem.getSessionManager())
+                .getSession().getRefContext().refFactory();
 
         startFXClient(primaryStage);
     }
@@ -83,6 +84,7 @@ public abstract class AnkorApplication extends Application {
         final AnkorSystemBuilder systemBuilder = new AnkorSystemBuilder()
                 .withName(clientId)
                 .withMessageBus(messageBus)
+                .withRefContextFactoryProvider(new FxRefContextFactoryProvider())
                 .withDispatcherFactory(new JavaFxEventDispatcherFactory());
 
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
