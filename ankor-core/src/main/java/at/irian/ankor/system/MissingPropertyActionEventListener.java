@@ -1,10 +1,12 @@
-package at.irian.ankor.action;
+package at.irian.ankor.system;
 
+import at.irian.ankor.action.Action;
+import at.irian.ankor.action.ActionEvent;
+import at.irian.ankor.action.ActionEventListener;
 import at.irian.ankor.annotation.ModelPropertyAnnotationsFinder;
 import at.irian.ankor.big.AnkorBigList;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.event.source.LocalSource;
-import at.irian.ankor.event.source.RemoteSource;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.impl.RefImplementor;
 
@@ -20,7 +22,7 @@ import java.util.List;
 public class MissingPropertyActionEventListener extends ActionEventListener {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(MissingPropertyActionEventListener.class);
 
-    public static final String ACTION_NAME = "@missingProperty";
+    public static final String MISSING_PROPERTY_ACTION_NAME = "@missingProperty";
 
     public MissingPropertyActionEventListener() {
         super(null); //global listener
@@ -34,7 +36,7 @@ public class MissingPropertyActionEventListener extends ActionEventListener {
     @Override
     public void process(ActionEvent event) {
         Action action = event.getAction();
-        if (event.getSource() instanceof RemoteSource && ACTION_NAME.equals(action.getName())) {
+        if (event.getSource() instanceof RemoteSource && MISSING_PROPERTY_ACTION_NAME.equals(action.getName())) {
             Ref missingProperty = event.getActionProperty();
             LOG.debug("handling missing property request for {}", missingProperty);
 

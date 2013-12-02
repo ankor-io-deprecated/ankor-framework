@@ -1,6 +1,5 @@
 package at.irian.ankor.system;
 
-import at.irian.ankor.action.MissingPropertyActionEventListener;
 import at.irian.ankor.annotation.AnnotationViewModelPostProcessor;
 import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.big.modify.ClientSideBigDataModifier;

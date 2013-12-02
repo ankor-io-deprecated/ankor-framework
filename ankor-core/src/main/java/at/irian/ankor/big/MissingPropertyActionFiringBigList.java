@@ -1,10 +1,10 @@
 package at.irian.ankor.big;
 
 import at.irian.ankor.action.Action;
-import at.irian.ankor.action.MissingPropertyActionEventListener;
 import at.irian.ankor.delay.FloodControl;
 import at.irian.ankor.messaging.AnkorIgnore;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.system.MissingPropertyActionEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,7 +54,7 @@ public class MissingPropertyActionFiringBigList<E> extends AbstractBigList<E> {
                     int lastIdx = -1;
                     for (Integer reqIdx : list) {
                         if (lastIdx == -1 || reqIdx >= lastIdx + chunkSize) {
-                            listRef.appendIndex(reqIdx).fire(new Action(MissingPropertyActionEventListener.ACTION_NAME));
+                            listRef.appendIndex(reqIdx).fire(new Action(MissingPropertyActionEventListener.MISSING_PROPERTY_ACTION_NAME));
                             lastIdx = reqIdx;
                         }
                     }

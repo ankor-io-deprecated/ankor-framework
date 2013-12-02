@@ -1,9 +1,9 @@
 package at.irian.ankor.big;
 
 import at.irian.ankor.action.Action;
-import at.irian.ankor.action.MissingPropertyActionEventListener;
 import at.irian.ankor.messaging.AnkorIgnore;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.system.MissingPropertyActionEventListener;
 
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -44,7 +44,7 @@ public class MissingPropertyActionFiringBigMap<K extends String,V> extends Abstr
     @Override
     protected V getMissingValue(Object key) {
         if (pendingRequests.add(key)) {
-            mapRef.appendLiteralKey((String)key).fire(new Action(MissingPropertyActionEventListener.ACTION_NAME));
+            mapRef.appendLiteralKey((String)key).fire(new Action(MissingPropertyActionEventListener.MISSING_PROPERTY_ACTION_NAME));
         }
         return missingValueSubstitute;
     }

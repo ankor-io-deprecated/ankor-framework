@@ -4,7 +4,6 @@ import at.irian.ankor.change.Change;
 import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.change.ChangeEventListener;
 import at.irian.ankor.context.ModelContext;
-import at.irian.ankor.event.source.RemoteSource;
 import at.irian.ankor.messaging.Message;
 import at.irian.ankor.messaging.MessageFactory;
 import at.irian.ankor.messaging.modify.Modifier;

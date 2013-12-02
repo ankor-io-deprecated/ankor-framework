@@ -1,9 +1,11 @@
-package at.irian.ankor.event.source;
+package at.irian.ankor.system;
 
+import at.irian.ankor.event.source.Source;
 import at.irian.ankor.session.Session;
 
 /**
- * Remote source of an event.
+ * Event source for an event that is derived from an incoming message from a remote system.
+ * A RemoteSource is always associated to a corresponding user session.
  *
  * @author Manfred Geiler
  */
