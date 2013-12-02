@@ -22,6 +22,11 @@ public class ModelPropertyAnnotationsFinder {
         }
 
         Object parentValue = propertyRef.parent().getValue();
+        if (parentValue == null) {
+            // prevent NPE, happens rarely, but may happen (race conditions, etc.)
+            return EMPTY_ANNOTATIONS;
+        }
+
         String propertyName = propertyRef.propertyName();
 
         Class<?> parentType = parentValue.getClass();
