@@ -48,7 +48,11 @@ public class ResourceBundleMap implements Map<String,String> {
 
     @Override
     public String get(Object key) {
-        return resourceBundle.getString((String)key);
+        try {
+            return resourceBundle.getString((String)key);
+        } catch (MissingResourceException e) {
+            return null;
+        }
     }
 
     @Override
