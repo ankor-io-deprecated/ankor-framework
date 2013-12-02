@@ -1,8 +1,7 @@
-package at.irian.ankor.servlet.websocket.messaging;
+package at.irian.ankor.websocket;
 
 import at.irian.ankor.messaging.MessageBus;
 import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
-import at.irian.ankor.servlet.websocket.session.WebSocketRemoteSystem;
 import at.irian.ankor.session.RemoteSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

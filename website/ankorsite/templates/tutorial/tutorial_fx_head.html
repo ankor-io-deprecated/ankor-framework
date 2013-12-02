@@ -1,15 +1,11 @@
 <div class="well well-small">
-    <div class="row">
-        <span class="span6">
-            {% include "tutorial/tutorial_fx_breadcrumbs.html" %}
-        </span>
-        <span class="span2">
-            {% include "tutorial/tutorial_fx_pagination.html" %}
-        </span>
+    {% include "tutorial/tutorial_fx_breadcrumbs.html" %}
+    <div class="pull-right">
+        {% include "tutorial/tutorial_fx_pagination.html" %}
     </div>
 </div>
 <a onclick="$('#instructions').toggle()"><i class="icon-hand-right"></i>&nbsp;Workspace Instructions</a>
-<div id="instructions" style="display:none">
+<div id="instructions" style="display:none; margin-top:10px">
 <pre class="prettyprint">
 // Checkout tutorial step
 git checkout -f fx-step-{{step}}

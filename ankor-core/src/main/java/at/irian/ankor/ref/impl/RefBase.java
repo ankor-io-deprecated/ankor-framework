@@ -151,6 +151,7 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
     @SuppressWarnings({"unchecked", "SuspiciousSystemArraycopy"})
     private void handleInsertChange(Object listOrArray, Object key, Object value) {
         if (listOrArray instanceof List) {
+            // TODO: list.size() is sometimes not returning the correct value. why?
             int idx = asIndex(key);
             List list = (List)listOrArray;
             if (idx == list.size()) {
@@ -158,7 +159,8 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
             } else if (idx < list.size()) {
                 list.add(idx, value);
             } else {
-                LOG.warn("Could not handle insert change on {} because index {} is out of bounds", this, idx);
+                LOG.warn("Could not handle insert change on {} because index {} is out of bounds (size = {})", this,
+                        idx, list.size());
             }
         } else if (listOrArray.getClass().isArray()) {
             int idx = asIndex(key);

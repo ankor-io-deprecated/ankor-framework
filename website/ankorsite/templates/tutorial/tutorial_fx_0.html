@@ -12,6 +12,19 @@
     <div class="span9">
         {% include "tutorial/tutorial_fx_head.html" with tutorial_title='Bootstrap' %}
 
+        <h3>The Application</h3>
+        <p>In this tutorial we'll be building a simple Ankor application.
+            We'll explain how to setup the application, write the first
+            view model and bind the model to your UI components via WebSockets. While the transport layer doesn't really
+            matter to Ankor, we'll be using WebSockets in this tutorial, as they are supported by both JavaFX and web browsers.
+            When we are done the app will look like this:</p>
+        {% load staticfiles %}
+        <img src="{% static 'images/tutorial/fx-step-1-0.png' %}"  width="50%" height="50%" >
+        <p>This might looks familiar to you (it's the infamous todo app form
+            <a href="http://todomvc.com/">TodoMVC</a>). However it is fully written and styled with JavaFX.
+            If you are interested in building it as a web app head over to the <a href='#'>JavaScript Tutorial</a>.
+        </p>
+
         <h3 id="beforeyoustart">Before you start</h3>
         <p>Please check that all software components are installed properly. Especially check the Java FX section to make sure
         that JavaFX is on the Classpath.</p>

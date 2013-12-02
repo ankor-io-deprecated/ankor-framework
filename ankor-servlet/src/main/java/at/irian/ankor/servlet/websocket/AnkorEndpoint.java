@@ -5,12 +5,12 @@ import at.irian.ankor.delay.AkkaScheduler;
 import at.irian.ankor.event.dispatch.AkkaEventDispatcherFactory;
 import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.servlet.websocket.messaging.WebSocketMessageBus;
-import at.irian.ankor.servlet.websocket.session.WebSocketRemoteSystem;
 import at.irian.ankor.session.ModelRootFactory;
 import at.irian.ankor.session.RemoteSystem;
 import at.irian.ankor.system.AnkorSystem;
 import at.irian.ankor.system.AnkorSystemBuilder;
+import at.irian.ankor.websocket.WebSocketMessageBus;
+import at.irian.ankor.websocket.WebSocketRemoteSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

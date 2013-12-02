@@ -73,9 +73,10 @@ public class AnkorSystem {
         return "AnkorSystem{'" + systemName + "'}";
     }
 
-    public void start() {
+    public AnkorSystem start() {
         LOG.info("Starting {}", this);
         messageBus.registerMessageListener(remoteMessageListener);
+        return this;
     }
 
 

@@ -7,8 +7,6 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-
 public class App extends AnkorApplication {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(App.class);
 
@@ -26,7 +24,7 @@ public class App extends AnkorApplication {
     }
 
     @Override
-    protected void startFXClient(Stage primaryStage) throws IOException {
+    protected void startFXClient(Stage primaryStage) throws Exception {
         services = getHostServices();
 
         primaryStage.setTitle("Ankor FX Sample");

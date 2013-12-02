@@ -24,10 +24,19 @@ import at.irian.ankor.ref.RefContextFactoryProvider;
 import at.irian.ankor.ref.el.ELRefContextFactoryProvider;
 import at.irian.ankor.session.*;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
+import at.irian.ankor.websocket.AnkorClientEndpoint;
+import at.irian.ankor.websocket.WebSocketMessageBus;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
+import javax.websocket.ContainerProvider;
+import javax.websocket.DeploymentException;
+import javax.websocket.WebSocketContainer;
+import java.io.IOException;
+import java.net.URI;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Manfred Geiler
@@ -35,9 +44,8 @@ import java.util.*;
 @SuppressWarnings({"FieldCanBeLocal", "UnusedDeclaration"})
 public class AnkorSystemBuilder {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnkorSystemBuilder.class);
-
+    private static final long CONNECT_TIMEOUT = 10000;
     private static int modelContextIdCnt = 0;
-
     private String systemName;
     private Config config;
     private List<ViewModelPostProcessor> viewModelPostProcessors;
@@ -47,13 +55,10 @@ public class AnkorSystemBuilder {
     private Scheduler scheduler;
     private EventListeners defaultGlobalEventListeners;
     private ModelContextFactory modelContextFactory;
-
     private ModelRootFactory modelRootFactory;
     private BeanResolver beanResolver;
     private MessageBus messageBus;
-
     private List<ModelEventListener> customGlobalEventListeners;
-
     private RefContextFactoryProvider refContextFactoryProvider;
 
     public AnkorSystemBuilder() {
@@ -134,44 +139,60 @@ public class AnkorSystemBuilder {
 
         RefContextFactory refContextFactory =
                 refContextFactoryProvider.createRefContextFactory(getServerBeanResolver(),
-                                                                  getServerViewModelPostProcessors(),
-                                                                  getScheduler(),
-                                                                  modelRootFactory);
+                        getServerViewModelPostProcessors(),
+                        getScheduler(),
+                        modelRootFactory);
 
         MessageFactory messageFactory = getServerMessageFactory();
 
         SessionFactory sessionFactory = new ServerSessionFactory(refContextFactory,
-                                                                 eventDispatcherFactory,
-                                                                 messageBus);
+                eventDispatcherFactory,
+                messageBus);
         SessionManager sessionManager = new DefaultSessionManager(sessionFactory);
 
         Modifier defaultModifier = getDefaultModifier();
         Modifier modifier = new ServerSideBigDataModifier(defaultModifier);
 
         EventListeners globalEventListeners = getGlobalEventListeners(messageFactory,
-                                                                      sessionManager,
-                                                                      modelRootFactory,
-                                                                      modifier);
+                sessionManager,
+                modelRootFactory,
+                modifier);
 
         ModelContextFactory modelContextFactory = getModelContextFactory(eventDispatcherFactory, globalEventListeners);
 
         ModelContextManager modelContextManager = new DefaultModelContextManager(modelContextFactory);
 
         RemoteMessageListener remoteMessageListener = new DefaultRemoteMessageListener(modelContextManager,
-                                                                                       sessionManager,
-                                                                                       modelRootFactory,
-                                                                                       modifier);
+                sessionManager,
+                modelRootFactory,
+                modifier);
         return new AnkorSystem(systemName,
-                               messageFactory,
-                               messageBus,
-                               refContextFactory,
-                               modelContextManager,
-                               sessionManager,
-                               remoteMessageListener);
+                messageFactory,
+                messageBus,
+                refContextFactory,
+                modelContextManager,
+                sessionManager,
+                remoteMessageListener);
     }
 
     private Modifier getDefaultModifier() {
         return new PassThroughModifier();
+    }
+
+    // TODO: Maybe refactor so a client can be crated via createClient() ?
+    public AnkorSystem createWebSocketClient(String uri) throws IOException, DeploymentException, InterruptedException {
+        WebSocketMessageBus messageBus = (WebSocketMessageBus) getMessageBus();
+
+        CountDownLatch latch = new CountDownLatch(2);
+        WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+        container.connectToServer(new AnkorClientEndpoint(this, messageBus, latch), URI.create(uri));
+
+        if (latch.await(CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)) {
+            return createClient();
+        }
+
+        LOG.error("Could not connect to {} within {} milliseconds", uri, CONNECT_TIMEOUT);
+        throw new RuntimeException("Could not connect within time");
     }
 
     public AnkorSystem createClient() {
@@ -187,9 +208,9 @@ public class AnkorSystemBuilder {
 
         RefContextFactory refContextFactory =
                 refContextFactoryProvider.createRefContextFactory(getClientBeanResolver(),
-                                                                  null,
-                                                                  getScheduler(),
-                                                                  modelRootFactory);
+                        null,
+                        getScheduler(),
+                        modelRootFactory);
 
         MessageFactory messageFactory = getClientMessageFactory();
 
@@ -200,9 +221,9 @@ public class AnkorSystemBuilder {
         Modifier modifier = new ClientSideBigDataModifier(defaultModifier);
 
         EventListeners globalEventListeners = getGlobalEventListeners(messageFactory,
-                                                                      sessionManager,
-                                                                      modelRootFactory,
-                                                                      modifier);
+                sessionManager,
+                modelRootFactory,
+                modifier);
 
         ModelContextFactory modelContextFactory = getModelContextFactory(getEventDispatcherFactory(), globalEventListeners);
 
@@ -219,19 +240,17 @@ public class AnkorSystemBuilder {
         ModelContextManager modelContextManager = new SingletonModelContextManager(modelContextId, modelContext);
 
         RemoteMessageListener remoteMessageListener = new DefaultRemoteMessageListener(modelContextManager,
-                                                                                       sessionManager,
-                                                                                       modelRootFactory,
-                                                                                       modifier);
+                sessionManager,
+                modelRootFactory,
+                modifier);
         return new AnkorSystem(systemName,
-                               messageFactory,
-                               messageBus,
-                               refContextFactory,
-                               modelContextManager,
-                               sessionManager,
-                               remoteMessageListener);
+                messageFactory,
+                messageBus,
+                refContextFactory,
+                modelContextManager,
+                sessionManager,
+                remoteMessageListener);
     }
-
-
 
     private EventListeners createDefaultGlobalEventListeners(MessageFactory messageFactory,
                                                              SessionManager sessionManager,
@@ -258,25 +277,10 @@ public class AnkorSystemBuilder {
         return eventListeners;
     }
 
-
-
     private List<ViewModelPostProcessor> createDefaultServerViewModelPostProcessors() {
         List<ViewModelPostProcessor> list = new ArrayList<ViewModelPostProcessor>();
         list.add(new AnnotationViewModelPostProcessor());
         return list;
-    }
-
-    private static class EmptyBeanResolver implements BeanResolver {
-
-        @Override
-        public Object resolveByName(String beanName) {
-            return null;
-        }
-
-        @Override
-        public Collection<String> getKnownBeanNames() {
-            return Collections.emptyList();
-        }
     }
 
     private String getServerSystemName() {
@@ -379,9 +383,9 @@ public class AnkorSystemBuilder {
         EventListeners globalEventListeners;
         if (defaultGlobalEventListeners == null) {
             globalEventListeners = createDefaultGlobalEventListeners(messageFactory,
-                                                                     sessionManager,
-                                                                     modelRootFactory,
-                                                                     modifier);
+                    sessionManager,
+                    modelRootFactory,
+                    modifier);
         } else {
             globalEventListeners = defaultGlobalEventListeners;
         }
@@ -397,7 +401,7 @@ public class AnkorSystemBuilder {
                                                        EventListeners globalEventListeners) {
         if (modelContextFactory == null) {
             modelContextFactory = new DefaultModelContextFactory(eventDispatcherFactory,
-                                                                 globalEventListeners);
+                    globalEventListeners);
         }
         return modelContextFactory;
     }
@@ -423,6 +427,19 @@ public class AnkorSystemBuilder {
 
     public MessageFactory getClientMessageFactory() {
         return new MessageFactory(getClientSystemName(), getMessageIdGenerator());
+    }
+
+    private static class EmptyBeanResolver implements BeanResolver {
+
+        @Override
+        public Object resolveByName(String beanName) {
+            return null;
+        }
+
+        @Override
+        public Collection<String> getKnownBeanNames() {
+            return Collections.emptyList();
+        }
     }
 
 }
