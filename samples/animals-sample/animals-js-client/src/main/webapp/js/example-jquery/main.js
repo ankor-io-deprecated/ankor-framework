@@ -79,7 +79,7 @@ define([
         };
         syncPanels();
         panelsRef.addTreeChangeListener(function(panelRef, event) {
-            if (panelRef.equals(panelsRef) || panelRef.parent().equals(panelsRef)) {
+            if (event.path.equals(panelsRef.path) || event.path.parent().equals(panelsRef.path)) {
                 syncPanels();
             }
         });
