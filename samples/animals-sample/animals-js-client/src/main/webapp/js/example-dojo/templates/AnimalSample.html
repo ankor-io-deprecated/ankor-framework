@@ -1,0 +1,23 @@
+<div class="${baseClass}">
+    <div data-dojo-type="dijit/layout/LayoutContainer">
+        <div data-dojo-type="dijit/MenuBar" data-dojo-props="region:'top'">
+            <div data-dojo-type="dijit/PopupMenuBarItem">
+                <span>Animal</span>
+                <div data-dojo-type="dijit/DropDownMenu">
+                    <div data-dojo-type="dijit/MenuItem" data-dojo-attach-event="onClick:onAnimalSearch">Animal Search</div>
+                    <div data-dojo-type="dijit/MenuItem" data-dojo-attach-event="onClick:onNewAnimal">New Animal</div>
+                </div>
+            </div>
+        </div>
+        <div data-dojo-type="dijit/layout/TabContainer" data-dojo-props="region:'center'" data-dojo-attach-point="tabContainer"></div>
+        <div data-dojo-type="dijit/MenuBar" data-dojo-props="region:'bottom'">
+            <div class="menuBarContent">
+                <span>User:</span>
+                <span data-dojo-attach-point="spanUser"></span>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <span>Server says:</span>
+                <span data-dojo-attach-point="spanServerSays"></span>
+            </div>
+        </div>
+    </div>
+</div>
