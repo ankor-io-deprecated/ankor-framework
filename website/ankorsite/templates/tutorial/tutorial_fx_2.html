@@ -10,7 +10,15 @@
         {% include "tutorial/tutorial_fx_menu.html" %}
     </div><!--/span-->
     <div class="span9">
-        {% include "tutorial/tutorial_fx_head.html" with tutorial_title='TBD' tutorial_step='2' %}
+        {% include "tutorial/tutorial_fx_head.html" with tutorial_title='Initializing Ankor' tutorial_step='2' %}
+
+        {% load staticfiles %}
+        {% load markdown %}
+        {{ content|markdown }}
+
+        <hr/>
+        <a class="btn btn-primary" href="/tutorials/fx/3">Next »</a>&nbsp;&nbsp;If everything works, head over to the next step.
+
     </div><!--/span-->
 </div><!--/row-->
 

@@ -53,6 +53,10 @@ a {
     cursor: pointer;
 }
 
+code, pre {
+    font-family: Menlo, Consolas, "Courier New", monospace;
+}
+
 .tab-content {
     padding: 10px 10px 0px;
     background-color: #f5f5f5;

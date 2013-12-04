@@ -12,93 +12,11 @@
     <div class="span9">
         {% include "tutorial/tutorial_fx_head.html" with tutorial_title='Bootstrap' %}
 
-        <h3>The Application</h3>
-        <p>In this tutorial we'll be building a simple Ankor application.
-            We'll explain how to setup the application, write the first
-            view model and bind the model to your UI components via WebSockets. While the transport layer doesn't really
-            matter to Ankor, we'll be using WebSockets in this tutorial, as they are supported by both JavaFX and web browsers.
-            When we are done the app will look like this:</p>
         {% load staticfiles %}
-        <img src="{% static 'images/tutorial/fx-step-1-0.png' %}"  width="50%" height="50%" >
-        <p>This might looks familiar to you (it's the infamous todo app form
-            <a href="http://todomvc.com/">TodoMVC</a>). However it is fully written and styled with JavaFX.
-            If you are interested in building it as a web app head over to the <a href='#'>JavaScript Tutorial</a>.
-        </p>
+        {% load markdown %}
+        {{ content|markdown }}
 
-        <h3 id="beforeyoustart">Before you start</h3>
-        <p>Please check that all software components are installed properly. Especially check the Java FX section to make sure
-        that JavaFX is on the Classpath.</p>
-        <div class="tabbable ">
-            <ul class="nav nav-tabs">
-                <li class="active"><a href="#tab1" data-toggle="tab">Java</a></li>
-                <li><a href="#tab2" data-toggle="tab">Maven</a></li>
-                <li><a href="#tab3" data-toggle="tab">Java FX</a></li>
-                <li><a href="#tab4" data-toggle="tab">Git</a></li>
-            </ul>
-            <div class="tab-content">
-                <div class="tab-pane active" id="tab1">
-                    <p>JDK 1.7, download from <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">here</a>.</p>
-                    <p>Make sure that<p></p>
-                    <ul>
-                        <li>JAVA_HOME exists in your user variables (JDK installation directory)</li>
-                        <li>and that %JAVA_HOME%\bin is in your Path environment variable</li>
-                    </ul>
-                    <p>Open command line and test</p>
-                    <pre><code>java -version</code></pre>
-                </div>
-                <div class="tab-pane" id="tab2">
-                    <p>Maven 3.0.5 or higher, download from <a href="http://maven.apache.org/download.cgi">here</a>.</p>
-                    <p>Make sure that<p></p>
-                    <ul>
-                        <li>MAVEN_HOME exists in your user variables (JDK installation directory)</li>
-                        <li>and that %MAVEN_HOME%\bin is in your Path environment variable</li>
-                    </ul>
-                    <p>Open command line and test</p>
-                    <pre><code>mvn -version</code></pre>
-                </div>
-                <div class="tab-pane" id="tab3">
-                    <p>To get JavaFX on the Classpath execute</p>
-                    <pre><code>mvn com.zenjava:javafx-maven-plugin:2.0:fix-classpath</code></pre>
-                    <p>On unix systems you may need <code>sudo mvn ...</code></p>
-                    <p>If you are interested in why this is needed read <a href="http://zenjava.com/javafx/maven/fix-classpath.html">"Getting JavaFX on the Classpath"</a></p>
-                </div>
-                <div class="tab-pane" id="tab4">
-                    <p>Install Git, download from <a href="http://git-scm.com/download">the Git site</a>.</p>
-                </div>
-            </div>
-        </div>
-
-        <h3>Get the code</h3>
-        <p>Clone git repository.</p>
-<pre><code>git clone https://github.com/ankor-io/ankor-phonecat</code></pre>
-
-        <p>The folder ankor-phonecat is empty. To get the first tutorial step, checkout branch
-            <a href="https://github.com/ankor-io/ankor-phonecat/tree/fx-step-0">fx-step-0</a>.
-            This is how you may switch between tutorial steps later.</p>
-<pre>
-<code>cd ankor-phonecat
-git checkout -f fx-step-0</code></pre>
-
-        <p>Now you got a maven project based on 3 modules</p>
-<pre>
-<code>boot   : Utility to start client and server
-client : Client application (Java FX)
-server : Server application</code></pre>
-
-        <h3>Hello World</h3>
-
-        <p>Start application</p>
-<pre>
-<code>cd boot
-mvn install exec:java
-</code></pre>
-        <p>What you get is ...</p>
-        {% load staticfiles %}
-        <img src="{% static 'images/tutorial/fx-step-0-1.png' %}" class="img-rounded">
-        <p>... a simple java FX sample app. As the setup is working fine you are are now ready
-            to start programming with Ankor. If you experience problems running the
-            JavaFX application please check <a href="#beforeyoustart">"Before you start"</a> section.</p>
-        <br/>
+        <hr/>
         <a class="btn btn-primary" href="/tutorials/fx/1">Next »</a>&nbsp;&nbsp;Learn how to write your first Ankor Application.
 
     </div><!--/span-->

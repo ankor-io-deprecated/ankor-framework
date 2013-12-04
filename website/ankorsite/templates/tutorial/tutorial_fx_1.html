@@ -12,91 +12,12 @@
     <div class="span9">
         {% include "tutorial/tutorial_fx_head.html" with tutorial_title='Starting the Application' %}
 
-        <h3>Starting the Application</h3>
-        <p>When creating an Ankor JavaFX application you have two choices. You can either extend then <code>AnkorApplication</code> class
-            which starts the Ankor system for you or you can set up your Ankor system manually using a builder.
-            <br/>
-            Both ways work the same and the rest of the tutorial does not depend on
-            your choice. However, chose the first option if you want to get going and the second if you'd like to get your
-            hands dirty.</p>
+        {% load staticfiles %}
+        {% load markdown %}
+        {{ content|markdown }}
 
-        <ul class="nav nav-tabs">
-            <li class="active" ><a href="#tab11" data-toggle="tab">AnkorApplication</a></li>
-            <li><a href="#tab12" data-toggle="tab">javafx.application.Application</a></li>
-        </ul>
-
-        <div class="tab-content">
-            <div class="tab-pane active" id="tab11">
-                <pre class="prettyprint">
-public class App extends AnkorApplication {
-
-    public static void main(String[] args) {
-        launch(args);
-    }
-
-    @Override
-    protected void startFXClient(Stage stage) throws Exception {
-        stage.setTitle("Ankor Todo Sample");
-        Pane myPane = FXMLLoader.load(getClass().getClassLoader().getResource("tasks.fxml"));
-
-        Scene myScene = new Scene(myPane);
-        myScene.getStylesheets().add("style.css");
-        stage.setScene(myScene);
-        stage.show();
-    }
-
-    @Override
-    protected String getWebSocketUri() {
-        return "wss://ankor-todo-sample.irian.at/websocket/ankor";
-    }
-}
-                </pre>
-                <p>The <code>AnkorApplication</code> class does all the plumbing and wiring for you. When you enter the
-                <code>startFXClient</code> method a WebSocket connection has already been set up, the Ankor system
-                    has received an id from the server and sends heartbeat messages to the server.</p>
-            </div>
-            <div class="tab-pane" id="tab12">
-                <pre class="prettyprint">
-public class App extends javafx.application.Application {
-
-    public static void main(String[] args) {
-        launch(args);
-    }
-
-    @Override
-    public void start(Stage stage) throws Exception {
-        AnkorSystemBuilder appBuilder = new AnkorSystemBuilder()
-                .withMessageBus(new WebSocketMessageBus(new ViewModelJsonMessageMapper()))
-                .withRefContextFactoryProvider(new FxRefContextFactoryProvider())
-                .withDispatcherFactory(new JavaFxEventDispatcherFactory());
-
-        AnkorSystem app = appBuilder.createWebSocketClient("ws://localhost:8080/websocket/ankor").start();
-
-        refFactory = (FxRefFactory) ((SingletonSessionManager) app.getSessionManager())
-                    .getSession().getRefContext().refFactory();
-
-        stage.setTitle("Ankor Todo Sample");
-        Pane myPane = FXMLLoader.load(getClass().getClassLoader().getResource("tasks.fxml"));
-
-        Scene myScene = new Scene(myPane);
-        myScene.getStylesheets().add("style.css");
-        stage.setScene(myScene);
-        stage.show();
-    }
-
-    private static FxRefFactory refFactory;
-
-    // we will need access to the refFactory later
-    public static FxRefFactory refFactory() {
-        return refFactory;
-    }
-}
-                </pre>
-            </div>
-        </div>
-
-        <p>For now we are connecting to an existing Ankor server but we'll be soon learning how to set up our own.</p>
-        <p>You can now start this app and see if it throws any errors. If everything works header over to step 2.</p>
+        <hr/>
+        <a class="btn btn-primary" href="/tutorials/fx/2">Next »</a>&nbsp;&nbsp;If everything works, head over to the next step.
 
     </div><!--/span9-->
 </div><!--/row-->
