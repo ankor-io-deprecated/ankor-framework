@@ -15,10 +15,10 @@ import java.util.concurrent.TimeUnit;
 public class AnkorClientEndpoint extends Endpoint {
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(AnkorClientEndpoint.class);
     private static final long HEARTBEAT_INTERVAL = 5000;
+    private static final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
     private AnkorSystemBuilder systemBuilder;
     private WebSocketMessageBus messageBus;
     private CountDownLatch latch;
-    private ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
     public AnkorClientEndpoint(AnkorSystemBuilder systemBuilder, WebSocketMessageBus messageBus, CountDownLatch latch) {
         this.systemBuilder = systemBuilder;
