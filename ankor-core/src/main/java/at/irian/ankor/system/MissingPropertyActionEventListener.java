@@ -49,12 +49,14 @@ public class MissingPropertyActionEventListener extends ActionEventListener {
                     int chunkSize = bigListAnnotation.chunkSize();
                     if (chunkSize > 1) {
                         int fromIndex = Integer.parseInt(missingProperty.propertyName());
-                        int toIndex = fromIndex + chunkSize;
                         List list = maybeCollRef.getValue();
-                        List subList = list.subList(fromIndex, Math.min(toIndex, list.size()));
-                        Change change = Change.replaceChange(fromIndex, subList);
-                        ((RefImplementor)maybeCollRef).signal(new LocalSource(missingProperty.context().modelContext()),
-                                                              change);
+                        int toIndex = Math.min(fromIndex + chunkSize, list.size());
+                        if (fromIndex <= toIndex) {
+                            List subList = list.subList(fromIndex, toIndex);
+                            Change change = Change.replaceChange(fromIndex, subList);
+                            ((RefImplementor)maybeCollRef).signal(new LocalSource(missingProperty.context().modelContext()),
+                                                                  change);
+                        }
                         return;
                     }
                 }

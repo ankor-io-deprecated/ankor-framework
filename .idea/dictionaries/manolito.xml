@@ -11,6 +11,8 @@
       <w>deserialized</w>
       <w>discardable</w>
       <w>implementor</w>
+      <w>infos</w>
+      <w>introspector</w>
       <w>jgen</w>
       <w>loopback</w>
       <w>matchers</w>

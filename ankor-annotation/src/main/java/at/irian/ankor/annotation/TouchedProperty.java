@@ -10,14 +10,10 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ActionListener {
-    /**
-     * Name of the action.
-     */
-    String name() default "";
+public @interface TouchedProperty {
+    String value();
+    int diffThreshold() default 10;
+    Class<?> diffHandler() default DefaultHandler.class;
 
-    /**
-     * One or more Ref patterns that must match.
-     */
-    String[] pattern() default "";
+    static class DefaultHandler {}
 }

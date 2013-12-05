@@ -10,14 +10,6 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ActionListener {
-    /**
-     * Name of the action.
-     */
-    String name() default "";
-
-    /**
-     * One or more Ref patterns that must match.
-     */
-    String[] pattern() default "";
+public @interface TouchedProperties {
+    TouchedProperty[] value();
 }
