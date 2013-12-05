@@ -7,8 +7,13 @@ import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.TypedRef;
 import at.irian.ankorsamples.animals.domain.animal.Animal;
+import at.irian.ankorsamples.animals.domain.animal.AnimalFamily;
 import at.irian.ankorsamples.animals.domain.animal.AnimalRepository;
+import at.irian.ankorsamples.animals.domain.animal.AnimalType;
 import at.irian.ankorsamples.animals.viewmodel.PanelNameCreator;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Thomas Spiegl
@@ -44,7 +49,7 @@ public class AnimalDetailModel {
         this.myRef = myRef;
         this.resourcesRef = resourcesRef;
         this.animal = animal;
-        this.selectItems = AnimalSelectItems.create(animalRepository.getAnimalTypes());
+        this.selectItems = AnimalSelectItems.create(myRef.appendPath("selectItems"), animalRepository.getAnimalTypes());
         this.animalRepository = animalRepository;
         this.panelNameRef = panelNameRef;
         this.serverStatusRef = serverStatusRef;
@@ -80,9 +85,20 @@ public class AnimalDetailModel {
 
     @ChangeListener(pattern = ".animal.type")
     public void animalTypeChanged() {
-        Ref familyRef = myRef.appendPath("animal.family");
-        Ref familiesRef = myRef.appendPath("selectItems.families");
-        new AnimalTypeChangeHandler(animalRepository).handleChange(animal.getType(), familyRef, familiesRef);
+
+        AnimalType type = animal.getType();
+        List<AnimalFamily> families;
+        if (type != null) {
+            families = animalRepository.getAnimalFamilies(type);
+        } else {
+            families = Collections.emptyList();
+        }
+        selectItems.setFamilies(AnimalSelectItems.createSelectItemsFrom(families));
+
+        //noinspection SuspiciousMethodCalls
+        if (!families.contains(animal.getFamily())) {
+            myRef.appendPath("animal.family").setValue(null);
+        }
     }
 
     @ActionListener
@@ -97,7 +113,7 @@ public class AnimalDetailModel {
             try {
                 animalRepository.saveAnimal(animal);
                 saved = true;
-                myRef.appendPath("editable").setValue(false);
+                setEditable(false);
                 status = "Animal successfully saved";
             } catch (Exception e) {
                 status = "Error: " + e.getMessage();
@@ -127,6 +143,7 @@ public class AnimalDetailModel {
 
     public void setEditable(boolean editable) {
         this.editable = editable;
+        myRef.appendPath("editable").signalValueChange();
     }
 
     public void setNameStatus(String nameStatus) {

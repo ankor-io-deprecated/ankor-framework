@@ -6,6 +6,8 @@ import at.irian.ankor.event.dispatch.DispatchThreadAware;
 import at.irian.ankor.event.dispatch.EventDispatcher;
 import at.irian.ankor.event.dispatch.EventDispatcherFactory;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,8 +19,8 @@ class DefaultModelContext implements ModelContext, DispatchThreadAware {
 
     private final String id;
     private final EventListeners eventListeners;
-    private EventDispatcher eventDispatcher;
-    private Map<String, Object> modelRoots;
+    private final Deque<EventDispatcher> eventDispatcherStack;
+    private final Map<String, Object> modelRoots;
     private Map<String, Object> attributes;
 
     private volatile Thread dispatchThread;
@@ -26,6 +28,7 @@ class DefaultModelContext implements ModelContext, DispatchThreadAware {
     DefaultModelContext(String id, EventListeners eventListeners) {
         this.id = id;
         this.eventListeners = eventListeners;
+        this.eventDispatcherStack = new ArrayDeque<EventDispatcher>();
         this.modelRoots = new HashMap<String, Object>();
         this.attributes = null;
     }
@@ -35,7 +38,7 @@ class DefaultModelContext implements ModelContext, DispatchThreadAware {
                                       EventListeners globalEventListeners) {
         EventListeners eventListeners = new ArrayListEventListeners(globalEventListeners);
         DefaultModelContext modelContext = new DefaultModelContext(id, eventListeners);
-        modelContext.setEventDispatcher(eventDispatcherFactory.createFor(modelContext));
+        modelContext.pushEventDispatcher(eventDispatcherFactory.createFor(modelContext));
         return modelContext;
     }
 
@@ -58,18 +61,24 @@ class DefaultModelContext implements ModelContext, DispatchThreadAware {
         this.modelRoots.put(rootName, modelRoot);
     }
 
-    private void setEventDispatcher(EventDispatcher eventDispatcher) {
-        this.eventDispatcher = eventDispatcher;
+    @Override
+    public void pushEventDispatcher(EventDispatcher eventDispatcher) {
+        eventDispatcherStack.push(eventDispatcher);
+    }
+
+    @Override
+    public EventDispatcher popEventDispatcher() {
+        return eventDispatcherStack.pop();
     }
 
     @Override
     public EventDispatcher getEventDispatcher() {
-        return eventDispatcher;
+        return eventDispatcherStack.peek();
     }
 
     @Override
     public void close() {
-        if (eventDispatcher != null) {
+        for (EventDispatcher eventDispatcher : eventDispatcherStack) {
             eventDispatcher.close();
         }
         modelRoots.clear();

@@ -58,7 +58,7 @@ public class AnimalSearchModel extends ViewModelBase {
         this.resourcesRef = resourcesRef;
         this.animalRepository = animalRepository;
         this.filter = new AnimalSearchFilter();
-        this.selectItems = AnimalSelectItems.create(animalRepository.getAnimalTypes());
+        this.selectItems = AnimalSelectItems.create(animalSearchModelRef.appendPath("selectItems"), animalRepository.getAnimalTypes());
         this.animals = new ExtendedListWrapper<>(new ArrayList<Animal>());
         this.reloadFloodControl = new FloodControl(animalSearchModelRef, 500L);
         AnkorPatterns.initViewModel(this);

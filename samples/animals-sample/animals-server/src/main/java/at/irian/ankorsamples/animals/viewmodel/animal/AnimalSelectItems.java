@@ -1,5 +1,6 @@
 package at.irian.ankorsamples.animals.viewmodel.animal;
 
+import at.irian.ankor.ref.Ref;
 import at.irian.ankorsamples.animals.domain.animal.AnimalFamily;
 import at.irian.ankorsamples.animals.domain.animal.AnimalType;
 
@@ -14,10 +15,12 @@ import java.util.List;
 public class AnimalSelectItems {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalSelectItems.class);
 
+    private final Ref myRef;
     private List<AnimalType> types;
     private List<AnimalFamily> families;
 
-    private AnimalSelectItems(List<AnimalType> types) {
+    private AnimalSelectItems(Ref myRef, List<AnimalType> types) {
+        this.myRef = myRef;
         this.types = types;
         this.families = Collections.emptyList();
     }
@@ -28,6 +31,7 @@ public class AnimalSelectItems {
 
     public void setTypes(List<AnimalType> types) {
         this.types = types;
+        myRef.appendPath("types").signalValueChange();
     }
 
     public List<AnimalFamily> getFamilies() {
@@ -36,6 +40,7 @@ public class AnimalSelectItems {
 
     public void setFamilies(List<AnimalFamily> families) {
         this.families = families;
+        myRef.appendPath("families").signalValueChange();
     }
 
 
@@ -46,8 +51,8 @@ public class AnimalSelectItems {
         return selectItems;
     }
 
-    public static AnimalSelectItems create(List<AnimalType> types) {
-        return new AnimalSelectItems(createSelectItemsFrom(types));
+    public static AnimalSelectItems create(Ref selectItemsRef, List<AnimalType> types) {
+        return new AnimalSelectItems(selectItemsRef, createSelectItemsFrom(types));
     }
 
 }

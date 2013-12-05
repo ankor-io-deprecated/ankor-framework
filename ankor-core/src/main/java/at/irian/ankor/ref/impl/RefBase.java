@@ -7,8 +7,10 @@ import at.irian.ankor.change.Change;
 import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.change.ChangeType;
 import at.irian.ankor.change.OldValuesAwareChangeEvent;
+import at.irian.ankor.event.ModelEvent;
 import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.event.PropertyWatcher;
+import at.irian.ankor.event.dispatch.BufferingEventDispatcher;
 import at.irian.ankor.event.source.LocalSource;
 import at.irian.ankor.event.source.Source;
 import at.irian.ankor.path.PathSyntax;
@@ -95,26 +97,45 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
         // remember old values of the watched properties
         Map<Ref, Object> oldWatchedValues = getOldWatchedValues();
 
-        ChangeType changeType = change.getType();
-        switch(changeType) {
-            case value:
-                handleValueChange(oldValue, change.getValue());
-                break;
+        // buffer events
+        BufferingEventDispatcher eventBuffer = new BufferingEventDispatcher();
+        context().modelContext().pushEventDispatcher(eventBuffer);
+        try {
+            ChangeType changeType = change.getType();
+            switch(changeType) {
+                case value:
+                    handleValueChange(oldValue, change.getValue());
+                    break;
 
-            case insert:
-                handleInsertChange(oldValue, change.getKey(), change.getValue());
-                break;
+                case insert:
+                    handleInsertChange(oldValue, change.getKey(), change.getValue());
+                    break;
 
-            case delete:
-                handleDeleteChange(oldValue, change.getKey());
-                break;
+                case delete:
+                    handleDeleteChange(oldValue, change.getKey());
+                    break;
 
-            case replace:
-                handleReplaceChange(oldValue, change.getKey(), change.getValue());
-                break;
+                case replace:
+                    handleReplaceChange(oldValue, change.getKey(), change.getValue());
+                    break;
 
-            default:
-                throw new IllegalArgumentException("Unsupported change type " + changeType);
+                default:
+                    throw new IllegalArgumentException("Unsupported change type " + changeType);
+            }
+        } finally {
+            context().modelContext().popEventDispatcher();
+        }
+
+        for (ModelEvent modelEvent : eventBuffer.getBufferedEvents()) {
+            if (modelEvent instanceof ChangeEvent) {
+                Ref changedProperty = ((ChangeEvent) modelEvent).getChangedProperty();
+                if (changedProperty.equals(this) && ((ChangeEvent) modelEvent).getChange().equals(change)) {
+                    // found exactly this change
+                    // do ignore, because we fire it anyway down below!
+                    continue;
+                }
+            }
+            context().modelContext().getEventDispatcher().dispatch(modelEvent);
         }
 
         // fire change event
