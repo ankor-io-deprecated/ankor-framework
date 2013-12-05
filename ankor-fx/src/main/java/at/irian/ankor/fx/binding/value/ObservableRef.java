@@ -35,6 +35,7 @@ public class ObservableRef<T> implements ObservableValue<T> {
             protected void handleChange(Ref changedProperty, Change change) {
                 if (change.getType() == ChangeType.value
                     && (changedProperty.equals(ObservableRef.this.ref) || changedProperty.isAncestorOf(ObservableRef.this.ref))) {
+                    LOG.trace("{} changed value --> fire FX change event", changedProperty);
                     ExpressionHelper.fireValueChangedEvent(helper);
                 }
             }

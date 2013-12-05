@@ -149,4 +149,37 @@ public class SimpleELPathSyntax implements PathSyntax {
         String key = getArrayIdx(path);
         return !key.startsWith("'") || !key.endsWith("'");
     }
+
+    @Override
+    public boolean isEqual(String path1, String path2) {
+        boolean hasParent1 = isHasParent(path1);
+        boolean hasParent2 = isHasParent(path2);
+
+        if (hasParent1) {
+            if (!hasParent2) {
+                return false;
+            }
+
+            // both paths have parents
+
+            String leaf1 = getPropertyName(path1);
+            String leaf2 = getPropertyName(path2);
+            if (leaf1.equals(leaf2)) {
+                String parent1 = parentOf(path1);
+                String parent2 = parentOf(path2);
+                return isEqual(parent1, parent2);
+            }
+
+            return false;
+
+        } else {
+            if (hasParent2) {
+                return false;
+            }
+
+            // both are root
+
+            return path1.equals(path2);
+        }
+    }
 }

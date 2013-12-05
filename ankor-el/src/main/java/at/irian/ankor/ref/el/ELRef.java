@@ -2,6 +2,7 @@ package at.irian.ankor.ref.el;
 
 import at.irian.ankor.el.ELUtils;
 import at.irian.ankor.event.dispatch.DispatchThreadChecker;
+import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.impl.RefBase;
 
 import javax.el.PropertyNotFoundException;
@@ -71,8 +72,18 @@ public class ELRef extends RefBase {
 
     @Override
     public boolean equals(Object that) {
-        return this == that
-               || !(that == null || getClass() != that.getClass()) && expression().equals(((ELRef) that).expression());
+        if (this == that) {
+            return true;
+        }
+
+        if (that == null || !(that instanceof Ref)) {
+            return false;
+        }
+
+        String thisPath = this.path();
+        String thatPath = ((Ref) that).path();
+
+        return context().pathSyntax().isEqual(thisPath, thatPath);
     }
 
     private String expression() {
