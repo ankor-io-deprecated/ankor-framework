@@ -1,3 +1,20 @@
 <div>
-    Hello, World
+    <div data-dojo-type="dijit/form/Form" data-dojo-attach-event="onSubmit:onSubmit">
+        <p>
+            Name:
+            <input type="text" data-dojo-type="dijit/form/TextBox" data-dojo-props="intermediateChanges:true" data-dojo-attach-point="inputName">
+            <span data-dojo-attach-point="spanNameStatus"></span>
+        </p>
+        <p>
+            Type:
+            <input data-dojo-type="dijit/form/FilteringSelect" data-dojo-attach-point="inputType">
+        </p>
+        <p>
+            Family:
+            <input data-dojo-type="dijit/form/FilteringSelect" data-dojo-props="labelAttr:'value'" data-dojo-attach-point="inputFamily">
+        </p>
+        <p>
+            <button type="submit" data-dojo-type="dijit/form/Button">Save</button>
+        </p>
+    </div>
 </div>
