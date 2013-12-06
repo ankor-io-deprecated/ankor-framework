@@ -136,7 +136,7 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
                         if (nestedChange.getType() == ChangeType.value) {
                             Object v1 = change.getValue();
                             Object v2 = nestedChange.getValue();
-                            if (coercedEquals(v1, v2)) {
+                            if (ObjectUtils.nullSafeEquals(v1, v2)) {
                                 // found exactly this change
                                 // do ignore, because we fire it anyway down below!
                                 LOG.debug("Suppressing nested change for {}: {}", changedProperty, change);
@@ -152,24 +152,6 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
         // fire change event
         ChangeEvent changeEvent = new OldValuesAwareChangeEvent(source, this, change, deepCopy(oldValue), oldWatchedValues);
         context().modelContext().getEventDispatcher().dispatch(changeEvent);
-    }
-
-    private boolean coercedEquals(Object v1, Object v2) {
-        if (v1 == v2) {
-            return true;
-        }
-        if (v1 == null || v2 == null) {
-            return false;
-        }
-        if (v1.getClass().isEnum()) {
-            v1 = ((Enum)v1).name();
-        }
-        if (v2.getClass().isEnum()) {
-            v2 = ((Enum)v2).name();
-        }
-        // todo  more coerce support (like specified in EL)
-
-        return ObjectUtils.nullSafeEquals(v1, v2);
     }
 
     @Override
@@ -460,8 +442,6 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
     }
 
     protected abstract <T> T internalGetValue() throws InvalidRefException;
-
-    protected abstract Class<?> getType();
 
     @Override
     public RefContext context() {

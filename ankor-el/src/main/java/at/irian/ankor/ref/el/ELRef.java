@@ -42,7 +42,7 @@ public class ELRef extends RefBase {
     }
 
     @Override
-    protected Class<?> getType() {
+    public Class<?> getType() {
         return ve.getType(elRefContext().createELContext());
     }
 
