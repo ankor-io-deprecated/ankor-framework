@@ -11,13 +11,11 @@ import at.irian.ankor.viewmodel.metadata.BeanMetadata;
 public class AnnotationViewModelPostProcessor implements ViewModelPostProcessor {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnnotationViewModelPostProcessor.class);
 
-    private final AnnotationViewModelBeanIntrospector viewModelIntrospector = new AnnotationViewModelBeanIntrospector();
     private final ViewModelBeanInitializer viewModelBeanInitializer = new ViewModelBeanInitializer();
 
     @Override
-    public void postProcess(Object viewModelObject, Ref viewModelRef) {
-        BeanMetadata info = viewModelIntrospector.getMetadata(viewModelObject);
-        viewModelBeanInitializer.init(viewModelObject, viewModelRef, info);
+    public void postProcess(Object viewModelObject, Ref viewModelRef, BeanMetadata metadata) {
+        viewModelBeanInitializer.init(viewModelObject, viewModelRef, metadata);
     }
 
 }

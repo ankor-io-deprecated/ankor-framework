@@ -3,7 +3,6 @@ package at.irian.ankorsamples.animals.viewmodel.animal;
 import at.irian.ankor.annotation.ActionListener;
 import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.messaging.AnkorIgnore;
-import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.TypedRef;
 import at.irian.ankorsamples.animals.domain.animal.Animal;
@@ -55,7 +54,7 @@ public class AnimalDetailModel {
         this.serverStatusRef = serverStatusRef;
         this.editable = true;
         this.nameStatus = "ok";
-        AnkorPatterns.initViewModel(this, myRef);
+        //AnkorPatterns.initViewModel(this, myRef);
     }
 
     @ChangeListener(pattern = ".animal.name")
@@ -65,11 +64,11 @@ public class AnimalDetailModel {
 
         String name = animal.getName();
         if (animalRepository.isAnimalNameAlreadyExists(name)) {
-            myRef.appendPath("nameStatus").setValue("name already exists");
+            setNameStatus("name already exists");
         } else if (name.length() > AnimalRepository.MAX_NAME_LEN) {
-            myRef.appendPath("nameStatus").setValue("name is too long");
+            setNameStatus("name is too long");
         } else {
-            myRef.appendPath("nameStatus").setValue("ok");
+            setNameStatus("ok");
         }
     }
 
@@ -143,7 +142,6 @@ public class AnimalDetailModel {
 
     public void setEditable(boolean editable) {
         this.editable = editable;
-        myRef.appendPath("editable").signalValueChange();
     }
 
     public void setNameStatus(String nameStatus) {

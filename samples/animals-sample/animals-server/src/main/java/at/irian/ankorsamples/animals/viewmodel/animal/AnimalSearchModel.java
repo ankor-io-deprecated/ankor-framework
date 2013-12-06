@@ -8,7 +8,6 @@ import at.irian.ankor.big.AnkorBigList;
 import at.irian.ankor.delay.FloodControl;
 import at.irian.ankor.messaging.AnkorIgnore;
 import at.irian.ankor.pattern.AnkorPatterns;
-import at.irian.ankor.proxy.ProxySupport;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.TypedRef;
 import at.irian.ankor.viewmodel.ViewModelBase;
@@ -23,6 +22,8 @@ import at.irian.ankorsamples.animals.viewmodel.PanelNameCreator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static at.irian.ankor.viewmodel.factory.AnkorBeanFactory.newInstance;
 
 /**
 * @author Thomas Spiegl
@@ -61,7 +62,7 @@ public class AnimalSearchModel extends ViewModelBase {
         this.serverStatusRef = serverStatusRef;
         this.resourcesRef = resourcesRef;
         this.animalRepository = animalRepository;
-        this.filter = ProxySupport.createProxyBean(animalSearchModelRef.appendPath("filter"), AnimalSearchFilter.class, null, null);
+        this.filter = newInstance(AnimalSearchFilter.class, animalSearchModelRef.appendPath("filter"));
         this.selectItems = AnimalSelectItems.create(animalSearchModelRef.appendPath("selectItems"), animalRepository.getAnimalTypes());
         this.animals = new ExtendedListWrapper<>(new ArrayList<Animal>());
         this.reloadFloodControl = new FloodControl(animalSearchModelRef, 500L);

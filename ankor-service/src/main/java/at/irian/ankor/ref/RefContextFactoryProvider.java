@@ -4,6 +4,7 @@ import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.delay.Scheduler;
 import at.irian.ankor.session.ModelRootFactory;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
+import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ public abstract class RefContextFactoryProvider {
     public abstract RefContextFactory createRefContextFactory(BeanResolver beanResolver,
                                                               List<ViewModelPostProcessor> viewModelPostProcessors,
                                                               Scheduler scheduler,
-                                                              ModelRootFactory modelRootFactory);
+                                                              ModelRootFactory modelRootFactory,
+                                                              BeanMetadataProvider metadataProvider);
 
 }

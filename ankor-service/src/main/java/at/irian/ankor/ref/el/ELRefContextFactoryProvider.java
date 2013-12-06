@@ -6,6 +6,7 @@ import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.ref.RefContextFactoryProvider;
 import at.irian.ankor.session.ModelRootFactory;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
+import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
 
 import java.util.List;
 
@@ -17,7 +18,12 @@ public class ELRefContextFactoryProvider extends RefContextFactoryProvider {
     public RefContextFactory createRefContextFactory(BeanResolver beanResolver,
                                                      List<ViewModelPostProcessor> viewModelPostProcessors,
                                                      Scheduler scheduler,
-                                                     ModelRootFactory modelRootFactory) {
-        return new ELRefContextFactory(beanResolver, viewModelPostProcessors, scheduler, modelRootFactory);
+                                                     ModelRootFactory modelRootFactory,
+                                                     BeanMetadataProvider metadataProvider) {
+        return new ELRefContextFactory(beanResolver,
+                                       viewModelPostProcessors,
+                                       scheduler,
+                                       modelRootFactory,
+                                       metadataProvider);
     }
 }

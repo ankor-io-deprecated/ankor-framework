@@ -32,6 +32,11 @@ public class AnnotationViewModelBeanIntrospector implements BeanMetadataProvider
 
         Class<?> type = viewModelBean.getClass();
 
+        return getMetadata(type);
+    }
+
+    @Override
+    public BeanMetadata getMetadata(Class<?> type) {
         BeanMetadata beanMetadata = CACHE.get(type);
         if (beanMetadata != null) {
             return beanMetadata;

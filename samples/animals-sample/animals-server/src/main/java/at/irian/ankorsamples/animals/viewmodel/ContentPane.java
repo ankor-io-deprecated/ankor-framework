@@ -14,6 +14,8 @@ import at.irian.ankorsamples.animals.viewmodel.animal.AnimalSearchModel;
 import java.util.HashMap;
 import java.util.Map;
 
+import static at.irian.ankor.viewmodel.factory.AnkorBeanFactory.newInstance;
+
 /**
  * @author Thomas Spiegl
  */
@@ -69,12 +71,15 @@ public class ContentPane {
         String panelId = createNextPanelId();
         Ref panelsRef = myRef.appendPath("panels");
         Ref panelRef = panelsRef.appendPath(panelId);
+        Ref modelRef = panelRef.appendPath("model");
 
-        AnimalDetailModel model = new AnimalDetailModel(panelRef.appendPath("model"),
-                                                        panelRef.appendPath("name").<String>toTypedRef(),
-                                                        serverStatusRef,
-                                                        animalRepository,
-                                                        resourcesRef, new Animal());
+        AnimalDetailModel model = newInstance(AnimalDetailModel.class, modelRef,
+                                              modelRef,
+                                              panelRef.appendPath("name").<String>toTypedRef(),
+                                              serverStatusRef,
+                                              animalRepository,
+                                              resourcesRef,
+                                              new Animal());
         Panel<AnimalDetailModel> panel = new Panel<>(panelId, panelRef, model.getPanelName(), "animalDetail",
                                                      model);
 
@@ -86,13 +91,16 @@ public class ContentPane {
         String panelId = createNextPanelId();
         Ref panelsRef = myRef.appendPath("panels");
         Ref panelRef = panelsRef.appendPath(panelId);
+        Ref modelRef = panelRef.appendPath("model");
 
         Animal animal = animalRepository.findAnimal(uuid);
-        AnimalDetailModel model = new AnimalDetailModel(panelRef.appendPath("model"),
-                                                        panelRef.appendPath("name").<String>toTypedRef(),
-                                                        serverStatusRef,
-                                                        animalRepository,
-                                                        resourcesRef, animal);
+        AnimalDetailModel model = newInstance(AnimalDetailModel.class, modelRef,
+                                              modelRef,
+                                              panelRef.appendPath("name").<String>toTypedRef(),
+                                              serverStatusRef,
+                                              animalRepository,
+                                              resourcesRef,
+                                              animal);
         Panel<AnimalDetailModel> panel = new Panel<>(panelId, panelRef, model.getPanelName(), "animalDetail",
                                                      model);
 

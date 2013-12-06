@@ -5,6 +5,7 @@ package at.irian.ankor.viewmodel.metadata;
  */
 public interface BeanMetadataProvider {
 
+    BeanMetadata getMetadata(Class<?> viewModelBeanType);
     BeanMetadata getMetadata(Object viewModelBean);
 
 }
