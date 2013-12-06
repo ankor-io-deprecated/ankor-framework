@@ -11,6 +11,7 @@
     <modules>
         <module>ankor-core</module>
         <module>ankor-annotation</module>
+        <module>ankor-proxy</module>
         <module>ankor-el</module>
         <module>ankor-json</module>
         <module>ankor-netty</module>

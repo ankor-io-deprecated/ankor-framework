@@ -1,5 +1,7 @@
 package at.irian.ankor.change;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.Collection;
 
 /**
@@ -21,6 +23,7 @@ public class Change {
     /**
      * Value of this change.
      */
+    @JsonInclude(JsonInclude.Include.ALWAYS)
     private final Object value;
 
     protected Change(ChangeType type, Object key, Object value) {

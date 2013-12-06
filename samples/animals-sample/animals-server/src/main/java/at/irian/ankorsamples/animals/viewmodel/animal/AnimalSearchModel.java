@@ -8,16 +8,20 @@ import at.irian.ankor.big.AnkorBigList;
 import at.irian.ankor.delay.FloodControl;
 import at.irian.ankor.messaging.AnkorIgnore;
 import at.irian.ankor.pattern.AnkorPatterns;
+import at.irian.ankor.proxy.ProxySupport;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.TypedRef;
 import at.irian.ankor.viewmodel.ViewModelBase;
 import at.irian.ankor.viewmodel.watch.ExtendedList;
 import at.irian.ankor.viewmodel.watch.ExtendedListWrapper;
 import at.irian.ankorsamples.animals.domain.animal.Animal;
+import at.irian.ankorsamples.animals.domain.animal.AnimalFamily;
 import at.irian.ankorsamples.animals.domain.animal.AnimalRepository;
+import at.irian.ankorsamples.animals.domain.animal.AnimalType;
 import at.irian.ankorsamples.animals.viewmodel.PanelNameCreator;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -57,7 +61,7 @@ public class AnimalSearchModel extends ViewModelBase {
         this.serverStatusRef = serverStatusRef;
         this.resourcesRef = resourcesRef;
         this.animalRepository = animalRepository;
-        this.filter = new AnimalSearchFilter();
+        this.filter = ProxySupport.createProxyBean(animalSearchModelRef.appendPath("filter"), AnimalSearchFilter.class, null, null);
         this.selectItems = AnimalSelectItems.create(animalSearchModelRef.appendPath("selectItems"), animalRepository.getAnimalTypes());
         this.animals = new ExtendedListWrapper<>(new ArrayList<Animal>());
         this.reloadFloodControl = new FloodControl(animalSearchModelRef, 500L);
@@ -111,9 +115,20 @@ public class AnimalSearchModel extends ViewModelBase {
 
     @ChangeListener(pattern = ".filter.type")
     public void animalTypeChanged() {
-        Ref familyRef = getRef().appendPath("filter.family");
-        Ref familiesRef = getRef().appendPath("selectItems.families");
-        new AnimalTypeChangeHandler(animalRepository).handleChange(filter.getType(), familyRef, familiesRef);
+
+        AnimalType type = filter.getType();
+        List<AnimalFamily> families;
+        if (type != null) {
+            families = animalRepository.getAnimalFamilies(type);
+        } else {
+            families = Collections.emptyList();
+        }
+        selectItems.setFamilies(AnimalSelectItems.createSelectItemsFrom(families));
+
+        //noinspection SuspiciousMethodCalls
+        if (!families.contains(filter.getFamily())) {
+            filter.setFamily(null);
+        }
     }
 
     @ActionListener(name = "save")
