@@ -6,6 +6,7 @@
       <w>antlr</w>
       <w>backref</w>
       <w>backrefs</w>
+      <w>cglib</w>
       <w>deserialization</w>
       <w>deserialize</w>
       <w>deserialized</w>

@@ -54,14 +54,18 @@ public class ViewModelJsonMessageMapper implements MessageMapper<String>,
         module.addSerializer(Wrapper.class, new WrapperSerializer());
 
         // do always ignore Refs (ie. do never serialize Refs)
-        module.setMixInAnnotation(TypedRef.class, MixIn.class);
+        module.setMixInAnnotation(TypedRef.class, IgnoreMixIn.class);
+        module.setMixInAnnotation(Object.class, DefaultMixIn.class);
 
         module.setSerializerModifier(new AnkorSerializerModifier());
 
         mapper = new ObjectMapper();
         mapper.registerModule(module);
 
-        mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+        mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.NONE);
+        mapper.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.PUBLIC_ONLY);
+        mapper.setVisibility(PropertyAccessor.IS_GETTER, JsonAutoDetect.Visibility.PUBLIC_ONLY);
+        mapper.setVisibility(PropertyAccessor.SETTER, JsonAutoDetect.Visibility.PUBLIC_ONLY);
 
         mapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
         mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);

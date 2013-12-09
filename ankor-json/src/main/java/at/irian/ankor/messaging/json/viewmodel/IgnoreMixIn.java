@@ -8,4 +8,4 @@ import com.fasterxml.jackson.annotation.JsonIgnoreType;
  * @author Manfred Geiler
  */
 @JsonIgnoreType
-interface MixIn {}
+interface IgnoreMixIn {}

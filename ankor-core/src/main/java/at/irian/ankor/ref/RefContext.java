@@ -4,6 +4,7 @@ import at.irian.ankor.context.ModelContext;
 import at.irian.ankor.delay.Scheduler;
 import at.irian.ankor.path.PathSyntax;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
+import at.irian.ankor.viewmodel.factory.BeanFactory;
 import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
 
 import java.util.List;
@@ -23,6 +24,9 @@ public interface RefContext {
 
     Scheduler scheduler();
 
+    @Deprecated
     BeanMetadataProvider metadataProvider();
+
+    BeanFactory beanFactory();
 
 }

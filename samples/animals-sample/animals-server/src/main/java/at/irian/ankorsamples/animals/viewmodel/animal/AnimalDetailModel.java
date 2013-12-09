@@ -1,8 +1,8 @@
 package at.irian.ankorsamples.animals.viewmodel.animal;
 
 import at.irian.ankor.annotation.ActionListener;
+import at.irian.ankor.annotation.AutoSignal;
 import at.irian.ankor.annotation.ChangeListener;
-import at.irian.ankor.messaging.AnkorIgnore;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.TypedRef;
 import at.irian.ankorsamples.animals.domain.animal.Animal;
@@ -14,23 +14,24 @@ import at.irian.ankorsamples.animals.viewmodel.PanelNameCreator;
 import java.util.Collections;
 import java.util.List;
 
+import static at.irian.ankor.viewmodel.factory.BeanFactories.newPropertyInstance;
+
 /**
  * @author Thomas Spiegl
  */
 @SuppressWarnings("UnusedDeclaration")
+@AutoSignal
 public class AnimalDetailModel {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalDetailModel.class);
 
-    @AnkorIgnore
-    private final AnimalRepository animalRepository;
-    @AnkorIgnore
-    private boolean saved = false;
-
     private final TypedRef<String> panelNameRef;
     private final TypedRef<String> serverStatusRef;
+    private final Ref i18nResourcesRef;
+    private final AnimalRepository animalRepository;
 
-    private final Ref myRef;
-    private final Ref resourcesRef;
+    private boolean saved = false;
+
+
 
     private Animal animal;
 
@@ -40,21 +41,19 @@ public class AnimalDetailModel {
 
     private String nameStatus;
 
-    public AnimalDetailModel(Ref myRef,
-                             TypedRef<String> panelNameRef,
+    public AnimalDetailModel(TypedRef<String> panelNameRef,
                              TypedRef<String> serverStatusRef,
                              AnimalRepository animalRepository,
-                             Ref resourcesRef, Animal animal) {
-        this.myRef = myRef;
-        this.resourcesRef = resourcesRef;
+                             Ref i18nResourcesRef, Animal animal) {
+        this.i18nResourcesRef = i18nResourcesRef;
         this.animal = animal;
-        this.selectItems = AnimalSelectItems.create(myRef.appendPath("selectItems"), animalRepository.getAnimalTypes());
+        this.selectItems = newPropertyInstance(AnimalSelectItems.class, this, "selectItems",
+                                               animalRepository.getAnimalTypes());
         this.animalRepository = animalRepository;
         this.panelNameRef = panelNameRef;
         this.serverStatusRef = serverStatusRef;
         this.editable = true;
         this.nameStatus = "ok";
-        //AnkorPatterns.initViewModel(this, myRef);
     }
 
     @ChangeListener(pattern = ".animal.name")
@@ -79,10 +78,11 @@ public class AnimalDetailModel {
 
     public String getPanelName() {
         String name = animal.getName();
-        return new PanelNameCreator().createName(resourcesRef.appendLiteralKey("EditAnimal").<String>getValue(), name);
+        return new PanelNameCreator().createName(i18nResourcesRef.appendLiteralKey("EditAnimal").<String>getValue(), name);
     }
 
     @ChangeListener(pattern = ".animal.type")
+    @AutoSignal(".animal.family")
     public void animalTypeChanged() {
 
         AnimalType type = animal.getType();
@@ -92,11 +92,12 @@ public class AnimalDetailModel {
         } else {
             families = Collections.emptyList();
         }
-        selectItems.setFamilies(AnimalSelectItems.createSelectItemsFrom(families));
+        selectItems.setFamilies(families);
 
         //noinspection SuspiciousMethodCalls
         if (!families.contains(animal.getFamily())) {
-            myRef.appendPath("animal.family").setValue(null);
+            //myRef.appendPath("animal.family").setValue(null);
+            animal.setFamily(null);
         }
     }
 

@@ -1,6 +1,6 @@
 package at.irian.ankorsamples.animals.viewmodel.animal;
 
-import at.irian.ankor.ref.Ref;
+import at.irian.ankor.annotation.AutoSignal;
 import at.irian.ankorsamples.animals.domain.animal.AnimalFamily;
 import at.irian.ankorsamples.animals.domain.animal.AnimalType;
 
@@ -12,17 +12,20 @@ import java.util.List;
  * @author Thomas Spiegl
  */
 @SuppressWarnings("UnusedDeclaration")
+@AutoSignal
 public class AnimalSelectItems {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalSelectItems.class);
 
-    private final Ref myRef;
     private List<AnimalType> types;
     private List<AnimalFamily> families;
 
-    private AnimalSelectItems(Ref myRef, List<AnimalType> types) {
-        this.myRef = myRef;
-        this.types = types;
-        this.families = Collections.emptyList();
+    public AnimalSelectItems() {
+        this(Collections.<AnimalType>emptyList());
+    }
+
+    public AnimalSelectItems(List<AnimalType> types) {
+        this.types = withNullItem(types);
+        this.families = withNullItem(Collections.<AnimalFamily>emptyList());
     }
 
     public List<AnimalType> getTypes() {
@@ -30,8 +33,7 @@ public class AnimalSelectItems {
     }
 
     public void setTypes(List<AnimalType> types) {
-        this.types = types;
-        myRef.appendPath("types").signalValueChange();
+        this.types = withNullItem(types);
     }
 
     public List<AnimalFamily> getFamilies() {
@@ -39,20 +41,14 @@ public class AnimalSelectItems {
     }
 
     public void setFamilies(List<AnimalFamily> families) {
-        this.families = families;
-        myRef.appendPath("families").signalValueChange();
+        this.families = withNullItem(families);
     }
 
-
-    public static <T> List<T> createSelectItemsFrom(List<T> list) {
+    private static <T> List<T> withNullItem(List<T> list) {
         List<T> selectItems = new ArrayList<>(list.size() + 1);
         selectItems.add(null);
         selectItems.addAll(list);
         return selectItems;
-    }
-
-    public static AnimalSelectItems create(Ref selectItemsRef, List<AnimalType> types) {
-        return new AnimalSelectItems(selectItemsRef, createSelectItemsFrom(types));
     }
 
 }

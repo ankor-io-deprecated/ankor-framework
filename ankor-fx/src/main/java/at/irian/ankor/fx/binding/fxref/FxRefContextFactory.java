@@ -9,6 +9,7 @@ import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.session.ModelRootFactory;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
+import at.irian.ankor.viewmodel.factory.BeanFactory;
 import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
 
 import java.util.List;
@@ -24,17 +25,20 @@ class FxRefContextFactory implements RefContextFactory {
     private final Scheduler scheduler;
     private final ModelRootFactory modelRootFactory;
     private BeanMetadataProvider metadataProvider;
+    private BeanFactory beanFactory;
 
     public FxRefContextFactory(BeanResolver beanResolver,
                                List<ViewModelPostProcessor> viewModelPostProcessors,
                                Scheduler scheduler,
                                ModelRootFactory modelRootFactory,
-                               BeanMetadataProvider metadataProvider) {
+                               BeanMetadataProvider metadataProvider,
+                               BeanFactory beanFactory) {
         this.beanResolver = beanResolver;
         this.viewModelPostProcessors = viewModelPostProcessors;
         this.scheduler = scheduler;
         this.modelRootFactory = modelRootFactory;
         this.metadataProvider = metadataProvider;
+        this.beanFactory = beanFactory;
     }
 
     @Override
@@ -44,7 +48,8 @@ class FxRefContextFactory implements RefContextFactory {
                                           modelContext,
                                           viewModelPostProcessors,
                                           scheduler,
-                                          metadataProvider);
+                                          metadataProvider,
+                                          beanFactory);
     }
 
 }

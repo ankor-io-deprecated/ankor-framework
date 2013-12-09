@@ -14,7 +14,7 @@ import at.irian.ankorsamples.animals.viewmodel.animal.AnimalSearchModel;
 import java.util.HashMap;
 import java.util.Map;
 
-import static at.irian.ankor.viewmodel.factory.AnkorBeanFactory.newInstance;
+import static at.irian.ankor.viewmodel.factory.BeanFactories.newInstance;
 
 /**
  * @author Thomas Spiegl
@@ -49,10 +49,12 @@ public class ContentPane {
         Ref panelsRef = myRef.appendPath("panels");
         //Ref panelRef = panelsRef.appendLiteralKey(panelId);  todo: why does this not work?
         Ref panelRef = panelsRef.appendPath(panelId);
+        Ref panelNameRef = panelRef.appendPath("name");
 
-        AnimalSearchModel model = new AnimalSearchModel(panelRef.appendPath("model"),
-                                                        panelRef.appendPath("name").<String>toTypedRef(),
-                                                        serverStatusRef, resourcesRef, animalRepository);
+        Ref animalSearchModelRef = panelRef.appendPath("model");
+        AnimalSearchModel model = newInstance(AnimalSearchModel.class, animalSearchModelRef,
+                                              panelNameRef.<String>toTypedRef(),
+                                              serverStatusRef, resourcesRef, animalRepository);
         model.reloadAnimals();
 
         Panel<AnimalSearchModel> panel = new Panel<>(panelId, panelRef, model.getPanelName(), "animalSearch",
@@ -74,7 +76,6 @@ public class ContentPane {
         Ref modelRef = panelRef.appendPath("model");
 
         AnimalDetailModel model = newInstance(AnimalDetailModel.class, modelRef,
-                                              modelRef,
                                               panelRef.appendPath("name").<String>toTypedRef(),
                                               serverStatusRef,
                                               animalRepository,

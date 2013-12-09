@@ -18,27 +18,28 @@ import java.util.List;
 public class ViewModelChangeEventListener extends ChangeEventListener {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnnotationChangeEventListener.class);
 
+    private final Ref viewModelBeanRef;
     private final WeakReference<Object> beanReference;
     private final Collection<ChangeListenerMetadata> changeListenersMetadata;
     private final TouchHelper touchHelper;
 
-    public ViewModelChangeEventListener(Ref watchedProperty,
+    public ViewModelChangeEventListener(Ref viewModelBeanRef,
                                         Object bean,
                                         Collection<ChangeListenerMetadata> changeListenersMetadata) {
-        super(watchedProperty);
+        super(null);
+        this.viewModelBeanRef = viewModelBeanRef;
         this.beanReference = new WeakReference<Object>(bean);
         this.changeListenersMetadata = changeListenersMetadata;
-        this.touchHelper = new TouchHelper(watchedProperty);
+        this.touchHelper = new TouchHelper(viewModelBeanRef);
     }
 
     @Override
     public void process(ChangeEvent event) {
         Object bean = beanReference.get();
-        Ref watchedProperty = getWatchedProperty();
-        if (bean != null && watchedProperty.isValid()) {
+        if (bean != null && viewModelBeanRef.isValid()) {
             Ref changedProperty = event.getChangedProperty();
             for (ChangeListenerMetadata changeListenerMetadata : changeListenersMetadata) {
-                RefMatcher.Result match = changeListenerMetadata.getPattern().match(changedProperty, watchedProperty);
+                RefMatcher.Result match = changeListenerMetadata.getPattern().match(changedProperty, viewModelBeanRef);
                 if (match.isMatch()) {
                     InvocationMetadata invocation = changeListenerMetadata.getInvocation();
                     invoke(bean, invocation, match.getBackRefs());
@@ -61,7 +62,7 @@ public class ViewModelChangeEventListener extends ChangeEventListener {
 
     @Override
     public boolean isDiscardable() {
-        return beanReference.get() == null || !getWatchedProperty().isValid();
+        return beanReference.get() == null || !viewModelBeanRef.isValid();
     }
 
 }

@@ -25,6 +25,8 @@ import at.irian.ankor.ref.RefContextFactoryProvider;
 import at.irian.ankor.ref.el.ELRefContextFactoryProvider;
 import at.irian.ankor.session.*;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
+import at.irian.ankor.viewmodel.factory.BeanFactory;
+import at.irian.ankor.viewmodel.factory.ReflectionBeanFactory;
 import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
 import at.irian.ankor.websocket.AnkorClientEndpoint;
 import at.irian.ankor.websocket.WebSocketMessageBus;
@@ -63,6 +65,7 @@ public class AnkorSystemBuilder {
     private List<ModelEventListener> customGlobalEventListeners;
     private RefContextFactoryProvider refContextFactoryProvider;
     private BeanMetadataProvider beanMetadataProvider;
+    private BeanFactory beanFactory;
 
     public AnkorSystemBuilder() {
         this.systemName = null;
@@ -76,6 +79,7 @@ public class AnkorSystemBuilder {
         this.modelContextFactory = null;
         this.refContextFactoryProvider = new ELRefContextFactoryProvider();
         this.beanMetadataProvider = new AnnotationViewModelBeanIntrospector();
+        this.beanFactory = null;
     }
 
     public AnkorSystemBuilder withName(String name) {
@@ -133,6 +137,12 @@ public class AnkorSystemBuilder {
         return this;
     }
 
+    public AnkorSystemBuilder withBeanFactory(BeanFactory beanFactory) {
+        this.beanFactory = beanFactory;
+        return this;
+    }
+
+
     public AnkorSystem createServer() {
 
         String systemName = getServerSystemName();
@@ -142,12 +152,15 @@ public class AnkorSystemBuilder {
         ModelRootFactory modelRootFactory = getServerModelRootFactory();
 
         BeanMetadataProvider beanMetadataProvider = getMetadataProvider();
+        BeanFactory beanFactory = getBeanFactory();
 
         RefContextFactory refContextFactory =
                 refContextFactoryProvider.createRefContextFactory(getServerBeanResolver(),
                                                                   getServerViewModelPostProcessors(),
                                                                   getScheduler(),
-                                                                  modelRootFactory, beanMetadataProvider);
+                                                                  modelRootFactory,
+                                                                  beanMetadataProvider,
+                                                                  beanFactory);
 
         MessageFactory messageFactory = getServerMessageFactory();
 
@@ -180,6 +193,13 @@ public class AnkorSystemBuilder {
                                modelContextManager,
                                sessionManager,
                                remoteMessageListener);
+    }
+
+    private BeanFactory getBeanFactory() {
+        if (beanFactory == null) {
+            beanFactory = new ReflectionBeanFactory(getMetadataProvider());
+        }
+        return beanFactory;
     }
 
     private BeanMetadataProvider getMetadataProvider() {
@@ -218,13 +238,15 @@ public class AnkorSystemBuilder {
         ModelRootFactory modelRootFactory = getClientModelRootFactory();
 
         BeanMetadataProvider beanMetadataProvider = getMetadataProvider();
+        BeanFactory beanFactory = getBeanFactory();
 
         RefContextFactory refContextFactory =
                 refContextFactoryProvider.createRefContextFactory(getClientBeanResolver(),
                                                                   null,
                                                                   getScheduler(),
                                                                   modelRootFactory,
-                                                                  beanMetadataProvider);
+                                                                  beanMetadataProvider,
+                                                                  beanFactory);
 
         MessageFactory messageFactory = getClientMessageFactory();
 

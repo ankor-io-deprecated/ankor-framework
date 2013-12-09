@@ -6,11 +6,9 @@ import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.annotation.Param;
 import at.irian.ankor.big.AnkorBigList;
 import at.irian.ankor.delay.FloodControl;
-import at.irian.ankor.messaging.AnkorIgnore;
-import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.TypedRef;
-import at.irian.ankor.viewmodel.ViewModelBase;
+import at.irian.ankor.viewmodel.factory.BeanFactories;
 import at.irian.ankor.viewmodel.watch.ExtendedList;
 import at.irian.ankor.viewmodel.watch.ExtendedListWrapper;
 import at.irian.ankorsamples.animals.domain.animal.Animal;
@@ -23,27 +21,22 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static at.irian.ankor.viewmodel.factory.AnkorBeanFactory.newInstance;
+import static at.irian.ankor.viewmodel.factory.BeanFactories.newPropertyInstance;
 
 /**
 * @author Thomas Spiegl
 */
 @SuppressWarnings("UnusedDeclaration")
-public class AnimalSearchModel extends ViewModelBase {
+public class AnimalSearchModel {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalSearchModel.class);
 
     private final TypedRef<String> panelNameRef;
     private final TypedRef<String> serverStatusRef;
-    private final Ref resourcesRef;
-
-    @AnkorIgnore
+    private final Ref i18nResourcesRef;
     private final AnimalRepository animalRepository;
-    @AnkorIgnore
+    private final AnimalSearchFilter filter;
+    private final AnimalSelectItems selectItems;
     private final FloodControl reloadFloodControl;
-
-    private AnimalSearchFilter filter;
-
-    private AnimalSelectItems selectItems;
 
     @AnkorBigList(missingElementSubstitute = EmptyAnimal.class,
                   threshold = 500,
@@ -52,21 +45,22 @@ public class AnimalSearchModel extends ViewModelBase {
     @AnkorWatched(diffThreshold = 20)
     private ExtendedList<Animal> animals;
 
-    public AnimalSearchModel(Ref animalSearchModelRef,
-                             TypedRef<String> panelNameRef,
+    public AnimalSearchModel(TypedRef<String> panelNameRef,
                              TypedRef<String> serverStatusRef,
-                             Ref resourcesRef,
+                             Ref i18nResourcesRef,
                              AnimalRepository animalRepository) {
-        super(animalSearchModelRef);
         this.panelNameRef = panelNameRef;
         this.serverStatusRef = serverStatusRef;
-        this.resourcesRef = resourcesRef;
+        this.i18nResourcesRef = i18nResourcesRef;
         this.animalRepository = animalRepository;
-        this.filter = newInstance(AnimalSearchFilter.class, animalSearchModelRef.appendPath("filter"));
-        this.selectItems = AnimalSelectItems.create(animalSearchModelRef.appendPath("selectItems"), animalRepository.getAnimalTypes());
+
+        this.filter = newPropertyInstance(AnimalSearchFilter.class, this, "filter");
+        this.selectItems = newPropertyInstance(AnimalSelectItems.class, this, "selectItems",
+                                               animalRepository.getAnimalTypes());
+
         this.animals = new ExtendedListWrapper<>(new ArrayList<Animal>());
-        this.reloadFloodControl = new FloodControl(animalSearchModelRef, 500L);
-        AnkorPatterns.initViewModel(this);
+
+        this.reloadFloodControl = new FloodControl(BeanFactories.currentRef(), 500L);  // todo:  annotation
     }
 
     public AnimalSearchFilter getFilter() {
@@ -111,7 +105,7 @@ public class AnimalSearchModel extends ViewModelBase {
 
     public String getPanelName() {
         String name = filter.getName();
-        return new PanelNameCreator().createName(resourcesRef.appendLiteralKey("SearchForAnimal").<String>getValue(), name);
+        return new PanelNameCreator().createName(i18nResourcesRef.appendLiteralKey("SearchForAnimal").<String>getValue(), name);
     }
 
     @ChangeListener(pattern = ".filter.type")
@@ -124,7 +118,7 @@ public class AnimalSearchModel extends ViewModelBase {
         } else {
             families = Collections.emptyList();
         }
-        selectItems.setFamilies(AnimalSelectItems.createSelectItemsFrom(families));
+        selectItems.setFamilies(families);
 
         //noinspection SuspiciousMethodCalls
         if (!families.contains(filter.getFamily())) {

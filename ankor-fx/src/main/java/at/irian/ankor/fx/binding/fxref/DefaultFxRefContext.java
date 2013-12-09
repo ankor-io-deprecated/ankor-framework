@@ -6,6 +6,7 @@ import at.irian.ankor.el.ELSupport;
 import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.ref.el.ELRefContext;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
+import at.irian.ankor.viewmodel.factory.BeanFactory;
 import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
 
 import java.util.List;
@@ -21,21 +22,23 @@ class DefaultFxRefContext extends ELRefContext implements FxRefContext {
                                   List<ViewModelPostProcessor> viewModelPostProcessors,
                                   Scheduler scheduler,
                                   RefFactory refFactory,
-                                  BeanMetadataProvider metadataProvider) {
-        super(elSupport, modelContext, viewModelPostProcessors, scheduler, refFactory, metadataProvider);
+                                  BeanMetadataProvider metadataProvider,
+                                  BeanFactory beanFactory) {
+        super(elSupport, modelContext, viewModelPostProcessors, scheduler, refFactory, metadataProvider, beanFactory);
     }
 
     protected static DefaultFxRefContext create(ELSupport elSupport,
                                                 ModelContext modelContext,
                                                 List<ViewModelPostProcessor> viewModelPostProcessors,
                                                 Scheduler scheduler,
-                                                BeanMetadataProvider metadataProvider) {
+                                                BeanMetadataProvider metadataProvider,
+                                                BeanFactory beanFactory) {
         DefaultFxRefFactory refFactory = new DefaultFxRefFactory();
         DefaultFxRefContext refContext = new DefaultFxRefContext(elSupport,
                                                    modelContext,
                                                    viewModelPostProcessors,
                                                    scheduler,
-                                                   refFactory, metadataProvider);
+                                                   refFactory, metadataProvider, beanFactory);
         refFactory.setRefContext(refContext); // bi-directional relation - not nice but no idea by now how to make it nice...  ;-)
         return refContext;
     }

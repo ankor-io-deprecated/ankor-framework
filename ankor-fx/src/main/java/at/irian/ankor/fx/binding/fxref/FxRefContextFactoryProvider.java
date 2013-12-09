@@ -6,6 +6,7 @@ import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.ref.RefContextFactoryProvider;
 import at.irian.ankor.session.ModelRootFactory;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
+import at.irian.ankor.viewmodel.factory.BeanFactory;
 import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
 
 import java.util.List;
@@ -19,8 +20,8 @@ public class FxRefContextFactoryProvider extends RefContextFactoryProvider {
                                                      List<ViewModelPostProcessor> viewModelPostProcessors,
                                                      Scheduler scheduler,
                                                      ModelRootFactory modelRootFactory,
-                                                     BeanMetadataProvider metadataProvider) {
+                                                     BeanMetadataProvider metadataProvider, BeanFactory beanFactory) {
         return new FxRefContextFactory(beanResolver, viewModelPostProcessors, scheduler, modelRootFactory,
-                                       metadataProvider);
+                                       metadataProvider, beanFactory);
     }
 }

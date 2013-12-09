@@ -5,6 +5,7 @@ import at.irian.ankor.ref.match.RefMatcherFactory;
 import at.irian.ankor.ref.match.pattern.AntlrRefMatcherFactory;
 import at.irian.ankor.viewmodel.metadata.*;
 
+import java.beans.Introspector;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -50,10 +51,15 @@ public class AnnotationViewModelBeanIntrospector implements BeanMetadataProvider
 
     private BeanMetadata createBeanTypeInfo(Class<?> type) {
         BeanMetadata beanMetadata = new BeanMetadata();
+        //beanMetadata = scanType(beanMetadata, type);
         beanMetadata = scanFields(beanMetadata, type);
         beanMetadata = scanMethods(beanMetadata, type);
         return beanMetadata;
     }
+
+//    private BeanMetadata scanType(BeanMetadata beanMetadata, Class<?> type) {
+//        return beanMetadata;
+//    }
 
     private BeanMetadata scanFields(BeanMetadata beanMetadata, Class<?> type) {
 
@@ -78,7 +84,11 @@ public class AnnotationViewModelBeanIntrospector implements BeanMetadataProvider
     }
 
     private BeanMetadata scanMethods(BeanMetadata beanMetadata, Class<?> type) {
+
+        boolean autoSignalForAllSetters = (type.getAnnotation(AutoSignal.class) != null);
+
         Collection<ChangeListenerMetadata> changeListeners = new ArrayList<ChangeListenerMetadata>();
+        Collection<ChangeSignalMetadata> changeSignals = new ArrayList<ChangeSignalMetadata>();
         Collection<ActionListenerMetadata> actionListeners = new ArrayList<ActionListenerMetadata>();
         for (Method method : type.getDeclaredMethods()) {
 
@@ -111,11 +121,35 @@ public class AnnotationViewModelBeanIntrospector implements BeanMetadataProvider
                 }
             }
 
-        }
+            boolean setterAutoSignal = false;
+            AutoSignal autoSignalAnnotation = method.getAnnotation(AutoSignal.class);
+            if (autoSignalAnnotation != null) {
+                String[] paths = autoSignalAnnotation.value();
+                if (paths.length == 0 || (paths.length == 1 && paths[0].isEmpty())) {
+                    if (isSetter(method)) {
+                        String propertyName = Introspector.decapitalize(method.getName().substring(3));
+                        changeSignals.add(new ChangeSignalMetadata(method, '.' + propertyName));
+                        setterAutoSignal = true;
+                    } else {
+                        throw new IllegalStateException("Method " + method + " is no setter, but is annotated with " + AutoSignal.class.getName() + " without a path");
+                    }
+                } else {
+                    for (String path : paths) {
+                        changeSignals.add(new ChangeSignalMetadata(method, path));
+                    }
+                }
+            }
 
+            if (!setterAutoSignal && autoSignalForAllSetters && isSetter(method)) {
+                String propertyName = Introspector.decapitalize(method.getName().substring(3));
+                changeSignals.add(new ChangeSignalMetadata(method, '.' + propertyName));
+            }
+
+        }
 
         beanMetadata = beanMetadata.withChangeListeners(changeListeners);
         beanMetadata = beanMetadata.withActionListeners(actionListeners);
+        beanMetadata = beanMetadata.withChangeSignals(changeSignals);
 
         Class<?> superclass = type.getSuperclass();
         if (superclass != null) {
@@ -123,6 +157,12 @@ public class AnnotationViewModelBeanIntrospector implements BeanMetadataProvider
         }
 
         return beanMetadata;
+    }
+
+    private boolean isSetter(Method method) {
+        return method.getName().startsWith("set")
+               && method.getParameterTypes().length == 1
+               && method.getReturnType().equals(Void.TYPE);
     }
 
     private Collection<TouchedPropertyMetadata> getTouchedProperties(Method method) {
