@@ -3,8 +3,7 @@ define([
     "./Model",
     "./Path",
     "./Ref",
-    "./events/ChangeEvent"
-], function(ListenerRegistry, Model, Path, Ref, ChangeEvent) {
+], function(ListenerRegistry, Model, Path, Ref) {
     var AnkorSystem = function(options) {
         if (!options.utils) {
             throw new Error("AnkorSystem missing utils");
@@ -45,23 +44,7 @@ define([
 
     AnkorSystem.prototype.onIncomingEvent = function(event) {
         var ref = this.getRef(event.path);
-
-        if (event instanceof ChangeEvent) {
-            if (event.type === ChangeEvent.TYPE.VALUE) {
-                ref.setValue(event.value, event);
-            }
-            else if (event.type === ChangeEvent.TYPE.DEL) {
-                ref.append(event.key.toString()).del(event);
-            }
-            else if (event.type === ChangeEvent.TYPE.INSERT) {
-                ref.insert(event.key.toString(), event.value, event);
-            }
-            else if (event.type === ChangeEvent.TYPE.REPLACE) {
-                for(var i = 0; i < event.value.length; i++) {
-                    ref.appendIndex(event.key + i).setValue(event.value[i], event);
-                }
-            }
-        }
+        ref._handleEvent(event);
     };
 
     return AnkorSystem;

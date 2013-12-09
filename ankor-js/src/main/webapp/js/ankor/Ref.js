@@ -39,7 +39,7 @@ define([
         return this.ankorSystem.model.getValue(this.path);
     };
 
-    Ref.prototype.setValue = function(value, eventOrEventSource) {
+    Ref.prototype.setValue = function(value, source) {
         //Apply value to model
         this.ankorSystem.model.setValue(this.path, value);
 
@@ -48,25 +48,18 @@ define([
             this.ankorSystem.removeInvalidListeners(this.path.parent());
         }
 
-        //Event logic
-        var event = eventOrEventSource;
-        var sendEvent = false;
-        if (!(event instanceof BaseEvent)) {
-            sendEvent = true;
-            event = new ChangeEvent(this.path, eventOrEventSource, ChangeEvent.TYPE.VALUE, null, value);
-        }
+        //Build event
+        var event = new ChangeEvent(this.path, source, ChangeEvent.TYPE.VALUE, null, value);
 
         //Trigger listeners
         this.ankorSystem.triggerListeners(this.path, event);
 
         //Send message
-        if (sendEvent) {
-            this.ankorSystem.transport.sendEvent(event);
-        }
+        this.ankorSystem.transport.sendEvent(event);
     };
 
     //Removes this ref from the parent (regardless of map or array)
-    Ref.prototype.del = function(eventOrEventSource) {
+    Ref.prototype.del = function(source) {
         //Apply change to model
         this.ankorSystem.model.del(this.path);
 
@@ -74,41 +67,27 @@ define([
         var parentPath = this.path.parent();
         this.ankorSystem.removeInvalidListeners(parentPath);
 
-        //Event logic
-        var event = eventOrEventSource;
-        var sendEvent = false;
-        if (!(event instanceof BaseEvent)) {
-            sendEvent = true;
-            event = new ChangeEvent(parentPath, eventOrEventSource, ChangeEvent.TYPE.DEL, this.propertyName(), null);
-        }
+        //Build event
+        var event = new ChangeEvent(parentPath, source, ChangeEvent.TYPE.DEL, this.propertyName(), null);
 
         //Trigger listeners
         this.ankorSystem.triggerListeners(parentPath, event);
 
         //Send message
-        if (sendEvent) {
-            this.ankorSystem.transport.sendEvent(event);
-        }
+        this.ankorSystem.transport.sendEvent(event);
     };
 
-    Ref.prototype.insert = function(index, value, eventOrEventSource) {
+    Ref.prototype.insert = function(index, value, source) {
         this.ankorSystem.model.insert(this.path, index, value);
 
-        //Event logic
-        var event = eventOrEventSource;
-        var sendEvent = false;
-        if (!(event instanceof BaseEvent)) {
-            sendEvent = true;
-            event = new ChangeEvent(this.path, eventOrEventSource, ChangeEvent.TYPE.INSERT, index, value);
-        }
+        //Build event
+        var event = new ChangeEvent(this.path, source, ChangeEvent.TYPE.INSERT, index, value);
 
         //Trigger listeners
         this.ankorSystem.triggerListeners(this.path, event);
 
         //Send message
-        if (sendEvent) {
-            this.ankorSystem.transport.sendEvent(event);
-        }
+        this.ankorSystem.transport.sendEvent(event);
     };
 
     Ref.prototype.size = function() {
@@ -122,6 +101,54 @@ define([
     ///////////////////
     // EVENT METHODS //
     ///////////////////
+
+    Ref.prototype._handleEvent = function(event) {
+        if (event instanceof ChangeEvent) {
+            if (event.type === ChangeEvent.TYPE.VALUE) {
+                //Apply value to model
+                this.ankorSystem.model.setValue(this.path, event.value);
+
+                //Cleanup listeners
+                if (value === null) {
+                    this.ankorSystem.removeInvalidListeners(this.path.parent());
+                }
+
+                //Trigger listeners
+                this.ankorSystem.triggerListeners(this.path, event);
+            }
+            else if (event.type === ChangeEvent.TYPE.DEL) {
+                //Apply change to model
+                this.ankorSystem.model.del(this.path.append(event.key.toString()));
+
+                //Cleanup listeners
+                this.ankorSystem.removeInvalidListeners(this.path);
+
+                //Trigger listeners
+                this.ankorSystem.triggerListeners(this.path, event);
+            }
+            else if (event.type === ChangeEvent.TYPE.INSERT) {
+                //Apply change to model
+                this.ankorSystem.model.insert(this.path, event.key.toString(), event.value);
+
+                //Trigger listeners
+                this.ankorSystem.triggerListeners(this.path, event);
+            }
+            else if (event.type === ChangeEvent.TYPE.REPLACE) {
+                //Apply change to model
+                for(var i = 0; i < event.value.length; i++) {
+                    var path = this.path.appendIndex(event.key + i);
+                    var value = event.value[i];
+                    this.ankorSystem.model.setValue(path, value);
+                }
+
+                //Cleanup listeners
+                this.ankorSystem.removeInvalidListeners(this.path);
+
+                //Trigger listeners
+                this.ankorSystem.triggerListeners(this.path, event);
+            }
+        }
+    };
 
     Ref.prototype.fire = function(actionName) {
         var event = new ActionEvent(this.path, null, actionName);
