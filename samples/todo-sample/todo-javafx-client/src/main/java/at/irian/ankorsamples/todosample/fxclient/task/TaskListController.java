@@ -9,6 +9,7 @@ import at.irian.ankorsamples.todosample.fxclient.App;
 import at.irian.ankorsamples.todosample.viewmodel.TaskModel;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -57,8 +58,8 @@ public class TaskListController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Ref rootRef = refFactory().ref("root");
-        FXControllerAnnotationSupport.scan(rootRef, this);
         rootRef.fire(new Action("init"));
+        FXControllerAnnotationSupport.scan(rootRef, this);
     }
 
     @ChangeListener(pattern = "root")
@@ -77,8 +78,9 @@ public class TaskListController implements Initializable {
         todoCountNum.textProperty().bind(itemsLeftAsString);
         todoCountText.textProperty().bind(modelRef.appendPath("itemsLeftText").<String>fxProperty());
 
-        footerTop.visibleProperty().bind(modelRef.appendPath("footerVisibility").<Boolean>fxProperty());
-        footerBottom.visibleProperty().bind(modelRef.appendPath("footerVisibility").<Boolean>fxProperty());
+        Property<Boolean> footerVisibility = modelRef.appendPath("footerVisibility").<Boolean>fxProperty();
+        footerTop.visibleProperty().bind(footerVisibility);
+        footerBottom.visibleProperty().bind(footerVisibility);
 
         toggleAllButton.visibleProperty().bind(modelRef.appendPath("footerVisibility").<Boolean>fxProperty());
         toggleAllButton.selectedProperty().bindBidirectional(modelRef.appendPath("toggleAll").<Boolean>fxProperty());

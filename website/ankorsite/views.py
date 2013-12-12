@@ -1,9 +1,16 @@
+import os
 import os.path
 from django.http import HttpResponse
 from django.template import RequestContext, loader
 from django.core.files import File
 
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
+
+def get_num_tutorials():
+    path, dirs, files = os.walk(SITE_ROOT + '/templates/tutorial/steps/').next()
+    return len(files)
+
+num_tutorials = get_num_tutorials()
 
 def index(request):
     template = loader.get_template('index.html')
@@ -20,18 +27,17 @@ def download(request):
     return HttpResponse(template.render(context))
 
 def tutorials(request, type, step):
-    template = loader.get_template('tutorial/tutorial_' + type + '_' + step + '.html')
+    template = loader.get_template('tutorial/steps/tutorial_' + type + '_' + step + '.html')
 
-    path = open(SITE_ROOT + '/templates/tutorial/tutorial_fx_' + step + '.md', 'r')
+    path = open(SITE_ROOT + '/templates/tutorial/steps/tutorial_fx_' + step + '.md', 'r')
     f = File(path)
     content = f.read()
 
     step = int(step)
 
-    # FIXME
     next_step = int(step) + 1
-    if next_step > 2:
-        next_step = 2
+    if next_step > num_tutorials/2 - 1:
+        next_step = num_tutorials/2 - 1
     previous_step = int(step) - 1
     if previous_step < 0:
         previous_step = 0

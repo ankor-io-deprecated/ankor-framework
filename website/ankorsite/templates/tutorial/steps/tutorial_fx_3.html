@@ -10,14 +10,13 @@
         {% include "tutorial/tutorial_fx_menu.html" %}
     </div><!--/span-->
     <div class="span9">
-        {% include "tutorial/tutorial_fx_head.html" with tutorial_title='Initializing Ankor' tutorial_step='2' %}
+        {% include "tutorial/tutorial_fx_head.html" with tutorial_title='Binding your first Property' tutorial_step='3' %}
 
-        {% load staticfiles %}
         {% load markdown %}
         {{ content|markdown }}
 
         <hr/>
-        <a class="btn btn-primary" href="/tutorials/fx/3">Next »</a>&nbsp;&nbsp;In the next step we will bind the first UI component to an Ankor property.
+        <a class="btn btn-primary" href="/tutorials/fx/3">Next »</a>&nbsp;&nbsp; Using Actions to add todos to the list.
 
     </div><!--/span-->
 </div><!--/row-->

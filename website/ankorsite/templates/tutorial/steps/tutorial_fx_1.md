@@ -6,7 +6,7 @@ Both ways work the same and the rest of the tutorial does not depend on
 your choice. However, chose the first option if you want to get going and the later if you'd like to get your
 hands dirty.
 
-Open `App.java` and add the following lines:
+Open [`App.java`][1] and add either of the the following lines:
 
 <ul class="nav nav-tabs">
     <li class="active" ><a href="#tab11" data-toggle="tab">AnkorApplication</a></li>
@@ -37,13 +37,15 @@ Open `App.java` and add the following lines:
         return "wss://ankor-todo-sample.irian.at/websocket/ankor";
     }
 }</pre></code>
-
-The `AnkorApplication` class does all the plumbing and wiring for you. When you enter the
-`startFXClient` method a WebSocket connection has already been set up, the Ankor system
-has received an id from the server and sends heartbeat messages to the server.
+<p>The <code>AnkorApplication</code> class does all the plumbing and wiring for you. When you enter the
+<code>startFXClient</code> method a WebSocket connection has already been set up, the Ankor system
+has received an id from the server and sends heartbeat messages to the server in fixed intervals.</p>
 
 </div>
+
 <div class="tab-pane" id="tab12">
+<p>This is an alternative implementation of the <code>App</code> class providing the same functionality:</p>
+
 <pre><code>public class App extends javafx.application.Application {
 
     public static void main(String[] args) {
@@ -97,6 +99,10 @@ styled for you. Building an JavaFX app from ground up is outside the scope of th
 ![fx-step-1-1](/static/images/tutorial/fx-step-1-1.png)
 
 If the app doesn't start the test server could be offline.
-In this case you should head over to the <a>server tutorial</a> as well. You can check the online status via
-[websocket.org](http://www.websocket.org/echo.html). A running Ankor server should return an UUID
-upon connecting.
+You can check the online status via
+[websocket.org](http://www.websocket.org/echo.html). The WebSocket url is `wss://ankor-todo-sample.irian.at/websocket/ankor`.
+A running Ankor server should return an UUID upon connecting.
+
+Note that you can always [write your own server](#). 
+
+[1]: https://github.com/ankor-io/ankor-todo/blob/fx-step-1/todo-javafx-client/src/main/java/io/ankor/tutorial/App.java

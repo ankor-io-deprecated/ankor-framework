@@ -10,16 +10,15 @@
         {% include "tutorial/tutorial_fx_menu.html" %}
     </div><!--/span-->
     <div class="span9">
-        {% include "tutorial/tutorial_fx_head.html" with tutorial_title='Bootstrap' %}
+        {% include "tutorial/tutorial_fx_head.html" with tutorial_title='Starting the Application' %}
 
-        {% load staticfiles %}
         {% load markdown %}
         {{ content|markdown }}
 
         <hr/>
-        <a class="btn btn-primary" href="/tutorials/fx/1">Next »</a>&nbsp;&nbsp;Learn how to write your first Ankor Application.
+        <a class="btn btn-primary" href="/tutorials/fx/2">Next »</a>&nbsp;&nbsp;If everything works, head over to the next step.
 
-    </div><!--/span-->
+    </div><!--/span9-->
 </div><!--/row-->
 
 {% endblock %}

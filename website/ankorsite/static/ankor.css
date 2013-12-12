@@ -53,8 +53,16 @@ a {
     cursor: pointer;
 }
 
+h1, h2, h3, h4, h5, h6 {
+    margin: 20px 0 10px;
+}
+
 code, pre {
     font-family: Menlo, Consolas, "Courier New", monospace;
+}
+
+pre.prettyprint {
+    margin-bottom: 10px;
 }
 
 .tab-content {
@@ -75,4 +83,12 @@ code, pre {
 
 .nav-tabs > li.active:hover a {
     background-color: #f5f5f5;
+}
+
+p code {
+    color: #333;
+}
+
+p a code {
+    color: #d41;
 }
