@@ -4,7 +4,7 @@ In this tutorial we'll be building a simple Ankor application.
 We'll explain how to setup the application, write the first
 view model and bind the model to your UI components via WebSockets. While the transport layer doesn't really
 matter to Ankor, we'll be using WebSockets in this tutorial, as they are supported by both JavaFX and web browsers.
-When we are done the app will look like this:</p>
+When we are done the app will look like this:
 
 ![fx-step-0-1](/static/images/tutorial/fx-step-0-1.png)
 

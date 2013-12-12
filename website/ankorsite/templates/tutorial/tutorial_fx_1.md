@@ -1,12 +1,12 @@
-### Starting the Application</h3>
+### Starting the Application
 
-When creating an Ankor JavaFX application you have two choices. You can either extend then <code>AnkorApplication</code> class
+When creating an Ankor JavaFX application you have two choices. You can either extend then `AnkorApplication` class
 which starts the Ankor system for you or you can set up your Ankor system manually using a builder.
 Both ways work the same and the rest of the tutorial does not depend on
 your choice. However, chose the first option if you want to get going and the later if you'd like to get your
 hands dirty.
 
-Open <code>App.java</code> and add the following lines:</p>
+Open `App.java` and add the following lines:
 
 <ul class="nav nav-tabs">
     <li class="active" ><a href="#tab11" data-toggle="tab">AnkorApplication</a></li>
@@ -38,9 +38,9 @@ Open <code>App.java</code> and add the following lines:</p>
     }
 }</pre></code>
 
-The <code>AnkorApplication</code> class does all the plumbing and wiring for you. When you enter the
-<code>startFXClient</code> method a WebSocket connection has already been set up, the Ankor system
-has received an id from the server and sends heartbeat messages to the server.</p>
+The `AnkorApplication` class does all the plumbing and wiring for you. When you enter the
+`startFXClient` method a WebSocket connection has already been set up, the Ankor system
+has received an id from the server and sends heartbeat messages to the server.
 
 </div>
 <div class="tab-pane" id="tab12">
@@ -84,8 +84,8 @@ has received an id from the server and sends heartbeat messages to the server.</
 For now we are connecting to an existing Ankor server but we'll soon be learning how to set up our own.
 The test sever will be able to understand and process the messages that our todo application is going to send.
 This will give you the experience of an application developer adding a new client
-platform to an existing Ankor system. <br/>
-If you want to write your own server first you can do so by <a>heading over to the respective step</a>.
+platform to an existing Ankor system.
+If you want to write your own server first you can do so by [heading over to the respective step](#).
 
 You can now start the app and check if it throws any exceptions.
 
@@ -98,5 +98,5 @@ styled for you. Building an JavaFX app from ground up is outside the scope of th
 
 If the app doesn't start the test server could be offline.
 In this case you should head over to the <a>server tutorial</a> as well. You can check the online status via
-<a href="http://www.websocket.org/echo.html">websocket.org</a>. A running Ankor server should return an UUID
+[websocket.org](http://www.websocket.org/echo.html). A running Ankor server should return an UUID
 upon connecting.
