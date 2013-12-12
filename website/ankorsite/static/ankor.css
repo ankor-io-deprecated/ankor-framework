@@ -85,10 +85,12 @@ pre.prettyprint {
     background-color: #f5f5f5;
 }
 
-p code {
-    color: #333;
+code {
+    color: rgba(0, 0, 0, 0.75);
+    background-color: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.1);
 }
 
-p a code {
+a code {
     color: #d41;
 }
