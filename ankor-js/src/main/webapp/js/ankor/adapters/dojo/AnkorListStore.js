@@ -16,7 +16,7 @@ define([
 
         constructor: function(ref) {
             this.ref = ref;
-            this.observers = {};
+            this.observedResultSets = {};
             this.listenerHandle = null;
         },
 
@@ -41,106 +41,146 @@ define([
 
             var resultSet = QueryResults(results);
             resultSet.total = this.ref.size();
-            resultSet._ankorResultsetId_ = resultSetId++;
-            resultSet._ankorResultsetStart = start;
-            resultSet._ankorResultsetCount = count;
+            resultSet._ankorResultSetId = resultSetId++;
+            resultSet._ankorResultSetStart = start;
+            resultSet._ankorResultSetCount = count;
 
             resultSet.observe = function(listener, includeUpdates) {
-                store._registerObserver(this, listener, includeUpdates);
+                store._registerObservedResultSetListener(this, listener, includeUpdates);
+
+                //While the Dojo documentation says that resultSet.close should be used - it seems that only a handle returned by observe is used for this...
+                var handle = {};
+                handle.remove = handle.cancel = function() {
+                    store._unregisterObservedResultSetListener(resultSet, listener);
+                };
+                return handle;
             };
             resultSet.close = function() {
-                store._unregisterObserver(this);
+                store._unregisterObservedResultSet(this);
             };
 
             return resultSet;
         },
-        _registerObserver: function(resultSet, listener, includeUpdates) {
-            console.log("AnkorListStore REGISTEROBSERVER");
-
+        _registerObservedResultSetListener: function(resultSet, listenerCallback, includeUpdates) {
             if (!this.listenerHandle) {
                 this.listenerHandle = this.ref.addTreeChangeListener(lang.hitch(this, "_onAnkorUpdate"));
             }
 
-            this.observers[resultSet._ankorResultsetId_] = {
-                resultSet: resultSet,
-                listener: listener,
-                includeUpdates: includeUpdates
-            };
-        },
-        _unregisterObserver: function(resultSet) {
-            console.log("AnkorListStore UNREGISTEROBSERVER");
-
-            if (resultSet) {
-                delete this.observers[resultSet._ankorResultsetId_];
-            }
-
-            var openResultSets = 0;
-            for (var resultSetId in this.observers) {
-                if (this.observers.hasOwnProperty(resultSetId)) {
-                    openResultSets++;
+            if (!(resultSet._ankorResultSetId in this.observedResultSets)) {
+                this.observedResultSets[resultSet._ankorResultSetId] = {
+                    resultSet: resultSet,
+                    listeners: []
                 }
             }
-            if (openResultSets == 0) {
+
+            this.observedResultSets[resultSet._ankorResultSetId].listeners.push({
+                callback: listenerCallback,
+                includeUpdates: includeUpdates
+            });
+        },
+        _unregisterObservedResultSet: function(resultSet) {
+            if (resultSet && resultSet._ankorResultSetId in this.observedResultSets) {
+                delete this.observedResultSets[resultSet._ankorResultSetId];
+            }
+            this._cleanupListenerHandle();
+        },
+        _unregisterObservedResultSetListener: function(resultSet, listenerCallback) {
+            if (resultSet && resultSet._ankorResultSetId in this.observedResultSets) {
+                var listeners = this.observedResultSets[resultSet._ankorResultSetId].listeners.slice();
+                var filteredListeners = [];
+
+                for (var i = 0; i < listeners.length; i++) {
+                    if (listeners[i].callback !== listenerCallback) {
+                        filteredListeners.push(listeners[i]);
+                    }
+                }
+
+                if (filteredListeners.length == 0) {
+                    delete this.observedResultSets[resultSet._ankorResultSetId];
+                }
+                else {
+                    this.observedResultSets[resultSet._ankorResultSetId].listeners = filteredListeners;
+                }
+            }
+            this._cleanupListenerHandle();
+        },
+        _cleanupListenerHandle: function() {
+            if (!this.listenerHandle) {
+                return;
+            }
+
+            var observedResultSetCount = 0;
+            for (var resultSetId in this.observedResultSets) {
+                if (this.observedResultSets.hasOwnProperty(resultSetId)) {
+                    observedResultSetCount++;
+                }
+            }
+            if (observedResultSetCount == 0) {
                 this.listenerHandle.remove();
                 this.listenerHandle = null;
             }
         },
         _onAnkorUpdate: function(ref, event) {
-            console.log("AnkorListStore RESULTSET onAnkorUpdate", ref.path.toString(), event.path.toString(), event)
+            var index;
 
-            if (event.type == event.TYPE.VALUE) {
-                if (event.path.equals(this.ref.path)) {
-                    //Complete ref changed - this will result in a new store and should not be handled in here
-                    this.observers = {};
-                    this._unregisterObserver();
-                }
-                else {
-                    //Find out which item has changed
-                    var relativeEventPath = event.path.slice(ref.path.segments.length);
-                    var elementRef = this.ref.append([relativeEventPath.segments[0]]);
-                    var index = elementRef.propertyName();
-
-                    for (var resultSetId in this.observers) {
-                        if (!this.observers.hasOwnProperty(resultSetId)) {
-                            continue;
-                        }
-                        var observer = this.observers[resultSetId];
-                        if (!observer.includeUpdates) {
-                            continue;
-                        }
-                        if (index < observer.resultSet._ankorResultsetStart || (observer.resultSet._ankorResultsetCount != Infinity && index > observer.resultSet._ankorResultsetStart + observer.resultSet._ankorResultsetCount)) {
-                            continue;
-                        }
-                        var resultIndex = index - observer.resultSet._ankorResultsetStart;
-                        var value = elementRef.getValue();
-                        var object = this._buildObject(value, index);
-                        console.log(object, index, resultIndex);
-                        observer.listener(object, resultIndex, resultIndex);
-                    }
-                }
+            //Only handle the event if it's within a child (all event types)
+            if (!event.path.equals(this.ref.path)) {
+                index = event.path.segments[ref.path.segments.length].key;
+                this._notifyObserverUpdate(index);
             }
+            //Or it's a replace event
             else if (event.type == event.TYPE.REPLACE) {
-                console.log("REPLACE", event.path.toString())
+                index = event.key;
+                for (var i = 0; i < event.value.length; i++) {
+                    this._notifyObserverUpdate(index);
+                    index++;
+                }
             }
+        },
+        _notifyObserverUpdate: function(index) {
+            for (var resultSetId in this.observedResultSets) {
+                if (!this.observedResultSets.hasOwnProperty(resultSetId)) {
+                    continue;
+                }
+
+                var observedResultSet = this.observedResultSets[resultSetId];
+                for (var i = 0; i < observedResultSet.listeners.length; i++) {
+                    var listener = observedResultSet.listeners[i];
+                    if (!listener.includeUpdates) {
+                        continue;
+                    }
+                    if (index < observedResultSet.resultSet._ankorResultSetStart || (observedResultSet.resultSet._ankorResultSetCount != Infinity && index >= observedResultSet.resultSet._ankorResultSetStart + observedResultSet.resultSet._ankorResultSetCount)) {
+                        continue;
+                    }
+
+                    var elementRef = this.ref.appendIndex(index);
+                    var resultIndex = index - observedResultSet.resultSet._ankorResultSetStart;
+                    var value = elementRef.getValue();
+                    var object = this._buildObject(value, index);
+                    listener.callback(object, resultIndex, resultIndex);
+                }
+            }
+        },
+
+        ///////////
+        //EXTRA API
+        ///////////
+        destroy: function() {
+            this.observedResultSets = {};
+            this._cleanupListenerHandle();
         },
 
         ///////////////
         // STORE API //
         ///////////////
         get: function(index) {
-            console.log("AnkorListStore GET", index);
-
             var value = this.ref.appendIndex(index).getValue();
             return this._buildObject(value, index);
         },
         getIdentity: function(object) {
-            //console.log("AnkorListStore GETIDENTITY", object, object[this.idProperty]);
-
             return object[this.idProperty];
         },
         query: function(query, options) {
-            console.log("AnkorListStore QUERY", query, options);
-
             //Get start & count options
             options = options || {};
             var start = options.start || 0;
@@ -152,6 +192,10 @@ define([
                 data = this.ref.getValue();
             }
             else {
+                var size = this.ref.size();
+                if (count === Infinity || start + count > size) {
+                    count = this.ref.size() - start;
+                }
                 for (var i = 0; i < count; i++) {
                     data.push(this.ref.appendIndex(i + start).getValue());
                 }
@@ -165,9 +209,7 @@ define([
                 index++;
             }
 
-            var resultSet = this._buildResultSet(results, start, count);
-            console.log("AnkorListStore QUERY RESULT", resultSet);
-            return resultSet;
+            return this._buildResultSet(results, start, count);
         }
     });
 });

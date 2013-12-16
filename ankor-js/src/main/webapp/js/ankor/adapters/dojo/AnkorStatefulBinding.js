@@ -31,7 +31,7 @@ define([
             }
             else {
                 if (this.floodDelay == -1) {
-                    this.converter.toAnkor(this.ref, this.stateful.get(this.attribute));
+                    this.converter.toAnkor(this.ref, this.stateful.get(this.attribute), this);
                 }
                 else {
                     if (this.floodTimer) {
@@ -39,13 +39,14 @@ define([
                     }
                     this.floodTimer = setTimeout(lang.hitch(this, function() {
                         this.floodTimer = null;
-                        this.converter.toAnkor(this.ref, this.stateful.get(this.attribute));
+                        this.converter.toAnkor(this.ref, this.stateful.get(this.attribute), this);
                     }), this.floodDelay);
                 }
             }
         },
         onAnkorChange: function(ref, event) {
-            if (event && event.eventSource == this.stateful) {
+            //Ignore events that where caused by this binding
+            if (event && event.eventSource == this) {
                 return;
             }
 
@@ -60,6 +61,9 @@ define([
         remove: function() {
             this.watchHandle.remove();
             this.ankorHandle.remove();
+        },
+        cancel: function() {
+            this.remove();
         }
     });
 });

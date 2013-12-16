@@ -5,8 +5,8 @@ define([
         fromAnkor: function(ref) {
             return ref.getValue();
         },
-        toAnkor: function(ref, value) {
-            ref.setValue(value);
+        toAnkor: function(ref, value, eventSource) {
+            ref.setValue(value, eventSource);
         }
     });
 });
