@@ -22,7 +22,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This is the base class of a WebSocket endpoint that communicates with a {@link AnkorSystem}.<br>
@@ -160,15 +163,18 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
     }
 
     private void startAnkorSystem() {
-        AnkorActorSystem ankorActorSystem;
-        ankorSystem = new AnkorSystemBuilder()
+        ankorSystem = getAnkorSystemBuilder().createServer();
+        ankorSystem.start();
+    }
+
+    protected AnkorSystemBuilder getAnkorSystemBuilder() {
+        AnkorActorSystem ankorActorSystem = AnkorActorSystem.create();
+        return new AnkorSystemBuilder()
                 .withName(getName())
                 .withModelRootFactory(getModelRootFactory())
                 .withMessageBus((webSocketMessageBus = new WebSocketMessageBus(new ViewModelJsonMessageMapper())))
-                .withDispatcherFactory(new AkkaEventDispatcherFactory((ankorActorSystem = AnkorActorSystem.create())))
-                .withScheduler(new AkkaScheduler(ankorActorSystem))
-                .createServer();
-        ankorSystem.start();
+                .withDispatcherFactory(new AkkaEventDispatcherFactory((ankorActorSystem)))
+                .withScheduler(new AkkaScheduler(ankorActorSystem));
     }
 
     /**

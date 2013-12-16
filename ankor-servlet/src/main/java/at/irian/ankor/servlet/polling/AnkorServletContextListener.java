@@ -1,6 +1,7 @@
 package at.irian.ankor.servlet.polling;
 
 import at.irian.ankor.akka.AnkorActorSystem;
+import at.irian.ankor.annotation.AnnotationViewModelBeanIntrospector;
 import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.delay.AkkaScheduler;
 import at.irian.ankor.event.dispatch.AkkaEventDispatcherFactory;
@@ -8,6 +9,7 @@ import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
 import at.irian.ankor.session.ModelRootFactory;
 import at.irian.ankor.system.AnkorSystem;
 import at.irian.ankor.system.AnkorSystemBuilder;
+import at.irian.ankor.viewmodel.proxy.CglibProxyBeanFactory;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -31,6 +33,7 @@ public abstract class AnkorServletContextListener implements ServletContextListe
                 .withMessageBus(new ServletMessageBus(new ViewModelJsonMessageMapper()))
                 .withDispatcherFactory(new AkkaEventDispatcherFactory(ankorActorSystem))
                 .withScheduler(new AkkaScheduler(ankorActorSystem))
+                .withBeanFactory(new CglibProxyBeanFactory(new AnnotationViewModelBeanIntrospector()))
                 .createServer();
 
 
