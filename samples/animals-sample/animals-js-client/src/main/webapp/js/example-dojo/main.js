@@ -16,7 +16,8 @@ define([
 
     //Init app
     var animalSample = new AnimalSample({
-        rootRef: ankorSystem.getRef("root")
+        rootRef: ankorSystem.getRef("root"),
+        i18nRef: ankorSystem.getRef("root.resources")
     });
     animalSample.placeAt(document.body);
     animalSample.startup();

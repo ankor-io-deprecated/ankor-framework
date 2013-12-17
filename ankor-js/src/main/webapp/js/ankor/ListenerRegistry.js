@@ -61,6 +61,7 @@ define(function() {
             this._resolveListenersForPath(this.propListeners, path)
         ];
         var pathsToCleanup = {};
+        var first = true;
         while (listenersToTrigger.length > 0) {
             listeners = listenersToTrigger.shift();
             if (!listeners.ref.isValid()) {
@@ -83,12 +84,36 @@ define(function() {
             }
 
             //Add child listeners to the listenersToTriggerList
-            for (var childName in listeners.children) {
-                if (!listeners.children.hasOwnProperty(childName)) {
-                    continue;
+            if (!first || event.type == event.TYPE.VALUE) {
+                //Propagate to all children if it's a VALUE change event or if it's not the first level
+                for (var childName in listeners.children) {
+                    if (!listeners.children.hasOwnProperty(childName)) {
+                        continue;
+                    }
+                    listenersToTrigger.push(listeners.children[childName]);
                 }
-                listenersToTrigger.push(listeners.children[childName]);
             }
+            else {
+                //Otherwise (if first) only notify affected children for INSERT and REPLACE, and nobody for DEL (invalid ref anyways)
+                var key;
+                if (event.type == event.TYPE.INSERT) {
+                    key = event.key.toString();
+                    if (key in listeners.children) {
+                        listenersToTrigger.push(listeners.children[key]);
+                    }
+                }
+                else if (event.type == event.TYPE.REPLACE) {
+                    var index = event.key;
+                    for (var i = 0; i < event.value.length; i++) {
+                        key = (index + i).toString();
+                        if (key in listeners.children) {
+                            listenersToTrigger.push(listeners.children[key]);
+                        }
+                    }
+                }
+            }
+
+            first = false;
         }
 
         //Cleanup found invalid listeners

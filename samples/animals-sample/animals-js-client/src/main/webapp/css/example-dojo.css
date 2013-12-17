@@ -15,3 +15,11 @@ body, html {
 .animalSampleMain div.menuBarContent {
     margin: 5px 10px;
 }
+
+.animalSampleMain > .dijitLayoutContainer > .dijitTabContainer {
+    margin: 5px;
+}
+
+.dijitTabPaneWrapper {
+    padding: 5px;
+}
