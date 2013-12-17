@@ -20,12 +20,13 @@ public class AnimalSelectItems {
     private List<AnimalFamily> families;
 
     public AnimalSelectItems() {
-        this(Collections.<AnimalType>emptyList());
+        this(Collections.<AnimalType>emptyList(),
+             Collections.<AnimalFamily>emptyList());
     }
 
-    public AnimalSelectItems(List<AnimalType> types) {
+    public AnimalSelectItems(List<AnimalType> types, List<AnimalFamily> families) {
         this.types = withNullItem(types);
-        this.families = withNullItem(Collections.<AnimalFamily>emptyList());
+        this.families = withNullItem(families);
     }
 
     public List<AnimalType> getTypes() {

@@ -48,7 +48,8 @@ public class AnimalDetailModel {
         this.i18nResourcesRef = i18nResourcesRef;
         this.animal = animal;
         this.selectItems = newPropertyInstance(AnimalSelectItems.class, this, "selectItems",
-                                               animalRepository.getAnimalTypes());
+                                               animalRepository.getAnimalTypes(),
+                                               animal != null ? animalRepository.getAnimalFamilies(animal.getType()) : Collections.emptyList());
         this.animalRepository = animalRepository;
         this.panelNameRef = panelNameRef;
         this.serverStatusRef = serverStatusRef;

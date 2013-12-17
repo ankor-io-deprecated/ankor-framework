@@ -56,7 +56,8 @@ public class AnimalSearchModel {
 
         this.filter = newPropertyInstance(AnimalSearchFilter.class, this, "filter");
         this.selectItems = newPropertyInstance(AnimalSelectItems.class, this, "selectItems",
-                                               animalRepository.getAnimalTypes());
+                                               animalRepository.getAnimalTypes(),
+                                               Collections.emptyList());
 
         this.animals = new ExtendedListWrapper<>(new ArrayList<Animal>());
 
