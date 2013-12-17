@@ -144,19 +144,25 @@ define([
                 }
 
                 var observedResultSet = this.observedResultSets[resultSetId];
+
+                //Check if resultSet covers this index
+                if (index < observedResultSet.resultSet._ankorResultSetStart || (observedResultSet.resultSet._ankorResultSetCount != Infinity && index >= observedResultSet.resultSet._ankorResultSetStart + observedResultSet.resultSet._ankorResultSetCount)) {
+                    continue;
+                }
+
+                //Update object in resultSet
+                var elementRef = this.ref.appendIndex(index);
+                var resultIndex = index - observedResultSet.resultSet._ankorResultSetStart;
+                var value = elementRef.getValue();
+                var object = this._buildObject(value, index);
+                observedResultSet.resultSet[resultIndex] = object;
+
+                //Notify listeners
                 for (var i = 0; i < observedResultSet.listeners.length; i++) {
                     var listener = observedResultSet.listeners[i];
                     if (!listener.includeUpdates) {
                         continue;
                     }
-                    if (index < observedResultSet.resultSet._ankorResultSetStart || (observedResultSet.resultSet._ankorResultSetCount != Infinity && index >= observedResultSet.resultSet._ankorResultSetStart + observedResultSet.resultSet._ankorResultSetCount)) {
-                        continue;
-                    }
-
-                    var elementRef = this.ref.appendIndex(index);
-                    var resultIndex = index - observedResultSet.resultSet._ankorResultSetStart;
-                    var value = elementRef.getValue();
-                    var object = this._buildObject(value, index);
                     listener.callback(object, resultIndex, resultIndex);
                 }
             }
@@ -210,6 +216,27 @@ define([
             }
 
             return this._buildResultSet(results, start, count);
+        },
+        put: function(object, directives) {
+            var index = this.getIdentity(object);
+            var elementRef = this.ref.appendIndex(index);
+            var oldValue = elementRef.getValue();
+
+            if (oldValue instanceof Object && !(oldValue instanceof Array)) {
+                for (var property in oldValue) {
+                    if (!oldValue.hasOwnProperty(property)) {
+                        continue;
+                    }
+                    if (object[property] !== oldValue[property]) {
+                        elementRef.append(property).setValue(object[property], this);
+                    }
+                }
+            }
+            else {
+                if (object.value != oldValue) {
+                    elementRef.setValue(object.value, this);
+                }
+            }
         }
     });
 });

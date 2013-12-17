@@ -42,7 +42,12 @@ define([
             event = new ChangeEvent(path, "ankorRemoteEvent", parsedJson.change.type, parsedJson.change.key, parsedJson.change.value);
         }
         else if (parsedJson.action) {
-            event = new ActionEvent(path, "ankorRemoteEvent", parsedJson.action);
+            if (parsedJson.action instanceof Object) {
+                event = new ActionEvent(path, "ankorRemoteEvent", parsedJson.action.name, parsedJson.action.params);
+            }
+            else {
+                event = new ActionEvent(path, "ankorRemoteEvent", parsedJson.action, null);
+            }
         }
         else {
             event = new BaseEvent(path, "ankorRemoteEvent");
@@ -60,7 +65,10 @@ define([
             property: event.path.toString()
         };
         if (event instanceof ActionEvent) {
-            jsonMessage.action = event.action;
+            jsonMessage.action = {
+                name: event.actionName,
+                params: event.params
+            };
         }
         else if (event instanceof ChangeEvent) {
             jsonMessage.change = {

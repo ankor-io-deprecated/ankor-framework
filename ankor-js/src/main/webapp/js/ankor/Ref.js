@@ -150,8 +150,8 @@ define([
         }
     };
 
-    Ref.prototype.fire = function(actionName) {
-        var event = new ActionEvent(this.path, null, actionName);
+    Ref.prototype.fire = function(actionName, params) {
+        var event = new ActionEvent(this.path, null, actionName, params);
         this.ankorSystem.transport.sendEvent(event);
     };
 

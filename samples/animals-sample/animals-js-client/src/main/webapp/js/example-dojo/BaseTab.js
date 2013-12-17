@@ -8,6 +8,7 @@ define([
     return declare([_Widget, _TemplatedMixin, _WidgetsInTemplateMixin], {
         closable: true,
         panelRef: null,
+        i18nRef: null,
         ankorPanelId: null,
 
         postCreate: function() {
