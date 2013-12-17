@@ -9,19 +9,11 @@ import at.irian.ankor.viewmodel.RefAware;
 public final class BeanFactories {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(BeanFactories.class);
 
-    private static ThreadLocal<Ref> CURRENT_REF = new ThreadLocal<Ref>();
-
     private BeanFactories() {}
 
     public static <T> T newInstance(Class<T> type, Ref ref, Object... constructorArgs) {
-        Ref previousRef = CURRENT_REF.get();
-        CURRENT_REF.set(ref);
-        try {
-            BeanFactory beanFactory = ref.context().beanFactory();
-            return beanFactory.createNewInstance(type, ref, constructorArgs);
-        } finally {
-            CURRENT_REF.set(previousRef);
-        }
+        BeanFactory beanFactory = ref.context().beanFactory();
+        return beanFactory.createNewInstance(type, ref, constructorArgs);
     }
 
     public static <T> T newPropertyInstance(Class<T> type, Ref beanRef, String propertyName, Object... constructorArgs) {
@@ -35,14 +27,6 @@ public final class BeanFactories {
         } else {
             throw new IllegalArgumentException("Given bean " + bean + " does not implement interface " + RefAware.class.getName());
         }
-    }
-
-    public static Ref currentRef() {
-        Ref ref = CURRENT_REF.get();
-        if (ref == null) {
-            throw new IllegalStateException("No current ref - this method must only be called during view model bean construction time!");
-        }
-        return ref;
     }
 
 }

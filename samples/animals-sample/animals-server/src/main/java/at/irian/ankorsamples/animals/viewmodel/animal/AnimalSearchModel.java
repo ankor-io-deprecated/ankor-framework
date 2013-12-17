@@ -8,7 +8,7 @@ import at.irian.ankor.big.AnkorBigList;
 import at.irian.ankor.delay.FloodControl;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.TypedRef;
-import at.irian.ankor.viewmodel.factory.BeanFactories;
+import at.irian.ankor.viewmodel.ViewModels;
 import at.irian.ankor.viewmodel.watch.ExtendedList;
 import at.irian.ankor.viewmodel.watch.ExtendedListWrapper;
 import at.irian.ankorsamples.animals.domain.animal.Animal;
@@ -60,7 +60,7 @@ public class AnimalSearchModel {
 
         this.animals = new ExtendedListWrapper<>(new ArrayList<Animal>());
 
-        this.reloadFloodControl = new FloodControl(BeanFactories.currentRef(), 500L);  // todo:  annotation
+        this.reloadFloodControl = new FloodControl(ViewModels.ref(this), 500L);  // todo:  flood control with annotation
     }
 
     public AnimalSearchFilter getFilter() {

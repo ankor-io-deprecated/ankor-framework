@@ -10,6 +10,7 @@ import java.lang.reflect.Field;
  *
  * @author Manfred Geiler
  */
+@Deprecated
 public class ModelPropertyAnnotationsFinder {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelPropertyAnnotationsFinder.class);
 
@@ -30,12 +31,9 @@ public class ModelPropertyAnnotationsFinder {
         String propertyName = propertyRef.propertyName();
 
         Class<?> parentType = parentValue.getClass();
-        Field field;
-        try {
-            field = parentType.getDeclaredField(propertyName);
-        } catch (NoSuchFieldException e) {
-            // todo  search in super types
-            // todo  also support getter annotations
+        Field field = findField(parentType, propertyName);
+        if (field == null) {
+            // todo   support getter/setter annotations
             return EMPTY_ANNOTATIONS;
         }
 
@@ -52,4 +50,17 @@ public class ModelPropertyAnnotationsFinder {
         }
         return null;
     }
+
+    private Field findField(Class<?> type, String fieldName) {
+        try {
+            return type.getDeclaredField(fieldName);
+        } catch (NoSuchFieldException e) {
+            Class<?> superType = type.getSuperclass();
+            if (superType != null) {
+                return findField(superType, fieldName);
+            }
+            return null;
+        }
+    }
+
 }

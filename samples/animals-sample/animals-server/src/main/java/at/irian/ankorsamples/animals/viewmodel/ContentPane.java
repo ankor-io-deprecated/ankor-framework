@@ -96,7 +96,6 @@ public class ContentPane {
 
         Animal animal = animalRepository.findAnimal(uuid);
         AnimalDetailModel model = newInstance(AnimalDetailModel.class, modelRef,
-                                              modelRef,
                                               panelRef.appendPath("name").<String>toTypedRef(),
                                               serverStatusRef,
                                               animalRepository,
