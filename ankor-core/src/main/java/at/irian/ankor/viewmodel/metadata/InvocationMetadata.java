@@ -10,14 +10,11 @@ public class InvocationMetadata {
 
     private final Method method;
     private final ParameterMetadata[] parameters;
-    private final Iterable<TouchedPropertyMetadata> touchedProperties;
 
     public InvocationMetadata(Method method,
-                              ParameterMetadata[] parameters,
-                              Iterable<TouchedPropertyMetadata> touchedProperties) {
+                              ParameterMetadata[] parameters) {
         this.method = method;
         this.parameters = parameters;
-        this.touchedProperties = touchedProperties;
     }
 
     public Method getMethod() {
@@ -28,7 +25,4 @@ public class InvocationMetadata {
         return parameters;
     }
 
-    public Iterable<TouchedPropertyMetadata> getTouchedProperties() {
-        return touchedProperties;
-    }
 }

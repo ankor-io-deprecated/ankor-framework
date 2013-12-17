@@ -21,7 +21,6 @@ public class ViewModelChangeEventListener extends ChangeEventListener {
     private final Ref viewModelBeanRef;
     private final WeakReference<Object> beanReference;
     private final Collection<ChangeListenerMetadata> changeListenersMetadata;
-    private final TouchHelper touchHelper;
 
     public ViewModelChangeEventListener(Ref viewModelBeanRef,
                                         Object bean,
@@ -30,7 +29,6 @@ public class ViewModelChangeEventListener extends ChangeEventListener {
         this.viewModelBeanRef = viewModelBeanRef;
         this.beanReference = new WeakReference<Object>(bean);
         this.changeListenersMetadata = changeListenersMetadata;
-        this.touchHelper = new TouchHelper(viewModelBeanRef);
     }
 
     @Override
@@ -43,7 +41,6 @@ public class ViewModelChangeEventListener extends ChangeEventListener {
                 if (match.isMatch()) {
                     InvocationMetadata invocation = changeListenerMetadata.getInvocation();
                     invoke(bean, invocation, match.getBackRefs());
-                    touchHelper.touch(invocation.getTouchedProperties());
                 }
             }
         }

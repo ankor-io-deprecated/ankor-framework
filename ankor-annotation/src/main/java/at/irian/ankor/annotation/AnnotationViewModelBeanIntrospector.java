@@ -11,7 +11,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -92,15 +91,11 @@ public class AnnotationViewModelBeanIntrospector implements BeanMetadataProvider
         Collection<ActionListenerMetadata> actionListeners = new ArrayList<ActionListenerMetadata>();
         for (Method method : type.getDeclaredMethods()) {
 
-            Collection<TouchedPropertyMetadata> touchedProperties = getTouchedProperties(method);
-
             ChangeListener changeListenerAnnotation = method.getAnnotation(ChangeListener.class);
             if (changeListenerAnnotation != null) {
                 for (String pattern : changeListenerAnnotation.pattern()) {
                     ParameterMetadata[] parameters = getMethodParameters(method);
-                    InvocationMetadata invocation = new InvocationMetadata(method,
-                                                                           parameters,
-                                                                           touchedProperties);
+                    InvocationMetadata invocation = new InvocationMetadata(method, parameters);
                     changeListeners.add(new ChangeListenerMetadata(refMatcherFactory.getRefMatcher(pattern),
                                                                    invocation));
                 }
@@ -109,8 +104,8 @@ public class AnnotationViewModelBeanIntrospector implements BeanMetadataProvider
             ActionListener actionListenerAnnotation = method.getAnnotation(ActionListener.class);
             if (actionListenerAnnotation != null) {
                 ParameterMetadata[] parameters = getMethodParameters(method);
-                InvocationMetadata invocation = new InvocationMetadata(method, parameters,
-                                                                       touchedProperties);
+                InvocationMetadata invocation = new InvocationMetadata(method, parameters
+                );
                 for (String pattern : actionListenerAnnotation.pattern()) {
                     String name = actionListenerAnnotation.name();
                     actionListeners.add(new ActionListenerMetadata(name.isEmpty() ? method.getName() : name,
@@ -163,42 +158,6 @@ public class AnnotationViewModelBeanIntrospector implements BeanMetadataProvider
         return method.getName().startsWith("set")
                && method.getParameterTypes().length == 1
                && method.getReturnType().equals(Void.TYPE);
-    }
-
-    private Collection<TouchedPropertyMetadata> getTouchedProperties(Method method) {
-        Collection<TouchedPropertyMetadata> touchedProperties = null;
-
-        TouchedProperties touchedPropertiesAnnotation = method.getAnnotation(TouchedProperties.class);
-        if (touchedPropertiesAnnotation != null) {
-            for (TouchedProperty touchedPropertyAnnotation : touchedPropertiesAnnotation.value()) {
-                touchedProperties = addTo(touchedProperties,
-                                             new TouchedPropertyMetadata(touchedPropertyAnnotation.value(),
-                                                                     touchedPropertyAnnotation.diffHandler(),
-                                                                     touchedPropertyAnnotation.diffThreshold()));
-            }
-        }
-
-        TouchedProperty touchedPropertyAnnotation = method.getAnnotation(TouchedProperty.class);
-        if (touchedPropertyAnnotation != null) {
-            touchedProperties = addTo(touchedProperties,
-                                         new TouchedPropertyMetadata(touchedPropertyAnnotation.value(),
-                                                                 touchedPropertyAnnotation.diffHandler(),
-                                                                 touchedPropertyAnnotation.diffThreshold()));
-        }
-
-        if (touchedProperties == null) {
-            touchedProperties = Collections.emptyList();
-        }
-
-        return touchedProperties;
-    }
-
-    private static <E> Collection<E> addTo(Collection<E> coll, E e) {
-        if (coll == null) {
-            coll = new ArrayList<E>();
-        }
-        coll.add(e);
-        return coll;
     }
 
     private ParameterMetadata[] getMethodParameters(Method method) {

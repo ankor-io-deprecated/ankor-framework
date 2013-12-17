@@ -24,7 +24,6 @@ public class ViewModelActionEventListener extends ActionEventListener {
 
     private final WeakReference<Object> beanReference;
     private final Collection<ActionListenerMetadata> actionListenersMetadata;
-    private final TouchHelper touchHelper;
 
     public ViewModelActionEventListener(Ref watchedProperty,
                                         Object bean,
@@ -32,7 +31,6 @@ public class ViewModelActionEventListener extends ActionEventListener {
         super(watchedProperty);
         this.beanReference = new WeakReference<Object>(bean);
         this.actionListenersMetadata = actionListenersMetadata;
-        this.touchHelper = new TouchHelper(watchedProperty);
     }
 
     @Override
@@ -51,13 +49,11 @@ public class ViewModelActionEventListener extends ActionEventListener {
                         if (match.isMatch()) {
                             InvocationMetadata invocation = actionListenerMetadata.getInvocation();
                             invoke(bean, invocation, match.getBackRefs(), action.getParams());
-                            touchHelper.touch(invocation.getTouchedProperties());
                         }
                     } else {
                         if (watchedProperty.equals(event.getActionProperty())) {
                             InvocationMetadata invocation = actionListenerMetadata.getInvocation();
                             invoke(bean, invocation, Collections.<Ref>emptyList(), action.getParams());
-                            touchHelper.touch(invocation.getTouchedProperties());
                         }
                     }
                 }
