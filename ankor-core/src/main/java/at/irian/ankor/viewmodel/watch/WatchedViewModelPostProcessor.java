@@ -1,7 +1,9 @@
 package at.irian.ankor.viewmodel.watch;
 
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.viewmodel.metadata.WatchedPropertyMetadata;
+import at.irian.ankor.viewmodel.ViewModelPostProcessor;
+import at.irian.ankor.viewmodel.metadata.BeanMetadata;
+import at.irian.ankor.viewmodel.metadata.PropertyMetadata;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -9,10 +11,20 @@ import java.util.List;
 /**
  * @author Manfred Geiler
  */
-public class WatchedPropertyInitializer {
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(WatchedPropertyInitializer.class);
+public class WatchedViewModelPostProcessor implements ViewModelPostProcessor {
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(WatchedViewModelPostProcessor.class);
 
-    public void init(Object bean, Ref beanRef, WatchedPropertyMetadata info) {
+    @Override
+    public void postProcess(Object viewModelObject, Ref viewModelRef, BeanMetadata metadata) {
+        for (PropertyMetadata propertyMetadata : metadata.getPropertiesMetadata()) {
+            WatchedPropertyMetadata md = propertyMetadata.getGenericMetadata(WatchedPropertyMetadata.class);
+            if (md != null) {
+                init(viewModelObject, viewModelRef, md);
+            }
+        }
+    }
+
+    private void init(Object bean, Ref beanRef, WatchedPropertyMetadata info) {
         Field field = info.getField();
         Class<?> fieldType = field.getType();
         if (List.class.isAssignableFrom(fieldType)) {

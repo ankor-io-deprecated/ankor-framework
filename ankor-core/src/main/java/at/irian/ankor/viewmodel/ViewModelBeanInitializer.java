@@ -8,8 +8,7 @@ import at.irian.ankor.viewmodel.listener.ViewModelChangeEventListener;
 import at.irian.ankor.viewmodel.metadata.ActionListenerMetadata;
 import at.irian.ankor.viewmodel.metadata.BeanMetadata;
 import at.irian.ankor.viewmodel.metadata.ChangeListenerMetadata;
-import at.irian.ankor.viewmodel.metadata.WatchedPropertyMetadata;
-import at.irian.ankor.viewmodel.watch.WatchedPropertyInitializer;
+import at.irian.ankor.viewmodel.watch.WatchedViewModelPostProcessor;
 
 import java.util.Collection;
 
@@ -33,11 +32,7 @@ public class ViewModelBeanInitializer {
             eventListeners.add(new ViewModelChangeEventListener(ref, bean, changeListeners));
         }
 
-        Collection<WatchedPropertyMetadata> watchedProperties = md.getWatchedProperties();
-        for (WatchedPropertyMetadata watchedPropertyMetadata : watchedProperties) {
-            new WatchedPropertyInitializer().init(bean, ref, watchedPropertyMetadata);
-        }
-
+        new WatchedViewModelPostProcessor().postProcess(bean, ref, md);
     }
 
 }

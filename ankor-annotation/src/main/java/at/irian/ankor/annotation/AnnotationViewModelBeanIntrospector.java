@@ -4,6 +4,7 @@ import at.irian.ankor.ref.TypedRef;
 import at.irian.ankor.ref.match.RefMatcherFactory;
 import at.irian.ankor.ref.match.pattern.AntlrRefMatcherFactory;
 import at.irian.ankor.viewmodel.metadata.*;
+import at.irian.ankor.viewmodel.watch.WatchedPropertyMetadata;
 
 import java.beans.Introspector;
 import java.lang.annotation.Annotation;
@@ -62,17 +63,15 @@ public class AnnotationViewModelBeanIntrospector implements BeanMetadataProvider
 
     private BeanMetadata scanFields(BeanMetadata beanMetadata, Class<?> type) {
 
-        Collection<WatchedPropertyMetadata> watchedProperties = new ArrayList<WatchedPropertyMetadata>();
         for (Field field : type.getDeclaredFields()) {
             AnkorWatched watchedAnnotation = field.getAnnotation(AnkorWatched.class);
             if (watchedAnnotation != null) {
-                watchedProperties.add(new WatchedPropertyMetadata(field.getName(),
-                                                                  watchedAnnotation.diffThreshold(),
-                                                                  field));
+                beanMetadata = beanMetadata.withPropertyMetadata(field.getName(),
+                                                                 new WatchedPropertyMetadata(
+                                                                         watchedAnnotation.diffThreshold(),
+                                                                         field));
             }
         }
-
-        beanMetadata = beanMetadata.withWatchedProperties(watchedProperties);
 
         Class<?> superclass = type.getSuperclass();
         if (superclass != null) {

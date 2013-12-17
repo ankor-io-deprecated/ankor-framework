@@ -1,4 +1,4 @@
-package at.irian.ankor.viewmodel.metadata;
+package at.irian.ankor.viewmodel.watch;
 
 import java.lang.reflect.Field;
 
@@ -8,18 +8,12 @@ import java.lang.reflect.Field;
 public class WatchedPropertyMetadata {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(WatchedPropertyMetadata.class);
 
-    private final String propertyName;
     private final int diffThreshold;
     private final Field field;
 
-    public WatchedPropertyMetadata(String propertyName, int diffThreshold, Field field) {
-        this.propertyName = propertyName;
+    public WatchedPropertyMetadata(int diffThreshold, Field field) {
         this.diffThreshold = diffThreshold;
         this.field = field;
-    }
-
-    public String getPropertyName() {
-        return propertyName;
     }
 
     public int getDiffThreshold() {
