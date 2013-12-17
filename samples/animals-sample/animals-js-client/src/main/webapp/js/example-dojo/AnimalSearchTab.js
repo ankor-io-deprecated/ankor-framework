@@ -2,11 +2,12 @@ define([
     "dojo/_base/declare",
     "./BaseTab",
     "ankor/adapters/dojo/AnkorStatefulBinding",
-    "ankor/adapters/dojo/AnkorListStoreConverter",
+    "ankor/adapters/dojo/AnkorDgridBinding",
     "dgrid/OnDemandGrid",
     "dgrid/extensions/DijitRegistry",
-    "dojo/text!./templates/AnimalSearchTab.html"
-], function(declare, BaseTab, AnkorStatefulBinding, AnkorListStoreConverter, OnDemandGrid, DijitRegistry, template) {
+    "dojo/text!./templates/AnimalSearchTab.html",
+    "dijit/form/TextBox" //Includes only below here
+], function(declare, BaseTab, AnkorStatefulBinding, AnkorDgridBinding, OnDemandGrid, DijitRegistry, template) {
     return declare([BaseTab], {
         templateString: template,
 
@@ -37,10 +38,10 @@ define([
 
             //Bindings
             this.own(
-                new AnkorStatefulBinding(this, "title", this.panelRef.append("name")),
-                new AnkorStatefulBinding(this.grid, "store", this.panelRef.append("model.animals"), {
-                    converter: new AnkorListStoreConverter()
-                })
+                new AnkorStatefulBinding(this.inputName, "value", this.panelRef.append("model.filter.name"), {
+                    floodDelay: 200
+                }),
+                new AnkorDgridBinding(this.grid, this.panelRef.append("model.animals"))
             );
         }
     });
