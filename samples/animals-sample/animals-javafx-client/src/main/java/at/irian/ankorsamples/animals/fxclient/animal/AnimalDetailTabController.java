@@ -4,7 +4,7 @@ import at.irian.ankor.action.Action;
 import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.fx.binding.convert.ReverseBooleanConverter;
 import at.irian.ankor.fx.binding.fxref.FxRef;
-import at.irian.ankor.fx.controller.FXControllerAnnotationSupport;
+import at.irian.ankor.fx.controller.FXControllerSupport;
 import at.irian.ankorsamples.animals.fxclient.BaseTabController;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -34,7 +34,7 @@ public class AnimalDetailTabController extends BaseTabController {
 
     public void initialize() {
         FxRef tabRef = getTabRef();
-        FXControllerAnnotationSupport.scan(tabRef, this);
+        FXControllerSupport.init(this, tabRef);
 
         FxRef modelRef = tabRef.appendPath("model");
         FxRef animalRef = modelRef.appendPath("animal");

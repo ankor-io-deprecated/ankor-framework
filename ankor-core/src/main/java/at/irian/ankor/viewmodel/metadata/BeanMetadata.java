@@ -9,12 +9,14 @@ import java.util.*;
 public class BeanMetadata {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(BeanMetadata.class);
 
+    public static BeanMetadata EMPTY_BEAN_METADATA = new BeanMetadata();
+
     private final Collection<ChangeListenerMetadata> changeListeners;
     private final Collection<ActionListenerMetadata> actionListeners;
     private final Map<Method, List<ChangeSignalMetadata>> changeSignals;
     private final Map<String, PropertyMetadata> propertyMetadataMap;
 
-    public BeanMetadata() {
+    protected BeanMetadata() {
         this(null, null, null, null);
     }
 
@@ -135,7 +137,7 @@ public class BeanMetadata {
                 return metadata;
             }
         }
-        return new PropertyMetadata(propertyName); // return empty metadata
+        return PropertyMetadata.emptyPropertyMetadata(propertyName);
     }
 
     public Collection<PropertyMetadata> getPropertiesMetadata() {

@@ -1,6 +1,5 @@
 package at.irian.ankorsamples.animals.websocket;
 
-import at.irian.ankor.annotation.AnnotationViewModelBeanIntrospector;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.servlet.websocket.AnkorEndpoint;
 import at.irian.ankor.system.AnkorSystemBuilder;
@@ -25,7 +24,7 @@ public class AnimalsSampleEndpoint extends AnkorEndpoint {
     protected AnkorSystemBuilder getAnkorSystemBuilder() {
         AnkorSystemBuilder ankorSystemBuilder = super.getAnkorSystemBuilder();
         ankorSystemBuilder = ankorSystemBuilder
-                .withBeanFactory(new CglibProxyBeanFactory(new AnnotationViewModelBeanIntrospector()));
+                .withBeanFactory(new CglibProxyBeanFactory(ankorSystemBuilder.getBeanMetadataProvider()));
         return ankorSystemBuilder;
     }
 }

@@ -1,6 +1,8 @@
 package at.irian.ankor.viewmodel;
 
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.ref.RefContext;
+import at.irian.ankor.viewmodel.metadata.BeanMetadata;
 
 /**
  * Utilities for working with view model beans.
@@ -18,6 +20,15 @@ public final class ViewModels {
             return ((RefAware) viewModelBean).getRef();
         } else {
             throw new IllegalArgumentException("View model bean " + viewModelBean + " does not implement RefAware");
+        }
+    }
+
+
+    public static void invokePostProcessorsOn(Object viewModelObject, Ref viewModelRef) {
+        RefContext context = viewModelRef.context();
+        BeanMetadata metadata = context.metadataProvider().getMetadata(viewModelObject);
+        for (ViewModelPostProcessor viewModelPostProcessor : context.viewModelPostProcessors()) {
+            viewModelPostProcessor.postProcess(viewModelObject, viewModelRef, metadata);
         }
     }
 

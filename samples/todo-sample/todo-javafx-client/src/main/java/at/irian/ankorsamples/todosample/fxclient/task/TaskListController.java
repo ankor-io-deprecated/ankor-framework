@@ -3,7 +3,7 @@ package at.irian.ankorsamples.todosample.fxclient.task;
 import at.irian.ankor.action.Action;
 import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.fx.binding.fxref.FxRef;
-import at.irian.ankor.fx.controller.FXControllerAnnotationSupport;
+import at.irian.ankor.fx.controller.FXControllerSupport;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorsamples.todosample.fxclient.App;
 import at.irian.ankorsamples.todosample.viewmodel.TaskModel;
@@ -57,7 +57,7 @@ public class TaskListController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Ref rootRef = refFactory().ref("root");
-        FXControllerAnnotationSupport.scan(rootRef, this);
+        FXControllerSupport.init(this, rootRef);
         rootRef.fire(new Action("init"));
     }
 

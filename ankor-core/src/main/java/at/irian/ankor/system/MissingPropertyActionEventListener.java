@@ -3,12 +3,13 @@ package at.irian.ankor.system;
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionEvent;
 import at.irian.ankor.action.ActionEventListener;
-import at.irian.ankor.annotation.ModelPropertyAnnotationsFinder;
-import at.irian.ankor.big.AnkorBigList;
+import at.irian.ankor.big.BigListMetadata;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.event.source.LocalSource;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.impl.RefImplementor;
+import at.irian.ankor.viewmodel.metadata.MetadataUtils;
+import at.irian.ankor.viewmodel.metadata.PropertyMetadata;
 
 import java.util.List;
 
@@ -43,10 +44,10 @@ public class MissingPropertyActionEventListener extends ActionEventListener {
             // special AnkorBigList handling
             if (!missingProperty.isRoot()) {
                 Ref maybeCollRef = missingProperty.parent();
-                AnkorBigList bigListAnnotation = new ModelPropertyAnnotationsFinder()
-                        .findModelPropertyAnnotations(maybeCollRef, AnkorBigList.class);
-                if (bigListAnnotation != null) {
-                    int chunkSize = bigListAnnotation.chunkSize();
+                PropertyMetadata propertyMetadata = MetadataUtils.getMetadataFor(maybeCollRef);
+                BigListMetadata bigListMetadata = propertyMetadata.getGenericMetadata(BigListMetadata.class);
+                if (bigListMetadata != null) {
+                    int chunkSize = bigListMetadata.getChunkSize();
                     if (chunkSize > 1) {
                         int fromIndex = Integer.parseInt(missingProperty.propertyName());
                         List list = maybeCollRef.getValue();

@@ -24,7 +24,6 @@ public interface RefContext {
 
     Scheduler scheduler();
 
-    @Deprecated
     BeanMetadataProvider metadataProvider();
 
     BeanFactory beanFactory();

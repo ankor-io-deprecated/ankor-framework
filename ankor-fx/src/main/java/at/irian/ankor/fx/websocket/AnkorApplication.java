@@ -80,8 +80,11 @@ public abstract class AnkorApplication extends Application {
      */
     private AnkorSystem createWebSocketClientSystem(String uri) throws IOException, DeploymentException, InterruptedException {
         AnkorSystem clientSystem;
-        WebSocketMessageBus messageBus = new WebSocketMessageBus(new ViewModelJsonMessageMapper());
-        AnkorSystemBuilder systemBuilder = new AnkorSystemBuilder()
+        AnkorSystemBuilder systemBuilder = new AnkorSystemBuilder();
+        ViewModelJsonMessageMapper messageMapper
+                = new ViewModelJsonMessageMapper(systemBuilder.getBeanMetadataProvider());
+        WebSocketMessageBus messageBus = new WebSocketMessageBus(messageMapper);
+        systemBuilder = systemBuilder
                 .withMessageBus(messageBus)
                 .withRefContextFactoryProvider(new FxRefContextFactoryProvider())
                 .withDispatcherFactory(new JavaFxEventDispatcherFactory());

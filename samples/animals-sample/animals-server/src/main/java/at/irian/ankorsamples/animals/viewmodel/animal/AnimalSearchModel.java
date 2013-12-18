@@ -4,7 +4,7 @@ import at.irian.ankor.annotation.ActionListener;
 import at.irian.ankor.annotation.AnkorWatched;
 import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.annotation.Param;
-import at.irian.ankor.big.AnkorBigList;
+import at.irian.ankor.annotation.AnkorBigList;
 import at.irian.ankor.delay.FloodControl;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.TypedRef;

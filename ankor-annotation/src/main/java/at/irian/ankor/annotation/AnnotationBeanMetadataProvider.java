@@ -1,5 +1,7 @@
 package at.irian.ankor.annotation;
 
+import at.irian.ankor.big.BigListMetadata;
+import at.irian.ankor.big.BigMapMetadata;
 import at.irian.ankor.ref.TypedRef;
 import at.irian.ankor.ref.match.RefMatcherFactory;
 import at.irian.ankor.ref.match.pattern.AntlrRefMatcherFactory;
@@ -18,8 +20,8 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author Manfred Geiler
  */
-public class AnnotationViewModelBeanIntrospector implements BeanMetadataProvider {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnnotationViewModelBeanIntrospector.class);
+public class AnnotationBeanMetadataProvider implements BeanMetadataProvider {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnnotationBeanMetadataProvider.class);
 
     private static Map<Class<?>, BeanMetadata> CACHE = new ConcurrentHashMap<Class<?>, BeanMetadata>();
 
@@ -50,7 +52,7 @@ public class AnnotationViewModelBeanIntrospector implements BeanMetadataProvider
     }
 
     private BeanMetadata createBeanTypeInfo(Class<?> type) {
-        BeanMetadata beanMetadata = new BeanMetadata();
+        BeanMetadata beanMetadata = BeanMetadata.EMPTY_BEAN_METADATA;
         //beanMetadata = scanType(beanMetadata, type);
         beanMetadata = scanFields(beanMetadata, type);
         beanMetadata = scanMethods(beanMetadata, type);
@@ -66,10 +68,17 @@ public class AnnotationViewModelBeanIntrospector implements BeanMetadataProvider
         for (Field field : type.getDeclaredFields()) {
             AnkorWatched watchedAnnotation = field.getAnnotation(AnkorWatched.class);
             if (watchedAnnotation != null) {
-                beanMetadata = beanMetadata.withPropertyMetadata(field.getName(),
-                                                                 new WatchedPropertyMetadata(
-                                                                         watchedAnnotation.diffThreshold(),
-                                                                         field));
+                beanMetadata = addWatchedMetadata(beanMetadata, field.getName(), field, watchedAnnotation);
+            }
+
+            AnkorBigList bigListAnnotation = field.getAnnotation(AnkorBigList.class);
+            if (bigListAnnotation != null) {
+                beanMetadata = addBigListMetadata(beanMetadata, field.getName(), bigListAnnotation);
+            }
+
+            AnkorBigMap bigMapAnnotation = field.getAnnotation(AnkorBigMap.class);
+            if (bigMapAnnotation != null) {
+                beanMetadata = addBigMapMetadata(beanMetadata, field.getName(), bigMapAnnotation);
             }
         }
 
@@ -78,6 +87,42 @@ public class AnnotationViewModelBeanIntrospector implements BeanMetadataProvider
             beanMetadata = scanFields(beanMetadata, superclass);
         }
 
+        return beanMetadata;
+    }
+
+    private BeanMetadata addWatchedMetadata(BeanMetadata beanMetadata,
+                                            String propertyName, Field field, // todo  also support setter as field accessor
+                                            AnkorWatched watchedAnnotation) {
+        WatchedPropertyMetadata metadata = new WatchedPropertyMetadata(watchedAnnotation.diffThreshold(),
+                                                                       field);
+        beanMetadata = beanMetadata.withPropertyMetadata(propertyName, metadata);
+        return beanMetadata;
+    }
+
+    private BeanMetadata addBigListMetadata(BeanMetadata beanMetadata,
+                                            String propertyName,
+                                            AnkorBigList bigListAnnotation) {
+        Class<?> missingElementSubstitute = bigListAnnotation.missingElementSubstitute();
+        BigListMetadata metadata = new BigListMetadata(bigListAnnotation.threshold(),
+                                                       bigListAnnotation.initialSize(),
+                                                       bigListAnnotation.chunkSize(),
+                                                       missingElementSubstitute.equals(AnkorBigList.Null.class)
+                                                       ? null
+                                                       : missingElementSubstitute);
+        beanMetadata = beanMetadata.withPropertyMetadata(propertyName, metadata);
+        return beanMetadata;
+    }
+
+    private BeanMetadata addBigMapMetadata(BeanMetadata beanMetadata,
+                                           String propertyName,
+                                           AnkorBigMap bigMapAnnotation) {
+        Class<?> missingValueSubstitute = bigMapAnnotation.missingValueSubstitute();
+        BigMapMetadata metadata = new BigMapMetadata(bigMapAnnotation.threshold(),
+                                                     bigMapAnnotation.initialSize(),
+                                                     missingValueSubstitute.equals(AnkorBigMap.Null.class)
+                                                     ? null
+                                                     : missingValueSubstitute);
+        beanMetadata = beanMetadata.withPropertyMetadata(propertyName, metadata);
         return beanMetadata;
     }
 
@@ -139,6 +184,15 @@ public class AnnotationViewModelBeanIntrospector implements BeanMetadataProvider
                 changeSignals.add(new ChangeSignalMetadata(method, '.' + propertyName));
             }
 
+            AnkorBigList bigListAnnotation = method.getAnnotation(AnkorBigList.class);
+            if (bigListAnnotation != null) {
+                beanMetadata = addBigListMetadata(beanMetadata, getPropertyNameFromMethod(method), bigListAnnotation);
+            }
+
+            AnkorBigMap bigMapAnnotation = method.getAnnotation(AnkorBigMap.class);
+            if (bigMapAnnotation != null) {
+                beanMetadata = addBigMapMetadata(beanMetadata, getPropertyNameFromMethod(method), bigMapAnnotation);
+            }
         }
 
         beanMetadata = beanMetadata.withChangeListeners(changeListeners);
@@ -158,6 +212,26 @@ public class AnnotationViewModelBeanIntrospector implements BeanMetadataProvider
                && method.getParameterTypes().length == 1
                && method.getReturnType().equals(Void.TYPE);
     }
+
+//    private boolean isGetter(Method method) {
+//        return (method.getName().startsWith("get") || method.getName().startsWith("is"))
+//               && method.getParameterTypes().length == 0
+//               && !method.getReturnType().equals(Void.TYPE);
+//    }
+
+    private String getPropertyNameFromMethod(Method method) {
+        String methodName = method.getName();
+        if (methodName.startsWith("get")) {
+            return Introspector.decapitalize(methodName.substring(3));
+        } else if (methodName.startsWith("is")) {
+            return Introspector.decapitalize(methodName.substring(2));
+        } else if (methodName.startsWith("set")) {
+            return Introspector.decapitalize(methodName.substring(3));
+        } else {
+            throw new IllegalArgumentException("Not a valid getter or setter method: " + method);
+        }
+    }
+
 
     private ParameterMetadata[] getMethodParameters(Method method) {
         ParameterMetadata[] parameters = new ParameterMetadata[method.getParameterAnnotations().length];

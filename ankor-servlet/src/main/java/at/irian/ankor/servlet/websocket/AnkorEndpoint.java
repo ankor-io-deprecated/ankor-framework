@@ -9,6 +9,7 @@ import at.irian.ankor.session.ModelRootFactory;
 import at.irian.ankor.session.RemoteSystem;
 import at.irian.ankor.system.AnkorSystem;
 import at.irian.ankor.system.AnkorSystemBuilder;
+import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
 import at.irian.ankor.websocket.WebSocketMessageBus;
 import at.irian.ankor.websocket.WebSocketRemoteSystem;
 import org.slf4j.Logger;
@@ -163,18 +164,22 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
     }
 
     private void startAnkorSystem() {
-        ankorSystem = getAnkorSystemBuilder().createServer();
+        AnkorSystemBuilder ankorSystemBuilder = getAnkorSystemBuilder();
+        BeanMetadataProvider beanMetadataProvider = ankorSystemBuilder.getBeanMetadataProvider();
+        webSocketMessageBus = new WebSocketMessageBus(new ViewModelJsonMessageMapper(beanMetadataProvider));
+        ankorSystem = ankorSystemBuilder
+                .withMessageBus(webSocketMessageBus)
+                .createServer();
         ankorSystem.start();
     }
 
     protected AnkorSystemBuilder getAnkorSystemBuilder() {
-        AnkorActorSystem ankorActorSystem = AnkorActorSystem.create();
+        AnkorActorSystem actorSystem = AnkorActorSystem.create();
         return new AnkorSystemBuilder()
                 .withName(getName())
                 .withModelRootFactory(getModelRootFactory())
-                .withMessageBus((webSocketMessageBus = new WebSocketMessageBus(new ViewModelJsonMessageMapper())))
-                .withDispatcherFactory(new AkkaEventDispatcherFactory((ankorActorSystem)))
-                .withScheduler(new AkkaScheduler(ankorActorSystem));
+                .withDispatcherFactory(new AkkaEventDispatcherFactory((actorSystem)))
+                .withScheduler(new AkkaScheduler(actorSystem));
     }
 
     /**

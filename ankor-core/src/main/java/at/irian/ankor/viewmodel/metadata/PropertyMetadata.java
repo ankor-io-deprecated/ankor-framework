@@ -37,8 +37,12 @@ public class PropertyMetadata {
 
     @SuppressWarnings("unchecked")
     public <T> T getGenericMetadata(Class<T> metadataType) {
-        return (T) genericMetadataMap.get(metadataType);
+        return genericMetadataMap != null ? (T) genericMetadataMap.get(metadataType) : null;
     }
 
+
+    public static PropertyMetadata emptyPropertyMetadata(String propertyName) {
+        return new PropertyMetadata(propertyName);
+    }
 
 }

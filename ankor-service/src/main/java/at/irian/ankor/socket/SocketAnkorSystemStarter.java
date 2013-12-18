@@ -1,7 +1,7 @@
 package at.irian.ankor.socket;
 
 import at.irian.ankor.akka.AnkorActorSystem;
-import at.irian.ankor.annotation.AnnotationViewModelBeanIntrospector;
+import at.irian.ankor.annotation.AnnotationBeanMetadataProvider;
 import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.delay.AkkaScheduler;
 import at.irian.ankor.event.ModelEventListener;
@@ -108,8 +108,11 @@ public class SocketAnkorSystemStarter {
 
     public void createAndStartServerSystem(boolean daemon) {
 
+        AnnotationBeanMetadataProvider beanMetadataProvider = new AnnotationBeanMetadataProvider();
+
         SocketMessageLoop.Host server = getServerLocalHost();
-        SocketMessageLoop<String> serverMessageLoop = new ServerSocketMessageLoop<String>(server, new ViewModelJsonMessageMapper());
+        SocketMessageLoop<String> serverMessageLoop
+                = new ServerSocketMessageLoop<String>(server, new ViewModelJsonMessageMapper(beanMetadataProvider));
 
         AnkorActorSystem ankorActorSystem = AnkorActorSystem.create();
         AnkorSystem serverSystem = new AnkorSystemBuilder()
@@ -121,7 +124,7 @@ public class SocketAnkorSystemStarter {
                 .withGlobalEventListener(globalEventListener)
                 .withScheduler(new AkkaScheduler(ankorActorSystem))
                 .withRefContextFactoryProvider(refContextFactoryProvider)
-                .withBeanFactory(new CglibProxyBeanFactory(new AnnotationViewModelBeanIntrospector()))
+                .withBeanFactory(new CglibProxyBeanFactory(beanMetadataProvider))
                 .createServer();
 
         serverSystem.start();

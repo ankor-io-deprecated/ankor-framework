@@ -1,7 +1,6 @@
 package at.irian.ankor.system;
 
-import at.irian.ankor.annotation.AnnotationViewModelBeanIntrospector;
-import at.irian.ankor.annotation.AnnotationViewModelPostProcessor;
+import at.irian.ankor.annotation.AnnotationBeanMetadataProvider;
 import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.big.modify.ClientSideBigDataModifier;
 import at.irian.ankor.big.modify.ServerSideBigDataModifier;
@@ -27,7 +26,10 @@ import at.irian.ankor.session.*;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
 import at.irian.ankor.viewmodel.factory.BeanFactory;
 import at.irian.ankor.viewmodel.factory.ReflectionBeanFactory;
+import at.irian.ankor.viewmodel.listener.ActionListenersPostProcessor;
+import at.irian.ankor.viewmodel.listener.ChangeListenersPostProcessor;
 import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
+import at.irian.ankor.viewmodel.watch.WatchedViewModelPostProcessor;
 import at.irian.ankor.websocket.AnkorClientEndpoint;
 import at.irian.ankor.websocket.WebSocketMessageBus;
 import com.typesafe.config.Config;
@@ -78,7 +80,7 @@ public class AnkorSystemBuilder {
         this.customGlobalEventListeners = new ArrayList<ModelEventListener>();
         this.modelContextFactory = null;
         this.refContextFactoryProvider = new ELRefContextFactoryProvider();
-        this.beanMetadataProvider = new AnnotationViewModelBeanIntrospector();
+        this.beanMetadataProvider = new AnnotationBeanMetadataProvider();
         this.beanFactory = null;
     }
 
@@ -319,34 +321,36 @@ public class AnkorSystemBuilder {
 
     private List<ViewModelPostProcessor> createDefaultServerViewModelPostProcessors() {
         List<ViewModelPostProcessor> list = new ArrayList<ViewModelPostProcessor>();
-        list.add(new AnnotationViewModelPostProcessor());
+        list.add(new ActionListenersPostProcessor());
+        list.add(new ChangeListenersPostProcessor());
+        list.add(new WatchedViewModelPostProcessor());
         return list;
     }
 
     private String getServerSystemName() {
         if (systemName == null) {
-            LOG.warn("No system name specified, using default name {}", systemName);
             systemName = "Unnamed Server";
+            LOG.warn("No system name specified, using default name {}", systemName);
         }
         return systemName;
     }
 
     private String getClientSystemName() {
         if (systemName == null) {
-            LOG.warn("No system name specified, using default name {}", systemName);
             systemName = "Unnamed Client";
+            LOG.warn("No system name specified, using default name {}", systemName);
         }
         return systemName;
     }
 
-    public MessageIdGenerator getMessageIdGenerator() {
+    private MessageIdGenerator getMessageIdGenerator(String systemName) {
         if (messageIdGenerator == null) {
-            messageIdGenerator = createDefaultMessageIdGenerator();
+            messageIdGenerator = createDefaultMessageIdGenerator(systemName);
         }
         return messageIdGenerator;
     }
 
-    private MessageIdGenerator createDefaultMessageIdGenerator() {
+    private MessageIdGenerator createDefaultMessageIdGenerator(String systemName) {
         return new CounterMessageIdGenerator(systemName + "#");
     }
 
@@ -462,11 +466,17 @@ public class AnkorSystemBuilder {
     }
 
     public MessageFactory getServerMessageFactory() {
-        return new MessageFactory(getServerSystemName(), getMessageIdGenerator());
+        String systemName = getServerSystemName();
+        return new MessageFactory(systemName, getMessageIdGenerator(systemName));
     }
 
     public MessageFactory getClientMessageFactory() {
-        return new MessageFactory(getClientSystemName(), getMessageIdGenerator());
+        String systemName = getClientSystemName();
+        return new MessageFactory(systemName, getMessageIdGenerator(systemName));
+    }
+
+    public BeanMetadataProvider getBeanMetadataProvider() {
+        return beanMetadataProvider;
     }
 
     private static class EmptyBeanResolver implements BeanResolver {

@@ -7,8 +7,7 @@ import at.irian.ankor.event.source.CustomSource;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.impl.RefImplementor;
 import at.irian.ankor.viewmodel.RefAware;
-import at.irian.ankor.viewmodel.ViewModelSupport;
-import at.irian.ankor.viewmodel.metadata.BeanMetadata;
+import at.irian.ankor.viewmodel.ViewModels;
 
 import java.util.Collection;
 
@@ -60,8 +59,7 @@ public final class AnkorPatterns {
 
 
     public static void initViewModel(Object viewModelObject, Ref viewModelRef) {
-        BeanMetadata metadata = viewModelRef.context().metadataProvider().getMetadata(viewModelObject);
-        ViewModelSupport.invokePostProcessorsOn(viewModelObject, viewModelRef, metadata);
+        ViewModels.invokePostProcessorsOn(viewModelObject, viewModelRef);
     }
 
     public static void initViewModel(RefAware viewModelObject) {
