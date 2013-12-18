@@ -7,10 +7,7 @@ import at.irian.ankor.base.Wrapper;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.change.ChangeType;
-import at.irian.ankor.change.OldValuesAwareChangeEvent;
 import at.irian.ankor.event.ModelEvent;
-import at.irian.ankor.event.ModelEventListener;
-import at.irian.ankor.event.PropertyWatcher;
 import at.irian.ankor.event.dispatch.BufferingEventDispatcher;
 import at.irian.ankor.event.source.LocalSource;
 import at.irian.ankor.event.source.Source;
@@ -87,48 +84,18 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
     @Override
     public void apply(Source source, Change change) {
 
-        // remember old value of the referenced property
-        Object oldValue;
-        try {
-            oldValue = getValue();
-        } catch (IllegalStateException e) {
-            oldValue = null;
-        }
-
-        // remember old values of the watched properties
-        Map<Ref, Object> oldWatchedValues = getOldWatchedValues();
-
         // buffer events
-        BufferingEventDispatcher eventBuffer = new BufferingEventDispatcher();
-        context().modelContext().pushEventDispatcher(eventBuffer);
+        BufferingEventDispatcher bufferingEventDispatcher = new BufferingEventDispatcher();
+        context().modelContext().pushEventDispatcher(bufferingEventDispatcher);
         try {
-            ChangeType changeType = change.getType();
-            switch(changeType) {
-                case value:
-                    handleValueChange(oldValue, change.getValue());
-                    break;
-
-                case insert:
-                    handleInsertChange(oldValue, change.getKey(), change.getValue());
-                    break;
-
-                case delete:
-                    handleDeleteChange(oldValue, change.getKey());
-                    break;
-
-                case replace:
-                    handleReplaceChange(oldValue, change.getKey(), change.getValue());
-                    break;
-
-                default:
-                    throw new IllegalArgumentException("Unsupported change type " + changeType);
-            }
+            // apply change to local view model
+            handleChange(change);
         } finally {
             context().modelContext().popEventDispatcher();
         }
 
         if (change.getType() == ChangeType.value) {
-            for (ModelEvent modelEvent : eventBuffer.getBufferedEvents()) {
+            for (ModelEvent modelEvent : bufferingEventDispatcher.getBufferedEvents()) {
                 if (modelEvent instanceof ChangeEvent) {
                     Ref changedProperty = ((ChangeEvent) modelEvent).getChangedProperty();
                     if (changedProperty.equals(this)) {
@@ -150,24 +117,36 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
         }
 
         // fire change event
-        ChangeEvent changeEvent = new OldValuesAwareChangeEvent(source, this, change, deepCopy(oldValue), oldWatchedValues);
-        context().modelContext().getEventDispatcher().dispatch(changeEvent);
-    }
-
-    @Override
-    public void signalValueChange() {
-        signal(new LocalSource(context().modelContext()), Change.valueChange(getValue()));
-    }
-
-    @Override
-    public void signal(Source source, Change change) {
-        LOG.trace("{} signal {}", this, change);
         ChangeEvent changeEvent = new ChangeEvent(source, this, change);
         context().modelContext().getEventDispatcher().dispatch(changeEvent);
     }
 
-    private void handleValueChange(Object oldValue, Object newValue) {
-        if (oldValue != null || isValid()) {
+    private void handleChange(Change change) {
+        ChangeType changeType = change.getType();
+        switch(changeType) {
+            case value:
+                handleValueChange(change.getValue());
+                break;
+
+            case insert:
+                handleInsertChange(getValue(), change.getKey(), change.getValue());
+                break;
+
+            case delete:
+                handleDeleteChange(getValue(), change.getKey());
+                break;
+
+            case replace:
+                handleReplaceChange(getValue(), change.getKey(), change.getValue());
+                break;
+
+            default:
+                throw new IllegalArgumentException("Unsupported change type " + changeType);
+        }
+    }
+
+    private void handleValueChange(Object newValue) {
+        if (isValid()) {
             Class<?> type = getType();
             if (Wrapper.class.isAssignableFrom(type)) {
                 Object newValueUnwrapped = unwrapIfNecessary(newValue);
@@ -240,7 +219,7 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
         } else if (key instanceof String) {
             // neither List nor Array nor Map, than we assume it is a bean and set the corresponding property to null...
             Ref propertyRef = refFactory().ref(pathSyntax().concat(path(), (String) key));
-            ((RefBase)propertyRef).handleValueChange(null, null);
+            ((RefBase)propertyRef).handleValueChange(null);
         } else {
             throw new IllegalArgumentException("list/array/map of type " + listOrArrayOrMap.getClass().getName());
         }
@@ -306,51 +285,6 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
         }
     }
 
-
-    private Map<Ref, Object> getOldWatchedValues() {
-        Map<Ref, Object> result = new HashMap<Ref, Object>();
-        for (ModelEventListener listener : context().modelContext().getEventListeners()) {
-            if (listener instanceof PropertyWatcher) {
-                Ref watchedProperty = ((PropertyWatcher) listener).getWatchedProperty();
-                if (watchedProperty != null && !(result.containsKey(watchedProperty))) {
-                    Object oldWatchedValue;
-                    try {
-                        oldWatchedValue = deepCopy(watchedProperty.getValue());
-                    } catch (IllegalStateException e) {
-                        // watched property is currently not valid
-                        oldWatchedValue = null;
-                    }
-                    result.put(watchedProperty, oldWatchedValue);
-                }
-            }
-        }
-        return result;
-    }
-
-    @SuppressWarnings("unchecked")
-    private Object deepCopy(Object value) {
-        return value;
-//        if (value == null) {
-//            return null;
-//        } else if (value instanceof List) {
-//            List result = new ArrayList(((List)value).size());
-//            for (Object o : (List) value) {
-//                result.add(deepCopy(o));
-//            }
-//            return result;
-//        } else if (value instanceof Set) {
-//            Set result = new HashSet(((Set)value).size());
-//            for (Object o : (Set) value) {
-//                result.add(deepCopy(o));
-//            }
-//            return result;
-//
-//            // todo... Array, Collection, Bean ?
-//
-//        } else {
-//            return value;
-//        }
-    }
 
     private Object unwrapIfNecessary(Object newValue) {
         Object newUnwrappedValue;
@@ -424,6 +358,18 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
         return wrapper;
     }
 
+    @Override
+    public void signalValueChange() {
+        signal(new LocalSource(context().modelContext()), Change.valueChange(getValue()));
+    }
+
+    @Override
+    public void signal(Source source, Change change) {
+        LOG.trace("{} signal {}", this, change);
+        ChangeEvent changeEvent = new ChangeEvent(source, this, change);
+        context().modelContext().getEventDispatcher().dispatch(changeEvent);
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getValue() {
@@ -431,9 +377,7 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
         try {
             val = internalGetValue();
         } catch (InvalidRefException e) {
-            MissingEvent missingEvent = new MissingEvent(new LocalSource(context().modelContext()), this);
-            context().modelContext().getEventDispatcher().dispatch(missingEvent);
-            val = null;  // todo   shall we re-throw the exception instead?
+            throw new IllegalStateException("Invalid Ref " + this, e);
         }
         if (val != null && val instanceof Wrapper) {
             return (T)((Wrapper)val).getWrappedValue();
