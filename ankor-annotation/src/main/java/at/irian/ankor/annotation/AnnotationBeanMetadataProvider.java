@@ -5,6 +5,7 @@ import at.irian.ankor.big.BigMapMetadata;
 import at.irian.ankor.ref.TypedRef;
 import at.irian.ankor.ref.match.RefMatcherFactory;
 import at.irian.ankor.ref.match.pattern.AntlrRefMatcherFactory;
+import at.irian.ankor.viewmodel.factory.InitMethodMetadata;
 import at.irian.ankor.viewmodel.metadata.*;
 import at.irian.ankor.viewmodel.watch.WatchedPropertyMetadata;
 
@@ -192,6 +193,11 @@ public class AnnotationBeanMetadataProvider implements BeanMetadataProvider {
             AnkorBigMap bigMapAnnotation = method.getAnnotation(AnkorBigMap.class);
             if (bigMapAnnotation != null) {
                 beanMetadata = addBigMapMetadata(beanMetadata, getPropertyNameFromMethod(method), bigMapAnnotation);
+            }
+
+            AnkorInit initAnnotation = method.getAnnotation(AnkorInit.class);
+            if (initAnnotation != null) {
+                beanMetadata = beanMetadata.withMethodMetadata(method, InitMethodMetadata.INSTANCE);
             }
         }
 

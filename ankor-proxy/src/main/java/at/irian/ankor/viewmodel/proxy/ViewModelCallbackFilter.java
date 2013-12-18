@@ -27,6 +27,10 @@ public class ViewModelCallbackFilter implements CallbackFilter {
             return 2;
         }
 
+        if (InitMethodCallback.accept(method, metadata)) {
+            return 3;
+        }
+
         return 0; // PassThroughCallback
     }
 

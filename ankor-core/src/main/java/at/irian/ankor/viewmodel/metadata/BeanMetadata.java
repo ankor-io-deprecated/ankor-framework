@@ -15,19 +15,22 @@ public class BeanMetadata {
     private final Collection<ActionListenerMetadata> actionListeners;
     private final Map<Method, List<ChangeSignalMetadata>> changeSignals;
     private final Map<String, PropertyMetadata> propertyMetadataMap;
+    private final Map<Method, MethodMetadata> methodMetadataMap;
 
     protected BeanMetadata() {
-        this(null, null, null, null);
+        this(null, null, null, null, null);
     }
 
     protected BeanMetadata(Collection<ChangeListenerMetadata> changeListeners,
                            Collection<ActionListenerMetadata> actionListeners,
                            Map<Method, List<ChangeSignalMetadata>> changeSignals,
-                           Map<String, PropertyMetadata> propertyMetadataMap) {
+                           Map<String, PropertyMetadata> propertyMetadataMap,
+                           Map<Method, MethodMetadata> methodMetadataMap) {
         this.changeListeners = changeListeners;
         this.actionListeners = actionListeners;
         this.changeSignals = changeSignals;
         this.propertyMetadataMap = propertyMetadataMap;
+        this.methodMetadataMap = methodMetadataMap;
     }
 
 
@@ -44,29 +47,14 @@ public class BeanMetadata {
         }
     }
 
-//    protected static <K,V> Map<K,V> combine(Map<K,V> m1, Map<K,V> m2) {
-//        if (m1 == null || m1.isEmpty()) {
-//            return m2;
-//        } else if (m2 == null || m2.isEmpty()) {
-//            return m1;
-//        } else {
-//            Map<K,V> c = new HashMap<K, V>(m1.size() + m2.size());
-//            c.putAll(m1);
-//            c.putAll(m2);
-//            return c;
-//        }
-//    }
-
-
-
     public BeanMetadata withChangeListeners(Collection<ChangeListenerMetadata> changeListeners) {
         return new BeanMetadata(combine(this.changeListeners, changeListeners), actionListeners,
-                                changeSignals, propertyMetadataMap);
+                                changeSignals, propertyMetadataMap, methodMetadataMap);
     }
 
     public BeanMetadata withActionListeners(Collection<ActionListenerMetadata> actionListeners) {
         return new BeanMetadata(changeListeners, combine(this.actionListeners, actionListeners),
-                                changeSignals, propertyMetadataMap);
+                                changeSignals, propertyMetadataMap, methodMetadataMap);
     }
 
     public BeanMetadata withChangeSignals(Collection<ChangeSignalMetadata> changeSignals) {
@@ -90,7 +78,7 @@ public class BeanMetadata {
 
         map = Collections.unmodifiableMap(map);
 
-        return new BeanMetadata(changeListeners, actionListeners, map, propertyMetadataMap);
+        return new BeanMetadata(changeListeners, actionListeners, map, propertyMetadataMap, methodMetadataMap);
     }
 
     public BeanMetadata withPropertyMetadata(String propertyName, Object metadata) {
@@ -111,7 +99,28 @@ public class BeanMetadata {
 
         map = Collections.unmodifiableMap(map);
 
-        return new BeanMetadata(changeListeners, actionListeners, changeSignals, map);
+        return new BeanMetadata(changeListeners, actionListeners, changeSignals, map, methodMetadataMap);
+    }
+
+    public BeanMetadata withMethodMetadata(Method method, Object metadata) {
+        Map<Method, MethodMetadata> map = new HashMap<Method, MethodMetadata>();
+        if (this.methodMetadataMap != null) {
+            map.putAll(this.methodMetadataMap);
+        }
+
+        MethodMetadata md = map.get(method);
+        if (md == null) {
+            md = new MethodMetadata(method);
+        }
+
+        //noinspection unchecked
+        md = md.withGenericMetadata((Class<Object>) metadata.getClass(), metadata);
+
+        map.put(method, md);
+
+        map = Collections.unmodifiableMap(map);
+
+        return new BeanMetadata(changeListeners, actionListeners, changeSignals, propertyMetadataMap, map);
     }
 
     public Collection<ChangeListenerMetadata> getChangeListeners() {
@@ -143,6 +152,23 @@ public class BeanMetadata {
     public Collection<PropertyMetadata> getPropertiesMetadata() {
         if (propertyMetadataMap != null) {
             return propertyMetadataMap.values();
+        }
+        return Collections.emptyList();
+    }
+
+    public MethodMetadata getMethodMetadata(Method method) {
+        if (methodMetadataMap != null) {
+            MethodMetadata metadata = methodMetadataMap.get(method);
+            if (metadata != null) {
+                return metadata;
+            }
+        }
+        return MethodMetadata.emptyMethodMetadata(method);
+    }
+
+    public Collection<MethodMetadata> getMethodsMetadata() {
+        if (methodMetadataMap != null) {
+            return methodMetadataMap.values();
         }
         return Collections.emptyList();
     }

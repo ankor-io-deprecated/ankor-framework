@@ -1,10 +1,6 @@
 package at.irian.ankorsamples.animals.viewmodel.animal;
 
-import at.irian.ankor.annotation.ActionListener;
-import at.irian.ankor.annotation.AnkorWatched;
-import at.irian.ankor.annotation.ChangeListener;
-import at.irian.ankor.annotation.Param;
-import at.irian.ankor.annotation.AnkorBigList;
+import at.irian.ankor.annotation.*;
 import at.irian.ankor.delay.FloodControl;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.TypedRef;
@@ -30,13 +26,13 @@ import static at.irian.ankor.viewmodel.factory.BeanFactories.newPropertyInstance
 public class AnimalSearchModel {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalSearchModel.class);
 
-    private final TypedRef<String> panelNameRef;
-    private final TypedRef<String> serverStatusRef;
-    private final Ref i18nResourcesRef;
-    private final AnimalRepository animalRepository;
-    private final AnimalSearchFilter filter;
-    private final AnimalSelectItems selectItems;
-    private final FloodControl reloadFloodControl;
+    private TypedRef<String> panelNameRef;
+    private TypedRef<String> serverStatusRef;
+    private Ref i18nResourcesRef;
+    private AnimalRepository animalRepository;
+    private AnimalSearchFilter filter;
+    private AnimalSelectItems selectItems;
+    private FloodControl reloadFloodControl;
 
     @AnkorBigList(missingElementSubstitute = EmptyAnimal.class,
                   threshold = 500,
@@ -45,19 +41,20 @@ public class AnimalSearchModel {
     @AnkorWatched(diffThreshold = 20)
     private ExtendedList<Animal> animals;
 
-    public AnimalSearchModel(TypedRef<String> panelNameRef,
-                             TypedRef<String> serverStatusRef,
-                             Ref i18nResourcesRef,
-                             AnimalRepository animalRepository) {
+    @AnkorInit
+    public void init(TypedRef<String> panelNameRef,
+                     TypedRef<String> serverStatusRef,
+                     Ref i18nResourcesRef,
+                     AnimalRepository animalRepository) {
         this.panelNameRef = panelNameRef;
         this.serverStatusRef = serverStatusRef;
         this.i18nResourcesRef = i18nResourcesRef;
         this.animalRepository = animalRepository;
 
         this.filter = newPropertyInstance(AnimalSearchFilter.class, this, "filter");
-        this.selectItems = newPropertyInstance(AnimalSelectItems.class, this, "selectItems",
-                                               animalRepository.getAnimalTypes(),
-                                               Collections.emptyList());
+        this.selectItems = newPropertyInstance(AnimalSelectItems.class, this, "selectItems");
+        this.selectItems.init(animalRepository.getAnimalTypes(),
+                              Collections.<AnimalFamily>emptyList());
 
         this.animals = new ExtendedListWrapper<>(new ArrayList<Animal>());
 

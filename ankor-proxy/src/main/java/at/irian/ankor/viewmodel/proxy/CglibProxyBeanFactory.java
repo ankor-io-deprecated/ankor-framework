@@ -24,7 +24,9 @@ public class CglibProxyBeanFactory extends AbstractBeanFactory {
     }
 
     @Override
-    protected <T> T createInstance(Class<T> type, Ref ref, Object[] args) {
+    protected <T> T createInstance(Class<T> type,
+                                   Ref ref,
+                                   Object[] args) {
         BeanMetadata metadata = metadataProvider.getMetadata(type);
         Enhancer e = new Enhancer();
         e.setSuperclass(type);
@@ -33,7 +35,8 @@ public class CglibProxyBeanFactory extends AbstractBeanFactory {
         e.setCallbacks(new Callback[] {
                 new PassThroughCallback(),             //0
                 new RefAwareCallback(ref),             //1
-                new AutoSignalCallback(ref, metadata)  //2
+                new AutoSignalCallback(ref, metadata), //2
+                new InitMethodCallback(ref)            //3
         });
 
         Class[] parameterTypes = getParameterTypes(args);

@@ -32,7 +32,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
     protected abstract <T> T createInstance(Class<T> type, Ref ref, Object[] args);
 
 
-    public static void invokePostProcessorsOn(Object viewModelBean, Ref viewModelRef, BeanMetadata metadata) {
+    protected void invokePostProcessorsOn(Object viewModelBean, Ref viewModelRef, BeanMetadata metadata) {
         for (ViewModelPostProcessor viewModelPostProcessor : viewModelRef.context().viewModelPostProcessors()) {
             viewModelPostProcessor.postProcess(viewModelBean, viewModelRef, metadata);
         }

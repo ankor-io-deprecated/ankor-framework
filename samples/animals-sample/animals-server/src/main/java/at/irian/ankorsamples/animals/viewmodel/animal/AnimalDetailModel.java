@@ -1,6 +1,7 @@
 package at.irian.ankorsamples.animals.viewmodel.animal;
 
 import at.irian.ankor.annotation.ActionListener;
+import at.irian.ankor.annotation.AnkorInit;
 import at.irian.ankor.annotation.AutoSignal;
 import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.ref.Ref;
@@ -24,14 +25,10 @@ import static at.irian.ankor.viewmodel.factory.BeanFactories.newPropertyInstance
 public class AnimalDetailModel {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalDetailModel.class);
 
-    private final TypedRef<String> panelNameRef;
-    private final TypedRef<String> serverStatusRef;
-    private final Ref i18nResourcesRef;
-    private final AnimalRepository animalRepository;
-
-    private boolean saved = false;
-
-
+    private TypedRef<String> panelNameRef;
+    private TypedRef<String> serverStatusRef;
+    private Ref i18nResourcesRef;
+    private AnimalRepository animalRepository;
 
     private Animal animal;
 
@@ -39,17 +36,23 @@ public class AnimalDetailModel {
 
     private boolean editable;
 
+    private boolean saved = false;
+
     private String nameStatus;
 
-    public AnimalDetailModel(TypedRef<String> panelNameRef,
-                             TypedRef<String> serverStatusRef,
-                             AnimalRepository animalRepository,
-                             Ref i18nResourcesRef, Animal animal) {
+    @AnkorInit
+    public void init(TypedRef<String> panelNameRef,
+                     TypedRef<String> serverStatusRef,
+                     AnimalRepository animalRepository,
+                     Ref i18nResourcesRef,
+                     Animal animal) {
         this.i18nResourcesRef = i18nResourcesRef;
         this.animal = animal;
-        this.selectItems = newPropertyInstance(AnimalSelectItems.class, this, "selectItems",
-                                               animalRepository.getAnimalTypes(),
-                                               animal != null ? animalRepository.getAnimalFamilies(animal.getType()) : Collections.emptyList());
+        this.selectItems = newPropertyInstance(AnimalSelectItems.class, this, "selectItems");
+        this.selectItems.init(animalRepository.getAnimalTypes(),
+                              animal != null
+                              ? animalRepository.getAnimalFamilies(animal.getType())
+                              : Collections.<AnimalFamily>emptyList());
         this.animalRepository = animalRepository;
         this.panelNameRef = panelNameRef;
         this.serverStatusRef = serverStatusRef;
