@@ -132,7 +132,6 @@ public class AnnotationBeanMetadataProvider implements BeanMetadataProvider {
         boolean autoSignalForAllSetters = (type.getAnnotation(AutoSignal.class) != null);
 
         Collection<ChangeListenerMetadata> changeListeners = new ArrayList<ChangeListenerMetadata>();
-        Collection<ChangeSignalMetadata> changeSignals = new ArrayList<ChangeSignalMetadata>();
         Collection<ActionListenerMetadata> actionListeners = new ArrayList<ActionListenerMetadata>();
         for (Method method : type.getDeclaredMethods()) {
 
@@ -162,27 +161,32 @@ public class AnnotationBeanMetadataProvider implements BeanMetadataProvider {
             }
 
             boolean setterAutoSignal = false;
+            AutoSignalMetadata signalMetadata = AutoSignalMetadata.empty();
             AutoSignal autoSignalAnnotation = method.getAnnotation(AutoSignal.class);
             if (autoSignalAnnotation != null) {
                 String[] paths = autoSignalAnnotation.value();
                 if (paths.length == 0 || (paths.length == 1 && paths[0].isEmpty())) {
                     if (isSetter(method)) {
                         String propertyName = Introspector.decapitalize(method.getName().substring(3));
-                        changeSignals.add(new ChangeSignalMetadata(method, '.' + propertyName));
+                        signalMetadata = signalMetadata.withPath('.' + propertyName);
                         setterAutoSignal = true;
                     } else {
                         throw new IllegalStateException("Method " + method + " is no setter, but is annotated with " + AutoSignal.class.getName() + " without a path");
                     }
                 } else {
                     for (String path : paths) {
-                        changeSignals.add(new ChangeSignalMetadata(method, path));
+                        signalMetadata = signalMetadata.withPath(path);
                     }
                 }
             }
 
             if (!setterAutoSignal && autoSignalForAllSetters && isSetter(method)) {
                 String propertyName = Introspector.decapitalize(method.getName().substring(3));
-                changeSignals.add(new ChangeSignalMetadata(method, '.' + propertyName));
+                signalMetadata = signalMetadata.withPath('.' + propertyName);
+            }
+
+            if (!signalMetadata.getPaths().isEmpty()) {
+                beanMetadata = beanMetadata.withMethodMetadata(method, signalMetadata);
             }
 
             AnkorBigList bigListAnnotation = method.getAnnotation(AnkorBigList.class);
@@ -203,7 +207,6 @@ public class AnnotationBeanMetadataProvider implements BeanMetadataProvider {
 
         beanMetadata = beanMetadata.withChangeListeners(changeListeners);
         beanMetadata = beanMetadata.withActionListeners(actionListeners);
-        beanMetadata = beanMetadata.withChangeSignals(changeSignals);
 
         Class<?> superclass = type.getSuperclass();
         if (superclass != null) {

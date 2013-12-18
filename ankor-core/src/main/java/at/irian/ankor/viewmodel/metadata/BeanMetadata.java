@@ -13,22 +13,19 @@ public class BeanMetadata {
 
     private final Collection<ChangeListenerMetadata> changeListeners;
     private final Collection<ActionListenerMetadata> actionListeners;
-    private final Map<Method, List<ChangeSignalMetadata>> changeSignals;
     private final Map<String, PropertyMetadata> propertyMetadataMap;
     private final Map<Method, MethodMetadata> methodMetadataMap;
 
     protected BeanMetadata() {
-        this(null, null, null, null, null);
+        this(null, null, null, null);
     }
 
     protected BeanMetadata(Collection<ChangeListenerMetadata> changeListeners,
                            Collection<ActionListenerMetadata> actionListeners,
-                           Map<Method, List<ChangeSignalMetadata>> changeSignals,
                            Map<String, PropertyMetadata> propertyMetadataMap,
                            Map<Method, MethodMetadata> methodMetadataMap) {
         this.changeListeners = changeListeners;
         this.actionListeners = actionListeners;
-        this.changeSignals = changeSignals;
         this.propertyMetadataMap = propertyMetadataMap;
         this.methodMetadataMap = methodMetadataMap;
     }
@@ -49,36 +46,12 @@ public class BeanMetadata {
 
     public BeanMetadata withChangeListeners(Collection<ChangeListenerMetadata> changeListeners) {
         return new BeanMetadata(combine(this.changeListeners, changeListeners), actionListeners,
-                                changeSignals, propertyMetadataMap, methodMetadataMap);
+                                propertyMetadataMap, methodMetadataMap);
     }
 
     public BeanMetadata withActionListeners(Collection<ActionListenerMetadata> actionListeners) {
         return new BeanMetadata(changeListeners, combine(this.actionListeners, actionListeners),
-                                changeSignals, propertyMetadataMap, methodMetadataMap);
-    }
-
-    public BeanMetadata withChangeSignals(Collection<ChangeSignalMetadata> changeSignals) {
-        if (changeSignals == null || changeSignals.isEmpty()) {
-            return this;
-        }
-
-        Map<Method, List<ChangeSignalMetadata>> map = new HashMap<Method, List<ChangeSignalMetadata>>();
-        if (this.changeSignals != null) {
-            map.putAll(this.changeSignals);
-        }
-
-        for (ChangeSignalMetadata changeSignal : changeSignals) {
-            List<ChangeSignalMetadata> signals = map.get(changeSignal.getMethod());
-            if (signals == null) {
-                signals = new ArrayList<ChangeSignalMetadata>(1);
-                map.put(changeSignal.getMethod(), signals);
-            }
-            signals.add(changeSignal);
-        }
-
-        map = Collections.unmodifiableMap(map);
-
-        return new BeanMetadata(changeListeners, actionListeners, map, propertyMetadataMap, methodMetadataMap);
+                                propertyMetadataMap, methodMetadataMap);
     }
 
     public BeanMetadata withPropertyMetadata(String propertyName, Object metadata) {
@@ -99,7 +72,7 @@ public class BeanMetadata {
 
         map = Collections.unmodifiableMap(map);
 
-        return new BeanMetadata(changeListeners, actionListeners, changeSignals, map, methodMetadataMap);
+        return new BeanMetadata(changeListeners, actionListeners, map, methodMetadataMap);
     }
 
     public BeanMetadata withMethodMetadata(Method method, Object metadata) {
@@ -120,7 +93,7 @@ public class BeanMetadata {
 
         map = Collections.unmodifiableMap(map);
 
-        return new BeanMetadata(changeListeners, actionListeners, changeSignals, propertyMetadataMap, map);
+        return new BeanMetadata(changeListeners, actionListeners, propertyMetadataMap, map);
     }
 
     public Collection<ChangeListenerMetadata> getChangeListeners() {
@@ -129,14 +102,6 @@ public class BeanMetadata {
 
     public Collection<ActionListenerMetadata> getActionListeners() {
         return actionListeners != null ? actionListeners : Collections.<ActionListenerMetadata>emptyList();
-    }
-
-    public List<ChangeSignalMetadata> findChangeSignals(Method method) {
-        if (changeSignals == null) {
-            return Collections.emptyList();
-        }
-        List<ChangeSignalMetadata> result = changeSignals.get(method);
-        return result != null ? result : Collections.<ChangeSignalMetadata>emptyList();
     }
 
     public PropertyMetadata getPropertyMetadata(String propertyName) {

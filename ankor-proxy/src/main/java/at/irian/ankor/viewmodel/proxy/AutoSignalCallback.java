@@ -1,13 +1,12 @@
 package at.irian.ankor.viewmodel.proxy;
 
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.viewmodel.metadata.AutoSignalMetadata;
 import at.irian.ankor.viewmodel.metadata.BeanMetadata;
-import at.irian.ankor.viewmodel.metadata.ChangeSignalMetadata;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 
 import java.lang.reflect.Method;
-import java.util.List;
 
 /**
  * @author Manfred Geiler
@@ -28,9 +27,9 @@ public class AutoSignalCallback implements MethodInterceptor {
 
         Object result = proxy.invokeSuper(obj, args);
 
-        List<ChangeSignalMetadata> changeSignals = metadata.findChangeSignals(method);
-        for (ChangeSignalMetadata changeSignal : changeSignals) {
-            String path = changeSignal.getPath();
+        AutoSignalMetadata autoSignalMetadata
+                = metadata.getMethodMetadata(method).getGenericMetadata(AutoSignalMetadata.class);
+        for (String path : autoSignalMetadata.getPaths()) {
             if (path.startsWith(".")) {
                 ref.appendPath(path.substring(1)).signalValueChange();
             } else {
@@ -42,6 +41,6 @@ public class AutoSignalCallback implements MethodInterceptor {
     }
 
     public static boolean accept(Method method, BeanMetadata metadata) {
-        return !metadata.findChangeSignals(method).isEmpty();
+        return metadata.getMethodMetadata(method).getGenericMetadata(AutoSignalMetadata.class) != null;
     }
 }

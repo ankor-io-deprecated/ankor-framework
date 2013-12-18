@@ -4,6 +4,7 @@ import at.irian.ankor.ref.Ref;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
 import at.irian.ankor.viewmodel.metadata.BeanMetadata;
 import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
+import at.irian.ankor.viewmodel.metadata.MethodMetadata;
 
 /**
  * @author Manfred Geiler
@@ -24,9 +25,20 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 
         T instance = createInstance(type, ref, args);
 
-        invokePostProcessorsOn(instance, ref, metadata);
+        if (!hasInitMethod(metadata)) {
+            invokePostProcessorsOn(instance, ref, metadata);
+        }
 
         return instance;
+    }
+
+    private boolean hasInitMethod(BeanMetadata metadata) {
+        for (MethodMetadata methodMetadata : metadata.getMethodsMetadata()) {
+            if (methodMetadata.getGenericMetadata(InitMethodMetadata.class) != null) {
+                return true;
+            }
+        }
+        return false;
     }
 
     protected abstract <T> T createInstance(Class<T> type, Ref ref, Object[] args);
