@@ -100,7 +100,7 @@ public class SimpleELPathSyntax implements PathSyntax {
             if (i > 0) {
                 return path.substring(i + 1);
             } else {
-                throw new IllegalArgumentException("Not a valid path: " + path);
+                return path;
             }
         }
     }
@@ -125,6 +125,7 @@ public class SimpleELPathSyntax implements PathSyntax {
         }
         String key = getArrayIdx(path);
         try {
+            //noinspection ResultOfMethodCallIgnored
             Integer.parseInt(key);
             return true;
         } catch (NumberFormatException e) {
