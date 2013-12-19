@@ -2,6 +2,7 @@ package at.irian.ankor.annotation;
 
 import at.irian.ankor.big.BigListMetadata;
 import at.irian.ankor.big.BigMapMetadata;
+import at.irian.ankor.delay.FloodControlMetadata;
 import at.irian.ankor.ref.TypedRef;
 import at.irian.ankor.ref.match.RefMatcherFactory;
 import at.irian.ankor.ref.match.pattern.AntlrRefMatcherFactory;
@@ -202,6 +203,11 @@ public class AnnotationBeanMetadataProvider implements BeanMetadataProvider {
             AnkorInit initAnnotation = method.getAnnotation(AnkorInit.class);
             if (initAnnotation != null) {
                 beanMetadata = beanMetadata.withMethodMetadata(method, InitMethodMetadata.INSTANCE);
+            }
+
+            AnkorFloodControl floodControlAnnotation = method.getAnnotation(AnkorFloodControl.class);
+            if (floodControlAnnotation != null) {
+                beanMetadata = beanMetadata.withMethodMetadata(method, new FloodControlMetadata(floodControlAnnotation.delayMillis()));
             }
         }
 

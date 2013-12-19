@@ -27,6 +27,14 @@ public final class AnkorPatterns {
                                                                       task));
     }
 
+    public static void runLater(Object viewModelBean, Runnable task) {
+        if (viewModelBean instanceof RefAware) {
+            runLater(((RefAware) viewModelBean).getRef(), task);
+        } else {
+            throw new IllegalArgumentException("View model bean must implement " + RefAware.class.getName());
+        }
+    }
+
     private static EventDispatcher getEventDispatcherFor(Ref property) {
         return property.context().modelContext().getEventDispatcher();
     }

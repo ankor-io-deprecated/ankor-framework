@@ -31,6 +31,10 @@ public class ViewModelCallbackFilter implements CallbackFilter {
             return 3;
         }
 
+        if (FloodControlCallback.accept(method, metadata)) {
+            return 4;
+        }
+
         return 0; // PassThroughCallback
     }
 

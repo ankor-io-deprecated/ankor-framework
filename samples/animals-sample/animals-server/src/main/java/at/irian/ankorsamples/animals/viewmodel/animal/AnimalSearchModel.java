@@ -1,10 +1,9 @@
 package at.irian.ankorsamples.animals.viewmodel.animal;
 
 import at.irian.ankor.annotation.*;
-import at.irian.ankor.delay.FloodControl;
+import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.TypedRef;
-import at.irian.ankor.viewmodel.ViewModels;
 import at.irian.ankor.viewmodel.watch.ExtendedList;
 import at.irian.ankor.viewmodel.watch.ExtendedListWrapper;
 import at.irian.ankorsamples.animals.domain.animal.Animal;
@@ -32,12 +31,8 @@ public class AnimalSearchModel {
     private AnimalRepository animalRepository;
     private AnimalSearchFilter filter;
     private AnimalSelectItems selectItems;
-    private FloodControl reloadFloodControl;
 
-    @AnkorBigList(missingElementSubstitute = EmptyAnimal.class,
-                  threshold = 500,
-                  initialSize = 10,
-                  chunkSize = 10)
+    @AnkorBigList(missingElementSubstitute = EmptyAnimal.class, threshold = 100, initialSize = 10, chunkSize = 10)
     @AnkorWatched(diffThreshold = 20)
     private ExtendedList<Animal> animals;
 
@@ -57,8 +52,6 @@ public class AnimalSearchModel {
                               Collections.<AnimalFamily>emptyList());
 
         this.animals = new ExtendedListWrapper<>(new ArrayList<Animal>());
-
-        this.reloadFloodControl = new FloodControl(ViewModels.ref(this), 500L);  // todo:  flood control with annotation
     }
 
     public AnimalSearchFilter getFilter() {
@@ -74,11 +67,14 @@ public class AnimalSearchModel {
     }
 
     @ChangeListener(pattern = {".filter.**"})
+    @AnkorFloodControl(delayMillis = 100L)
     public void reloadAnimals() {
-        reloadFloodControl.control(new Runnable() {
+
+        serverStatusRef.setValue("loading...");
+
+        AnkorPatterns.runLater(this, new Runnable() {
             @Override
             public void run() {
-
                 reloadAnimalsImmediately();
 
                 // reset server status display
@@ -87,7 +83,7 @@ public class AnimalSearchModel {
         });
     }
 
-    private void reloadAnimalsImmediately() {
+    public void reloadAnimalsImmediately() {
         // get new list from database
         LOG.info("RELOADING animals ...");
         List<Animal> newAnimalsList = animalRepository.searchAnimals(filter, 0, Integer.MAX_VALUE);

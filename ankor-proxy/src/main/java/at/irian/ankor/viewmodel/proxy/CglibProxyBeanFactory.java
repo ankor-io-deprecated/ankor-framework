@@ -33,10 +33,11 @@ public class CglibProxyBeanFactory extends AbstractBeanFactory {
         e.setInterfaces(INTERFACES);
         e.setCallbackFilter(new ViewModelCallbackFilter(metadata));
         e.setCallbacks(new Callback[] {
-                new PassThroughCallback(),             //0
-                new RefAwareCallback(ref),             //1
-                new AutoSignalCallback(ref, metadata), //2
-                new InitMethodCallback(ref)            //3
+                new PassThroughCallback(),                          //0
+                new RefAwareCallback(ref),                          //1
+                new AutoSignalCallback(ref, metadata),              //2
+                new InitMethodCallback(ref),                        //3
+                new FloodControlCallback(ref.context(), metadata)   //4
         });
 
         Class[] parameterTypes = getParameterTypes(args);
