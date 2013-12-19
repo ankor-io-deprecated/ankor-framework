@@ -2,7 +2,6 @@ package at.irian.ankor.fx.binding.convert;
 
 import at.irian.ankor.converter.Converter;
 import com.sun.javafx.binding.ExpressionHelper;
-import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
@@ -24,25 +23,13 @@ public class ConvertedObservableValue<A,B> implements ObservableValue<B> {
         observableValue.addListener(new InvalidationListener() {
             @Override
             public void invalidated(Observable observable) {
-                // fire change asynchronously because of timing problem (fx bug?)
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        ExpressionHelper.fireValueChangedEvent(helper);
-                    }
-                });
+                ExpressionHelper.fireValueChangedEvent(helper);
             }
         });
         observableValue.addListener(new ChangeListener<A>() {
             @Override
             public void changed(ObservableValue<? extends A> observableValue, A oldValue, A newValue) {
-                // fire change asynchronously because of timing problem (fx bug?)
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        ExpressionHelper.fireValueChangedEvent(helper);
-                    }
-                });
+                ExpressionHelper.fireValueChangedEvent(helper);
             }
         });
     }

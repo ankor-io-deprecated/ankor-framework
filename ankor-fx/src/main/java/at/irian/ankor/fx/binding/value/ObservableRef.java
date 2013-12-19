@@ -6,7 +6,6 @@ import at.irian.ankor.change.ChangeType;
 import at.irian.ankor.fx.binding.cache.FxCacheSupport;
 import at.irian.ankor.ref.Ref;
 import com.sun.javafx.binding.ExpressionHelper;
-import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -37,13 +36,7 @@ public class ObservableRef<T> implements ObservableValue<T> {
                 if (change.getType() == ChangeType.value
                     && (changedProperty.equals(ObservableRef.this.ref) || changedProperty.isAncestorOf(ObservableRef.this.ref))) {
                     LOG.trace("{} changed value --> fire FX change event", changedProperty);
-                    // fire change asynchronously because of timing problem (fx bug?)
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            ExpressionHelper.fireValueChangedEvent(helper);
-                        }
-                    });
+                    ExpressionHelper.fireValueChangedEvent(helper);
                 }
             }
         };
