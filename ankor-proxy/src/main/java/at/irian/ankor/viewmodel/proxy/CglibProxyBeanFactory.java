@@ -5,7 +5,6 @@ import at.irian.ankor.viewmodel.RefAware;
 import at.irian.ankor.viewmodel.factory.AbstractBeanFactory;
 import at.irian.ankor.viewmodel.metadata.BeanMetadata;
 import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
-import net.sf.cglib.proxy.Callback;
 import net.sf.cglib.proxy.Enhancer;
 import org.apache.commons.lang.reflect.ConstructorUtils;
 
@@ -31,14 +30,10 @@ public class CglibProxyBeanFactory extends AbstractBeanFactory {
         Enhancer e = new Enhancer();
         e.setSuperclass(type);
         e.setInterfaces(INTERFACES);
-        e.setCallbackFilter(new ViewModelCallbackFilter(metadata));
-        e.setCallbacks(new Callback[] {
-                new PassThroughCallback(),                          //0
-                new RefAwareCallback(ref),                          //1
-                new AutoSignalCallback(ref, metadata),              //2
-                new InitMethodCallback(ref),                        //3
-                new FloodControlCallback(ref.context(), metadata)   //4
-        });
+
+        InterceptorChainFactory interceptorChainFactory = new InterceptorChainFactory(metadata);
+        CglibCallback cglibCallback = new CglibCallback(metadata, ref, interceptorChainFactory);
+        e.setCallback(cglibCallback);
 
         Class[] parameterTypes = getParameterTypes(args);
         Constructor matchingAccessibleConstructor

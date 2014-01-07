@@ -4,8 +4,6 @@ import at.irian.ankor.delay.FloodControl;
 import at.irian.ankor.delay.FloodControlMetadata;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.viewmodel.metadata.BeanMetadata;
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -14,21 +12,26 @@ import java.util.Map;
 /**
  * @author Manfred Geiler
  */
-public class FloodControlCallback implements MethodInterceptor {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(InitMethodCallback.class);
+public class FloodControlMethodInterceptor implements MethodInterceptor {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(FloodControlMethodInterceptor.class);
 
-    private final RefContext refContext;
     private final BeanMetadata metadata;
     private Map<Method, FloodControl> floodControlMap;
 
-    public FloodControlCallback(RefContext refContext, BeanMetadata metadata) {
-        this.refContext = refContext;
+    public FloodControlMethodInterceptor(BeanMetadata metadata) {
         this.metadata = metadata;
         this.floodControlMap = null;
     }
 
     @Override
-    public Object intercept(final Object obj, Method method, final Object[] args, final MethodProxy proxy) throws Throwable {
+    public boolean accept(Method method) {
+        return metadata.getMethodMetadata(method).getGenericMetadata(FloodControlMetadata.class) != null;
+    }
+
+    @Override
+    public Object invoke(final MethodInvocation invocation) throws Throwable {
+
+        Method method = invocation.getMethod();
 
         FloodControl floodControl = null;
 
@@ -40,6 +43,7 @@ public class FloodControlCallback implements MethodInterceptor {
             FloodControlMetadata floodControlMetadata = metadata.getMethodMetadata(method)
                                                                 .getGenericMetadata(FloodControlMetadata.class);
             if (floodControlMetadata != null) {
+                RefContext refContext = invocation.getRef().context();
                 floodControl = new FloodControl(refContext, floodControlMetadata.getDelayMillis());
                 if (floodControlMap == null) {
                     floodControlMap = new HashMap<Method, FloodControl>();
@@ -53,7 +57,7 @@ public class FloodControlCallback implements MethodInterceptor {
                 @Override
                 public void run() {
                     try {
-                        proxy.invokeSuper(obj, args);
+                        invocation.proceed();
                     } catch (Throwable throwable) {
                         throwable.printStackTrace();
                     }
@@ -61,11 +65,8 @@ public class FloodControlCallback implements MethodInterceptor {
             });
             return null;
         } else {
-            return proxy.invokeSuper(obj, args);
+            return invocation.proceed();
         }
     }
 
-    public static boolean accept(Method method, BeanMetadata metadata) {
-        return metadata.getMethodMetadata(method).getGenericMetadata(FloodControlMetadata.class) != null;
-    }
 }

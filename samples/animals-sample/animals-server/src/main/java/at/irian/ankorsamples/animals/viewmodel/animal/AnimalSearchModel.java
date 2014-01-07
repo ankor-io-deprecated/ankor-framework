@@ -34,9 +34,12 @@ public class AnimalSearchModel {
 
     @AnkorBigList(missingElementSubstitute = EmptyAnimal.class, threshold = 100, initialSize = 10, chunkSize = 10)
     @AnkorWatched(diffThreshold = 20)
-    private ExtendedList<Animal> animals;
+    private ExtendedList<Animal> animals = new ExtendedListWrapper<>(new ArrayList<Animal>());
 
-    @AnkorInit
+    public AnimalSearchModel() {
+    }
+
+    //@AnkorInit
     public void init(TypedRef<String> panelNameRef,
                      TypedRef<String> serverStatusRef,
                      Ref i18nResourcesRef,
@@ -51,7 +54,7 @@ public class AnimalSearchModel {
         this.selectItems.init(animalRepository.getAnimalTypes(),
                               Collections.<AnimalFamily>emptyList());
 
-        this.animals = new ExtendedListWrapper<>(new ArrayList<Animal>());
+        //this.animals = new ExtendedListWrapper<>(new ArrayList<Animal>());
     }
 
     public AnimalSearchFilter getFilter() {
@@ -93,6 +96,7 @@ public class AnimalSearchModel {
     }
 
     @ChangeListener(pattern = {".filter.name", "root.locale"})
+    @AnkorFloodControl(delayMillis = 100L)
     public void onNameOrLocaleChanged() {
         panelNameRef.setValue(getPanelName());
     }
