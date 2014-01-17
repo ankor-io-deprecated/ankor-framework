@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		E24D7687188435CB00257B9B /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E24D7686188435CB00257B9B /* libicucore.dylib */; };
-		E29E1050184F2799004AC9F8 /* libAnkorIOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E29E104B184F24AE004AC9F8 /* libAnkorIOS.a */; };
+		E24D768C1889827F00257B9B /* libAnkorIOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E29E104B184F24AE004AC9F8 /* libAnkorIOS.a */; };
 		E2A21A381845E6EB00DA836E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2A21A371845E6EB00DA836E /* Foundation.framework */; };
 		E2A21A3A1845E6EB00DA836E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2A21A391845E6EB00DA836E /* CoreGraphics.framework */; };
 		E2A21A3C1845E6EB00DA836E /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2A21A3B1845E6EB00DA836E /* UIKit.framework */; };
@@ -30,6 +30,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		E24D7690188982EC00257B9B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E29E1045184F24AE004AC9F8 /* AnkorIOS.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = E24756BC184E858A00D75019;
+			remoteInfo = AnkorIOS;
+		};
 		E29E104A184F24AE004AC9F8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E29E1045184F24AE004AC9F8 /* AnkorIOS.xcodeproj */;
@@ -44,13 +51,6 @@
 			remoteGlobalIDString = E24756CD184E858A00D75019;
 			remoteInfo = AnkorIOSTests;
 		};
-		E29E104E184F26B1004AC9F8 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E29E1045184F24AE004AC9F8 /* AnkorIOS.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = E24756BC184E858A00D75019;
-			remoteInfo = AnkorIOS;
-		};
 		E2A21A541845E6EB00DA836E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E2A21A2C1845E6EB00DA836E /* Project object */;
@@ -62,7 +62,7 @@
 
 /* Begin PBXFileReference section */
 		E24D7686188435CB00257B9B /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = usr/lib/libicucore.dylib; sourceTree = SDKROOT; };
-		E29E1045184F24AE004AC9F8 /* AnkorIOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AnkorIOS.xcodeproj; path = ../../../ankor-ios/AnkorIOS.xcodeproj; sourceTree = "<group>"; };
+		E29E1045184F24AE004AC9F8 /* AnkorIOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AnkorIOS.xcodeproj; path = "../../../ankor-ios/AnkorIOS.xcodeproj"; sourceTree = "<group>"; };
 		E2A21A341845E6EB00DA836E /* TodoList.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TodoList.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2A21A371845E6EB00DA836E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		E2A21A391845E6EB00DA836E /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -95,8 +95,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E24D768C1889827F00257B9B /* libAnkorIOS.a in Frameworks */,
 				E24D7687188435CB00257B9B /* libicucore.dylib in Frameworks */,
-				E29E1050184F2799004AC9F8 /* libAnkorIOS.a in Frameworks */,
 				E2A21A7918464F1100DA836E /* Security.framework in Frameworks */,
 				E2A21A7718464F0400DA836E /* CFNetwork.framework in Frameworks */,
 				E2A21A3A1845E6EB00DA836E /* CoreGraphics.framework in Frameworks */,
@@ -230,7 +230,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				E29E104F184F26B1004AC9F8 /* PBXTargetDependency */,
+				E24D7691188982EC00257B9B /* PBXTargetDependency */,
 			);
 			name = TodoList;
 			productName = TodoList;
@@ -358,10 +358,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		E29E104F184F26B1004AC9F8 /* PBXTargetDependency */ = {
+		E24D7691188982EC00257B9B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = AnkorIOS;
-			targetProxy = E29E104E184F26B1004AC9F8 /* PBXContainerItemProxy */;
+			targetProxy = E24D7690188982EC00257B9B /* PBXContainerItemProxy */;
 		};
 		E2A21A551845E6EB00DA836E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -474,7 +474,7 @@
 				HEADER_SEARCH_PATHS = (
 					"<Multiple",
 					"values>",
-					../../../ankor-ios,
+					"../../../ankor-ios/AnkorIOS",
 				);
 				INFOPLIST_FILE = "TodoList/TodoList-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
@@ -500,7 +500,7 @@
 				HEADER_SEARCH_PATHS = (
 					"<Multiple",
 					"values>",
-					../../../ankor-ios,
+					"../../../ankor-ios/AnkorIOS",
 				);
 				INFOPLIST_FILE = "TodoList/TodoList-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
