@@ -42,11 +42,9 @@ define([
 
         $("#toggle-all")
             .on('click', function() {
-                modelRef.fire({
-                    name: "toggleAll",
-                    params: {
+                modelRef.fire("toggleAll", {
                         toggleAll: $(this).prop("checked")
-                    }});
+                    });
             })
             .ankorBindProp("checked", modelRef.append("toggleAll"));
 
@@ -54,10 +52,7 @@ define([
             var title = $(e.currentTarget).val();
             if (e.keyCode === ENTER_KEY &&  title != "") {
                 $(e.currentTarget).val('');
-                modelRef.fire({
-                    name: "newTask",
-                    params: { title: title }
-                });
+                modelRef.fire("newTask", {title: title});
             }
         });
 
@@ -129,10 +124,7 @@ define([
                     $task
                         .find('.destroy')
                         .on("click", function() {
-                            modelRef.fire({
-                                name: 'deleteTask',
-                                params: { index: index }
-                            });
+                            modelRef.fire('deleteTask', { index: index });
                         });
                 })(model);
             }

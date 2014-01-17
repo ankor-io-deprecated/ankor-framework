@@ -9,8 +9,8 @@
         </encoder>
     </appender>
 
-    <logger name="at.irian.ankor.messaging" level="DEBUG" />
-    <logger name="at.irian.ankor.servlet" level="DEBUG" />
+    <logger name="at.irian.ankor.messaging" level="INFO" />
+    <logger name="at.irian.ankor.servlet" level="INFO" />
     <!--<logger name="at.irian.ankor.akka" level="DEBUG" />-->
 
     <root level="INFO">

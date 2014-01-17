@@ -1,0 +1,716 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		E24756C1184E858A00D75019 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E24756C0184E858A00D75019 /* Foundation.framework */; };
+		E24756CF184E858A00D75019 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E24756CE184E858A00D75019 /* XCTest.framework */; };
+		E24756D0184E858A00D75019 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E24756C0184E858A00D75019 /* Foundation.framework */; };
+		E24756D2184E858A00D75019 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E24756D1184E858A00D75019 /* UIKit.framework */; };
+		E24756D5184E858A00D75019 /* libAnkorIOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E24756BD184E858A00D75019 /* libAnkorIOS.a */; };
+		E24756DB184E858A00D75019 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E24756D9184E858A00D75019 /* InfoPlist.strings */; };
+		E24756DD184E858A00D75019 /* AnkorIOSTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E24756DC184E858A00D75019 /* AnkorIOSTests.m */; };
+		E24756F7184E877500D75019 /* ANKActionMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = E24756F1184E877500D75019 /* ANKActionMessage.m */; };
+		E24756F8184E877500D75019 /* ANKHttpMessageLoop.m in Sources */ = {isa = PBXBuildFile; fileRef = E24756F3184E877500D75019 /* ANKHttpMessageLoop.m */; };
+		E24756F9184E877500D75019 /* ANKMessageSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = E24756F6184E877500D75019 /* ANKMessageSerialization.m */; };
+		E2475701184E878A00D75019 /* ANKChangeMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = E24756FB184E878A00D75019 /* ANKChangeMessage.m */; };
+		E2475702184E878A00D75019 /* ANKMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = E24756FD184E878A00D75019 /* ANKMessage.m */; };
+		E2475703184E878A00D75019 /* ANKMessageFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = E24756FF184E878A00D75019 /* ANKMessageFactory.m */; };
+		E24D766B188402AD00257B9B /* ANKSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = E24D766A188402AD00257B9B /* ANKSystem.m */; };
+		E24D76701884218000257B9B /* ANKAction.m in Sources */ = {isa = PBXBuildFile; fileRef = E24D766F1884218000257B9B /* ANKAction.m */; };
+		E24D76791884276B00257B9B /* base64.c in Sources */ = {isa = PBXBuildFile; fileRef = E24D76721884276B00257B9B /* base64.c */; };
+		E24D767A1884276B00257B9B /* NSData+SRB64Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = E24D76751884276B00257B9B /* NSData+SRB64Additions.m */; };
+		E24D767B1884276B00257B9B /* SRWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = E24D76781884276B00257B9B /* SRWebSocket.m */; };
+		E24D767D188427D900257B9B /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E24D767C188427D900257B9B /* CFNetwork.framework */; };
+		E24D767F188427E200257B9B /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E24D767E188427E200257B9B /* Security.framework */; };
+		E24D7681188427F200257B9B /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E24D7680188427F200257B9B /* libicucore.dylib */; };
+		E24D76841884283B00257B9B /* ANKWebSocketMessageLoop.m in Sources */ = {isa = PBXBuildFile; fileRef = E24D76831884283B00257B9B /* ANKWebSocketMessageLoop.m */; };
+		E2B72F79184F29D2007F21F7 /* protocol.txt in Resources */ = {isa = PBXBuildFile; fileRef = E2B72F78184F29D2007F21F7 /* protocol.txt */; };
+		E2B72F80184F4C31007F21F7 /* ANKChange.m in Sources */ = {isa = PBXBuildFile; fileRef = E2B72F7F184F4C31007F21F7 /* ANKChange.m */; };
+		E2B72F86184F98A3007F21F7 /* ANKChange.h in Sources */ = {isa = PBXBuildFile; fileRef = E2B72F7E184F4C31007F21F7 /* ANKChange.h */; };
+		E2B72F92184F9B7F007F21F7 /* ANKRefContextFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = E2B72F91184F9B7F007F21F7 /* ANKRefContextFactory.m */; };
+		E2B72F99184F9BD7007F21F7 /* ANKModelContext.m in Sources */ = {isa = PBXBuildFile; fileRef = E2B72F98184F9BD7007F21F7 /* ANKModelContext.m */; };
+		E2CF2B66187D988D004E46F6 /* ANKChangeEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = E2CF2B65187D988D004E46F6 /* ANKChangeEvent.m */; };
+		E2CF2B6A187DF343004E46F6 /* ANKEventListeners.m in Sources */ = {isa = PBXBuildFile; fileRef = E2CF2B69187DF343004E46F6 /* ANKEventListeners.m */; };
+		E2CF2B7C187EB06B004E46F6 /* ANKRemoteMessageListener.m in Sources */ = {isa = PBXBuildFile; fileRef = E2CF2B7B187EB06B004E46F6 /* ANKRemoteMessageListener.m */; };
+		E2CF2B7F187EBEA6004E46F6 /* ANKEventListeners.h in Sources */ = {isa = PBXBuildFile; fileRef = E2CF2B68187DF343004E46F6 /* ANKEventListeners.h */; };
+		E2CF2B80187EBEA6004E46F6 /* ANKEventListener.h in Sources */ = {isa = PBXBuildFile; fileRef = E2CF2B6B187DF354004E46F6 /* ANKEventListener.h */; };
+		E2CF2B81187EBEA6004E46F6 /* ANKModelEvent.h in Sources */ = {isa = PBXBuildFile; fileRef = E2CF2B79187EA46B004E46F6 /* ANKModelEvent.h */; };
+		E2CF2B82187EBEA6004E46F6 /* ANKModelContext.h in Sources */ = {isa = PBXBuildFile; fileRef = E2B72F97184F9BD7007F21F7 /* ANKModelContext.h */; };
+		E2CF2B83187EBEA6004E46F6 /* ANKChangeEvent.h in Sources */ = {isa = PBXBuildFile; fileRef = E2CF2B64187D988D004E46F6 /* ANKChangeEvent.h */; };
+		E2CF2B84187EBEA6004E46F6 /* ANKChangeEventListener.h in Sources */ = {isa = PBXBuildFile; fileRef = E2CF2B75187DFD10004E46F6 /* ANKChangeEventListener.h */; };
+		E2CF2B86187EBEA6004E46F6 /* ANKRefContextFactory.h in Sources */ = {isa = PBXBuildFile; fileRef = E2B72F90184F9B7F007F21F7 /* ANKRefContextFactory.h */; };
+		E2CF2B88187EBEA6004E46F6 /* ANKMessageSerialization.h in Sources */ = {isa = PBXBuildFile; fileRef = E24756F5184E877500D75019 /* ANKMessageSerialization.h */; };
+		E2CF2B89187EBEA6004E46F6 /* ANKMessageLoop.h in Sources */ = {isa = PBXBuildFile; fileRef = E2475700184E878A00D75019 /* ANKMessageLoop.h */; };
+		E2CF2B8A187EBEA6004E46F6 /* ANKHttpMessageLoop.h in Sources */ = {isa = PBXBuildFile; fileRef = E24756F2184E877500D75019 /* ANKHttpMessageLoop.h */; };
+		E2CF2B8B187EBEA6004E46F6 /* ANKRemoteMessageListener.h in Sources */ = {isa = PBXBuildFile; fileRef = E2CF2B7A187EB06B004E46F6 /* ANKRemoteMessageListener.h */; };
+		E2CF2B8C187EBEA6004E46F6 /* ANKMessageListener.h in Sources */ = {isa = PBXBuildFile; fileRef = E2CF2B7D187EB1CE004E46F6 /* ANKMessageListener.h */; };
+		E2CF2B8D187EBEA6004E46F6 /* ANKMessageBus.h in Sources */ = {isa = PBXBuildFile; fileRef = E24756F4184E877500D75019 /* ANKMessageBus.h */; };
+		E2CF2B8E187EBEA6004E46F6 /* ANKMessageFactory.h in Sources */ = {isa = PBXBuildFile; fileRef = E24756FE184E878A00D75019 /* ANKMessageFactory.h */; };
+		E2CF2B8F187EBEA6004E46F6 /* ANKActionMessage.h in Sources */ = {isa = PBXBuildFile; fileRef = E24756F0184E877500D75019 /* ANKActionMessage.h */; };
+		E2CF2B90187EBEA6004E46F6 /* ANKChangeMessage.h in Sources */ = {isa = PBXBuildFile; fileRef = E24756FA184E878A00D75019 /* ANKChangeMessage.h */; };
+		E2CF2B91187EBEA6004E46F6 /* ANKMessage.h in Sources */ = {isa = PBXBuildFile; fileRef = E24756FC184E878A00D75019 /* ANKMessage.h */; };
+		E2D7B6C2187EEFEA0027646C /* ANKRefFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = E2D7B6C1187EEFEA0027646C /* ANKRefFactory.m */; };
+		E2D7B6C5187EF07A0027646C /* ANKRefContext.m in Sources */ = {isa = PBXBuildFile; fileRef = E2D7B6C4187EF07A0027646C /* ANKRefContext.m */; };
+		E2D7B6C8187EF1080027646C /* ANKRef.m in Sources */ = {isa = PBXBuildFile; fileRef = E2D7B6C7187EF1080027646C /* ANKRef.m */; };
+		E2D7B6D2187F40F80027646C /* ANKRefChangeListener.m in Sources */ = {isa = PBXBuildFile; fileRef = E2D7B6D1187F40F80027646C /* ANKRefChangeListener.m */; };
+		E2D7B6DA187F652B0027646C /* ANKRefs.m in Sources */ = {isa = PBXBuildFile; fileRef = E2D7B6D9187F652B0027646C /* ANKRefs.m */; };
+		E2D7B6DD187FE8D60027646C /* ANKActionEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = E2D7B6DC187FE8D60027646C /* ANKActionEvent.m */; };
+		E2D7B6E4187FF3150027646C /* ANKRemoteEventListener.m in Sources */ = {isa = PBXBuildFile; fileRef = E2D7B6E3187FF3150027646C /* ANKRemoteEventListener.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		E24756D3184E858A00D75019 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E24756B5184E858A00D75019 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E24756BC184E858A00D75019;
+			remoteInfo = AnkorIOS;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		E24756BB184E858A00D75019 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		E24756BD184E858A00D75019 /* libAnkorIOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libAnkorIOS.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		E24756C0184E858A00D75019 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		E24756C4184E858A00D75019 /* AnkorIOS-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AnkorIOS-Prefix.pch"; sourceTree = "<group>"; };
+		E24756CD184E858A00D75019 /* AnkorIOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AnkorIOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E24756CE184E858A00D75019 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		E24756D1184E858A00D75019 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
+		E24756D8184E858A00D75019 /* AnkorIOSTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "AnkorIOSTests-Info.plist"; sourceTree = "<group>"; };
+		E24756DA184E858A00D75019 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		E24756DC184E858A00D75019 /* AnkorIOSTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AnkorIOSTests.m; sourceTree = "<group>"; };
+		E24756F0184E877500D75019 /* ANKActionMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ANKActionMessage.h; sourceTree = "<group>"; };
+		E24756F1184E877500D75019 /* ANKActionMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ANKActionMessage.m; sourceTree = "<group>"; };
+		E24756F2184E877500D75019 /* ANKHttpMessageLoop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ANKHttpMessageLoop.h; sourceTree = "<group>"; };
+		E24756F3184E877500D75019 /* ANKHttpMessageLoop.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ANKHttpMessageLoop.m; sourceTree = "<group>"; };
+		E24756F4184E877500D75019 /* ANKMessageBus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ANKMessageBus.h; sourceTree = "<group>"; };
+		E24756F5184E877500D75019 /* ANKMessageSerialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ANKMessageSerialization.h; sourceTree = "<group>"; };
+		E24756F6184E877500D75019 /* ANKMessageSerialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ANKMessageSerialization.m; sourceTree = "<group>"; };
+		E24756FA184E878A00D75019 /* ANKChangeMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ANKChangeMessage.h; sourceTree = "<group>"; };
+		E24756FB184E878A00D75019 /* ANKChangeMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ANKChangeMessage.m; sourceTree = "<group>"; };
+		E24756FC184E878A00D75019 /* ANKMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ANKMessage.h; sourceTree = "<group>"; };
+		E24756FD184E878A00D75019 /* ANKMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ANKMessage.m; sourceTree = "<group>"; };
+		E24756FE184E878A00D75019 /* ANKMessageFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ANKMessageFactory.h; sourceTree = "<group>"; };
+		E24756FF184E878A00D75019 /* ANKMessageFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ANKMessageFactory.m; sourceTree = "<group>"; };
+		E2475700184E878A00D75019 /* ANKMessageLoop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ANKMessageLoop.h; sourceTree = "<group>"; };
+		E24D7669188402AD00257B9B /* ANKSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ANKSystem.h; sourceTree = "<group>"; };
+		E24D766A188402AD00257B9B /* ANKSystem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ANKSystem.m; sourceTree = "<group>"; };
+		E24D766E1884218000257B9B /* ANKAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ANKAction.h; sourceTree = "<group>"; };
+		E24D766F1884218000257B9B /* ANKAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ANKAction.m; sourceTree = "<group>"; };
+		E24D76721884276B00257B9B /* base64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = base64.c; sourceTree = "<group>"; };
+		E24D76731884276B00257B9B /* base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = base64.h; sourceTree = "<group>"; };
+		E24D76741884276B00257B9B /* NSData+SRB64Additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+SRB64Additions.h"; sourceTree = "<group>"; };
+		E24D76751884276B00257B9B /* NSData+SRB64Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+SRB64Additions.m"; sourceTree = "<group>"; };
+		E24D76761884276B00257B9B /* SocketRocket-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SocketRocket-Prefix.pch"; sourceTree = "<group>"; };
+		E24D76771884276B00257B9B /* SRWebSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SRWebSocket.h; sourceTree = "<group>"; };
+		E24D76781884276B00257B9B /* SRWebSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SRWebSocket.m; sourceTree = "<group>"; };
+		E24D767C188427D900257B9B /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		E24D767E188427E200257B9B /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		E24D7680188427F200257B9B /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = usr/lib/libicucore.dylib; sourceTree = SDKROOT; };
+		E24D76821884283B00257B9B /* ANKWebSocketMessageLoop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ANKWebSocketMessageLoop.h; sourceTree = "<group>"; };
+		E24D76831884283B00257B9B /* ANKWebSocketMessageLoop.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ANKWebSocketMessageLoop.m; sourceTree = "<group>"; };
+		E2B72F78184F29D2007F21F7 /* protocol.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = protocol.txt; sourceTree = "<group>"; };
+		E2B72F7E184F4C31007F21F7 /* ANKChange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ANKChange.h; sourceTree = "<group>"; };
+		E2B72F7F184F4C31007F21F7 /* ANKChange.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ANKChange.m; sourceTree = "<group>"; };
+		E2B72F90184F9B7F007F21F7 /* ANKRefContextFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ANKRefContextFactory.h; sourceTree = "<group>"; };
+		E2B72F91184F9B7F007F21F7 /* ANKRefContextFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ANKRefContextFactory.m; sourceTree = "<group>"; };
+		E2B72F97184F9BD7007F21F7 /* ANKModelContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ANKModelContext.h; sourceTree = "<group>"; };
+		E2B72F98184F9BD7007F21F7 /* ANKModelContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ANKModelContext.m; sourceTree = "<group>"; };
+		E2CF2B64187D988D004E46F6 /* ANKChangeEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ANKChangeEvent.h; sourceTree = "<group>"; };
+		E2CF2B65187D988D004E46F6 /* ANKChangeEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ANKChangeEvent.m; sourceTree = "<group>"; };
+		E2CF2B68187DF343004E46F6 /* ANKEventListeners.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ANKEventListeners.h; sourceTree = "<group>"; };
+		E2CF2B69187DF343004E46F6 /* ANKEventListeners.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ANKEventListeners.m; sourceTree = "<group>"; };
+		E2CF2B6B187DF354004E46F6 /* ANKEventListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ANKEventListener.h; sourceTree = "<group>"; };
+		E2CF2B75187DFD10004E46F6 /* ANKChangeEventListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ANKChangeEventListener.h; sourceTree = "<group>"; };
+		E2CF2B79187EA46B004E46F6 /* ANKModelEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ANKModelEvent.h; sourceTree = "<group>"; };
+		E2CF2B7A187EB06B004E46F6 /* ANKRemoteMessageListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ANKRemoteMessageListener.h; sourceTree = "<group>"; };
+		E2CF2B7B187EB06B004E46F6 /* ANKRemoteMessageListener.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ANKRemoteMessageListener.m; sourceTree = "<group>"; };
+		E2CF2B7D187EB1CE004E46F6 /* ANKMessageListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ANKMessageListener.h; sourceTree = "<group>"; };
+		E2D7B6C0187EEFEA0027646C /* ANKRefFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ANKRefFactory.h; sourceTree = "<group>"; };
+		E2D7B6C1187EEFEA0027646C /* ANKRefFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ANKRefFactory.m; sourceTree = "<group>"; };
+		E2D7B6C3187EF07A0027646C /* ANKRefContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ANKRefContext.h; sourceTree = "<group>"; };
+		E2D7B6C4187EF07A0027646C /* ANKRefContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ANKRefContext.m; sourceTree = "<group>"; };
+		E2D7B6C6187EF1080027646C /* ANKRef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ANKRef.h; sourceTree = "<group>"; };
+		E2D7B6C7187EF1080027646C /* ANKRef.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ANKRef.m; sourceTree = "<group>"; };
+		E2D7B6D0187F40F80027646C /* ANKRefChangeListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ANKRefChangeListener.h; sourceTree = "<group>"; };
+		E2D7B6D1187F40F80027646C /* ANKRefChangeListener.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ANKRefChangeListener.m; sourceTree = "<group>"; };
+		E2D7B6D8187F652B0027646C /* ANKRefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ANKRefs.h; sourceTree = "<group>"; };
+		E2D7B6D9187F652B0027646C /* ANKRefs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ANKRefs.m; sourceTree = "<group>"; };
+		E2D7B6DB187FE8D60027646C /* ANKActionEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ANKActionEvent.h; sourceTree = "<group>"; };
+		E2D7B6DC187FE8D60027646C /* ANKActionEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ANKActionEvent.m; sourceTree = "<group>"; };
+		E2D7B6DE187FE9540027646C /* ANKActionEventListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ANKActionEventListener.h; sourceTree = "<group>"; };
+		E2D7B6E2187FF3150027646C /* ANKRemoteEventListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ANKRemoteEventListener.h; sourceTree = "<group>"; };
+		E2D7B6E3187FF3150027646C /* ANKRemoteEventListener.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ANKRemoteEventListener.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E24756BA184E858A00D75019 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E24D7681188427F200257B9B /* libicucore.dylib in Frameworks */,
+				E24D767F188427E200257B9B /* Security.framework in Frameworks */,
+				E24D767D188427D900257B9B /* CFNetwork.framework in Frameworks */,
+				E24756C1184E858A00D75019 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E24756CA184E858A00D75019 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E24756CF184E858A00D75019 /* XCTest.framework in Frameworks */,
+				E24756D5184E858A00D75019 /* libAnkorIOS.a in Frameworks */,
+				E24756D2184E858A00D75019 /* UIKit.framework in Frameworks */,
+				E24756D0184E858A00D75019 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		E24756B4184E858A00D75019 = {
+			isa = PBXGroup;
+			children = (
+				E24756C2184E858A00D75019 /* AnkorIOS */,
+				E24756D6184E858A00D75019 /* AnkorIOSTests */,
+				E24756BF184E858A00D75019 /* Frameworks */,
+				E24756BE184E858A00D75019 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E24756BE184E858A00D75019 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E24756BD184E858A00D75019 /* libAnkorIOS.a */,
+				E24756CD184E858A00D75019 /* AnkorIOSTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E24756BF184E858A00D75019 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E24D7680188427F200257B9B /* libicucore.dylib */,
+				E24D767E188427E200257B9B /* Security.framework */,
+				E24D767C188427D900257B9B /* CFNetwork.framework */,
+				E24756C0184E858A00D75019 /* Foundation.framework */,
+				E24756CE184E858A00D75019 /* XCTest.framework */,
+				E24756D1184E858A00D75019 /* UIKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		E24756C2184E858A00D75019 /* AnkorIOS */ = {
+			isa = PBXGroup;
+			children = (
+				E24D76711884275300257B9B /* SocketRocket */,
+				E24D76681884029300257B9B /* boot */,
+				E2D7B6D4187F58130027646C /* binding */,
+				E2CF2B70187DF590004E46F6 /* action */,
+				E2CF2B67187DF323004E46F6 /* event */,
+				E2B72F96184F9BBF007F21F7 /* context */,
+				E2B72F7D184F4C12007F21F7 /* change */,
+				E2B72F7A184F49E4007F21F7 /* ref */,
+				E2475707184E974E00D75019 /* remote */,
+				E2475706184E963A00D75019 /* message */,
+				E24756C3184E858A00D75019 /* Supporting Files */,
+			);
+			path = AnkorIOS;
+			sourceTree = "<group>";
+		};
+		E24756C3184E858A00D75019 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				E2B72F78184F29D2007F21F7 /* protocol.txt */,
+				E24756C4184E858A00D75019 /* AnkorIOS-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		E24756D6184E858A00D75019 /* AnkorIOSTests */ = {
+			isa = PBXGroup;
+			children = (
+				E24756DC184E858A00D75019 /* AnkorIOSTests.m */,
+				E24756D7184E858A00D75019 /* Supporting Files */,
+			);
+			path = AnkorIOSTests;
+			sourceTree = "<group>";
+		};
+		E24756D7184E858A00D75019 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				E24756D8184E858A00D75019 /* AnkorIOSTests-Info.plist */,
+				E24756D9184E858A00D75019 /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		E2475706184E963A00D75019 /* message */ = {
+			isa = PBXGroup;
+			children = (
+				E2CF2B7D187EB1CE004E46F6 /* ANKMessageListener.h */,
+				E24756F5184E877500D75019 /* ANKMessageSerialization.h */,
+				E24756F6184E877500D75019 /* ANKMessageSerialization.m */,
+				E24756F4184E877500D75019 /* ANKMessageBus.h */,
+				E24756FE184E878A00D75019 /* ANKMessageFactory.h */,
+				E24756FF184E878A00D75019 /* ANKMessageFactory.m */,
+				E24756F0184E877500D75019 /* ANKActionMessage.h */,
+				E24756F1184E877500D75019 /* ANKActionMessage.m */,
+				E24756FA184E878A00D75019 /* ANKChangeMessage.h */,
+				E24756FB184E878A00D75019 /* ANKChangeMessage.m */,
+				E24756FC184E878A00D75019 /* ANKMessage.h */,
+				E24756FD184E878A00D75019 /* ANKMessage.m */,
+			);
+			name = message;
+			sourceTree = "<group>";
+		};
+		E2475707184E974E00D75019 /* remote */ = {
+			isa = PBXGroup;
+			children = (
+				E2475700184E878A00D75019 /* ANKMessageLoop.h */,
+				E24756F2184E877500D75019 /* ANKHttpMessageLoop.h */,
+				E24756F3184E877500D75019 /* ANKHttpMessageLoop.m */,
+				E2CF2B7A187EB06B004E46F6 /* ANKRemoteMessageListener.h */,
+				E2CF2B7B187EB06B004E46F6 /* ANKRemoteMessageListener.m */,
+				E2D7B6E2187FF3150027646C /* ANKRemoteEventListener.h */,
+				E2D7B6E3187FF3150027646C /* ANKRemoteEventListener.m */,
+				E24D76821884283B00257B9B /* ANKWebSocketMessageLoop.h */,
+				E24D76831884283B00257B9B /* ANKWebSocketMessageLoop.m */,
+			);
+			name = remote;
+			sourceTree = "<group>";
+		};
+		E24D76681884029300257B9B /* boot */ = {
+			isa = PBXGroup;
+			children = (
+				E24D7669188402AD00257B9B /* ANKSystem.h */,
+				E24D766A188402AD00257B9B /* ANKSystem.m */,
+			);
+			name = boot;
+			sourceTree = "<group>";
+		};
+		E24D76711884275300257B9B /* SocketRocket */ = {
+			isa = PBXGroup;
+			children = (
+				E24D76721884276B00257B9B /* base64.c */,
+				E24D76731884276B00257B9B /* base64.h */,
+				E24D76741884276B00257B9B /* NSData+SRB64Additions.h */,
+				E24D76751884276B00257B9B /* NSData+SRB64Additions.m */,
+				E24D76761884276B00257B9B /* SocketRocket-Prefix.pch */,
+				E24D76771884276B00257B9B /* SRWebSocket.h */,
+				E24D76781884276B00257B9B /* SRWebSocket.m */,
+			);
+			name = SocketRocket;
+			sourceTree = "<group>";
+		};
+		E2B72F7A184F49E4007F21F7 /* ref */ = {
+			isa = PBXGroup;
+			children = (
+				E2B72F90184F9B7F007F21F7 /* ANKRefContextFactory.h */,
+				E2B72F91184F9B7F007F21F7 /* ANKRefContextFactory.m */,
+				E2D7B6C0187EEFEA0027646C /* ANKRefFactory.h */,
+				E2D7B6C1187EEFEA0027646C /* ANKRefFactory.m */,
+				E2D7B6C3187EF07A0027646C /* ANKRefContext.h */,
+				E2D7B6C4187EF07A0027646C /* ANKRefContext.m */,
+				E2D7B6C6187EF1080027646C /* ANKRef.h */,
+				E2D7B6C7187EF1080027646C /* ANKRef.m */,
+			);
+			name = ref;
+			sourceTree = "<group>";
+		};
+		E2B72F7D184F4C12007F21F7 /* change */ = {
+			isa = PBXGroup;
+			children = (
+				E2B72F7E184F4C31007F21F7 /* ANKChange.h */,
+				E2B72F7F184F4C31007F21F7 /* ANKChange.m */,
+				E2CF2B64187D988D004E46F6 /* ANKChangeEvent.h */,
+				E2CF2B65187D988D004E46F6 /* ANKChangeEvent.m */,
+				E2CF2B75187DFD10004E46F6 /* ANKChangeEventListener.h */,
+			);
+			name = change;
+			sourceTree = "<group>";
+		};
+		E2B72F96184F9BBF007F21F7 /* context */ = {
+			isa = PBXGroup;
+			children = (
+				E2B72F97184F9BD7007F21F7 /* ANKModelContext.h */,
+				E2B72F98184F9BD7007F21F7 /* ANKModelContext.m */,
+			);
+			name = context;
+			sourceTree = "<group>";
+		};
+		E2CF2B67187DF323004E46F6 /* event */ = {
+			isa = PBXGroup;
+			children = (
+				E2CF2B68187DF343004E46F6 /* ANKEventListeners.h */,
+				E2CF2B69187DF343004E46F6 /* ANKEventListeners.m */,
+				E2CF2B6B187DF354004E46F6 /* ANKEventListener.h */,
+				E2CF2B79187EA46B004E46F6 /* ANKModelEvent.h */,
+			);
+			name = event;
+			sourceTree = "<group>";
+		};
+		E2CF2B70187DF590004E46F6 /* action */ = {
+			isa = PBXGroup;
+			children = (
+				E2D7B6DB187FE8D60027646C /* ANKActionEvent.h */,
+				E2D7B6DC187FE8D60027646C /* ANKActionEvent.m */,
+				E2D7B6DE187FE9540027646C /* ANKActionEventListener.h */,
+				E24D766E1884218000257B9B /* ANKAction.h */,
+				E24D766F1884218000257B9B /* ANKAction.m */,
+			);
+			name = action;
+			sourceTree = "<group>";
+		};
+		E2D7B6D4187F58130027646C /* binding */ = {
+			isa = PBXGroup;
+			children = (
+				E2D7B6D0187F40F80027646C /* ANKRefChangeListener.h */,
+				E2D7B6D1187F40F80027646C /* ANKRefChangeListener.m */,
+				E2D7B6D8187F652B0027646C /* ANKRefs.h */,
+				E2D7B6D9187F652B0027646C /* ANKRefs.m */,
+			);
+			name = binding;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		E24756BC184E858A00D75019 /* AnkorIOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E24756E0184E858A00D75019 /* Build configuration list for PBXNativeTarget "AnkorIOS" */;
+			buildPhases = (
+				E24756B9184E858A00D75019 /* Sources */,
+				E24756BA184E858A00D75019 /* Frameworks */,
+				E24756BB184E858A00D75019 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AnkorIOS;
+			productName = AnkorIOS;
+			productReference = E24756BD184E858A00D75019 /* libAnkorIOS.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		E24756CC184E858A00D75019 /* AnkorIOSTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E24756E3184E858A00D75019 /* Build configuration list for PBXNativeTarget "AnkorIOSTests" */;
+			buildPhases = (
+				E24756C9184E858A00D75019 /* Sources */,
+				E24756CA184E858A00D75019 /* Frameworks */,
+				E24756CB184E858A00D75019 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E24756D4184E858A00D75019 /* PBXTargetDependency */,
+			);
+			name = AnkorIOSTests;
+			productName = AnkorIOSTests;
+			productReference = E24756CD184E858A00D75019 /* AnkorIOSTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E24756B5184E858A00D75019 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0500;
+				ORGANIZATIONNAME = "Thomas Spiegl";
+			};
+			buildConfigurationList = E24756B8184E858A00D75019 /* Build configuration list for PBXProject "AnkorIOS" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = E24756B4184E858A00D75019;
+			productRefGroup = E24756BE184E858A00D75019 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				E24756BC184E858A00D75019 /* AnkorIOS */,
+				E24756CC184E858A00D75019 /* AnkorIOSTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		E24756CB184E858A00D75019 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E2B72F79184F29D2007F21F7 /* protocol.txt in Resources */,
+				E24756DB184E858A00D75019 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E24756B9184E858A00D75019 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E2CF2B7F187EBEA6004E46F6 /* ANKEventListeners.h in Sources */,
+				E2CF2B80187EBEA6004E46F6 /* ANKEventListener.h in Sources */,
+				E2CF2B81187EBEA6004E46F6 /* ANKModelEvent.h in Sources */,
+				E2CF2B82187EBEA6004E46F6 /* ANKModelContext.h in Sources */,
+				E2CF2B83187EBEA6004E46F6 /* ANKChangeEvent.h in Sources */,
+				E2CF2B84187EBEA6004E46F6 /* ANKChangeEventListener.h in Sources */,
+				E2CF2B86187EBEA6004E46F6 /* ANKRefContextFactory.h in Sources */,
+				E2D7B6C2187EEFEA0027646C /* ANKRefFactory.m in Sources */,
+				E2CF2B88187EBEA6004E46F6 /* ANKMessageSerialization.h in Sources */,
+				E2CF2B89187EBEA6004E46F6 /* ANKMessageLoop.h in Sources */,
+				E2CF2B8A187EBEA6004E46F6 /* ANKHttpMessageLoop.h in Sources */,
+				E2CF2B8B187EBEA6004E46F6 /* ANKRemoteMessageListener.h in Sources */,
+				E2CF2B8C187EBEA6004E46F6 /* ANKMessageListener.h in Sources */,
+				E24D766B188402AD00257B9B /* ANKSystem.m in Sources */,
+				E2CF2B8D187EBEA6004E46F6 /* ANKMessageBus.h in Sources */,
+				E24D76841884283B00257B9B /* ANKWebSocketMessageLoop.m in Sources */,
+				E2D7B6C5187EF07A0027646C /* ANKRefContext.m in Sources */,
+				E2CF2B8E187EBEA6004E46F6 /* ANKMessageFactory.h in Sources */,
+				E2CF2B8F187EBEA6004E46F6 /* ANKActionMessage.h in Sources */,
+				E24D767B1884276B00257B9B /* SRWebSocket.m in Sources */,
+				E2CF2B90187EBEA6004E46F6 /* ANKChangeMessage.h in Sources */,
+				E2CF2B91187EBEA6004E46F6 /* ANKMessage.h in Sources */,
+				E2D7B6DA187F652B0027646C /* ANKRefs.m in Sources */,
+				E2B72F86184F98A3007F21F7 /* ANKChange.h in Sources */,
+				E2D7B6E4187FF3150027646C /* ANKRemoteEventListener.m in Sources */,
+				E2475701184E878A00D75019 /* ANKChangeMessage.m in Sources */,
+				E2CF2B7C187EB06B004E46F6 /* ANKRemoteMessageListener.m in Sources */,
+				E2D7B6C8187EF1080027646C /* ANKRef.m in Sources */,
+				E2D7B6D2187F40F80027646C /* ANKRefChangeListener.m in Sources */,
+				E2B72F80184F4C31007F21F7 /* ANKChange.m in Sources */,
+				E2CF2B6A187DF343004E46F6 /* ANKEventListeners.m in Sources */,
+				E24756F7184E877500D75019 /* ANKActionMessage.m in Sources */,
+				E24D76791884276B00257B9B /* base64.c in Sources */,
+				E24756F9184E877500D75019 /* ANKMessageSerialization.m in Sources */,
+				E24756F8184E877500D75019 /* ANKHttpMessageLoop.m in Sources */,
+				E24D767A1884276B00257B9B /* NSData+SRB64Additions.m in Sources */,
+				E2D7B6DD187FE8D60027646C /* ANKActionEvent.m in Sources */,
+				E2B72F99184F9BD7007F21F7 /* ANKModelContext.m in Sources */,
+				E2475702184E878A00D75019 /* ANKMessage.m in Sources */,
+				E2CF2B66187D988D004E46F6 /* ANKChangeEvent.m in Sources */,
+				E24D76701884218000257B9B /* ANKAction.m in Sources */,
+				E2B72F92184F9B7F007F21F7 /* ANKRefContextFactory.m in Sources */,
+				E2475703184E878A00D75019 /* ANKMessageFactory.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E24756C9184E858A00D75019 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E24756DD184E858A00D75019 /* AnkorIOSTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		E24756D4184E858A00D75019 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E24756BC184E858A00D75019 /* AnkorIOS */;
+			targetProxy = E24756D3184E858A00D75019 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		E24756D9184E858A00D75019 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				E24756DA184E858A00D75019 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		E24756DE184E858A00D75019 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		E24756DF184E858A00D75019 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		E24756E1184E858A00D75019 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/AnkorIOS.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "AnkorIOS/AnkorIOS-Prefix.pch";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		E24756E2184E858A00D75019 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/AnkorIOS.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "AnkorIOS/AnkorIOS-Prefix.pch";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		E24756E4184E858A00D75019 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "AnkorIOS/AnkorIOS-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "AnkorIOSTests/AnkorIOSTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Debug;
+		};
+		E24756E5184E858A00D75019 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "AnkorIOS/AnkorIOS-Prefix.pch";
+				INFOPLIST_FILE = "AnkorIOSTests/AnkorIOSTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		E24756B8184E858A00D75019 /* Build configuration list for PBXProject "AnkorIOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E24756DE184E858A00D75019 /* Debug */,
+				E24756DF184E858A00D75019 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E24756E0184E858A00D75019 /* Build configuration list for PBXNativeTarget "AnkorIOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E24756E1184E858A00D75019 /* Debug */,
+				E24756E2184E858A00D75019 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E24756E3184E858A00D75019 /* Build configuration list for PBXNativeTarget "AnkorIOSTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E24756E4184E858A00D75019 /* Debug */,
+				E24756E5184E858A00D75019 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = E24756B5184E858A00D75019 /* Project object */;
+}

@@ -1,0 +1,32 @@
+{"messageId":"0","modelId":"model-1","property":"root","senderId":"435","action":"init"}
+
+
+OUT
+{"senderId":"ac22235c-f943-40eb-9cc8-5d6263e22859","modelId":"collabTest","messageId":"434ed5bd-e240-42b2-850c-47457f1ef0ec#0","property":"root","action":"init"} 
+
+IN
+{"senderId":"ankor-servlet-server","modelId":"collabTest","messageId":"ankor-servlet-server#33","property":"root","change":{"type":"value","value":
+{"model":
+  {"tasks":[],
+   "filter":"all",
+   "itemsLeft":0,
+   "itemsLeftText":"items left",
+   "footerVisibility":false,
+   "itemsComplete":0,
+   "itemsCompleteText":"Clear completed(0)",
+   "clearButtonVisibility":false,
+   "toggleAll":true,
+   "filterAllSelected":true,
+   "filterActiveSelected":false,
+   "filterCompletedSelected":false}
+}}}
+
+OUT
+{"senderId":"344c77c3-3e26-448b-87fb-20f3a0ef173f","modelId":"collabTest","messageId":"344c77c3-3e26-448b-87fb-20f3a0ef173f#1","property":"root.model","action":{"name":"newTask","params":{"title":"Laundry"}}}
+
+IN
+{"senderId":"ankor-servlet-server","modelId":"collabTest","messageId":"ankor-servlet-server#40","property":"root.model.itemsLeft","change":{"type":"value","value":1}}
+{"senderId":"ankor-servlet-server","modelId":"collabTest","messageId":"ankor-servlet-server#44","property":"root.model.tasks","change":{"type":"insert","key":0,"value":{"editing":false,"title":"Laundry","completed":false}}}
+{"senderId":"ankor-servlet-server","modelId":"collabTest","messageId":"ankor-servlet-server#48","property":"root.model.footerVisibility","change":{"type":"value","value":true}} 
+{"senderId":"ankor-servlet-server","modelId":"collabTest","messageId":"ankor-servlet-server#52","property":"root.model.itemsLeftText","change":{"type":"value","value":"item left"}} 
+{"senderId":"ankor-servlet-server","modelId":"collabTest","messageId":"ankor-servlet-server#56","property":"root.model.toggleAll","change":{"type":"value","value":false}}

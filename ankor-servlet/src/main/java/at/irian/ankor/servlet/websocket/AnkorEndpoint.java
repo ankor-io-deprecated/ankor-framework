@@ -19,6 +19,8 @@ import javax.websocket.*;
 import javax.websocket.server.ServerApplicationConfig;
 import javax.websocket.server.ServerEndpointConfig;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
@@ -40,7 +42,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author Florian Klampfer
  */
-public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.Whole<String>, ServerApplicationConfig {
+public abstract class AnkorEndpoint extends Endpoint implements ServerApplicationConfig {
     /**
      * Must be greater than the clients heartbeat interval.
      */
@@ -70,6 +72,7 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
                 }
             }
         }
+
     }
 
     @Override
@@ -97,7 +100,9 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
             remoteSystem.setLastSeen(System.currentTimeMillis());
             // watchForTimeout(session);
 
-            session.addMessageHandler(this);
+            session.addMessageHandler(new StringMessageHandler());
+            session.addMessageHandler(new ByteMessageHandler());
+
         } catch (IOException e) {
             LOG.error("Error while sending id to newly connected client");
         }
@@ -132,19 +137,37 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
         }, TIMEOUT_CHECK_INTERVAL, TIMEOUT_CHECK_INTERVAL, TimeUnit.MILLISECONDS);
     }
 
-    @Override
-    public void onMessage(String message) {
-        if (!isHeartbeat(message)) {
-            LOG.info("Endpoint received {}, length = {}", message, message.length());
+    public class ByteMessageHandler implements MessageHandler.Whole<ByteBuffer> {
+        @Override
+        public void onMessage(ByteBuffer byteBuffer) {
+            String message = new String(byteBuffer.array(), Charset.forName("UTF-8"));
+            if (!isHeartbeat(message)) {
+                LOG.info("Endpoint received {}, length = {}", message, message.length());
 
-            // XXX: A malformed message will crash this Ankor session (but new clients can connect)
-            webSocketMessageBus.receiveSerializedMessage(message);
+                // XXX: A malformed message will crash this Ankor session (but new clients can connect)
+                webSocketMessageBus.receiveSerializedMessage(message);
+            }
+            remoteSystem.setLastSeen(System.currentTimeMillis());
         }
-
-        remoteSystem.setLastSeen(System.currentTimeMillis());
     }
 
-    private boolean isHeartbeat(String message) {
+
+    public class StringMessageHandler implements MessageHandler.Whole<String> {
+        @Override
+        public void onMessage(String message) {
+            if (!isHeartbeat(message)) {
+                LOG.info("Endpoint received {}, length = {}", message, message.length());
+
+                // XXX: A malformed message will crash this Ankor session (but new clients can connect)
+                webSocketMessageBus.receiveSerializedMessage(message);
+            }
+
+            remoteSystem.setLastSeen(System.currentTimeMillis());
+        }
+
+    }
+
+    private static boolean isHeartbeat(String message) {
         return message.trim().equals("");
     }
 

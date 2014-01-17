@@ -85,10 +85,27 @@ public class AnimalDetailModel {
         return new PanelNameCreator().createName(i18nResourcesRef.appendLiteralKey("EditAnimal").<String>getValue(), name);
     }
 
+    AnimalDetailModel changed(Object obj) {
+        return null;
+    }
+
+    AnimalDetailModel on(Object obj, Object obj2) {
+        return null;
+    }
+
+    AnimalDetailModel call(Object obj) {
+        return null;
+    }
+
+    private static class Types {
+        public static <T> T any() {
+            return null;
+        }
+    }
+
     @ChangeListener(pattern = ".animal.type")
     @AutoSignal(".animal.family")
     public void animalTypeChanged() {
-
         AnimalType type = animal.getType();
         List<AnimalFamily> families;
         if (type != null) {

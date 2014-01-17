@@ -4,6 +4,7 @@ import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.servlet.polling.AnkorServletContextListener;
 import at.irian.ankor.session.ModelRootFactory;
+import at.irian.ankorsamples.todosample.domain.task.Task;
 import at.irian.ankorsamples.todosample.domain.task.TaskRepository;
 import at.irian.ankorsamples.todosample.viewmodel.ModelRoot;
 
@@ -48,7 +49,10 @@ public class TodoSampleServletContextListener extends AnkorServletContextListene
 
             @Override
             public Object createModelRoot(Ref rootRef) {
-                return new ModelRoot(rootRef, new TaskRepository());
+                TaskRepository taskRepository = new TaskRepository();
+                taskRepository.saveTask(new Task("Test task 1"));
+                taskRepository.saveTask(new Task("Test task 2"));
+                return new ModelRoot(rootRef, taskRepository);
             }
         };
     }
