@@ -37,6 +37,7 @@
     messages = [[NSMutableArray alloc] init];
     msgSerialization = [ANKMessageSerialization new];
     url = sUrl;
+    [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(sendHeartbeat) userInfo:Nil repeats:YES];
     return self;
 }
 
@@ -47,22 +48,6 @@
 - (void)stop {
     
 }
-
-- (void)doSend {
-    if (!_webSocket.readyState == SR_OPEN) {
-        [self connect];
-        return;
-    }
-    @synchronized(self) {
-        for (id msg in messages) {
-            NSData* data = [msgSerialization serialize:msg];
-            NSLog(@"Sending json %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
-            [_webSocket send:data];
-        }
-        [messages removeAllObjects];
-    }
-}
-
 
 #pragma mark - MessageBus
 
@@ -77,6 +62,21 @@
     }
 }
 
+- (void)doSend {
+    if (!_webSocket.readyState == SR_OPEN) {
+        [self reconnect];
+        return;
+    }
+    @synchronized(self) {
+        for (id msg in messages) {
+            NSData* data = [msgSerialization serialize:msg];
+            NSLog(@"Sending json %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+            [_webSocket send:data];
+        }
+        [messages removeAllObjects];
+    }
+}
+
 #pragma mark - WebSocket
 
 - (void)open {
@@ -87,19 +87,26 @@
     
 }
 
+- (void)reconnect {
+    if (_nextMessageIsClientId) {
+        return; // already connecting
+    } else {
+        _webSocket = nil;
+        [self connect];
+    }
+}
+
+
 - (void)connect;
 {
     @synchronized(self) {
-        SRReadyState readyState = _webSocket.readyState;
-        if (_webSocket && (_webSocket.readyState == SR_OPEN || _webSocket.readyState == SR_CONNECTING)) {
+        if (_webSocket && _webSocket.readyState == SR_OPEN) {
             return;
         }
-        _webSocket = nil;
         _webSocket = [[SRWebSocket alloc] initWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]]];
         _webSocket.delegate = self;
         
         _nextMessageIsClientId = true;
-        readyState = _webSocket.readyState;
         [_webSocket open];
     }
 }
@@ -114,7 +121,6 @@
                 ANKActionMessage *initMessage = [messageFactory createActionMessage:@"root" action:@"init"];
                 [messages insertObject:initMessage atIndex:0];
                 [self doSend];
-                [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(sendHeartbeat) userInfo:Nil repeats:YES];
             } else {
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                     @autoreleasepool {
@@ -140,6 +146,8 @@
             @synchronized(self) {
                 [_webSocket send:data];
             }
+        } else {
+            [self connect];
         }
     }
 }
@@ -150,12 +158,12 @@
 
 - (void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error {
     NSLog(@"didFailWithError");
-    [self connect];
+    [self reconnect];
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean {
     NSLog(@"didCloseWithCode");
-    [self connect];
+    [self reconnect];
 }
 
 
