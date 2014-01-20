@@ -24,7 +24,6 @@
 		E2A21A671845E70800DA836E /* Storyboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E2A21A661845E70800DA836E /* Storyboard.storyboard */; };
 		E2A21A6A1846377600DA836E /* AddToDoItemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E2A21A691846377600DA836E /* AddToDoItemViewController.m */; };
 		E2A21A701846387500DA836E /* ToDoListView.m in Sources */ = {isa = PBXBuildFile; fileRef = E2A21A6F1846387500DA836E /* ToDoListView.m */; };
-		E2A21A73184639EF00DA836E /* ToDoItem.m in Sources */ = {isa = PBXBuildFile; fileRef = E2A21A72184639EF00DA836E /* ToDoItem.m */; };
 		E2A21A7718464F0400DA836E /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2A21A7618464F0400DA836E /* CFNetwork.framework */; };
 		E2A21A7918464F1100DA836E /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2A21A7818464F1100DA836E /* Security.framework */; };
 /* End PBXBuildFile section */
@@ -84,8 +83,6 @@
 		E2A21A691846377600DA836E /* AddToDoItemViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddToDoItemViewController.m; sourceTree = "<group>"; };
 		E2A21A6E1846387500DA836E /* ToDoListView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ToDoListView.h; path = ../ToDoListView.h; sourceTree = "<group>"; };
 		E2A21A6F1846387500DA836E /* ToDoListView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ToDoListView.m; path = ../ToDoListView.m; sourceTree = "<group>"; };
-		E2A21A71184639EF00DA836E /* ToDoItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ToDoItem.h; path = ../ToDoItem.h; sourceTree = "<group>"; };
-		E2A21A72184639EF00DA836E /* ToDoItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ToDoItem.m; path = ../ToDoItem.m; sourceTree = "<group>"; };
 		E2A21A7618464F0400DA836E /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		E2A21A7818464F1100DA836E /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -176,8 +173,6 @@
 			isa = PBXGroup;
 			children = (
 				E29E1031184F20EB004AC9F8 /* views */,
-				E2A21A71184639EF00DA836E /* ToDoItem.h */,
-				E2A21A72184639EF00DA836E /* ToDoItem.m */,
 				E2A21A461845E6EB00DA836E /* AppDelegate.h */,
 				E2A21A471845E6EB00DA836E /* AppDelegate.m */,
 				E2A21A661845E70800DA836E /* Storyboard.storyboard */,
@@ -340,7 +335,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				E2A21A481845E6EB00DA836E /* AppDelegate.m in Sources */,
-				E2A21A73184639EF00DA836E /* ToDoItem.m in Sources */,
 				E2A21A441845E6EB00DA836E /* main.m in Sources */,
 				E2A21A701846387500DA836E /* ToDoListView.m in Sources */,
 				E2A21A6A1846377600DA836E /* AddToDoItemViewController.m in Sources */,
