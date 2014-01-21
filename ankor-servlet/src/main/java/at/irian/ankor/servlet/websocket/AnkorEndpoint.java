@@ -192,6 +192,7 @@ public abstract class AnkorEndpoint extends Endpoint implements ServerApplicatio
         webSocketMessageBus = new WebSocketMessageBus(new ViewModelJsonMessageMapper(beanMetadataProvider));
         ankorSystem = ankorSystemBuilder
                 .withMessageBus(webSocketMessageBus)
+                .withDispatcherFactory(new AkkaEventDispatcherFactory())
                 .createServer();
         ankorSystem.start();
     }

@@ -11,7 +11,14 @@
 #import "SRWebSocket.h"
 #import "ANKMessage.h"
 
+typedef enum {
+    ANK_WS_INIT_CONNECTION   = 0,
+    ANK_WS_INIT_MODEL        = 1,
+    ANK_WS_INITIALIZED       = 2,
+} ANKWebSocketState;
+
 @interface ANKWebSocketMessageLoop() <SRWebSocketDelegate> {
+    
     id <ANKMessageListener> messageListener;
     NSString* url;
     NSInteger pollingInterval;
@@ -22,10 +29,11 @@
     
     SRWebSocket *_webSocket;
     
-    bool _nextMessageIsClientId;
+    ANKWebSocketState _state;
 }
 
 @end
+
 
 @implementation ANKWebSocketMessageLoop
 
@@ -72,6 +80,11 @@
             NSData* data = [msgSerialization serialize:msg];
             NSLog(@"Sending json %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
             [_webSocket send:data];
+            if (_state == ANK_WS_INIT_MODEL) {
+                // send out init model message, ignore rest
+                [messages removeObjectAtIndex:0];
+                return;
+            }
         }
         [messages removeAllObjects];
     }
@@ -88,7 +101,7 @@
 }
 
 - (void)reconnect {
-    if (_nextMessageIsClientId) {
+    if (_state == ANK_WS_INIT_CONNECTION) {
         return; // already connecting
     } else {
         _webSocket = nil;
@@ -106,20 +119,24 @@
         _webSocket = [[SRWebSocket alloc] initWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]]];
         _webSocket.delegate = self;
         
-        _nextMessageIsClientId = true;
+        _state = ANK_WS_INIT_CONNECTION;
         [_webSocket open];
     }
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(id)data {
+    NSLog(@"didReceiveMessage %@", data);
     @autoreleasepool {
         @synchronized(self) {
-            NSLog(@"webSocketDidOpen %@", data);
-            if (_nextMessageIsClientId) {
-                _nextMessageIsClientId = false;
+            if (_state == ANK_WS_INIT_MODEL) {
+                _state = ANK_WS_INITIALIZED;
+                [self doSend];
+            }
+            if (_state == ANK_WS_INIT_CONNECTION) {
                 messageFactory.senderId = data;
                 ANKActionMessage *initMessage = [messageFactory createActionMessage:@"root" action:@"init"];
                 [messages insertObject:initMessage atIndex:0];
+                _state = ANK_WS_INIT_MODEL;
                 [self doSend];
             } else {
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{

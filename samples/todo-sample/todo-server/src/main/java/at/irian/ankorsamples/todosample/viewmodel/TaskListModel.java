@@ -207,7 +207,7 @@ public class TaskListModel {
     }
 
     private void updateTasksData() {
-        new ListDiff<>(tasks, fetchTasksData()).withThreshold(10).applyChangesTo(tasksRef());
+        //new ListDiff<>(tasks, fetchTasksData()).withThreshold(10).applyChangesTo(tasksRef()); issue if changes are sent very fast
         thisRef.appendPath("itemsLeft").setValue(taskRepository.getActiveTasks().size());
         thisRef.appendPath("itemsComplete").setValue(taskRepository.getCompletedTasks().size());
     }
