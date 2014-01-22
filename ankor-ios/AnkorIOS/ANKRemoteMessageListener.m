@@ -23,7 +23,6 @@ ANKRefContext* _refContext;
 }
 
 -(void) onMessage:(ANKMessage*) msg {
-    NSLog(@"Received message %@", msg);
     if ([msg isKindOfClass:[ANKActionMessage class]]) {
         // ignore
     } else {

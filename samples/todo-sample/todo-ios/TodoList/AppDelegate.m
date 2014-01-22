@@ -15,7 +15,9 @@
 {
     //[[[ANKSystem alloc] initWith:@"collabTest" url:@"http://192.168.69.56:8080/ankor" useWebsocket:NO] start];
 
-    [[[ANKSystem alloc] initWith:@"collabTest" url:@"ws://192.168.69.102:8080/websocket/ankor" useWebsocket:YES] start];
+    //[[[ANKSystem alloc] initWith:@"collabTest" url:@"ws://192.168.69.102:8080/websocket/ankor" useWebsocket:YES] start];
+    
+    [[[ANKSystem alloc] initWith:@"collabTest" url:@"wss://ankor-todo-sample.irian.at/websocket/ankor" useWebsocket:YES] start];
     
     return YES;
 }

@@ -28,7 +28,6 @@
 - (void)process:(ANKChangeEvent*)event {
     if ([event.changedProperty.path rangeOfString:self.ref.path].location != NSNotFound ||
         [self.ref.path rangeOfString:event.changedProperty.path].location != NSNotFound) {
-        //Accessing UI Thread
         [self.target performSelector:self.changeListener withObject:self.ref.value];
     }
 }
