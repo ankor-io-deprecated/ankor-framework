@@ -1,11 +1,10 @@
-<div class="well well-small">
-    {% include "tutorial/tutorial_fx_breadcrumbs.html" %}
-    <div class="pull-right">
-        {% include "tutorial/tutorial_fx_pagination.html" %}
-    </div>
-</div>
-<a onclick="$('#instructions').toggle()"><i class="icon-hand-right"></i>&nbsp;Workspace Instructions</a>
-<div id="instructions" style="display:none; margin-top:10px">
+{% include "tutorial/tutorial_fx_breadcrumbs.html" %}
+<div id="accordion">
+	<a data-toggle="collapse" data-parent="#accordion" href="#instructions">
+		<i class="glyphicon glyphicon-hand-right"></i> Workspace Instructions
+	</a>
+
+	<div id="instructions" class="collapse out" style="margin-top:10px">
 <pre class="prettyprint">
 // Checkout tutorial step
 git checkout -f fx-step-{{step}}
@@ -13,5 +12,7 @@ git checkout -f fx-step-{{step}}
 cd boot
 // Start the application
 mvn install exec:java</pre>
-<p>If you experience problems, please check the <a href="/tutorials/fx/0">Bootstraping</a> section of this tutorial.</p>
+		<p>If you experience problems, please check the <a href="/tutorials/fx/0">Bootstraping</a> section of this
+			tutorial.</p>
+	</div>
 </div>

@@ -1,19 +1,22 @@
 body {
-    padding-top: 20px;
-    padding-bottom: 60px;
+    padding: 70px 10px;
+    -webkit-font-smoothing: antialiased;
 }
 
 /* Custom container */
 .container {
-    margin: 0 auto;
-    max-width: 1200px;
 }
+
 .container > hr {
     margin: 60px 0;
 }
 
+.well {
+  box-shadow: none;
+}
+
 /* Main marketing message and sign up button */
-.jumbotron {
+/*.jumbotron {
     margin: 80px 0;
     text-align: center;
 }
@@ -29,6 +32,7 @@ body {
     font-size: 21px;
     padding: 14px 24px;
 }
+*/
 
 /* Supporting marketing content */
 .marketing {
@@ -40,13 +44,9 @@ body {
 }
 
 .navbar .nav li a {
-    text-align: center;
-    border-left: 1px solid rgba(255,255,255,.75);
-    border-right: 1px solid rgba(0,0,0,.1);
 }
 
 .navbar .nav li:first-child a {
-    border-left: 1px solid rgba(0,0,0,.1);;
 }
 
 a {
@@ -74,6 +74,7 @@ pre.prettyprint {
 }
 
 .nav-tabs {
+    margin-top: 20px;
     margin-bottom: 0;
 }
 
@@ -93,4 +94,8 @@ code {
 
 a code {
     color: #d41;
+}
+
+.row img {
+  width: 100%;
 }

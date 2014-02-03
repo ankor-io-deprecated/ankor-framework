@@ -5,27 +5,36 @@
 {% block content %}
 
 <!-- Jumbotron -->
-<div class="jumbotron">
-    <h1>Ankor</h1>
-    <p class="lead">Web application development made easy.<br/>Support for Java FX, HTML 5 and WPF Clients.<br/>Multiple server platforms Netty, J2EE, Node.</p>
-    <a class="btn btn-large btn-success" href="#">Get started today</a>
+<div class="row">
+	<div class="jumbotron">
+		<h1>Ankor</h1>
+
+		<p class="lead">Web application development made easy.<br/>Support for Java FX, HTML 5 and WPF Clients.<br/>Multiple
+			server platforms Netty, J2EE, Node.</p>
+		<a class="btn btn-lg btn-primary" href="#">Get started today</a>
+	</div>
 </div>
 
 <hr>
 
 <!-- Example row of columns -->
-<div class="row-fluid">
-    <div class="span6">
-        <h2>Simple to use</h2>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-        <p><a class="btn" href="#">View details &raquo;</a></p>
-    </div>
-    <div class="span6">
-        <h2>MVVM Pattern</h2>
-        {% load staticfiles %}
-        <img src="{% static 'images/ankor_mvvm_pattern.png' %}" />
-        <p><a class="btn" href="#">View details &raquo;</a></p>
-    </div>
+<div class="row">
+	<div class="col-md-6">
+		<h2>Simple to use</h2>
+		Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore
+		magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+		consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+		pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est
+		laborum.
+		<p><a class="btn" href="#">View details &raquo;</a></p>
+	</div>
+	<div class="col-md-6">
+		<h2>MVVM Pattern</h2>
+		{% load staticfiles %}
+		<img src="{% static 'images/ankor_mvvm_pattern.png' %}"/>
+
+		<p><a class="btn" href="#">View details &raquo;</a></p>
+	</div>
 </div>
 
 {% endblock %}
