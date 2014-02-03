@@ -3,7 +3,7 @@
 Open [`TaskListController.java`][1]. This is a controller in the JavaFX sense. A controller is attached to an
 `.fxml` file by specifying it as an attribute in the root node. You can take a look at it in [`tasks.fxml`][2].
 
-#### Bla
+#### Initialize
 
 Inside `initialize` we have to take care of two things:
 

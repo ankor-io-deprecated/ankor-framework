@@ -1,10 +1,9 @@
 ### Starting the Application
 
-When creating an Ankor JavaFX application you have two choices. You can either extend then `AnkorApplication` class
-which starts the Ankor system for you or you can set up your Ankor system manually using a builder.
-Both ways work the same and the rest of the tutorial does not depend on
-your choice. However, chose the first option if you want to get going and the later if you'd like to get your
-hands dirty.
+When creating a Ankor JavaFX application you have two choices: You can either extend the `AnkorApplication` class
+which starts the Ankor system for you, or you can set up your Ankor system manually.
+Both work the same way and the rest of the tutorial does not depend on
+your choice here. However, chose the first option if you want to get going fast.
 
 Open [`App.java`][1] and add either of the the following lines:
 
@@ -37,9 +36,9 @@ Open [`App.java`][1] and add either of the the following lines:
         return "wss://ankor-todo-sample.irian.at/websocket/ankor";
     }
 }</pre></code>
-<p>The <code>AnkorApplication</code> class does all the plumbing and wiring for you. When you enter the
+<p>The <code>AnkorApplication</code> class does all the plumbing and wiring for you. When entering the
 <code>startFXClient</code> method a WebSocket connection has already been set up, the Ankor system
-has received an id from the server and sends heartbeat messages to the server in fixed intervals.</p>
+has received an id from the server and heartbeat messages are sent to the server in fixed intervals.</p>
 
 </div>
 
@@ -83,11 +82,11 @@ has received an id from the server and sends heartbeat messages to the server in
 </div>
 </div>
 
-For now we are connecting to an existing Ankor server but we'll soon be learning how to set up our own.
+For now we are connecting to an existing Ankor server at `wss://ankor-todo-sample.irian.at/websocket/ankor`.
 The test sever will be able to understand and process the messages that our todo application is going to send.
 This will give you the experience of an application developer adding a new client
 platform to an existing Ankor system.
-If you want to write your own server first you can do so by [heading over to the respective step](#).
+However, if you want to write your own server first you can do so by [heading over to the respective step](#).
 
 You can now start the app and check if it throws any exceptions.
 

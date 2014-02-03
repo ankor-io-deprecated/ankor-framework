@@ -6,28 +6,41 @@ from django.core.files import File
 
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 
+
 def get_num_tutorials():
     path, dirs, files = os.walk(SITE_ROOT + '/templates/tutorial/steps/').next()
     return len(files)
 
+
 num_tutorials = get_num_tutorials()
+
 
 def index(request):
     template = loader.get_template('index.html')
     context = RequestContext(request, {
-                'activeMenu': 'home',
-        })
+        'activeMenu': 'home',
+    })
     return HttpResponse(template.render(context))
+
 
 def download(request):
     template = loader.get_template('download.html')
     context = RequestContext(request, {
-                'activeMenu': 'download',
-        })
+        'activeMenu': 'download',
+    })
     return HttpResponse(template.render(context))
 
+
+def tutorials_overview(request):
+    template = loader.get_template('tutorials.html')
+    context = RequestContext(request, {
+        'activeMenu': 'tutorials',
+    })
+    return HttpResponse(template.render(context))
+
+
 def tutorials(request, type, step):
-    template = loader.get_template('tutorial/steps/tutorial_' + type + '_' + step + '.html')
+    template = loader.get_template('tutorial/tutorial_' + type + '.html')
 
     path = open(SITE_ROOT + '/templates/tutorial/steps/tutorial_fx_' + step + '.md', 'r')
     f = File(path)
@@ -36,31 +49,33 @@ def tutorials(request, type, step):
     step = int(step)
 
     next_step = int(step) + 1
-    if next_step > num_tutorials/2 - 1:
-        next_step = num_tutorials/2 - 1
+    if next_step > num_tutorials / 2 - 1:
+        next_step = num_tutorials / 2 - 1
     previous_step = int(step) - 1
     if previous_step < 0:
         previous_step = 0
 
     context = RequestContext(request, {
-                'activeMenu': 'tutorials',
-                'step': step,
-                'previousStep': previous_step,
-                'nextStep': next_step,
-                'content': content
-        })
+        'activeMenu': 'tutorials',
+        'step': step,
+        'previousStep': previous_step,
+        'nextStep': next_step,
+        'content': content
+    })
     return HttpResponse(template.render(context))
+
 
 def documentation(request):
     template = loader.get_template('documentation.html')
     context = RequestContext(request, {
-                'activeMenu': 'documentation',
-        })
+        'activeMenu': 'documentation',
+    })
     return HttpResponse(template.render(context))
+
 
 def contribute(request):
     template = loader.get_template('contribute.html')
     context = RequestContext(request, {
-                'activeMenu': 'contribute',
-        })
+        'activeMenu': 'contribute',
+    })
     return HttpResponse(template.render(context))

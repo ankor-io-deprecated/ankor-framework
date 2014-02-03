@@ -1,21 +1,22 @@
 ### The Application
 
 In this tutorial we'll be building a simple Ankor application.
-We'll explain how to setup the application, write the first
-view model and bind the model to your UI components via WebSockets. While the transport layer doesn't really
-matter to Ankor, we'll be using WebSockets in this tutorial, as they are supported by both JavaFX and web browsers.
-When we are done the app will look like this:
+We'll explain how to setup Ankor, write the first
+view model and bind the model to your UI components. While Ankor is generally independent of the transport layer, 
+in this tutorial we'll be using WebSockets. They are supported by both JavaFX and web browsers 
+and Ankor has some utility classes that make using WebSockets easy.
+
+This his how the app will look like when we are done:
 
 ![fx-step-0-1](/static/images/tutorial/fx-step-0-1.png)
 
 This might looks familiar to you (it's the infamous todo app form [TodoMVC](http://todomvc.com/)).
-However it is fully written and styled with JavaFX.
-If you are interested in building it as a web app head over to the [JavaScript Tutorial](#).
+However it is fully written and styled using JavaFX.
 
 ### Before you start
 
-Please check that all software components are installed properly. Especially check the Java FX section to make sure
-that JavaFX is on the Classpath.
+Please make sure that all software components are installed properly. Especially check the Java FX section to make sure
+that JavaFX is on the classpath.
 
 <div class="tabbable ">
     <ul class="nav nav-tabs">
@@ -59,7 +60,7 @@ that JavaFX is on the Classpath.
 
 ### Get the code
 
-Clone the git repository:
+Clone the git repository from:
 
     git clone https://github.com/ankor-io/ankor-todo.git
 

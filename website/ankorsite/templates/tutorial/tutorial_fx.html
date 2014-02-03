@@ -10,15 +10,18 @@
         {% include "tutorial/tutorial_fx_menu.html" %}
     </div><!--/span-->
     <div class="col-md-9">
-        {% include "tutorial/tutorial_fx_head.html" with tutorial_title='Starting the Application' %}
+        {% include "tutorial/tutorial_fx_head.html" with tutorial_title='Bootstrap' %}
 
         {% load markdown %}
         {{ content|markdown }}
 
         <hr/>
-        <a class="btn btn-primary" href="/tutorials/fx/2">Next »</a>&nbsp;&nbsp;If everything works, head over to the next step.
+        <a class="btn btn-primary" href="/tutorials/fx/{{nextStep}}">
+			Next 
+			<span class="glyphicon glyphicon-chevron-right"></span>
+		</a>
 
-    </div><!--/span9-->
+    </div><!--/span-->
 </div><!--/row-->
 
 {% endblock %}

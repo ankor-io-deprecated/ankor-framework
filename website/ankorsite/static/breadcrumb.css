@@ -1,0 +1,83 @@
+.breadcrumb {
+  padding: 0;
+  margin-bottom: 20px;
+  list-style: none;
+  background-color: transparent;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid #dddddd;
+  background-color: #ffffff;
+}
+.breadcrumb > li {
+  display: inline-block;
+  height: 40px;
+}
+.breadcrumb > li > * {
+  padding: 10px 10px 10px 25px;
+  position: relative;
+  display: block;
+  background-color: #ffffff;
+  margin-top: -1px;
+  border-top: 1px solid #dddddd;
+  border-bottom: 1px solid #dddddd;
+  margin-left: -3px;
+}
+.breadcrumb > li > a {
+  background-color: #f5f5f5;
+}
+.breadcrumb > li > *:after {
+  content: " ";
+  display: block;
+  width: 0;
+  height: 0;
+  border-top: 20px solid transparent;
+  /* Go big on the size, and let overflow hide */
+  border-bottom: 20px solid transparent;
+  border-left: 15px solid #ffffff;
+  position: absolute;
+  top: 50%;
+  margin-top: -20px;
+  left: 100%;
+  z-index: 2;
+}
+.breadcrumb > li > *:before {
+  content: " ";
+  display: block;
+  width: 0;
+  height: 0;
+  border-top: 20px solid transparent;
+  border-bottom: 20px solid transparent;
+  border-left: 15px solid #dddddd;
+  position: absolute;
+  top: 50%;
+  margin-top: -20px;
+  margin-left: 1px;
+  left: 100%;
+  z-index: 1;
+}
+.breadcrumb > li > a:after {
+  border-left-color: #f5f5f5;
+}
+.breadcrumb > li > a:before {
+  border-left-color: #dddddd;
+}
+.breadcrumb > li > a:hover {
+  background-color: #efefef;
+  text-decoration: none;
+}
+.breadcrumb > li > a:hover:after {
+  border-left-color: #efefef;
+}
+.breadcrumb > li:first-child > * {
+  padding-left: 15px;
+}
+.breadcrumb > .active {
+  color: #999999;
+}
+.breadcrumb > li:after {
+  content: "";
+}
+.breadcrumb > li + li:before {
+  padding: 0;
+  content: "";
+}
