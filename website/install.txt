@@ -1,12 +1,14 @@
---- Donwload
-Download Django  Django-1.5.1.tar.gz from https://www.djangoproject.com/download/
-                           ´
---- Install
-tar xzvf Django-1.5.1.tar.gz
-cd Django-1.5.1
-sudo python setup.py install
+--- Prerequisites
+Make sure you have pip installed.
+If not follow these instructions:
+http://www.pip-installer.org/en/latest/installing.html
+
+--- Download + Install
+$ pip install Django==1.6.1
+$ pip install markdown2
 
 --- Test
-python -c "import django; print(django.get_version())"
-
-1.5.1
+$ python -c "import django; print(django.get_version())"
+1.6.1
+$ python -c "import markdown2; print(markdown2.markdown(''))"
+<p></p>
