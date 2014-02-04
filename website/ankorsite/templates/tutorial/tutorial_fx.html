@@ -10,13 +10,15 @@
         {% include "tutorial/tutorial_fx_menu.html" %}
     </div><!--/span-->
     <div class="col-md-9">
-        {% include "tutorial/tutorial_fx_head.html" with tutorial_title='Bootstrap' %}
+        {% include "tutorial/tutorial_fx_head.html" %}
 
-        {% load markdown %}
-        {{ content|markdown }}
+        {% load markdownlib %}
+        {% autoescape off %}
+            {{ content|markdown:"codehilite" }}
+        {% endautoescape %}
 
         <hr/>
-        <a class="btn btn-primary" href="/tutorials/fx/{{nextStep}}">
+        <a class="btn btn-primary pull-right" href="/tutorials/fx/{{nextStep}}">
 			Next 
 			<span class="glyphicon glyphicon-chevron-right"></span>
 		</a>

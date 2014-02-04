@@ -39,6 +39,19 @@ def tutorials_overview(request):
     return HttpResponse(template.render(context))
 
 
+def get_titles():
+    titles = [""] * get_num_tutorials()
+    for x in range(0, len(titles)):
+        path = open(SITE_ROOT + '/templates/tutorial/steps/tutorial_fx_' + str(x) + '.md', 'r')
+        line = path.readline()
+        try:
+            titles[x] = line.replace('### ', '')
+        except Exception:
+            print("Tutorials needs to start with '### '")
+    return titles
+
+tutorial_titles = get_titles()
+
 def tutorials(request, type, step):
     template = loader.get_template('tutorial/tutorial_' + type + '.html')
 
@@ -58,6 +71,8 @@ def tutorials(request, type, step):
     context = RequestContext(request, {
         'activeMenu': 'tutorials',
         'step': step,
+        'tutorial_titles': tutorial_titles,
+        'tutorial_title': tutorial_titles[step],
         'previousStep': previous_step,
         'nextStep': next_step,
         'content': content

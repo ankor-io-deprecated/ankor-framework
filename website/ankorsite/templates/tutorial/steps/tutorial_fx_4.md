@@ -10,11 +10,13 @@ you will find the attribute `onAction="#newTodo"`. This links the text fields ac
 
 Before we get started we need the reference to the `TextField` from the fxml, so we add another field to our controller:
 
+    :::java
     @FXML
     public TextField newTodo;
     
 Inside our `newTodo` function we can then get the text from the text field:
 
+    :::java
     String title = newTodo.getText();
     
 #### Firing an Action with Parameters
@@ -23,6 +25,7 @@ We will use an `Action` to tell the server that the user wants to add a new todo
 for a action named `"newTask"`. Unlike the `"init"` action this one takes parameters as well. 
 The parameters are stored in a map, which is passed to the constructor of `Action`.Then we fire the action on the `modelRef`.  
 
+    :::java
     if (!title.equals("")) {
         Map<String, Object> params = new LinkedHashMap<>();
         params.put("title", title);

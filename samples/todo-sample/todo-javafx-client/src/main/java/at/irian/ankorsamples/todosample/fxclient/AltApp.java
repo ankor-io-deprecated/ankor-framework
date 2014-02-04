@@ -26,10 +26,6 @@ public class AltApp extends javafx.application.Application {
         launch(args);
     }
 
-    public static FxRefFactory refFactory() {
-        return refFactory;
-    }
-
     @Override
     public void start(Stage stage) throws Exception {
         setupAnkor();
@@ -57,5 +53,13 @@ public class AltApp extends javafx.application.Application {
 
         // TODO: Hide this from the user
         refFactory = (FxRefFactory) ((SingletonSessionManager) app.getSessionManager()).getSession().getRefContext().refFactory();
+    }
+
+    public static FxRefFactory refFactory() {
+        return refFactory;
+    }
+
+    public static HostServices getServices() {
+        return services;
     }
 }

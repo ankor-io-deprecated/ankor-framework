@@ -14,6 +14,7 @@ In this example we want to hide and show the footer based on the number of uncom
 implementation. This means we need to access the footer (which is separated in two parts). Its ids are `footerTop` and `footerBottom`, 
 so we'll need those two fields in our controller:
 
+    :::java
     @FXML
     public Node footerTop;
     @FXML
@@ -26,6 +27,7 @@ a Ankor `Ref`, which obviously can't be bound to any JavaFX properties.
 
 Now as you might have noticed earlier, our todo application's view model on the server is structured like this:
 
+    :::javascript
     "root": {
         "model": {
             "tasks": [],
@@ -41,11 +43,13 @@ To navigate the tree we can "append" a path to a `Ref`, yielding a new `Ref` to 
 
 So in order to access the `model` part of the view model we call inside our `myInit` method:
 
+    :::java
     FxRef rootRef = refFactory().ref("root");
     FxRef modelRef = rootRef.appendPath("model");
     
 Now that we got used to it, we do it once more:
 
+    :::java
     FxRef footerVisibilityRef = modelRef.appendPath("footerVisibility");
     
 <div class="alert alert-info">
@@ -60,6 +64,7 @@ do the binding.
 Ankor provides a subtype of `Ref` called [`FxRef`][3], which has a method `fxProperty()`. 
 As the name suggests it returns a property object. It can be used like any other JavaFX property, especially for bindings. 
 
+    :::java
     Property<Boolean> footerVisibilityProperty = footerVisibilityRef.fxProperty();
     footerTop.visibleProperty().bind(footerVisibilityProperty);
     footerBottom.visibleProperty().bind(footerVisibilityProperty);
@@ -72,4 +77,4 @@ since the footer visibility won't change until we add a todo to the list.
 
 [1]: https://github.com/ankor-io/ankor-todo/blob/fx-step-3/todo-javafx-client/src/main/java/io/ankor/tutorial/TaskListController.java
 [2]: https://github.com/ankor-io/ankor-todo/blob/fx-step-3/todo-javafx-client/src/main/resources/tasks.fxml
-[3]: #
+[3]: #TODOlinktoDocs

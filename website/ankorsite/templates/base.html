@@ -10,8 +10,7 @@
     <!-- Le styles -->
     {% load staticfiles %}
 	<link href="{% static 'bootstrap/css/bootstrap.min.css' %}" type="text/css" rel="stylesheet">
-    <link href="{% static 'google-code-prettify/prettify.css' %}" type="text/css" rel="stylesheet"/>
-    <link href="{% static 'tomorrow.css' %}" type="text/css" rel="stylesheet" />
+    <link href="{% static 'github.css' %}" type="text/css" rel="stylesheet" />
 	<link href="{% static 'breadcrumb.css' %}" type="text/css" rel="stylesheet" />
 	<link href="{% static 'ankor.css' %}" type="text/css" rel="stylesheet" />
 
@@ -28,7 +27,7 @@
     <link rel="shortcut icon" href="../assets/ico/favicon.png">
 </head>
 
-<body onload="$('pre').addClass('prettyprint'); prettyPrint();">
+<body>
 
 <div class="container">
 
@@ -50,6 +49,5 @@
 <!-- Placed at the end of the document so the pages load fasbootstrap.jster -->
 <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 <script type="text/javascript" src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'google-code-prettify/prettify.js' %}"></script>
 </body>
 </html>

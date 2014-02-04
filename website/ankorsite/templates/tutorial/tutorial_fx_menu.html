@@ -1,7 +1,5 @@
 <div class="list-group">
-	<a href="/tutorials/fx/0" class="list-group-item {% if step == 0 %}active{% endif %}">0 - Bootstraping</a>
-	<a href="/tutorials/fx/1" class="list-group-item {% if step == 1 %}active{% endif %}">1 - Starting the Application</a>
-	<a href="/tutorials/fx/2" class="list-group-item {% if step == 2 %}active{% endif %}">2 - Initializing Ankor</a>
-	<a href="/tutorials/fx/3" class="list-group-item {% if step == 3 %}active{% endif %}">3 - Binding your first Property</a>
-	<a href="/tutorials/fx/4" class="list-group-item {% if step == 4 %}active{% endif %}">4 - Adding Todos to the List</a>
+    {% for o in tutorial_titles %}
+    	<a href="/tutorials/fx/{{forloop.counter0}}" class="list-group-item {% if step == forloop.counter0 %}active{% endif %}">{{forloop.counter0}} - {{o}}</a>
+    {% endfor %}
 </div>

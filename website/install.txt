@@ -5,10 +5,12 @@ http://www.pip-installer.org/en/latest/installing.html
 
 --- Download + Install
 $ pip install Django==1.6.1
-$ pip install markdown2
+$ pip install Pygments
+$ pip install markdown
 
 --- Test
 $ python -c "import django; print(django.get_version())"
 1.6.1
-$ python -c "import markdown2; print(markdown2.markdown(''))"
-<p></p>
+
+--- Run
+$ sh run.sh

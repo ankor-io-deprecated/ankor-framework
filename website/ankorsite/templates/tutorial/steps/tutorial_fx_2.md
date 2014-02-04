@@ -7,6 +7,7 @@ Open [`TaskListController.java`][1]. This is a controller in the JavaFX sense. A
 
 Inside `initialize` we have to take care of two things:
 
+    :::java
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Ref rootRef = refFactory().ref("root"); // 1
@@ -15,7 +16,7 @@ Inside `initialize` we have to take care of two things:
 
 ##### References
 
-The core of the Ankor model is the [`Ref`](#linkToDoc). It is a reference to a property of the view model.
+The core of the Ankor model is the [`Ref`](#TODOlinkToDoc). It is a reference to a property of the view model.
 In this case it's a remote reference, as the view model resides on the server. All view model properties are ordered
 in a hierarchical tree structure. The Ref object allows you to navigate this tree and manipulate the underlying properties.
 By requesting the reference that lies at the `"root"` of the tree we get access to the complete view model. Except for
@@ -23,13 +24,14 @@ the root the tree is still empty though. That's why we need...
 
 ##### Actions
 
-Another core concept of Ankor are Actions. An [`Action`](#linkToDoc) is generally used to make user interaction explicit. In this case
+Another core concept of Ankor are Actions. An [`Action`](#TODOlinkToDoc) is generally used to make user interaction explicit. In this case
 however we use it to tell the Ankor server to set up a new view model for us (you can think of it as
 making the interaction that started the application explicit). An Action always gets invoked on a Ref, in this case it's
 the root reference.  
 The server will process the action and return a response containing the initial state of the application.
 The data is JSON encoded and will look like this:
 
+    ::javascript
     {
         "senderId": "ankor-servlet-server",
         "modelId": "fe03c887-e024-4e51-8af0-dc3d4d4de340",
@@ -63,10 +65,12 @@ we want to avoid the boilerplate code of event listeners.
 
 We add one line to our initialize method:
 
+    ::java
     FXControllerAnnotationSupport.scan(rootRef, this);
 
 Now we can create our own initialize method, the one that will be executed when the response from the server returns:
 
+    ::java
     @ChangeListener(pattern = "root")
     public void myInit() {
         // TODO
