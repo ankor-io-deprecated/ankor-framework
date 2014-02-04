@@ -49,8 +49,8 @@ def tutorials(request, type, step):
     step = int(step)
 
     next_step = int(step) + 1
-    if next_step > num_tutorials / 2 - 1:
-        next_step = num_tutorials / 2 - 1
+    if next_step > num_tutorials - 1:
+        next_step = num_tutorials - 1
     previous_step = int(step) - 1
     if previous_step < 0:
         previous_step = 0
