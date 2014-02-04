@@ -12,6 +12,7 @@ import at.irian.ankor.messaging.json.common.ActionDeserializer;
 import at.irian.ankor.messaging.json.common.ChangeDeserializer;
 import at.irian.ankor.messaging.json.common.MessageDeserializer;
 import at.irian.ankor.ref.TypedRef;
+import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -37,13 +38,13 @@ public class ViewModelJsonMessageMapper implements MessageMapper<String>,
 
     private static final Class<? extends Message[]> MESSAGE_ARRAY_TYPE = (new Message[0]).getClass();
 
-    private ObjectMapper mapper;
+    private final ObjectMapper mapper;
 
-    public ViewModelJsonMessageMapper() {
-        init();
+    public ViewModelJsonMessageMapper(BeanMetadataProvider beanMetadataProvider) {
+        this.mapper = createMapper(beanMetadataProvider);
     }
 
-    public void init() {
+    private static ObjectMapper createMapper(BeanMetadataProvider beanMetadataProvider) {
         SimpleModule module = new SimpleModule("ViewModelJsonMessageMapperModule",
                                                new Version(1, 0, 0, null, null, null));
 
@@ -54,14 +55,18 @@ public class ViewModelJsonMessageMapper implements MessageMapper<String>,
         module.addSerializer(Wrapper.class, new WrapperSerializer());
 
         // do always ignore Refs (ie. do never serialize Refs)
-        module.setMixInAnnotation(TypedRef.class, MixIn.class);
+        module.setMixInAnnotation(TypedRef.class, IgnoreMixIn.class);
+        module.setMixInAnnotation(Object.class, DefaultMixIn.class);
 
-        module.setSerializerModifier(new AnkorSerializerModifier());
+        module.setSerializerModifier(new AnkorSerializerModifier(beanMetadataProvider));
 
-        mapper = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(module);
 
-        mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+        mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.NONE);
+        mapper.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.PUBLIC_ONLY);
+        mapper.setVisibility(PropertyAccessor.IS_GETTER, JsonAutoDetect.Visibility.PUBLIC_ONLY);
+        mapper.setVisibility(PropertyAccessor.SETTER, JsonAutoDetect.Visibility.PUBLIC_ONLY);
 
         mapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
         mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
@@ -74,6 +79,8 @@ public class ViewModelJsonMessageMapper implements MessageMapper<String>,
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
         //mapper.enableDefaultTypingAsProperty(ObjectMapper.DefaultTyping.JAVA_LANG_OBJECT, "@javaType");
+
+        return mapper;
     }
 
     @Override

@@ -17,11 +17,6 @@ public @interface ActionListener {
     String name() default "";
 
     /**
-     * Required java type of the action property.
-     */
-    Class<?> refType() default ActionListener.class;
-
-    /**
      * One or more Ref patterns that must match.
      */
     String[] pattern() default "";

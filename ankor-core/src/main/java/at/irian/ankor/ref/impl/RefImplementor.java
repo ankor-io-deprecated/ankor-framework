@@ -13,6 +13,8 @@ import at.irian.ankor.ref.Ref;
  */
 public interface RefImplementor extends Ref {
 
+    Class<?> getType();
+
     void apply(Source source, Change change);
 
     void signal(Source source, Change change);

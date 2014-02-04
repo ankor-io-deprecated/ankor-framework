@@ -24,4 +24,10 @@ public interface ModelContext {
 
     Map<String,Object> getAttributes();
 
+
+
+    void pushEventDispatcher(EventDispatcher eventDispatcher);
+
+    EventDispatcher popEventDispatcher();
+
 }

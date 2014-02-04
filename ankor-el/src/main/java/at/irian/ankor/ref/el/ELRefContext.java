@@ -10,6 +10,8 @@ import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.ref.impl.RefContextImplementor;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
+import at.irian.ankor.viewmodel.factory.BeanFactory;
+import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
 
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
@@ -26,29 +28,35 @@ public class ELRefContext implements RefContext, RefContextImplementor {
     private final List<ViewModelPostProcessor> viewModelPostProcessors;
     private final Scheduler scheduler;
     private final RefFactory refFactory;
+    private final BeanMetadataProvider metadataProvider;
+    private final BeanFactory beanFactory;
 
     protected ELRefContext(ELSupport elSupport,
                            ModelContext modelContext,
                            List<ViewModelPostProcessor> viewModelPostProcessors,
                            Scheduler scheduler,
-                           RefFactory refFactory) {
+                           RefFactory refFactory, BeanMetadataProvider metadataProvider, BeanFactory beanFactory) {
         this.elSupport = elSupport;
         this.modelContext = modelContext;
         this.viewModelPostProcessors = viewModelPostProcessors;
         this.scheduler = scheduler;
         this.refFactory = refFactory;
+        this.metadataProvider = metadataProvider;
+        this.beanFactory = beanFactory;
     }
 
     protected static ELRefContext create(ELSupport elSupport,
                                          ModelContext modelContext,
                                          List<ViewModelPostProcessor> viewModelPostProcessors,
-                                         Scheduler scheduler) {
+                                         Scheduler scheduler,
+                                         BeanMetadataProvider metadataProvider, BeanFactory beanFactory) {
         ELRefFactory refFactory = new ELRefFactory();
         ELRefContext refContext = new ELRefContext(elSupport,
                                                    modelContext,
                                                    viewModelPostProcessors,
                                                    scheduler,
-                                                   refFactory);
+                                                   refFactory,
+                                                   metadataProvider, beanFactory);
         refFactory.setRefContext(refContext); // bi-directional relation - not nice but no idea by now how to make it nice...  ;-)
         return refContext;
     }
@@ -89,5 +97,15 @@ public class ELRefContext implements RefContext, RefContextImplementor {
     @Override
     public Scheduler scheduler() {
         return scheduler;
+    }
+
+    @Override
+    public BeanMetadataProvider metadataProvider() {
+        return metadataProvider;
+    }
+
+    @Override
+    public BeanFactory beanFactory() {
+        return beanFactory;
     }
 }

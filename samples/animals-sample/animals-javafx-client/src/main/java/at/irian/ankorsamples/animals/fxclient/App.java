@@ -146,8 +146,9 @@ public class App extends javafx.application.Application {
 
         final String clientId = UUID.randomUUID().toString();
         final AnkorSystem[] clientSystem = new AnkorSystem[1];
-        final WebSocketMessageBus messageBus = new WebSocketMessageBus(new ViewModelJsonMessageMapper());
-        final AnkorSystemBuilder systemBuilder = new AnkorSystemBuilder()
+        AnkorSystemBuilder systemBuilder = new AnkorSystemBuilder();
+        final WebSocketMessageBus messageBus = new WebSocketMessageBus(new ViewModelJsonMessageMapper(systemBuilder.getBeanMetadataProvider()));
+        final AnkorSystemBuilder finalSystemBuilder = systemBuilder
                 .withName(clientId)
                 .withMessageBus(messageBus)
                 .withDispatcherFactory(new JavaFxEventDispatcherFactory())
@@ -172,7 +173,7 @@ public class App extends javafx.application.Application {
                 });
 
                 messageBus.addRemoteSystem(new WebSocketRemoteSystem(clientId, session));
-                (clientSystem[0] = systemBuilder.createClient()).start();
+                (clientSystem[0] = finalSystemBuilder.createClient()).start();
                 startHeartbeat(session);
                 latch.countDown();
             }

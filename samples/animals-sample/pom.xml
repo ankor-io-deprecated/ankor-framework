@@ -37,6 +37,12 @@
 
             <dependency>
                 <groupId>at.irian.ankor</groupId>
+                <artifactId>ankor-proxy</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>at.irian.ankor</groupId>
                 <artifactId>ankor-servlet</artifactId>
                 <version>${project.version}</version>
             </dependency>

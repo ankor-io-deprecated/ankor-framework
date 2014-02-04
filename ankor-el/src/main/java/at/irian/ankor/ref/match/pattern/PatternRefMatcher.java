@@ -107,7 +107,7 @@ public class PatternRefMatcher implements RefMatcher {
                 return false;
             }
             Class<?> refType = refValue.getClass();
-            return type.equals(refType.getSimpleName()) || type.equals(refType.getName());
+            return isTypeMatch(type, refType);
         }
 
         String refPropName = ref.path();
@@ -135,11 +135,23 @@ public class PatternRefMatcher implements RefMatcher {
                 return false;
             }
             Class<?> refType = refValue.getClass();
-            return type.equals(refType.getSimpleName()) || type.equals(refType.getName());
+            return isTypeMatch(type, refType);
         }
 
         String refPropName = ref.isRoot() ? ref.path() : ref.propertyName();
         return refPropName.equals(propertyPattern.getPropertyName());
+    }
+
+    /**
+     * @return true if type is the name of the given refType or a superclass of refType
+     */
+    private boolean isTypeMatch(String type, Class<?> refType) {
+        if (type.equals(refType.getSimpleName()) || type.equals(refType.getName())) {
+            return true;
+        }
+
+        Class<?> superclass = refType.getSuperclass();
+        return superclass != null && isTypeMatch(type, superclass);
     }
 
 }

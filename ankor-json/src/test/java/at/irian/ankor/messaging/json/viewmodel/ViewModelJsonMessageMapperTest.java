@@ -5,6 +5,7 @@ import at.irian.ankor.action.CloseAction;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.context.ModelContext;
 import at.irian.ankor.messaging.*;
+import at.irian.ankor.viewmodel.metadata.EmptyBeanMetadataProvider;
 import com.google.common.collect.Maps;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +32,7 @@ public class ViewModelJsonMessageMapperTest {
         when(modelContext.getId()).thenReturn("mc1");
 
         messageFactory = new MessageFactory("test", new CounterMessageIdGenerator(""));
-        msgMapper = new ViewModelJsonMessageMapper();
+        msgMapper = new ViewModelJsonMessageMapper(new EmptyBeanMetadataProvider());
     }
 
     @Test

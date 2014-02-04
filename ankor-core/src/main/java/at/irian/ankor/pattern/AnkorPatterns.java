@@ -7,7 +7,7 @@ import at.irian.ankor.event.source.CustomSource;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.impl.RefImplementor;
 import at.irian.ankor.viewmodel.RefAware;
-import at.irian.ankor.viewmodel.ViewModelSupport;
+import at.irian.ankor.viewmodel.ViewModels;
 
 import java.util.Collection;
 
@@ -25,6 +25,14 @@ public final class AnkorPatterns {
     public static void runLater(Ref property, Runnable task) {
         getEventDispatcherFor(property).dispatch(new TaskRequestEvent(STATIC_SOURCE,
                                                                       task));
+    }
+
+    public static void runLater(Object viewModelBean, Runnable task) {
+        if (viewModelBean instanceof RefAware) {
+            runLater(((RefAware) viewModelBean).getRef(), task);
+        } else {
+            throw new IllegalArgumentException("View model bean must implement " + RefAware.class.getName());
+        }
     }
 
     private static EventDispatcher getEventDispatcherFor(Ref property) {
@@ -59,7 +67,7 @@ public final class AnkorPatterns {
 
 
     public static void initViewModel(Object viewModelObject, Ref viewModelRef) {
-        ViewModelSupport.invokePostProcessorsOn(viewModelObject, viewModelRef);
+        ViewModels.invokePostProcessorsOn(viewModelObject, viewModelRef);
     }
 
     public static void initViewModel(RefAware viewModelObject) {

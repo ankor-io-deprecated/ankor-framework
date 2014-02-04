@@ -47,11 +47,6 @@ public class AnkorSystem {
         return systemName;
     }
 
-    @Deprecated
-    public MessageFactory getMessageFactory() {
-        return messageFactory;
-    }
-
     public MessageBus getMessageBus() {
         return messageBus;
     }

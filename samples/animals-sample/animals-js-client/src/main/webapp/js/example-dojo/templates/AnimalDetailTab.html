@@ -1,0 +1,20 @@
+<div>
+    <div data-dojo-type="dijit/form/Form" data-dojo-attach-event="onSubmit:onSubmit">
+        <p>
+            <span data-dojo-attach-point="spanNameI18n"></span>
+            <input type="text" data-dojo-type="dijit/form/TextBox" data-dojo-props="intermediateChanges: true" data-dojo-attach-point="inputName">
+            <span data-dojo-attach-point="spanNameStatus"></span>
+        </p>
+        <p>
+            <span data-dojo-attach-point="spanTypeI18n"></span>
+            <input data-dojo-type="dijit/form/Select" data-dojo-props="labelAttr: 'label', sortByLabel: false" data-dojo-attach-point="inputType" style="width: 200px;">
+        </p>
+        <p>
+            <span data-dojo-attach-point="spanFamilyI18n"></span>
+            <input data-dojo-type="dijit/form/Select" data-dojo-props="labelAttr: 'label', sortByLabel: false" data-dojo-attach-point="inputFamily" style="width: 200px;">
+        </p>
+        <p>
+            <button type="submit" data-dojo-type="dijit/form/Button" data-dojo-attach-point="buttonSave">Save</button>
+        </p>
+    </div>
+</div>

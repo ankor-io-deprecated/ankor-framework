@@ -41,6 +41,15 @@ public class AnkorFXMLLoader extends FXMLLoader {
         this.i18nSupport = new I18nSupport(resourcesRef);
     }
 
+    public Object load() throws IOException {
+        if (getResources() == null) {
+            setResources(IGNORE_RESOURCE_BUNDLE);
+        }
+        Object loaded = super.load();
+        doPostProcess(loaded);
+        return loaded;
+    }
+
     @Override
     public Object load(InputStream inputStream) throws IOException {
         if (getResources() == null) {

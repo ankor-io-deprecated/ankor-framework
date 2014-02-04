@@ -1,6 +1,6 @@
 package at.irian.ankor.big.modify;
 
-import at.irian.ankor.big.AnkorBigList;
+import at.irian.ankor.big.BigListMetadata;
 
 import java.util.*;
 
@@ -30,20 +30,20 @@ public class ListToBigListDummyConverter {
         this.chunkSize = chunkSize;
     }
 
-    public static ListToBigListDummyConverter createFromAnnotation(AnkorBigList ann) {
-        Class<?> missingElementSubstituteType = ann.missingElementSubstitute();
+    public static ListToBigListDummyConverter createFromMetadata(BigListMetadata metadata) {
+        Class<?> missingElementSubstituteType = metadata.getMissingElementSubstitute();
         Object missingElementSubstitute = null;
-        if (missingElementSubstituteType != AnkorBigList.Null.class) {
+        if (missingElementSubstituteType != null) {
             try {
                 missingElementSubstitute = missingElementSubstituteType.newInstance();
             } catch (Exception e) {
                 throw new RuntimeException("Unable to instantiate " + missingElementSubstituteType);
             }
         }
-        return new ListToBigListDummyConverter(ann.threshold(),
-                                               ann.initialSize(),
+        return new ListToBigListDummyConverter(metadata.getThreshold(),
+                                               metadata.getInitialSize(),
                                                missingElementSubstitute,
-                                               ann.chunkSize());
+                                               metadata.getChunkSize());
     }
 
 

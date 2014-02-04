@@ -42,4 +42,6 @@ public interface PathSyntax {
     boolean isPathMapKey(String path);
 
     String rootOf(String path);
+
+    boolean isEqual(String path1, String path2);
 }

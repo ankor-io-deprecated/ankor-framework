@@ -92,8 +92,8 @@ define([
                 var newPage = Math.min(page, maxPage);
                 if (newPage != page || newPage == maxPage) {
                     page = newPage;
-                    updatePage();
                 }
+                updatePage();
             }
         });
         body.find(".prev").click(function() {

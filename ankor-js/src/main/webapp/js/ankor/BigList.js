@@ -1,15 +1,17 @@
 define([
     "./ModelInterface",
-    "./Path"
-], function(ModelInterface, Path) {
+    "./Path",
+    "./BigCacheController"
+], function(ModelInterface, Path, BigCacheController) {
     var BigList = function(config, model) {
         this.model = model;
-
-        this._cacheSize = 1000;
-        this._cacheOrder = [];
+        this.cacheController = new BigCacheController(model, {
+            indexMode: true
+        });
 
         this._loadTimer = null;
         this._loadQueue = [];
+        this._loadPending = {};
 
         //Parse/Init config
         this._size = config["@size"];
@@ -48,7 +50,7 @@ define([
                 this._requestMissing(key);
             }
             else {
-                this._touchCache(key);
+                this.cacheController.touch(key);
             }
 
             //Run model.getValue
@@ -74,21 +76,25 @@ define([
             return; //Silently ignore
         }
 
-        //Update cache infos
+        //Update internal state
         if (path.segments.length == 1) {
+            //Update cache
             if (!(key in this.model.model)) {
-                this._cacheOrder.push(key);
+                this.cacheController.add(key);
             }
             else {
-                this._touchCache(key);
+                this.cacheController.touch(key);
             }
+
+            //Update _loadPending
+            delete this._loadPending[key];
         }
 
         //Set value in model
         this.model.setValue(path, value);
 
         //Clean up cache
-        this._cleanupCache();
+        this.cacheController.cleanup();
     };
 
     BigList.prototype.isValid = function(path) {
@@ -162,18 +168,8 @@ define([
             }
             this._loadQueue = newLoadQueue;
 
-            //Update indices of @_cacheOrder
-            var newCacheOrder = [];
-            for (var i = 0; i < this._cacheOrder.length; i++) {
-                var cacheKey = this._cacheOrder[i];
-                if (cacheKey < key) {
-                    newCacheOrder.push(cacheKey);
-                }
-                else if (cacheKey > key) {
-                    newCacheOrder.push(cacheKey - 1);
-                }
-            }
-            this._cacheOrder = newCacheOrder;
+            //Update indices of cache
+            this.cacheController.remove(key);
         }
         else if (key in this.model.model) {
             //If del for a subpath and item is currently cached -> delegate to model
@@ -218,18 +214,8 @@ define([
             }
             this._loadQueue = newLoadQueue;
 
-            //Update indices of @_cacheOrder
-            var newCacheOrder = [];
-            for (var i = 0; i < this._cacheOrder.length; i++) {
-                var cacheKey = this._cacheOrder[i];
-                if (cacheKey < index) {
-                    newCacheOrder.push(cacheKey);
-                }
-                else if (cacheKey >= index) {
-                    newCacheOrder.push(cacheKey + 1);
-                }
-            }
-            this._cacheOrder = newCacheOrder;
+            //Update indices of cache
+            this.cacheController.insert(index);
 
             //Insert new item
             this.setValue(new Path("").appendIndex(index), value);
@@ -248,41 +234,16 @@ define([
         }
     };
 
-    BigList.prototype._cleanupCache = function() {
-        while (this._cacheOrder.length > this._cacheSize) {
-            var index = this._cacheOrder.shift();
-            delete this.model.model[index];
-        }
-    };
-
-    BigList.prototype._touchCache = function(key) {
-        //Find index of key in cacheOrder array
-        var index = null;
-        if (Array.prototype.indexOf) {
-            index = this._cacheOrder.indexOf(key);
-        }
-        else {
-            for (var i = 0; i < this._cacheOrder.length; i++) {
-                if (this._cacheOrder[i] == key) {
-                    index = i;
-                    break;
-                }
-            }
-        }
-
-        //Remove index from cacheOrder arraay
-        this._cacheOrder.splice(index, 1);
-
-        //Re-add at back
-        this._cacheOrder.push(key);
-    };
-
     BigList.prototype._requestMissing = function(index) {
+        if (this._loadPending[index]) {
+            return;
+        }
+
         this._loadQueue.push(index);
+        this._loadPending[index] = true;
         if (this._loadTimer) {
             clearTimeout(this._loadTimer);
         }
-        this._loadTimer = setTimeout(this.model.baseRef.ankorSystem.utils.hitch(this, "_loadMissing"), 100);
 
         var self = this;
         this._loadTimer = setTimeout(function() {
@@ -302,6 +263,9 @@ define([
                 if (lastAddedIndex == null || index > lastAddedIndex + self._chunk - 1) {
                     lastAddedIndex = index;
                     indicesToLoad.push(index);
+                    for (var j = 0; j < self._chunk; j++) {
+                        self._loadPending[index + j] = true;
+                    }
                 }
             }
 

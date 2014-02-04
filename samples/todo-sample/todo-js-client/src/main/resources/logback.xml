@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<configuration debug="false" scan="true">
+<configuration debug="true" scan="true">
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <!-- encoders are assigned the type
@@ -9,9 +9,12 @@
         </encoder>
     </appender>
 
-    <logger name="at.irian.ankor.messaging" level="DEBUG" />
-    <logger name="at.irian.ankor.servlet" level="DEBUG" />
+    <logger name="at.irian.ankor.messaging" level="INFO" />
+    <logger name="at.irian.ankor.servlet" level="INFO" />
     <!--<logger name="at.irian.ankor.akka" level="DEBUG" />-->
+
+    <!--<logger name="at.irian.ankor.system.DefaultRemoteMessageListener" level="DEBUG" />-->
+    <logger name="at.irian.ankor.akka.ModelContextActor" level="DEBUG" />
 
     <root level="INFO">
         <appender-ref ref="STDOUT" />

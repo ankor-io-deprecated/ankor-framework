@@ -2,11 +2,12 @@ package at.irian.ankorsamples.animals.viewmodel;
 
 import at.irian.ankor.annotation.ActionListener;
 import at.irian.ankor.annotation.ChangeListener;
-import at.irian.ankor.big.AnkorBigMap;
+import at.irian.ankor.annotation.AnkorBigMap;
 import at.irian.ankor.i18n.ResourceBundleMap;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorsamples.animals.domain.animal.AnimalRepository;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.Collections;
 import java.util.Locale;
@@ -28,6 +29,7 @@ public class ModelRoot {
     private String userName = "";
     private String serverStatus = "";
 
+    @JsonInclude(JsonInclude.Include.ALWAYS)
     private Locale locale = null;
     private Locale[] supportedLocales = {Locale.GERMAN, Locale.ENGLISH};
 

@@ -6,12 +6,16 @@
       <w>antlr</w>
       <w>backref</w>
       <w>backrefs</w>
+      <w>cglib</w>
       <w>deserialization</w>
       <w>deserialize</w>
       <w>deserialized</w>
       <w>discardable</w>
       <w>implementor</w>
+      <w>infos</w>
+      <w>introspector</w>
       <w>jgen</w>
+      <w>joinpoint</w>
       <w>loopback</w>
       <w>matchers</w>
       <w>pluggable</w>

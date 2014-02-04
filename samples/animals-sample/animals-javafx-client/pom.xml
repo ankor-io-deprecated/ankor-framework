@@ -48,7 +48,13 @@
         <dependency>
             <groupId>at.irian.ankor</groupId>
             <artifactId>ankor-servlet</artifactId>
-            <version>0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>at.irian.ankor</groupId>
+            <artifactId>ankor-proxy</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
         <dependency>

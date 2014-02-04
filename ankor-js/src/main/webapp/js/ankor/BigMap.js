@@ -1,14 +1,14 @@
 define([
     "./ModelInterface",
-    "./Path"
-], function(ModelInterface, Path) {
+    "./Path",
+    "./BigCacheController"
+], function(ModelInterface, Path, BigCacheController) {
     var BigMap = function(init, model) {
         this.model = model;
-
-        this._cacheSize = 1000;
-        this._cacheOrder = [];
+        this.cacheController = new BigCacheController(model);
 
         this._loadTimer = null;
+        this._loadPending = {};
 
         //Parse/Init config
         this._size = init["@size"];
@@ -41,13 +41,13 @@ define([
                 this._requestMissing(key);
             }
             else {
-                this._touchCache(key);
+                this.cacheController.touch(key);
             }
 
             //Run model.getValue
             var value = this.model.getValue(path);
 
-            //Delete substitute isValid was run against subst
+            //Delete substitute if getValue was run against subst
             if (tempSubstitute) {
                 delete this.model.model[key];
             }
@@ -67,21 +67,25 @@ define([
             return; //Silently ignore
         }
 
-        //Update cache infos
+        //Update internal state
         if (path.segments.length == 1) {
+            //Update cache
             if (!(key in this.model.model)) {
-                this._cacheOrder.push(key);
+                this.cacheController.add(key);
             }
             else {
-                this._touchCache(key);
+                this.cacheController.touch(key);
             }
+
+            //Update _loadPending
+            delete this._loadPending[key];
         }
 
         //Set value in model
         this.model.setValue(path, value);
 
         //Clean up cache
-        this._cleanupCache();
+        this.cacheController.cleanup();
     };
 
     BigMap.prototype.isValid = function(path) {
@@ -128,15 +132,8 @@ define([
             //Update size
             this._size--;
 
-            //Remove from @_cacheOrder
-            var newCacheOrder = [];
-            for (var i = 0; i < this._cacheOrder.length; i++) {
-                var cacheKey = this._cacheOrder[i];
-                if (cacheKey != key) {
-                    newCacheOrder.push(cacheKey);
-                }
-            }
-            this._cacheOrder = newCacheOrder;
+            //Remove from cache
+            this.cacheController.remove(key);
         }
         else if (key in this.model.model) {
             //If del for a subpath and item is currently cached -> delegate to model
@@ -164,36 +161,12 @@ define([
         }
     };
 
-    BigMap.prototype._cleanupCache = function() {
-        while (this._cacheOrder.length > this._cacheSize) {
-            var key = this._cacheOrder.shift();
-            delete this.model.model[key];
-        }
-    };
-
-    BigMap.prototype._touchCache = function(key) {
-        //Find index of key in cacheOrder array
-        var index = null;
-        if (Array.prototype.indexOf) {
-            index = this._cacheOrder.indexOf(key);
-        }
-        else {
-            for (var i = 0; i < this._cacheOrder.length; i++) {
-                if (this._cacheOrder[i] == key) {
-                    index = i;
-                    break;
-                }
-            }
-        }
-
-        //Remove index from cacheOrder array
-        this._cacheOrder.splice(index, 1);
-
-        //Re-add at back
-        this._cacheOrder.push(key);
-    };
-
     BigMap.prototype._requestMissing = function(key) {
+        if (this._loadPending[key]) {
+            return;
+        }
+
+        this._loadPending[key] = true;
         this.model.baseRef.append(key).fire("@missingProperty");
     };
 

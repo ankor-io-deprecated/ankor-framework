@@ -1,6 +1,6 @@
 package at.irian.ankor.big.modify;
 
-import at.irian.ankor.big.AnkorBigMap;
+import at.irian.ankor.big.BigMapMetadata;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -27,21 +27,20 @@ public class MapToBigMapDummyConverter {
         this.missingValueSubstitute = missingValueSubstitute;
     }
 
-    public static MapToBigMapDummyConverter createFromAnnotation(AnkorBigMap ann) {
-        Class<?> missingValueSubstituteType = ann.missingValueSubstitute();
+    public static MapToBigMapDummyConverter createFromMetadata(BigMapMetadata metadata) {
+        Class<?> missingValueSubstituteType = metadata.getMissingValueSubstitute();
         Object missingValueSubstitute = null;
-        if (missingValueSubstituteType != AnkorBigMap.Null.class) {
+        if (missingValueSubstituteType != null) {
             try {
                 missingValueSubstitute = missingValueSubstituteType.newInstance();
             } catch (Exception e) {
                 throw new RuntimeException("Unable to instantiate " + missingValueSubstituteType);
             }
         }
-        return new MapToBigMapDummyConverter(ann.threshold(),
-                                               ann.initialSize(),
-                                               missingValueSubstitute);
+        return new MapToBigMapDummyConverter(metadata.getThreshold(),
+                                             metadata.getInitialSize(),
+                                             missingValueSubstitute);
     }
-
 
     @SuppressWarnings("unchecked")
     public Map convert(Map actualMap) {

@@ -11,16 +11,16 @@ import at.irian.ankor.ref.Ref;
 public class ServerSideBigDataModifier extends AbstractModifier implements Modifier {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ServerSideBigDataModifier.class);
 
-    private final AnnotationAwareBigDataChangeModifier bigListModifier;
+    private final BigDataChangeModifier bigDataModifier;
 
     public ServerSideBigDataModifier(Modifier parent) {
         super(parent);
-        this.bigListModifier = new AnnotationAwareBigDataChangeModifier();
+        this.bigDataModifier = new BigDataChangeModifier();
     }
 
     @Override
     public Change modifyBeforeSend(Change change, Ref changedProperty) {
-        change = bigListModifier.modify(change, changedProperty);
+        change = bigDataModifier.modify(change, changedProperty);
         return super.modifyBeforeSend(change, changedProperty);
     }
 

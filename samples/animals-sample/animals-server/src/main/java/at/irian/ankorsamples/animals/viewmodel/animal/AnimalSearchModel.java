@@ -1,67 +1,60 @@
 package at.irian.ankorsamples.animals.viewmodel.animal;
 
-import at.irian.ankor.annotation.ActionListener;
-import at.irian.ankor.annotation.AnkorWatched;
-import at.irian.ankor.annotation.ChangeListener;
-import at.irian.ankor.annotation.Param;
-import at.irian.ankor.big.AnkorBigList;
-import at.irian.ankor.delay.FloodControl;
-import at.irian.ankor.messaging.AnkorIgnore;
+import at.irian.ankor.annotation.*;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.TypedRef;
-import at.irian.ankor.viewmodel.ViewModelBase;
 import at.irian.ankor.viewmodel.watch.ExtendedList;
 import at.irian.ankor.viewmodel.watch.ExtendedListWrapper;
 import at.irian.ankorsamples.animals.domain.animal.Animal;
+import at.irian.ankorsamples.animals.domain.animal.AnimalFamily;
 import at.irian.ankorsamples.animals.domain.animal.AnimalRepository;
+import at.irian.ankorsamples.animals.domain.animal.AnimalType;
 import at.irian.ankorsamples.animals.viewmodel.PanelNameCreator;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import static at.irian.ankor.viewmodel.factory.BeanFactories.newPropertyInstance;
 
 /**
 * @author Thomas Spiegl
 */
 @SuppressWarnings("UnusedDeclaration")
-public class AnimalSearchModel extends ViewModelBase {
+public class AnimalSearchModel {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalSearchModel.class);
 
-    private final TypedRef<String> panelNameRef;
-    private final TypedRef<String> serverStatusRef;
-    private final Ref resourcesRef;
-
-    @AnkorIgnore
-    private final AnimalRepository animalRepository;
-    @AnkorIgnore
-    private final FloodControl reloadFloodControl;
-
+    private TypedRef<String> panelNameRef;
+    private TypedRef<String> serverStatusRef;
+    private Ref i18nResourcesRef;
+    private AnimalRepository animalRepository;
     private AnimalSearchFilter filter;
-
     private AnimalSelectItems selectItems;
 
-    @AnkorBigList(missingElementSubstitute = EmptyAnimal.class,
-                  threshold = 500,
-                  initialSize = 10,
-                  chunkSize = 10)
+    @AnkorBigList(missingElementSubstitute = EmptyAnimal.class, threshold = 100, initialSize = 10, chunkSize = 10)
     @AnkorWatched(diffThreshold = 20)
-    private ExtendedList<Animal> animals;
+    private ExtendedList<Animal> animals = new ExtendedListWrapper<>(new ArrayList<Animal>());
 
-    public AnimalSearchModel(Ref animalSearchModelRef,
-                             TypedRef<String> panelNameRef,
-                             TypedRef<String> serverStatusRef,
-                             Ref resourcesRef,
-                             AnimalRepository animalRepository) {
-        super(animalSearchModelRef);
+    public AnimalSearchModel() {
+    }
+
+    //@AnkorInit
+    public void init(TypedRef<String> panelNameRef,
+                     TypedRef<String> serverStatusRef,
+                     Ref i18nResourcesRef,
+                     AnimalRepository animalRepository) {
         this.panelNameRef = panelNameRef;
         this.serverStatusRef = serverStatusRef;
-        this.resourcesRef = resourcesRef;
+        this.i18nResourcesRef = i18nResourcesRef;
         this.animalRepository = animalRepository;
-        this.filter = new AnimalSearchFilter();
-        this.selectItems = AnimalSelectItems.create(animalRepository.getAnimalTypes());
-        this.animals = new ExtendedListWrapper<>(new ArrayList<Animal>());
-        this.reloadFloodControl = new FloodControl(animalSearchModelRef, 500L);
-        AnkorPatterns.initViewModel(this);
+
+        this.filter = newPropertyInstance(AnimalSearchFilter.class, this, "filter");
+        this.selectItems = newPropertyInstance(AnimalSelectItems.class, this, "selectItems");
+        this.selectItems.init(animalRepository.getAnimalTypes(),
+                              Collections.<AnimalFamily>emptyList());
+
+        //this.animals = new ExtendedListWrapper<>(new ArrayList<Animal>());
     }
 
     public AnimalSearchFilter getFilter() {
@@ -77,11 +70,14 @@ public class AnimalSearchModel extends ViewModelBase {
     }
 
     @ChangeListener(pattern = {".filter.**"})
+    @AnkorFloodControl(delayMillis = 100L)
     public void reloadAnimals() {
-        reloadFloodControl.control(new Runnable() {
+
+        serverStatusRef.setValue("loading...");
+
+        AnkorPatterns.runLater(this, new Runnable() {
             @Override
             public void run() {
-
                 reloadAnimalsImmediately();
 
                 // reset server status display
@@ -90,7 +86,7 @@ public class AnimalSearchModel extends ViewModelBase {
         });
     }
 
-    private void reloadAnimalsImmediately() {
+    public void reloadAnimalsImmediately() {
         // get new list from database
         LOG.info("RELOADING animals ...");
         List<Animal> newAnimalsList = animalRepository.searchAnimals(filter, 0, Integer.MAX_VALUE);
@@ -100,20 +96,32 @@ public class AnimalSearchModel extends ViewModelBase {
     }
 
     @ChangeListener(pattern = {".filter.name", "root.locale"})
+    @AnkorFloodControl(delayMillis = 100L)
     public void onNameOrLocaleChanged() {
         panelNameRef.setValue(getPanelName());
     }
 
     public String getPanelName() {
         String name = filter.getName();
-        return new PanelNameCreator().createName(resourcesRef.appendLiteralKey("SearchForAnimal").<String>getValue(), name);
+        return new PanelNameCreator().createName(i18nResourcesRef.appendLiteralKey("SearchForAnimal").<String>getValue(), name);
     }
 
     @ChangeListener(pattern = ".filter.type")
     public void animalTypeChanged() {
-        Ref familyRef = getRef().appendPath("filter.family");
-        Ref familiesRef = getRef().appendPath("selectItems.families");
-        new AnimalTypeChangeHandler(animalRepository).handleChange(filter.getType(), familyRef, familiesRef);
+
+        AnimalType type = filter.getType();
+        List<AnimalFamily> families;
+        if (type != null) {
+            families = animalRepository.getAnimalFamilies(type);
+        } else {
+            families = Collections.emptyList();
+        }
+        selectItems.setFamilies(families);
+
+        //noinspection SuspiciousMethodCalls
+        if (!families.contains(filter.getFamily())) {
+            filter.setFamily(null);
+        }
     }
 
     @ActionListener(name = "save")

@@ -3,7 +3,7 @@ package at.irian.ankorsamples.animals.fxclient.animal;
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionBuilder;
 import at.irian.ankor.fx.binding.fxref.FxRef;
-import at.irian.ankor.fx.controller.FXControllerAnnotationSupport;
+import at.irian.ankor.fx.controller.FXControllerSupport;
 import at.irian.ankor.fx.controller.I18nSupport;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
@@ -57,7 +57,7 @@ public class AnimalSearchTabController extends BaseTabController {
     @Override
     public void initialize() {
         final FxRef tabRef = getTabRef();
-        FXControllerAnnotationSupport.scan(tabRef, this);
+        FXControllerSupport.init(this, tabRef);
 
         FxRef modelRef = tabRef.appendPath("model");
         FxRef filterRef = tabRef.appendPath("model.filter");

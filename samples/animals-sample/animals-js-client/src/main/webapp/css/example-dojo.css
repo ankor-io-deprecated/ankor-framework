@@ -6,7 +6,20 @@ body, html {
     overflow:hidden;
     font: 12px Myriad,Helvetica,Tahoma,Arial,clean,sans-serif;
 }
-#layoutContainer {
+.animalSampleMain,
+.animalSampleMain > .dijitLayoutContainer {
     width:100%;
     height:100%
+}
+
+.animalSampleMain div.menuBarContent {
+    margin: 5px 10px;
+}
+
+.animalSampleMain > .dijitLayoutContainer > .dijitTabContainer {
+    margin: 5px;
+}
+
+.dijitTabPaneWrapper {
+    padding: 5px;
 }

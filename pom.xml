@@ -11,6 +11,7 @@
     <modules>
         <module>ankor-core</module>
         <module>ankor-annotation</module>
+        <module>ankor-proxy</module>
         <module>ankor-el</module>
         <module>ankor-json</module>
         <module>ankor-netty</module>
@@ -49,6 +50,12 @@
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>4.11</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-lang</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>2.6</version>
             </dependency>
 
             <dependency>

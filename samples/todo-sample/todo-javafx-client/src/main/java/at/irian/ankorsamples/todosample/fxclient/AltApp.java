@@ -46,8 +46,10 @@ public class AltApp extends javafx.application.Application {
     }
 
     private void setupAnkor() throws IOException, DeploymentException, InterruptedException {
-        AnkorSystemBuilder appBuilder = new AnkorSystemBuilder()
-                .withMessageBus(new WebSocketMessageBus(new ViewModelJsonMessageMapper()))
+        AnkorSystemBuilder appBuilder = new AnkorSystemBuilder();
+
+        appBuilder = appBuilder
+                .withMessageBus(new WebSocketMessageBus(new ViewModelJsonMessageMapper(appBuilder.getBeanMetadataProvider())))
                 .withRefContextFactoryProvider(new FxRefContextFactoryProvider())
                 .withDispatcherFactory(new JavaFxEventDispatcherFactory());
 

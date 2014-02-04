@@ -76,7 +76,7 @@ public class TaskListModel {
                     TaskListModel.this.taskRepository.saveTask(task);
 
                     if ("completed".equals(name)) {
-                        updateTasksData();
+                        updateItemsValues();
                     }
                 }
             }
@@ -147,8 +147,7 @@ public class TaskListModel {
 
         Task task = tasks.get(index).getTask();
         taskRepository.deleteTask(task);
-        thisRef.appendPath("itemsLeft").setValue(taskRepository.getActiveTasks().size());
-        thisRef.appendPath("itemsComplete").setValue(taskRepository.getCompletedTasks().size());
+        updateItemsValues();
 
         tasksRef(index).delete();
     }
@@ -208,6 +207,10 @@ public class TaskListModel {
 
     private void updateTasksData() {
         new ListDiff<>(tasks, fetchTasksData()).withThreshold(10).applyChangesTo(tasksRef());
+        updateItemsValues();
+    }
+
+    private void updateItemsValues() {
         thisRef.appendPath("itemsLeft").setValue(taskRepository.getActiveTasks().size());
         thisRef.appendPath("itemsComplete").setValue(taskRepository.getCompletedTasks().size());
     }

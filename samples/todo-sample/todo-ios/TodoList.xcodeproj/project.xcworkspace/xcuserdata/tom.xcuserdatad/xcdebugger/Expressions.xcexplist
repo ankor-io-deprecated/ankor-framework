@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "-[ANKWebSocketMessageLoop doSend]:ANKWebSocketMessageLoop.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[ANKModelContext dispatch:]:ANKModelContext.m">
+      </ContextState>
+      <ContextState
+         contextName = "__28-[ANKHttpMessageLoop doSend]_block_invoke:ANKHttpMessageLoop.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[ANKWebSocketMessageLoop webSocket:didReceiveMessage:]:ANKWebSocketMessageLoop.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[ANKHttpMessageLoop sendMessage:]:ANKHttpMessageLoop.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[ANKRef value]:ANKRef.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[AppDelegate tasksChanged:]:AppDelegate.m">
+      </ContextState>
+      <ContextState
+         contextName = "+[ANKRef initPathElements:]:ANKRef.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "[match range]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[ANKWebSocketMessageLoop connect]:ANKWebSocketMessageLoop.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "[websocket]">
+            </PersistentString>
+            <PersistentString
+               value = "_webSocket.readyState">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[ANKHttpMessageLoop connection:didReceiveData:]:ANKHttpMessageLoop.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "message == nil">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[GlobalListener process:]:GlobalListener.m">
+      </ContextState>
+      <ContextState
+         contextName = "__42-[SRWebSocket _handleFrameHeader:curData:]_block_invoke:SRWebSocket.m">
+      </ContextState>
+      <ContextState
+         contextName = "__34-[SRWebSocket stream:handleEvent:]_block_invoke440:SRWebSocket.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[ANKMessageSerialization deserialize:]:ANKMessageSerialization.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "[data isKindOfClass:[NSString class]]">
+            </PersistentString>
+            <PersistentString
+               value = "[changeDict valueForKey:_value]">
+            </PersistentString>
+            <PersistentString
+               value = "[[changeDict valueForKey:_value] valueForKey:type]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[ANKMessageSerialization messagesAsArrayOfDict:]:ANKMessageSerialization.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[ToDoListView tasksChanged:]:ToDoListView.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[ANKRefChangeListener process:]:ANKRefChangeListener.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "_ref.value">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[ANKRemoteMessageListener onChangeMessage:]:ANKRemoteMessageListener.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[ANKRef apply:change:]:ANKRef.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "[self value]">
+            </PersistentString>
+            <PersistentString
+               value = "[dict objectAtIndex:0]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[ANKHttpMessageLoop doSend]:ANKHttpMessageLoop.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "theConnection">
+            </PersistentString>
+            <PersistentString
+               value = "[msgSerialization serialize:messages]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "__55-[ANKWebSocketMessageLoop webSocket:didReceiveMessage:]_block_invoke:ANKWebSocketMessageLoop.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[ANKRef findDictonary]:ANKRef.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "[_pathElements count]">
+            </PersistentString>
+            <PersistentString
+               value = "_pathElements">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[ANKRef initWith:refContext:]:ANKRef.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "[path componentsSeparatedByString:@&quot;.&quot;]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[ANKActionEvent initWith:ref:action:]:ANKActionEvent.m">
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>

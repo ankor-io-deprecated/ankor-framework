@@ -1,9 +1,12 @@
 package at.irian.ankor.big.json;
 
-import at.irian.ankor.big.AnkorBigList;
-import at.irian.ankor.big.AnkorBigMap;
+import at.irian.ankor.big.BigListMetadata;
+import at.irian.ankor.big.BigMapMetadata;
 import at.irian.ankor.big.modify.ListToBigListDummyConverter;
 import at.irian.ankor.big.modify.MapToBigMapDummyConverter;
+import at.irian.ankor.viewmodel.metadata.BeanMetadata;
+import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
+import at.irian.ankor.viewmodel.metadata.PropertyMetadata;
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializationConfig;
@@ -18,6 +21,11 @@ import java.util.List;
 public class AnkorSerializerModifier extends BeanSerializerModifier {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnkorSerializerModifier.class);
 
+    private final BeanMetadataProvider metadataProvider;
+
+    public AnkorSerializerModifier(BeanMetadataProvider metadataProvider) {
+        this.metadataProvider = metadataProvider;
+    }
 
     @Override
     public List<BeanPropertyWriter> changeProperties(SerializationConfig config,
@@ -25,17 +33,24 @@ public class AnkorSerializerModifier extends BeanSerializerModifier {
                                                      List<BeanPropertyWriter> beanProperties) {
 
         for (BeanPropertyWriter beanProperty : beanProperties) {
-            checkForBigListAnnotation(beanProperty);
-            checkForBigMapAnnotation(beanProperty);
+            checkForBigList(beanProperty);
+            checkForBigMap(beanProperty);
         }
 
         return super.changeProperties(config, beanDesc, beanProperties);
     }
 
-    private void checkForBigListAnnotation(BeanPropertyWriter beanProperty) {
-        AnkorBigList bigListAnn = beanProperty.getAnnotation(AnkorBigList.class);
-        if (bigListAnn != null) {
-            ListToBigListDummyConverter converter = ListToBigListDummyConverter.createFromAnnotation(bigListAnn);
+    private PropertyMetadata getPropertyMetadata(BeanPropertyWriter beanProperty) {
+        Class<?> beanType = beanProperty.getMember().getDeclaringClass();
+        BeanMetadata beanMetadata = metadataProvider.getMetadata(beanType);
+        return beanMetadata.getPropertyMetadata(beanProperty.getName());
+    }
+
+    private void checkForBigList(BeanPropertyWriter beanProperty) {
+        PropertyMetadata propertyMetadata = getPropertyMetadata(beanProperty);
+        BigListMetadata bigListMetadata = propertyMetadata.getGenericMetadata(BigListMetadata.class);
+        if (bigListMetadata != null) {
+            ListToBigListDummyConverter converter = ListToBigListDummyConverter.createFromMetadata(bigListMetadata);
             JsonSerializer serializer = new BigListSerializer(converter);
             //noinspection unchecked
             beanProperty.assignSerializer(serializer);
@@ -43,10 +58,11 @@ public class AnkorSerializerModifier extends BeanSerializerModifier {
         }
     }
 
-    private void checkForBigMapAnnotation(BeanPropertyWriter beanProperty) {
-        AnkorBigMap bigMapAnn = beanProperty.getAnnotation(AnkorBigMap.class);
-        if (bigMapAnn != null) {
-            MapToBigMapDummyConverter converter = MapToBigMapDummyConverter.createFromAnnotation(bigMapAnn);
+    private void checkForBigMap(BeanPropertyWriter beanProperty) {
+        PropertyMetadata propertyMetadata = getPropertyMetadata(beanProperty);
+        BigMapMetadata bigMapMetadata = propertyMetadata.getGenericMetadata(BigMapMetadata.class);
+        if (bigMapMetadata != null) {
+            MapToBigMapDummyConverter converter = MapToBigMapDummyConverter.createFromMetadata(bigMapMetadata);
             JsonSerializer serializer = new BigMapSerializer(converter);
             //noinspection unchecked
             beanProperty.assignSerializer(serializer);

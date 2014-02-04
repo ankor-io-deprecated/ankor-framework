@@ -9,6 +9,7 @@ import at.irian.ankor.session.ModelRootFactory;
 import at.irian.ankor.session.RemoteSystem;
 import at.irian.ankor.system.AnkorSystem;
 import at.irian.ankor.system.AnkorSystemBuilder;
+import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
 import at.irian.ankor.websocket.WebSocketMessageBus;
 import at.irian.ankor.websocket.WebSocketRemoteSystem;
 import org.slf4j.Logger;
@@ -18,11 +19,16 @@ import javax.websocket.*;
 import javax.websocket.server.ServerApplicationConfig;
 import javax.websocket.server.ServerEndpointConfig;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This is the base class of a WebSocket endpoint that communicates with a {@link AnkorSystem}.<br>
@@ -36,7 +42,7 @@ import java.util.concurrent.*;
  *
  * @author Florian Klampfer
  */
-public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.Whole<String>, ServerApplicationConfig {
+public abstract class AnkorEndpoint extends Endpoint implements ServerApplicationConfig {
     /**
      * Must be greater than the clients heartbeat interval.
      */
@@ -66,6 +72,7 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
                 }
             }
         }
+
     }
 
     @Override
@@ -93,7 +100,9 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
             remoteSystem.setLastSeen(System.currentTimeMillis());
             // watchForTimeout(session);
 
-            session.addMessageHandler(this);
+            session.addMessageHandler(new StringMessageHandler());
+            session.addMessageHandler(new ByteMessageHandler());
+
         } catch (IOException e) {
             LOG.error("Error while sending id to newly connected client");
         }
@@ -128,19 +137,37 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
         }, TIMEOUT_CHECK_INTERVAL, TIMEOUT_CHECK_INTERVAL, TimeUnit.MILLISECONDS);
     }
 
-    @Override
-    public void onMessage(String message) {
-        if (!isHeartbeat(message)) {
-            LOG.info("Endpoint received {}, length = {}", message, message.length());
+    public class ByteMessageHandler implements MessageHandler.Whole<ByteBuffer> {
+        @Override
+        public void onMessage(ByteBuffer byteBuffer) {
+            String message = new String(byteBuffer.array(), Charset.forName("UTF-8"));
+            if (!isHeartbeat(message)) {
+                LOG.info("Endpoint received {}, length = {}", message, message.length());
 
-            // XXX: A malformed message will crash this Ankor session (but new clients can connect)
-            webSocketMessageBus.receiveSerializedMessage(message);
+                // XXX: A malformed message will crash this Ankor session (but new clients can connect)
+                webSocketMessageBus.receiveSerializedMessage(message);
+            }
+            remoteSystem.setLastSeen(System.currentTimeMillis());
         }
-
-        remoteSystem.setLastSeen(System.currentTimeMillis());
     }
 
-    private boolean isHeartbeat(String message) {
+
+    public class StringMessageHandler implements MessageHandler.Whole<String> {
+        @Override
+        public void onMessage(String message) {
+            if (!isHeartbeat(message)) {
+                LOG.info("Endpoint received {}, length = {}", message, message.length());
+
+                // XXX: A malformed message will crash this Ankor session (but new clients can connect)
+                webSocketMessageBus.receiveSerializedMessage(message);
+            }
+
+            remoteSystem.setLastSeen(System.currentTimeMillis());
+        }
+
+    }
+
+    private static boolean isHeartbeat(String message) {
         return message.trim().equals("");
     }
 
@@ -160,15 +187,23 @@ public abstract class AnkorEndpoint extends Endpoint implements MessageHandler.W
     }
 
     private void startAnkorSystem() {
-        AnkorActorSystem ankorActorSystem;
-        ankorSystem = new AnkorSystemBuilder()
-                .withName(getName())
-                .withModelRootFactory(getModelRootFactory())
-                .withMessageBus((webSocketMessageBus = new WebSocketMessageBus(new ViewModelJsonMessageMapper())))
-                .withDispatcherFactory(new AkkaEventDispatcherFactory((ankorActorSystem = AnkorActorSystem.create())))
-                .withScheduler(new AkkaScheduler(ankorActorSystem))
+        AnkorSystemBuilder ankorSystemBuilder = getAnkorSystemBuilder();
+        BeanMetadataProvider beanMetadataProvider = ankorSystemBuilder.getBeanMetadataProvider();
+        webSocketMessageBus = new WebSocketMessageBus(new ViewModelJsonMessageMapper(beanMetadataProvider));
+        ankorSystem = ankorSystemBuilder
+                .withMessageBus(webSocketMessageBus)
+                .withDispatcherFactory(new AkkaEventDispatcherFactory())
                 .createServer();
         ankorSystem.start();
+    }
+
+    protected AnkorSystemBuilder getAnkorSystemBuilder() {
+        AnkorActorSystem actorSystem = AnkorActorSystem.create();
+        return new AnkorSystemBuilder()
+                .withName(getName())
+                .withModelRootFactory(getModelRootFactory())
+                .withDispatcherFactory(new AkkaEventDispatcherFactory((actorSystem)))
+                .withScheduler(new AkkaScheduler(actorSystem));
     }
 
     /**
