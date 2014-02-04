@@ -7,12 +7,47 @@ from django.core.files import File
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 
 
-def get_num_tutorials():
-    path, dirs, files = os.walk(SITE_ROOT + '/templates/tutorial/steps/').next()
+def path_to_steps(type, step):
+    return open(SITE_ROOT + '/templates/tutorial/' + type + '/' + type + '_step_' + step + '.md', 'r')
+
+
+def get_num_tutorials(type):
+    path, dirs, files = os.walk(SITE_ROOT + '/templates/tutorial/' + type + '/').next()
     return len(files)
 
 
-num_tutorials = get_num_tutorials()
+def get_titles(type):
+    titles = [""] * get_num_tutorials(type)
+    for x in range(0, len(titles)):
+        path = path_to_steps(type, str(x))
+        line = path.readline()
+        try:
+            titles[x] = line.replace('### ', '')
+        except Exception:
+            print("Tutorials needs to start with '### '")
+    return titles
+
+
+type_names = {
+    'fx': 'JavaFX Client',
+    'js': 'JavaScript Client',
+    'ios': 'iOS Client',
+    'server': 'Ankor Server'
+}
+
+num_tutorials = {
+    'fx': get_num_tutorials('fx'),
+    'js': get_num_tutorials('js'),
+    'ios': get_num_tutorials('ios'),
+    'server': get_num_tutorials('server')
+}
+
+tutorial_titles = {
+    'fx': get_titles('fx'),
+    'js': get_titles('js'),
+    'ios': get_titles('ios'),
+    'server': get_titles('server')
+}
 
 
 def index(request):
@@ -39,40 +74,29 @@ def tutorials_overview(request):
     return HttpResponse(template.render(context))
 
 
-def get_titles():
-    titles = [""] * get_num_tutorials()
-    for x in range(0, len(titles)):
-        path = open(SITE_ROOT + '/templates/tutorial/steps/tutorial_fx_' + str(x) + '.md', 'r')
-        line = path.readline()
-        try:
-            titles[x] = line.replace('### ', '')
-        except Exception:
-            print("Tutorials needs to start with '### '")
-    return titles
-
-tutorial_titles = get_titles()
-
 def tutorials(request, type, step):
-    template = loader.get_template('tutorial/tutorial_' + type + '.html')
+    template = loader.get_template('tutorial/tutorial.html')
 
-    path = open(SITE_ROOT + '/templates/tutorial/steps/tutorial_fx_' + step + '.md', 'r')
+    path = path_to_steps(type, step)
     f = File(path)
     content = f.read()
 
     step = int(step)
 
-    next_step = int(step) + 1
-    if next_step > num_tutorials - 1:
-        next_step = num_tutorials - 1
-    previous_step = int(step) - 1
+    next_step = step + 1
+    if next_step > num_tutorials[type] - 1:
+        next_step = num_tutorials[type] - 1
+    previous_step = step - 1
     if previous_step < 0:
         previous_step = 0
 
     context = RequestContext(request, {
         'activeMenu': 'tutorials',
+        'type': type,
+        'type_name': type_names[type],
         'step': step,
-        'tutorial_titles': tutorial_titles,
-        'tutorial_title': tutorial_titles[step],
+        'tutorial_titles': tutorial_titles[type],
+        'tutorial_title': tutorial_titles[type][step],
         'previousStep': previous_step,
         'nextStep': next_step,
         'content': content
