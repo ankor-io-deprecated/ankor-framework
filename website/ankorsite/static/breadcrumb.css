@@ -2,7 +2,6 @@
   padding: 0;
   margin-bottom: 20px;
   list-style: none;
-  background-color: transparent;
   border-radius: 4px;
   overflow: hidden;
   border: 1px solid #dddddd;
@@ -20,7 +19,8 @@
   margin-top: -1px;
   border-top: 1px solid #dddddd;
   border-bottom: 1px solid #dddddd;
-  margin-left: -3px;
+  margin-left: -4px;
+  border-right: 1px solid #dddddd;
 }
 .breadcrumb > li > a {
   background-color: #f5f5f5;
