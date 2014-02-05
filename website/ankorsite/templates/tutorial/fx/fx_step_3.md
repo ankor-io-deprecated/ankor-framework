@@ -17,6 +17,7 @@ Its ids are `footerTop` and `footerBottom`, so we'll need those two fields in ou
     :::java
     @FXML
     public Node footerTop;
+
     @FXML
     public Node footerBottom;
 
@@ -67,8 +68,37 @@ including bindings:
 In the case of our `footerVisibilityRef` we are expecting a `Property` of type `Boolean`.
 We then bind this property to the `visibleProperty` of the two footer nodes.
 
-This is how one-way bindings are done in JavaFX. Unfortunately we still won't be able to see anything,
-since the footer visibility won't change until we add a todo to the list.
+#### More bindings
+
+Let's also bind the number of items in the list.
+The number should be bound to `todoCountNum` and the text ("items left" or "item left") should be bound to `todoCountText`.
+Again, they are predefined in [`tasks.fxml`][2], so to reference them all we need is:
+
+    :::java
+    @FXML
+    public Label todoCountNum;
+
+    @FXML
+    public Label todoCountText;
+
+In our change listener method we can now bind the properties.
+Binding the text is rather straight forward. However, note that we need to call `fxProperty` with a type parameter,
+as it can't be inferred from the declaration in this context.
+
+    :::java
+    todoCountText.textProperty().bind(modelRef.appendPath("itemsLeftText").<String>fxProperty());
+
+Binding the number is a bit trickier as this property is of type `Number`, while the label is expecting a `String`.
+To work around this we can use a bidirectional binding, which allows us to specify a converter.
+Alternatively we could have written our server to provide `itemsLeft` as a string.
+
+    :::java
+    todoCountNum.textProperty().bindBidirectional(
+            modelRef.appendPath("itemsLeft").<Number>fxProperty(),
+            new NumberStringConverter());
+
+This is how bindings are done in JavaFX. Unfortunately we still won't be able to see anything,
+since nothing will change until we add some todos to the list.
 
 [1]: https://github.com/ankor-io/ankor-todo/blob/fx-step-3/todo-javafx-client/src/main/java/io/ankor/tutorial/TaskListController.java
 [2]: https://github.com/ankor-io/ankor-todo/blob/fx-step-3/todo-javafx-client/src/main/resources/tasks.fxml

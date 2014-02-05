@@ -70,12 +70,9 @@ public class TaskListController implements Initializable {
         modelRef = rootRef.appendPath("model");
         FxRef tasksRef = modelRef.appendPath("tasks");
 
-        SimpleStringProperty itemsLeftAsString = new SimpleStringProperty();
-        Bindings.bindBidirectional(itemsLeftAsString,
-                                   modelRef.appendPath("itemsLeft").<Number>fxProperty(),
-                                   new NumberStringConverter());
-
-        todoCountNum.textProperty().bind(itemsLeftAsString);
+        todoCountNum.textProperty().bindBidirectional(
+                modelRef.appendPath("itemsLeft").<Number>fxProperty(),
+                new NumberStringConverter());
         todoCountText.textProperty().bind(modelRef.appendPath("itemsLeftText").<String>fxProperty());
 
         Property<Boolean> footerVisibility = modelRef.appendPath("footerVisibility").<Boolean>fxProperty();
