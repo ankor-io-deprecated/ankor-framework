@@ -4,7 +4,7 @@ In order to find out whether our bindings from the previous step work we need to
 The UI structure for this has already been set up.
 We just need to implement the `newTask` method in our [`TaskListController`][1].
 
-As the `@FXML` annotation of this method suggests it is defined in [`tasks.fxml`][2].
+As the [`@FXML`][3]  annotation of this method suggests it is defined in [`tasks.fxml`][2].
 The `TextField` with the id `newTask` has an attribute `onAction="#newTodo"`.
 This links the text field's action event to the method in our controller.
 
@@ -48,3 +48,4 @@ However, we still don't see our todos in the list yet.
 
 [1]: https://github.com/ankor-io/ankor-todo/blob/fx-step-4/todo-javafx-client/src/main/java/io/ankor/tutorial/TaskListController.java
 [2]: https://github.com/ankor-io/ankor-todo/blob/fx-step-4/todo-javafx-client/src/main/resources/tasks.fxml
+[3]: http://docs.oracle.com/javafx/2/api/javafx/fxml/FXML.html

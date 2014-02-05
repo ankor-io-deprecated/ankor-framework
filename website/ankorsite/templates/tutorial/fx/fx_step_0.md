@@ -1,4 +1,4 @@
-### Bootstrapping
+### JavaFX Client
 
 In this tutorial we'll be building a simple Ankor application.
 We'll explain how to setup Ankor, write the first

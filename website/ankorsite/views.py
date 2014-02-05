@@ -74,9 +74,7 @@ def tutorials_overview(request):
     return HttpResponse(template.render(context))
 
 
-def tutorials(request, type, step):
-    template = loader.get_template('tutorial/tutorial.html')
-
+def tutorial_helper(request, type, step, template):
     path = path_to_steps(type, step)
     f = File(path)
     content = f.read()
@@ -102,6 +100,15 @@ def tutorials(request, type, step):
         'content': content
     })
     return HttpResponse(template.render(context))
+
+
+def tutorials_detail(request, type):
+    return tutorials(request, type, '0')
+
+
+def tutorials(request, type, step):
+    template = loader.get_template('tutorial/tutorial.html')
+    return tutorial_helper(request, type, step, template)
 
 
 def documentation(request):

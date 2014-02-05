@@ -1,6 +1,11 @@
 <ol class="breadcrumb">
 	<li><a href="/tutorials">Tutorials</a></li>
-	<li><a href="/tutorials/{{type}}">{{type_name}}</a></li>
+
+    {% if step > 0 %}
+    <li><a href="/tutorials/{{type}}">{{type_name}}</a></li>
 	<li class="active"><span>{{step}} - {{tutorial_title}}</span></li>
+    {% else %}
+    <li class="active"><span href="/tutorials/{{type}}">{{type_name}}</span></li>
+    {% endif %}
 </ol>
 

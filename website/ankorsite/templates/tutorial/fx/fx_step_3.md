@@ -1,4 +1,4 @@
-### Binding your first Property
+### Binding Properties
 
 In this step we are going to bind a JavaFX property to an Ankor property. As far as bindings are concerned Ankor tries
 to be as close to the JavaFX API as possible. If have used JavaFX before, this will look familiar to you.
@@ -7,17 +7,16 @@ to be as close to the JavaFX API as possible. If have used JavaFX before, this w
 
 Before we can bind Ankor properties to UI components we need references to them in our controller.
 In order to do so we need to specify the type of our component (`Node` being the most general one) and name 
-it exactly like its id attribute in [`tasks.fxml`][2]. Adding the `@FXML` annotation makes it explicit that there is
-magic happening in the background.
+it exactly like its id attribute in [`tasks.fxml`][2].
+Adding the [`@FXML`][5] annotation makes it explicit that this field is defined in the markup.
 
 In this step we want to hide and show the footer based on the number of uncompleted tasks, as in the reference
-implementation of TodoMVC. This means we need to access the footer (which has actually two parts).
+implementation of TodoMVC. This means we need to access the footer.
 Its ids are `footerTop` and `footerBottom`, so we'll need those two fields in our controller:
 
     :::java
     @FXML
     public Node footerTop;
-
     @FXML
     public Node footerBottom;
 
@@ -48,7 +47,7 @@ To navigate the tree we can "append" a path to a `Ref`, yielding a new `Ref` to 
     FxRef footerVisibilityRef = modelRef.appendPath("footerVisibility");
 
 <div class="alert alert-info">
-  <strong>Note:</strong> We are using type FxRef instead of Ref here.
+  <strong>Note:</strong> We are using type <code>FxRef</code> instead of <code>Ref</code> here.
 </div>
 
 #### Binding Ankor properties to JavaFX properties
@@ -71,13 +70,13 @@ We then bind this property to the `visibleProperty` of the two footer nodes.
 #### More bindings
 
 Let's also bind the number of items in the list.
-The number should be bound to `todoCountNum` and the text ("items left" or "item left") should be bound to `todoCountText`.
+The number should be bound to the label `todoCountNum`
+and the text ("items left" or "item left") should be bound to the label `todoCountText`.
 Again, they are predefined in [`tasks.fxml`][2], so to reference them all we need is:
 
     :::java
     @FXML
     public Label todoCountNum;
-
     @FXML
     public Label todoCountText;
 
@@ -104,3 +103,4 @@ since nothing will change until we add some todos to the list.
 [2]: https://github.com/ankor-io/ankor-todo/blob/fx-step-3/todo-javafx-client/src/main/resources/tasks.fxml
 [3]: #TODOlinktoDocs
 [4]: http://docs.oracle.com/javafx/2/api/javafx/beans/property/Property.html
+[5]: http://docs.oracle.com/javafx/2/api/javafx/fxml/FXML.html

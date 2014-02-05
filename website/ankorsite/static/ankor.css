@@ -1,6 +1,7 @@
 body {
     padding: 80px 0;
     overflow-x: hidden;
+    overflow-y: scroll;
     -webkit-font-smoothing: antialiased;
 }
 
@@ -46,6 +47,10 @@ a code {
   box-shadow: none;
 }
 
+.muted {
+    opacity: 0.5;
+}
+
 .tab-content {
     padding: 10px 10px 0px;
     background-color: #f5f5f5;
@@ -69,4 +74,12 @@ a code {
 
 .row img {
   width: 100%;
+}
+
+a.panel-heading {
+    display: block;
+}
+
+a.panel-heading:hover {
+    text-decoration: none;
 }

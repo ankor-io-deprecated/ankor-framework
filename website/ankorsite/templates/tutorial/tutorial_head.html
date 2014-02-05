@@ -1,18 +1,15 @@
 {% include "tutorial/tutorial_breadcrumbs.html" %}
 <div id="accordion">
-	<a data-toggle="collapse" data-parent="#accordion" href="#instructions">
-		<i class="glyphicon glyphicon-hand-right"></i> Workspace Instructions
-	</a>
+    <a data-toggle="collapse" data-parent="#accordion" href="#instructions">
+        <i class="glyphicon glyphicon-hand-right"></i> Workspace Instructions
+    </a>
 
-	<div id="instructions" class="collapse out" style="margin-top:10px">
-<pre class="prettyprint">
-// Checkout tutorial step
-git checkout -f fx-step-{{step}}
-// Switch to boot module
-cd boot
-// Start the application
+    <div id="instructions" class="collapse out" style="margin-top:10px">
+<pre><span class="muted">// Checkout tutorial step</span>
+git checkout -f {{type}}-step-{{step}}
+<span class="muted">// Start the application</span>
 mvn install exec:java</pre>
-		<p>If you experience problems, please check the <a href="/tutorials/fx/0">Bootstraping</a> section of this
-			tutorial.</p>
-	</div>
+        <p>If you experience problems, please check the <a href="/tutorials/fx/0">Bootstraping</a> section of this
+            tutorial.</p>
+    </div>
 </div>
