@@ -5,6 +5,26 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
+.container {
+    position: relative;
+}
+
+body > .jumbotron {
+    min-height: 320px;
+}
+
+body > .jumbotron h1 {
+    margin-top: 0;
+}
+
+body > .jumbotron .fa-anchor {
+    position: absolute;
+    right: 0;
+    top: 0;
+    font-size: 230px;
+    opacity: 0.1;
+}
+
 h1, h2, h3, h4, h5, h6 {
     margin-top: 20px;
     margin-bottom: 10px;
@@ -37,10 +57,6 @@ code {
 
 a code {
     color: #d01040;
-}
-
-.container > hr {
-    margin: 60px 0;
 }
 
 .well {
