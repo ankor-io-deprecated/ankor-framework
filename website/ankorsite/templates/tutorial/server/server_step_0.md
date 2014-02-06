@@ -2,8 +2,9 @@
 
 In this tutorial we'll be building an Ankor server that will receive messages from one of our
 todo client apps, update its view model state and push those changes back to the client.
+
 The server can run within any web container that implements [JSR 356][1], the Java API for WebSockets.
-In this tutorial we'll be using [GlassFish 4][2].
+In this tutorial we'll be using an embedded [GlassFish 4][2] server, so you don't need to worry about it.
 
 #### Before you start
 

@@ -52,7 +52,8 @@ However, if you want to write your own server first you can learn how to do so i
 
 You can now start the app and check if it throws any exceptions.
 
-    // TODO maven command to start application
+    cd todo-fx
+    mvn install
 
 The window should look exactly like the one below. As you can see the UI structure has already been defined and
 styled for you. Building an JavaFX app from ground up is outside the scope of this tutorial.</p>
