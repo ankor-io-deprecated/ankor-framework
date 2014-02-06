@@ -74,7 +74,9 @@ This is how you may switch between tutorial steps later.
     cd ankor-todo
     git checkout -f fx-step-0
 
-Now you got a maven project based on two modules:
+Now you got a maven project based on these modules:
 
-    client : Todo Sample - JavaFX Client
-    server : Todo Sample - Server
+    fx      : Todo Sample - JavaFX Client
+    server  : Todo Sample - Server
+    servlet : Todo Sample - Servlet
+

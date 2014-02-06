@@ -1,6 +1,6 @@
 import os
 import os.path
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseNotFound
 from django.template import RequestContext, loader
 from django.core.files import File
 
@@ -75,7 +75,11 @@ def tutorials_overview(request):
 
 
 def tutorial_helper(request, type, step, template):
-    path = path_to_steps(type, step)
+    try:
+        path = path_to_steps(type, step)
+    except IOError:
+        return HttpResponseNotFound()
+
     f = File(path)
     content = f.read()
 
