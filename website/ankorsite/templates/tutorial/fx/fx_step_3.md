@@ -33,7 +33,15 @@ As we've seen previously our todo application's view model is structured like th
             "tasks": [],
             "filter": "all",
             "itemsLeft": 0,
-            ...
+            "itemsLeftText": "items left",
+            "footerVisibility": false,
+            "itemsComplete": 0,
+            "itemsCompleteText": "Clear completed (0)",
+            "clearButtonVisibility": false,
+            "toggleAll": true,
+            "filterAllSelected": true,
+            "filterActiveSelected": false,
+            "filterCompletedSelected": false
         }
     }
 

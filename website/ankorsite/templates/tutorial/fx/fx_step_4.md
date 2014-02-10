@@ -1,7 +1,7 @@
 ### Adding Todos to the List
 
-In order to find out whether our bindings from the previous step work we need to add todos to the list.
-The UI structure for this has already been set up.
+In order to find out if our bindings from the previous step work we need to add todos to the list.
+There's already an input field in the UI.
 We just need to implement the `newTask` method in our [`TaskListController`][1].
 
 As the [`@FXML`][3]  annotation of this method suggests it is defined in [`tasks.fxml`][2].
@@ -16,7 +16,7 @@ First we need the reference to the `TextField`, so we add another field to our c
     @FXML
     public TextField newTodo;
     
-Inside the `newTodo` method we then can get the text from the text field:
+Now we can get the text form the text field like this. Inside the `newTodo` method write:
 
     :::java
     String title = newTodo.getText();
@@ -26,9 +26,9 @@ Inside the `newTodo` method we then can get the text from the text field:
 We will use an `Action` to tell the server that the user wants to add a new todo.
 On the server there's already a method defined for a action named `"newTask"`.
 Unlike the `"init"` action this one takes parameters as well.
-The parameters are stored in a map, which is passed to the constructor of `Action`.
+The parameters are stored in a map, which is passed to the constructor of an `Action`.
 
-In addition you might want to prevent empty tasks from reaching the server.
+In addition you might want to prevent empty tasks from reaching the server:
 
     :::java
     if (!title.equals("")) {

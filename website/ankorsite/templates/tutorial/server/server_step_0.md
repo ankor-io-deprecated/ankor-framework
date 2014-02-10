@@ -59,9 +59,9 @@ This is how you may switch between tutorial steps later.
 
 Now you got a maven project based on these modules:
 
-    fx      : Todo Sample - JavaFX Client
-    server  : Todo Sample - Server
-    servlet : Todo Sample - Servlet
+    todo-fx      : Todo Sample - JavaFX Client
+    todo-server  : Todo Sample - Server
+    todo-servlet : Todo Sample - Servlet
 
 [1]: http://www.oracle.com/technetwork/articles/java/jsr356-1937161.html
 [2]: https://glassfish.java.net/
