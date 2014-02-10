@@ -49,21 +49,21 @@ public class TaskListModel {
         this.thisRef = viewModelRef;
 
         filter = Filter.all.toString();
-        filterAllSelected = (true);
-        filterActiveSelected = (false);
-        filterCompletedSelected = (false);
+        filterAllSelected = true;
+        filterActiveSelected = false;
+        filterCompletedSelected = false;
 
-        tasks = new ArrayList<>(fetchTasksData());
+        tasks = new ArrayList<>(fetchTasksData(Filter.valueOf(filter)));
 
         itemsLeft = taskRepository.getActiveTasks().size();
-        itemsLeftText = (itemsLeftText(itemsLeft));
+        itemsLeftText = itemsLeftText(itemsLeft);
         footerVisibility = taskRepository.getTasks().size() != 0;
 
-        itemsComplete = (taskRepository.getCompletedTasks().size());
-        itemsCompleteText = (itemsCompleteText(itemsComplete));
-        clearButtonVisibility = (itemsComplete != 0);
+        itemsComplete = taskRepository.getCompletedTasks().size();
+        itemsCompleteText = itemsCompleteText(itemsComplete);
+        clearButtonVisibility = itemsComplete != 0;
 
-        toggleAll = (false);
+        toggleAll = false;
 
         RefListeners.addTreeChangeListener(tasksRef(), new RefChangeListener() {
             @Override
@@ -86,7 +86,6 @@ public class TaskListModel {
     @ChangeListener(pattern = "root.model.filter")
     public void filterChanged() {
         LOG.info("reloading tasks");
-
         thisRef.appendPath("filterAllSelected").setValue(filter.equals("all"));
         thisRef.appendPath("filterActiveSelected").setValue(filter.equals("active"));
         thisRef.appendPath("filterCompletedSelected").setValue(filter.equals("completed"));
@@ -99,11 +98,17 @@ public class TaskListModel {
             "root.model.filterCompletedSelected" })
     public void reloadTasks() {
         if (filterAllSelected) {
-            thisRef.appendPath("filter").setValue(Filter.all.toString());
+            if (!Filter.valueOf(filter).equals(Filter.all)) { // TODO: Creates infinite loop otherwise
+                thisRef.appendPath("filter").setValue(Filter.all.toString());
+            }
         } else if (filterActiveSelected) {
-            thisRef.appendPath("filter").setValue(Filter.active.toString());
+            if (!Filter.valueOf(filter).equals(Filter.active)) {
+                thisRef.appendPath("filter").setValue(Filter.active.toString());
+            }
         } else if (filterCompletedSelected) {
-            thisRef.appendPath("filter").setValue(Filter.completed.toString());
+            if (!Filter.valueOf(filter).equals(Filter.completed)) {
+                thisRef.appendPath("filter").setValue(Filter.completed.toString());
+            }
         }
     }
 
@@ -132,7 +137,7 @@ public class TaskListModel {
 
         Task task = new Task(title);
         taskRepository.saveTask(task);
-        thisRef.appendPath("itemsLeft").setValue(taskRepository.getActiveTasks().size()); // XXX: incValue?
+        thisRef.appendPath("itemsLeft").setValue(taskRepository.getActiveTasks().size());
 
         if (!Filter.valueOf(filter).equals(Filter.completed)) {
             int index = tasks.size();
@@ -192,8 +197,7 @@ public class TaskListModel {
         return thisRef.appendPath("tasks").appendIndex(index);
     }
 
-    private List<TaskModel> fetchTasksData() {
-        Filter filterEnum = Filter.valueOf(filter);
+    private List<TaskModel> fetchTasksData(Filter filterEnum) {
         List<Task> tasks = taskRepository.filterTasks(filterEnum);
         List<TaskModel> res = new ArrayList<>(tasks.size());
 
@@ -206,7 +210,8 @@ public class TaskListModel {
     }
 
     private void updateTasksData() {
-        new ListDiff<>(tasks, fetchTasksData()).withThreshold(10).applyChangesTo(tasksRef());
+        Filter filterEnum = Filter.valueOf(filter);
+        (new ListDiff<>(tasks, fetchTasksData(filterEnum))).withThreshold(10).applyChangesTo(tasksRef());
         updateItemsValues();
     }
 

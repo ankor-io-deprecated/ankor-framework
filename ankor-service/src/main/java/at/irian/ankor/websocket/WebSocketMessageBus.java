@@ -28,9 +28,11 @@ public class WebSocketMessageBus extends MessageBus<String> {
 
             LOG.debug("Send serialized message {} to client {}", msg, client.getId());
             try {
-                client.getAsyncRemote().sendText(msg); // TODO Concurrency issue (see SendCompletionAdapter within AsyncRemote)?
-            } catch (RuntimeException e) {
+                client.getBasicRemote().sendText(msg);
+                //client.getAsyncRemote().sendText(msg); // TODO Concurrency issue (see SendCompletionAdapter within AsyncRemote)?
+            } catch (IOException e) {
                 LOG.error("Error while sending message.", e);
+                e.printStackTrace();
             }
         }
     }

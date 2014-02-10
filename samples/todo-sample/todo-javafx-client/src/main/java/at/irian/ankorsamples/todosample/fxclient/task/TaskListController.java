@@ -6,11 +6,7 @@ import at.irian.ankor.fx.binding.fxref.FxRef;
 import at.irian.ankor.fx.controller.FXControllerSupport;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorsamples.todosample.fxclient.App;
-import at.irian.ankorsamples.todosample.viewmodel.TaskModel;
-import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -20,7 +16,9 @@ import javafx.scene.layout.VBox;
 import javafx.util.converter.NumberStringConverter;
 
 import java.net.URL;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.ResourceBundle;
 
 import static at.irian.ankorsamples.todosample.fxclient.App.refFactory;
 
@@ -53,7 +51,7 @@ public class TaskListController implements Initializable {
     public Node footerBottom;
     private FxRef modelRef;
     private boolean initialized = false;
-    private HashMap<Integer, TaskPane> cache = new HashMap<>();
+    //private HashMap<Integer, TaskPane> cache = new HashMap<>();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -68,7 +66,6 @@ public class TaskListController implements Initializable {
 
         FxRef rootRef = refFactory().ref("root");
         modelRef = rootRef.appendPath("model");
-        FxRef tasksRef = modelRef.appendPath("tasks");
 
         todoCountNum.textProperty().bindBidirectional(
                 modelRef.appendPath("itemsLeft").<Number>fxProperty(),
@@ -89,13 +86,21 @@ public class TaskListController implements Initializable {
         filterActive.selectedProperty().bindBidirectional(modelRef.appendPath("filterActiveSelected").<Boolean>fxProperty());
         filterCompleted.selectedProperty().bindBidirectional(modelRef.appendPath("filterCompletedSelected").<Boolean>fxProperty());
 
-        renderTasks(tasksRef);
+        renderTasks(modelRef.appendPath("tasks"));
     }
 
     @ChangeListener(pattern = "root.model.(tasks)")
-    public void renderTasks(Ref tasksRef) {
-        List<LinkedHashMap<String, Object>> tasks = tasksRef.getValue();
-        Platform.runLater(new TaskLoaderRunnable(tasks));      // todo  runLater still necessary?
+    public void renderTasks(FxRef tasksRef) {
+        LOG.info("rendering tasks");
+
+        tasksList.getChildren().clear();
+
+        int numTasks = tasksRef.<List>getValue().size();
+        for (int index = 0; index < numTasks; index++) {
+            FxRef itemRef = tasksRef.appendIndex(index);
+            TaskPane node = new TaskPane(itemRef, index);
+            tasksList.getChildren().add(node);
+        }
     }
 
     @FXML
@@ -136,43 +141,5 @@ public class TaskListController implements Initializable {
     @FXML
     public void openTodoMVC(ActionEvent actionEvent) {
         App.getServices().showDocument("http://todomvc.com/");
-    }
-
-    private class TaskLoaderRunnable implements Runnable {
-
-        private List<LinkedHashMap<String, Object>> tasks;
-
-        public TaskLoaderRunnable(List<LinkedHashMap<String, Object>> tasks) {
-            this.tasks = tasks;
-        }
-
-        @Override
-        public void run() {
-            tasksList.getChildren().clear();
-
-            int index = 0;
-            try {
-
-                for (LinkedHashMap<String, Object> task : tasks) {
-                    TaskModel model = new TaskModel(task);
-
-                    TaskPane node;
-                    if (cache.get(index) == null) {
-                        FxRef itemRef = modelRef.appendPath("tasks").appendIndex(index);
-                        cache.put(index, new TaskPane(itemRef));
-                    }
-                    node = cache.get(index);
-                    node.updateContent(model, index);
-
-                    tasksList.getChildren().add(node);
-
-                    index++;
-                }
-            } catch (ConcurrentModificationException ignored) {
-                // XXX: This happens when there are a lot of changes in the list, but it shouldn't be a problem,
-                // since the change should have triggered another rendering of the list
-                LOG.error("Modification of tasks list while drawing..");
-            }
-        }
     }
 }

@@ -129,7 +129,6 @@ define([
                 })(model);
             }
         });
-
     };
 
     return TaskList;

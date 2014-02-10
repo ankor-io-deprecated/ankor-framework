@@ -2,11 +2,8 @@ package at.irian.ankorsamples.todosample.fxclient.task;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.fx.binding.fxref.FxRef;
-import at.irian.ankor.ref.Ref;
-import at.irian.ankorsamples.todosample.viewmodel.TaskModel;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
@@ -22,6 +19,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -29,40 +28,59 @@ import java.util.Map;
 
 @SuppressWarnings({"PointlessBooleanExpression", "UnusedDeclaration"})
 public class TaskPane extends AnchorPane {
+    private static Logger LOG = LoggerFactory.getLogger(TaskPane.class);
 
-    private Ref itemRef;
-    private TaskModel model;
+    private FxRef itemRef;
     private int index;
 
     @FXML public ToggleButton completedButton;
     @FXML public Button deleteButton;
     @FXML public TextField titleTextField;
 
-    private Property<String> title;
-    private Property<Boolean> completed;
-    private Property<Boolean> editing;
-    private SimpleStringProperty helper = new SimpleStringProperty();
+    private SimpleStringProperty cursorPositionFix = new SimpleStringProperty();
 
-    public TaskPane(FxRef itemRef) {
+    public static ClassLoader cachingClassLoader = new MyClassLoader(FXMLLoader.getDefaultClassLoader());
+
+    public TaskPane(FxRef itemRef, int index) {
+        this.itemRef = itemRef;
+        this.index = index;
+
+        loadFXML();
+        setValues();
+        bindProperties();
+        addEventListeners();
+    }
+
+    private void loadFXML() {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("task.fxml"));
+        fxmlLoader.setClassLoader(cachingClassLoader);
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
         try {
             fxmlLoader.load();
-        } catch (IOException exception) {
-            throw new RuntimeException(exception);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+    }
 
-        this.itemRef = itemRef;
-        title = itemRef.appendPath("title").fxProperty();
-        completed = itemRef.appendPath("completed").fxProperty();
-        editing = itemRef.appendPath("editing").fxProperty();
+    private void setValues() {
+        titleTextField.textProperty().setValue(itemRef.appendPath("title").<String>getValue());
+        completedButton.selectedProperty().setValue(itemRef.appendPath("completed").<Boolean>getValue());
+        titleTextField.editableProperty().setValue(itemRef.appendPath("editable").<Boolean>getValue());
+    }
 
+    private void bindProperties() {
+        titleTextField.textProperty().bindBidirectional(itemRef.appendPath("title").<String>fxProperty());
+        completedButton.selectedProperty().bindBidirectional(itemRef.appendPath("completed").<Boolean>fxProperty());
+        titleTextField.editableProperty().bindBidirectional(itemRef.appendPath("editable").<Boolean>fxProperty());
+    }
+
+    private void addEventListeners() {
         titleTextField.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
                 if (event.getClickCount() > 1) {
-                    setEditable(true);
+                    titleTextField.setEditable(true);
                     titleTextField.selectAll();
                 }
             }
@@ -72,7 +90,7 @@ public class TaskPane extends AnchorPane {
             @Override
             public void handle(KeyEvent keyEvent) {
                 if (keyEvent.getCode() == KeyCode.ENTER) {
-                    setEditable(false);
+                    titleTextField.setEditable(false);
                 }
             }
         });
@@ -81,12 +99,11 @@ public class TaskPane extends AnchorPane {
             @Override
             public void changed(ObservableValue<? extends Boolean> observableValue, Boolean newValue, Boolean oldValue) {
                 if (newValue == false) {       // todo  newValue <--> oldValue !
-                    setEditable(false);
+                    titleTextField.setEditable(false);
                 }
             }
         });
 
-        Bindings.bindBidirectional(completedButton.selectedProperty(), titleTextField.disableProperty());
         completedButton.selectedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observableValue, Boolean newValue, Boolean oldValue) {
@@ -101,80 +118,11 @@ public class TaskPane extends AnchorPane {
         });
     }
 
-    private void setIndex(int index) {
-        this.index = index;
-    }
-
-    private void setModel(TaskModel model) {
-        this.model = model;
-    }
-
     @SuppressWarnings("UnusedParameters")
     @FXML
     public void delete(ActionEvent actionEvent) {
         Map<String, Object> params = new HashMap<>();
         params.put("index", index);
         itemRef.root().appendPath("model").fire(new Action("deleteTask", params));
-    }
-
-    public StringProperty textProperty() {
-        return titleTextField.textProperty();
-    }
-
-    public BooleanProperty selectedProperty() {
-        return completedButton.selectedProperty();
-    }
-
-    public BooleanProperty editableProperty() {
-        return titleTextField.editableProperty();
-    }
-
-    public boolean isEditable() {
-        return titleTextField.isEditable();
-    }
-
-    public void setEditable(boolean editable) {
-        titleTextField.setEditable(editable);
-    }
-
-    public String getText() {
-        return textProperty().get();
-    }
-
-    public void setText(String value) {
-        textProperty().set(value);
-    }
-
-    public void setSelected(boolean selected) {
-        this.completedButton.setSelected(selected);
-    }
-
-    public boolean isSelected() {
-        return this.completedButton.isSelected();
-    }
-
-    public TaskModel getModel() {
-        return model;
-    }
-
-    public void updateContent(TaskModel model, int index) {
-        setIndex(index);
-        setModel(model);
-
-        helper.unbindBidirectional(textProperty());
-        title.unbindBidirectional(helper);
-        completed.unbindBidirectional(selectedProperty());
-        editing.unbindBidirectional(editableProperty());
-
-//        title = new ViewModelProperty<>(itemRef, "title");
-//        completed = new ViewModelProperty<>(itemRef, "completed");
-//        editing = new ViewModelProperty<>(itemRef, "editing");
-
-        helper = new SimpleStringProperty();
-        helper.bindBidirectional(title);
-
-        textProperty().bindBidirectional(helper);
-        selectedProperty().bindBidirectional(completed);
-        editableProperty().bindBidirectional(editing);
     }
 }
