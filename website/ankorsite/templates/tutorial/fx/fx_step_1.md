@@ -1,5 +1,7 @@
 ### Starting the Application
 
+#### The AnkorApplication class
+
 When creating a Ankor JavaFX application you have two choices: You can either extend the `AnkorApplication` class
 which starts the Ankor system for you, or you can set up your own Ankor system manually.
 Both work the same way under the hood and the rest of the tutorial does not depend on
@@ -50,10 +52,25 @@ This server will be able to understand and process the messages that our todo ap
 This will give you the experience of an application developer adding a new client platform to an existing Ankor system.
 However, if you want to write your own server first you can learn how to do so in the [server section][2].
 
-You can now start the app and check if it throws any exceptions.
+#### Adding JavaFX to the classpath
+
+Now go to the `todo-fx` folder in the project.
 
     cd todo-fx
-    mvn install
+
+Before we can start the application we need to add JavaFX to the classpath.
+While JDK 7 ships with JavaFX it is not added to the classpath by default.
+The following command fixes this:
+
+    mvn jfx:fix-classpath
+
+<div class="alert alert-info"><strong>Note: </strong>You have to run this command as super user / with administrator privileges.</div>
+
+#### Starting the application
+
+You can now start the app and check if it throws any exceptions.
+
+    mvn jfx:run
 
 The window should look exactly like the one below. As you can see the UI structure has already been defined and
 styled for you. Building an JavaFX app from ground up is outside the scope of this tutorial.</p>

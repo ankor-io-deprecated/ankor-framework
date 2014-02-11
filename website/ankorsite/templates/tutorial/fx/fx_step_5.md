@@ -16,7 +16,7 @@ We want to render the list whenever the list of todos changes:
     :::java
     @ChangeListener(pattern = "root.model.(tasks)")
     public void renderTasks(FxRef tasksRef) {
-        // TODO
+
     }
 
 We use special syntax here, denoting that we are expecting a reference to the tasks as call parameter.
@@ -43,6 +43,13 @@ It's basically the same as `get` for a list, but it returns another `Ref` instea
 4. For now lets just assume there is already a custom JavaFX component named `TaskPane` that takes a `Ref` and an index.
 5. Finally we add the new `TaskPane` to the UI list.
 
+Before you go on, you might want to add this line to your init method (not the constructor):
+
+    :::java
+    renderTasks(modelRef.appendPath("tasks"));
+
+This way todos that are already in the list when the application starts will be rendered.
+
 #### Defining a Custom JavaFX Component
 
 The `TaskPane` is a single todo entry in the list. The markup is already defined in a separate file [`task.fxml`][2].
@@ -62,6 +69,7 @@ Open `TaskPane.java`. We will need the following properties:
 
 The constructor is structured like this:
 
+    :::java
     public TaskPane(FxRef itemRef, int index) {
         this.itemRef = itemRef;
         this.index = index;
@@ -81,6 +89,7 @@ We need to implement these four methods:
 
 ##### loadFXML
 
+    :::java
     private void loadFXML() {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("task.fxml"));
         fxmlLoader.setRoot(this);
@@ -94,6 +103,7 @@ We need to implement these four methods:
 
 ##### setValues
 
+    :::java
     private void setValues() {
         titleTextField.textProperty().setValue(itemRef.appendPath("title").<String>getValue());
         completedButton.selectedProperty().setValue(itemRef.appendPath("completed").<Boolean>getValue());
@@ -102,6 +112,7 @@ We need to implement these four methods:
 
 ##### bindProperties
 
+    :::java
     private void bindProperties() {
         titleTextField.textProperty().bindBidirectional(itemRef.appendPath("title").<String>fxProperty());
         completedButton.selectedProperty().bindBidirectional(itemRef.appendPath("completed").<Boolean>fxProperty());

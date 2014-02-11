@@ -17,19 +17,17 @@ However this one is fully written and styled using JavaFX.
 
 #### Before you start
 
-Please make sure that all software components are installed properly. Especially check the JavaFX section to make sure
-that JavaFX is on the classpath.
+Please make sure that all software components are installed properly.
 
 <div class="tabbable ">
     <ul class="nav nav-tabs">
         <li class="active"><a href="#tab1" data-toggle="tab">Java</a></li>
         <li><a href="#tab2" data-toggle="tab">Maven</a></li>
-        <li><a href="#tab3" data-toggle="tab">Java FX</a></li>
-        <li><a href="#tab4" data-toggle="tab">Git</a></li>
+        <li><a href="#tab3" data-toggle="tab">Git</a></li>
     </ul>
     <div class="tab-content">
         <div class="tab-pane active" id="tab1">
-            <p>JDK 1.7, download from <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">here</a>.</p>
+            <p>JDK 1.7.0 update 9 or higher, download from <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">here</a>.</p>
             <p>Make sure that<p></p>
             <ul>
                 <li>JAVA_HOME exists in your user variables (JDK installation directory)</li>
@@ -49,12 +47,6 @@ that JavaFX is on the classpath.
             <pre><code>mvn -version</code></pre>
         </div>
         <div class="tab-pane" id="tab3">
-            <p>To get JavaFX on the Classpath execute</p>
-            <pre><code>mvn com.zenjava:javafx-maven-plugin:2.0:fix-classpath</code></pre>
-            <p>On unix systems you may need <code>sudo mvn ...</code></p>
-            <p>If you are interested in why this is needed read <a href="http://zenjava.com/javafx/maven/fix-classpath.html">"Getting JavaFX on the Classpath"</a></p>
-        </div>
-        <div class="tab-pane" id="tab4">
             <p>Install Git, download from <a href="http://git-scm.com/download">the Git site</a>.</p>
         </div>
     </div>
