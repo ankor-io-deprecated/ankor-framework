@@ -31,13 +31,13 @@ define([
         });
 
         $('#filter-all')
-            .on('click', function() { modelRef.append("filter").setValue("all"); })
+            .on('click', function() { modelRef.append("filterAllSelected").setValue(true); })
             .ankorBindToggleClass("selected", modelRef.append("filterAllSelected"));
         $('#filter-active')
-            .on('click', function() { modelRef.append("filter").setValue("active"); })
+            .on('click', function() { modelRef.append("filterActiveSelected").setValue(true); })
             .ankorBindToggleClass("selected", modelRef.append("filterActiveSelected"));
         $('#filter-completed')
-            .on('click', function() { modelRef.append("filter").setValue("completed"); })
+            .on('click', function() { modelRef.append("filterCompletedSelected").setValue(true); })
             .ankorBindToggleClass("selected", modelRef.append("filterCompletedSelected"));
 
         $("#toggle-all")

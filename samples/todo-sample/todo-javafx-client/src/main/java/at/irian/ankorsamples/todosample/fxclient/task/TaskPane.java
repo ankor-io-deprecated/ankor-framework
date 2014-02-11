@@ -2,10 +2,7 @@ package at.irian.ankorsamples.todosample.fxclient.task;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.fx.binding.fxref.FxRef;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -46,9 +43,9 @@ public class TaskPane extends AnchorPane {
         this.index = index;
 
         loadFXML();
+        addEventListeners();
         setValues();
         bindProperties();
-        addEventListeners();
     }
 
     private void loadFXML() {
@@ -73,6 +70,12 @@ public class TaskPane extends AnchorPane {
         titleTextField.textProperty().bindBidirectional(itemRef.appendPath("title").<String>fxProperty());
         completedButton.selectedProperty().bindBidirectional(itemRef.appendPath("completed").<Boolean>fxProperty());
         titleTextField.editableProperty().bindBidirectional(itemRef.appendPath("editable").<Boolean>fxProperty());
+    }
+
+    private void unbindProperties() {
+        titleTextField.textProperty().unbindBidirectional(itemRef.appendPath("title").<String>fxProperty());
+        completedButton.selectedProperty().unbindBidirectional(itemRef.appendPath("completed").<Boolean>fxProperty());
+        titleTextField.editableProperty().unbindBidirectional(itemRef.appendPath("editable").<Boolean>fxProperty());
     }
 
     private void addEventListeners() {

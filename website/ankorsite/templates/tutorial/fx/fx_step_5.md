@@ -67,17 +67,17 @@ The constructor is structured like this:
         this.index = index;
 
         loadFXML();
+        addEventListeners();
         setValues();
         bindProperties();
-        addEventListeners();
     }
 
 We need to implement these four methods:
 
 * `loadFXML`: Load the markup that defines the component.
+* `addEventListeners`: Leave this unimplemented for now.
 * `setValues`: Set the initial values from the `itemRef`.
 * `bindProperties`: Enable two-way bindings.
-* `addEventListeners`: Enable completing, editing and deleting. Leave it empty for now.
 
 ##### loadFXML
 

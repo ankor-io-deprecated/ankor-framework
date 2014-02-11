@@ -84,31 +84,44 @@ public class TaskListModel {
     }
 
     @ChangeListener(pattern = "root.model.filter")
-    public void filterChanged() {
-        LOG.info("reloading tasks");
-        thisRef.appendPath("filterAllSelected").setValue(filter.equals("all"));
-        thisRef.appendPath("filterActiveSelected").setValue(filter.equals("active"));
-        thisRef.appendPath("filterCompletedSelected").setValue(filter.equals("completed"));
-        updateTasksData();
+    public void updateFilterSelected() {
+        switch (Filter.valueOf(filter)) {
+            case all:
+                thisRef.appendPath("filterActiveSelected").setValue(false);
+                thisRef.appendPath("filterCompletedSelected").setValue(false);
+                break;
+            case active:
+                thisRef.appendPath("filterAllSelected").setValue(false);
+                thisRef.appendPath("filterCompletedSelected").setValue(false);
+                break;
+            case completed:
+                thisRef.appendPath("filterAllSelected").setValue(false);
+                thisRef.appendPath("filterActiveSelected").setValue(false);
+                break;
+        }
     }
 
-    @ChangeListener(pattern = {
-            "root.model.filterAllSelected",
-            "root.model.filterActiveSelected",
-            "root.model.filterCompletedSelected" })
-    public void reloadTasks() {
-        if (filterAllSelected) {
-            if (!Filter.valueOf(filter).equals(Filter.all)) { // TODO: Creates infinite loop otherwise
-                thisRef.appendPath("filter").setValue(Filter.all.toString());
-            }
-        } else if (filterActiveSelected) {
-            if (!Filter.valueOf(filter).equals(Filter.active)) {
-                thisRef.appendPath("filter").setValue(Filter.active.toString());
-            }
-        } else if (filterCompletedSelected) {
-            if (!Filter.valueOf(filter).equals(Filter.completed)) {
-                thisRef.appendPath("filter").setValue(Filter.completed.toString());
-            }
+    @ChangeListener(pattern = "root.model.filterAllSelected")
+    public void filterAllSelected() {
+        if (this.filterAllSelected) {
+            thisRef.appendPath("filter").setValue(Filter.all.toString());
+            updateTasksData();
+        }
+    }
+
+    @ChangeListener(pattern = "root.model.filterActiveSelected")
+    public void filterActiveSelected() {
+        if (this.filterActiveSelected) {
+            thisRef.appendPath("filter").setValue(Filter.active.toString());
+            updateTasksData();
+        }
+    }
+
+    @ChangeListener(pattern = "root.model.filterCompletedSelected")
+    public void filterCompletedSelected() {
+        if (this.filterCompletedSelected) {
+            thisRef.appendPath("filter").setValue(Filter.completed.toString());
+            updateTasksData();
         }
     }
 
@@ -210,6 +223,8 @@ public class TaskListModel {
     }
 
     private void updateTasksData() {
+        LOG.info("reloading tasks");
+
         Filter filterEnum = Filter.valueOf(filter);
         (new ListDiff<>(tasks, fetchTasksData(filterEnum))).withThreshold(10).applyChangesTo(tasksRef());
         updateItemsValues();
