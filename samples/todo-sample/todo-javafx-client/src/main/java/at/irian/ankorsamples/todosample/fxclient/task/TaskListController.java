@@ -44,8 +44,6 @@ public class TaskListController implements Initializable {
     @FXML
     public RadioButton filterCompleted;
     @FXML
-    public ToggleGroup filterToggleGroup;
-    @FXML
     public Node footerTop;
     @FXML
     public Node footerBottom;
@@ -72,11 +70,11 @@ public class TaskListController implements Initializable {
                 new NumberStringConverter());
         todoCountText.textProperty().bind(modelRef.appendPath("itemsLeftText").<String>fxProperty());
 
-        Property<Boolean> footerVisibility = modelRef.appendPath("footerVisibility").<Boolean>fxProperty();
+        Property<Boolean> footerVisibility = modelRef.appendPath("footerVisibility").fxProperty();
         footerTop.visibleProperty().bind(footerVisibility);
         footerBottom.visibleProperty().bind(footerVisibility);
 
-        toggleAllButton.visibleProperty().bind(modelRef.appendPath("footerVisibility").<Boolean>fxProperty());
+        toggleAllButton.visibleProperty().bind(footerVisibility);
         toggleAllButton.selectedProperty().bindBidirectional(modelRef.appendPath("toggleAll").<Boolean>fxProperty());
 
         clearButton.textProperty().bind(modelRef.appendPath("itemsCompleteText").<String>fxProperty());
@@ -123,7 +121,6 @@ public class TaskListController implements Initializable {
 
         LinkedHashMap<String, Object> params = new LinkedHashMap<>();
         params.put("toggleAll", toggleAllButton.selectedProperty().get());
-
         modelRef.fire(new Action("toggleAll", params));
     }
 

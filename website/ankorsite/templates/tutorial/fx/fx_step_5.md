@@ -2,9 +2,11 @@
 
 In this step we want to display todos in the UI.
 
-#### Top Level
+![fx-step-5-1](/static/images/tutorial/fx-step-5-1.png)
 
-First of all we need a reference to the UI list, which is actually a [`VBox`][1].
+#### tasksList
+
+First of all we need a reference to the UI component `tasksList`, which is a [`VBox`][1].
 
     :::java
     @FXML
@@ -50,7 +52,7 @@ Before you go on, you might want to add this line to your init method (not the c
 
 This way todos that are already in the list when the application starts will be rendered.
 
-#### Defining a Custom JavaFX Component
+#### Defining a custom JavaFX component
 
 The `TaskPane` is a single todo entry in the list. The markup is already defined in a separate file [`task.fxml`][2].
 Open `TaskPane.java` and add the following properties:
@@ -65,6 +67,8 @@ Open `TaskPane.java` and add the following properties:
     public ToggleButton completedButton;
     @FXML
     public Button deleteButton;
+
+![fx-step-5-2](/static/images/tutorial/fx-step-5-2.png)
 
 The constructor is structured like this:
 

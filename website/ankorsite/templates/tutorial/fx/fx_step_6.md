@@ -1,7 +1,9 @@
 ### Handling Events
 
 By now we have the basic functionality of the app implemented.
-We will implement the remaining features of the `TaskPane` first.
+What's left are either JavaFX specific event handlers or more Ankor `Action`s and Ankor bindings.
+
+We will implement the missing features of the `TaskPane` first.
 Then we will add cosmetic improvements like adding and removing style classes on some criteria.
 
 Currently the app is missing these features:
@@ -11,7 +13,7 @@ Currently the app is missing these features:
 
 <div class="alert alert-info">
     <strong>Note:</strong>
-    Completing todos is already possible because we defined two-way bindings on the <code>completedProperty</code> in the previous step.
+    Completing todos is already possible, because we defined two-way bindings on the <code>completedProperty</code> in the previous step.
 </div>
 
 #### Double-click to edit a todo
@@ -65,7 +67,7 @@ This is either the case when pressing Enter (1) or when the text field loses its
 #### Deleting a todo
 
 All we need to know for this one is that there is an `ActionListener` on the server called `deleteTask` that expects
-the `index` of the todo as parameter. It's similar to `newTask` in step 4.
+the `index` of the todo as parameter. It's like `newTask` in step 4.
 
     :::java
     @FXML
@@ -79,7 +81,7 @@ the `index` of the todo as parameter. It's similar to `newTask` in step 4.
 
 There is one thing that can't be done with JavaFX' CSS alone.
 When a task is completed it's appearance should change.
-There are already CSS classes for this, but they need to be added/removed:
+There are already CSS classes for this, but we need to add/remove them when the task gets completed.
 
     :::java
     completedButton.selectedProperty().addListener(new ChangeListener<Boolean>() {

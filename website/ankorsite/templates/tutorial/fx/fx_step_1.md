@@ -1,4 +1,4 @@
-### Starting the Application
+### Starting the App
 
 #### The AnkorApplication class
 

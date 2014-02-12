@@ -208,7 +208,15 @@
 .default .text {
     -fx-strikethrough: false;
 }
+
+.default .text-field {
+    -fx-text-fill: #4d4d4d;
+}
+
 .strike-through .text {
     -fx-strikethrough: true;
 }
 
+.strike-through .text-field {
+    -fx-text-fill: #a9a9a9;
+}

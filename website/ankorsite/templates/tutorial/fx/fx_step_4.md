@@ -8,6 +8,8 @@ As the [`@FXML`][3]  annotation of this method suggests it is defined in [`tasks
 The `TextField` with the id `newTask` has an attribute `onAction="#newTodo"`.
 This links the text field's action event to the method in our controller.
 
+![fx-step-4-1](/static/images/tutorial/fx-step-4-1.png)
+
 #### Get the TextField
 
 First we need the reference to the `TextField`, so we add another field to our controller:
