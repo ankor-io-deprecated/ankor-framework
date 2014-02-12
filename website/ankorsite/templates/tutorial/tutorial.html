@@ -6,24 +6,37 @@
 {% load staticfiles %}
 
 <div class="row">
-    <div class="col-md-3">
-        {% include "tutorial/tutorial_menu.html" %}
-    </div><!--/span-->
-    <div class="col-md-9">
+    <!--/span-->
+    <div class="col-md-9 col-md-push-3">
         {% include "tutorial/tutorial_head.html" %}
 
         {% load markdownlib %}
         {% autoescape off %}
-            {{ content|markdown:"codehilite" }}
+        {{ content|markdown:"codehilite" }}
         {% endautoescape %}
 
         <hr/>
         <a class="btn btn-primary pull-right" href="/tutorials/{{type}}/{{nextStep}}">
-			Next 
-			<span class="glyphicon glyphicon-chevron-right"></span>
-		</a>
+            Next
+            <span class="glyphicon glyphicon-chevron-right muted"></span>
+        </a>
 
-    </div><!--/span-->
+    </div>
+    <div class="col-md-3 col-md-pull-9">
+        {% include "tutorial/tutorial_menu.html" %}
+    </div>
+    <!--/span-->
 </div><!--/row-->
+<script type="text/javascript">
+    $(function() {
+        $(window).resize(function () {
+            $('.affix').width($('.col-md-3').width());
+        });
+
+        $("#tutorial-menu").on("affixed.bs.affix", function() {
+            $('.affix').width($('.col-md-3').width());
+        });
+    });
+</script>
 
 {% endblock %}

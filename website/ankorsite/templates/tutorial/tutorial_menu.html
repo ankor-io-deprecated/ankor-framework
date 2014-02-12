@@ -1,16 +1,19 @@
-<div class="panel {% if step == 0 %}panel-primary{% else %}panel-default{% endif %}">
-    <!-- Default panel contents -->
-    <a class="panel-heading" href="/tutorials/{{type}}">{{type_name}}</a>
+<div id="tutorial-menu" data-spy="affix" data-offset-top="0">
+    <div class="panel {% if step == 0 %}panel-primary{% else %}panel-default{% endif %}">
+        <!-- Default panel contents -->
+        <a class="panel-heading" href="/tutorials/{{type}}">{{type_name}}</a>
 
-    <!-- List group -->
-    <div class="list-group">
-        {% for o in tutorial_titles %}
-        {% if forloop.counter0 > 0 %}
-        <a href="/tutorials/{{type}}/{{forloop.counter0}}"
-           class="list-group-item {% if step == forloop.counter0 %}active{% endif %}">
-            {{forloop.counter0}} - {{o}}
-        </a>
-        {% endif %}
-        {% endfor %}
+        <!-- List group -->
+        <div class="list-group">
+            {% for o in tutorial_titles %}
+            {% if forloop.counter0 > 0 %}
+            <a href="/tutorials/{{type}}/{{forloop.counter0}}"
+               class="list-group-item {% if step == forloop.counter0 %}active{% endif %}">
+                <span class="glyphicon glyphicon-chevron-right pull-right muted"></span>
+                {{forloop.counter0}} - {{o}}
+            </a>
+            {% endif %}
+            {% endfor %}
+        </div>
     </div>
 </div>
