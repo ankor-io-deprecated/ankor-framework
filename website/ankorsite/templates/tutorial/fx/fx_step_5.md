@@ -16,7 +16,7 @@ We want to render the list whenever the list of todos changes:
     :::java
     @ChangeListener(pattern = "root.model.(tasks)")
     public void renderTasks(FxRef tasksRef) {
-
+        // ...
     }
 
 We use special syntax here, denoting that we are expecting a reference to the tasks as call parameter.
@@ -53,8 +53,7 @@ This way todos that are already in the list when the application starts will be 
 #### Defining a Custom JavaFX Component
 
 The `TaskPane` is a single todo entry in the list. The markup is already defined in a separate file [`task.fxml`][2].
-
-Open `TaskPane.java`. We will need the following properties:
+Open `TaskPane.java` and add the following properties:
 
     :::java
     private FxRef itemRef;
@@ -76,18 +75,19 @@ The constructor is structured like this:
 
         loadFXML();
         addEventListeners();
-        setValues();
         bindProperties();
     }
 
-We need to implement these four methods:
+Obviously we need to implement these three methods:
 
 * `loadFXML`: Load the markup that defines the component.
 * `addEventListeners`: Leave this unimplemented for now.
-* `setValues`: Set the initial values from the `itemRef`.
 * `bindProperties`: Enable two-way bindings.
 
 ##### loadFXML
+
+Similar to the `TaskListController` the structure of the `TaskPane` is defined in markup.
+The `loadFXML` method loads the markup from the resource folder and sets our `TaskPane` class as its controller.
 
     :::java
     private void loadFXML() {
@@ -99,15 +99,6 @@ We need to implement these four methods:
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-##### setValues
-
-    :::java
-    private void setValues() {
-        titleTextField.textProperty().setValue(itemRef.appendPath("title").<String>getValue());
-        completedButton.selectedProperty().setValue(itemRef.appendPath("completed").<Boolean>getValue());
-        titleTextField.editableProperty().setValue(itemRef.appendPath("editable").<Boolean>getValue());
     }
 
 ##### bindProperties
