@@ -2,8 +2,6 @@
 
 There are only a few top-level things missing.
 
-![fx-step-7-1](/static/images/tutorial/fx-step-7-1.png)
-
 #### Adding the remaining bindings
 
 In our `TaskListController` there are still some UI properties that are not bound to any server variables.
@@ -20,6 +18,8 @@ For the sake of simplicity we skipped them in step 3.
     public RadioButton filterActive;
     @FXML
     public RadioButton filterCompleted;
+
+![fx-step-7-1](/static/images/tutorial/fx-step-7-1.png)
 
 We add the bindings in our root change listener (`myInit`):
 

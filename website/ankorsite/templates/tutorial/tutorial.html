@@ -16,11 +16,12 @@
         {% endautoescape %}
 
         <hr/>
+        {% if hasNextStep %}
         <a class="btn btn-primary pull-right" href="/tutorials/{{type}}/{{nextStep}}">
             Next
             <span class="glyphicon glyphicon-chevron-right muted"></span>
         </a>
-
+        {% endif %}
     </div>
     <div class="col-md-3 col-md-pull-9">
         {% include "tutorial/tutorial_menu.html" %}

@@ -86,11 +86,9 @@ def tutorial_helper(request, type, step, template):
     step = int(step)
 
     next_step = step + 1
+    has_next_step = True
     if next_step > num_tutorials[type] - 1:
-        next_step = num_tutorials[type] - 1
-    previous_step = step - 1
-    if previous_step < 0:
-        previous_step = 0
+        has_next_step = False
 
     context = RequestContext(request, {
         'activeMenu': 'tutorials',
@@ -99,7 +97,7 @@ def tutorial_helper(request, type, step, template):
         'step': step,
         'tutorial_titles': tutorial_titles[type],
         'tutorial_title': tutorial_titles[type][step],
-        'previousStep': previous_step,
+        'hasNextStep': has_next_step,
         'nextStep': next_step,
         'content': content
     })

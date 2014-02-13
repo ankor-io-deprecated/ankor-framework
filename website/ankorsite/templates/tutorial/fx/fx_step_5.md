@@ -2,8 +2,6 @@
 
 In this step we want to display todos in the UI.
 
-![fx-step-5-1](/static/images/tutorial/fx-step-5-1.png)
-
 #### tasksList
 
 First of all we need a reference to the UI component `tasksList`, which is a [`VBox`][1].
@@ -11,6 +9,8 @@ First of all we need a reference to the UI component `tasksList`, which is a [`V
     :::java
     @FXML
     public VBox tasksList;
+
+![fx-step-5-1](/static/images/tutorial/fx-step-5-1.png)
 
 In order to add todos to the list we need to add a change listener.
 We want to render the list whenever the list of todos changes:
