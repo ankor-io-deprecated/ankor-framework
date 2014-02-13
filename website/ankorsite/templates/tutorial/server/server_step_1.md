@@ -1,13 +1,12 @@
-### Starting the Server
+### Testing the Setup
 
-#### Testing the setup
-
-In order to see the results of our work in this tutorial we'll want to connect a client to our Ankor server.
-The clients connect to the server via WebSocket, so we need a web server, [GlassFish 4][] in our case.
+In order to see the results of our work in this tutorial we'll connect a client to our Ankor server.
+The clients connect to the server via WebSocket. So we need a web server that supports them.
+[GlassFish 4][1] comes with WebSocket support out of the box, so we'll be using that one.
 
 To start the web server `cd` into the `todo-servlet` directory and execute this Maven goal:
 
-    mvn install
+    mvn embedded-glassfish:run
 
 This can take a while. GlassFish will be downloaded.
 After the process completes point your browser to `http://localhost:8080/`.
@@ -18,7 +17,8 @@ The page should look something like this:
     WebSocket connection established
     UUID received: 9b1ac725-5bdd-46d2-9b9e-e5a283ae057b
 
-In a new prompt `cd` into `todo-server` and run:
+When we make changes to the code we want to redeploy them.
+In order to do so, in a new command prompt `cd` into `todo-server` and run:
 
     mvn package
 
@@ -32,4 +32,6 @@ Just make sure they connect to `ws://localhost:8080/websockets/ankor`.
 Otherwise you can use the JavaFX client implementation provided in this repository:
 
     cd todo-fx
-    mvn install
+    mvn jfx:run
+
+[1]: https://glassfish.java.net/

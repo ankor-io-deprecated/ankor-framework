@@ -63,6 +63,10 @@ Now you got a maven project based on these modules:
     todo-server  : Todo Sample - Server
     todo-servlet : Todo Sample - Servlet
 
+The `todo-server` project contains the view model and its associated behaviour.
+The `todo-servlet` project contains an endpoint that will expose the view model to clients via WebSocket.
+The `todo-fx` contains a minimal JavaFX client to test your setup.
+
 [1]: http://www.oracle.com/technetwork/articles/java/jsr356-1937161.html
 [2]: https://glassfish.java.net/
 
