@@ -1,0 +1,31 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>at.irian.ankorsamples</groupId>
+    <artifactId>ankor-samples</artifactId>
+    <packaging>pom</packaging>
+    <version>0-SNAPSHOT</version>
+    <name>Ankor - Samples</name>
+
+    <modules>
+        <module>todo-sample</module>
+        <module>animals-sample</module>
+        <module>fxrates-sample</module>
+    </modules>
+
+    <distributionManagement>
+        <repository>
+            <id>ankor-release</id>
+            <name>Ankor - Release</name>
+            <url>http://repo.irian.at/content/repositories/ankor-release/</url>
+        </repository>
+
+        <snapshotRepository>
+            <id>ankor-snapshot</id>
+            <name>Ankor - Snapshot</name>
+            <url>http://repo.irian.at/content/repositories/ankor-snapshot/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+</project>
