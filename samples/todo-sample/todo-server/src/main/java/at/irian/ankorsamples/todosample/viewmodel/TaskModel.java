@@ -12,16 +12,12 @@ public class TaskModel {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TaskModel.class);
 
     @AnkorIgnore
-    private String id;
-
-    @AnkorIgnore
     private Task task;
 
     private boolean editing = false;
 
     public TaskModel(Task task) {
         this.task = task;
-        this.id = task.getId();
     }
 
     public TaskModel(LinkedHashMap<String, Object> task) {
@@ -29,8 +25,6 @@ public class TaskModel {
         this.task.setId((String) task.get("id"));
         this.task.setTitle((String) task.get("title"));
         this.task.setCompleted((Boolean) task.get("completed"));
-
-        this.id = (String) task.get("id");
     }
 
     public Task getTask() {
@@ -39,6 +33,14 @@ public class TaskModel {
 
     public void setTask(Task task) {
         this.task = task;
+    }
+
+    public String getId() {
+        return task.getId();
+    }
+
+    public void setId(String id) {
+        this.task.setId(id);
     }
 
     public String getTitle() {
@@ -65,10 +67,6 @@ public class TaskModel {
         this.editing = editing;
     }
 
-    /*
-     * XXX
-     * This is working for now but needs to be reviewed.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -76,14 +74,16 @@ public class TaskModel {
 
         TaskModel taskModel = (TaskModel) o;
 
-        if (!id.equals(taskModel.id)) return false;
-        if (!task.isCompleted() == taskModel.isCompleted()) return false;
+        if (editing != taskModel.editing) return false;
+        if (task != null ? !task.equals(taskModel.task) : taskModel.task != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        int result = task != null ? task.hashCode() : 0;
+        result = 31 * result + (editing ? 1 : 0);
+        return result;
     }
 }

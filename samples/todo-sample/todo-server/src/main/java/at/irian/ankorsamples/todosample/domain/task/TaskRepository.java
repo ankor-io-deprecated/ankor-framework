@@ -1,39 +1,23 @@
 package at.irian.ankorsamples.todosample.domain.task;
 
 import at.irian.ankorsamples.todosample.viewmodel.Filter;
+import scala.collection.parallel.Tasks;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class TaskRepository {
-    private List<Task> tasks = new ArrayList<Task>();
+    private Map<String, Task> tasks = new LinkedHashMap<>();
 
-    public void saveTask(Task task) {
-
-        // do validation
-
-        int i = 0;
-        for (Task t : tasks) {
-            if (t.getId().equals(task.getId())) {
-                tasks.set(i, new Task(task));
-                return;
-            }
-            i++;
-        }
-
-        tasks.add(new Task(task));
+    public synchronized void saveTask(Task task) {
+        tasks.put(task.getId(), task);
     }
 
-    public Task findTask(String id) {
-        for (Task t : tasks) {
-            if (t.getId().equals(id)) {
-                return new Task(t);
-            }
-        }
-        return null;
+    public synchronized Task findTask(String id) {
+        return tasks.get(id);
     }
 
-    public List<Task> filterTasks(Filter filter) {
+    public synchronized List<Task> filterTasks(Filter filter) {
         switch (filter) {
             case all:  return getTasks();
             case active: return getActiveTasks();
@@ -42,17 +26,17 @@ public class TaskRepository {
         return null;
     }
 
-    public List<Task> getTasks() {
+    public synchronized List<Task> getTasks() {
         List<Task> res = new ArrayList<Task>(tasks.size());
-        for(Task t : tasks) {
+        for(Task t : tasks.values()) {
             res.add(new Task(t));
         }
         return res;
     }
 
-    public List<Task> getActiveTasks() {
+    public synchronized List<Task> getActiveTasks() {
         List<Task> res = new ArrayList<Task>(tasks.size());
-        for(Task t : tasks) {
+        for(Task t : tasks.values()) {
             if (!t.isCompleted()) {
                 res.add(new Task(t));
             }
@@ -60,9 +44,9 @@ public class TaskRepository {
         return res;
     }
 
-    public List<Task> getCompletedTasks() {
+    public synchronized List<Task> getCompletedTasks() {
         List<Task> res = new ArrayList<Task>(tasks.size());
-        for(Task t : tasks) {
+        for(Task t : tasks.values()) {
             if (t.isCompleted()) {
                 res.add(new Task(t));
             }
@@ -70,18 +54,17 @@ public class TaskRepository {
         return res;
     }
 
-    public void clearTasks() {
-        tasks = getActiveTasks();
+    public synchronized void clearTasks() {
+        Iterator<Map.Entry<String, Task>> it = tasks.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<String, Task> next = it.next();
+            if (next.getValue().isCompleted()) {
+                it.remove();
+            }
+        }
     }
 
-    public void deleteTask(Task task) {
-        int i = 0;
-        for (Task t : tasks) {
-            if (t.getId().equals(task.getId())) {
-                tasks.remove(i);
-                return;
-            }
-            i++;
-        }
+    public synchronized void deleteTask(Task task) {
+        tasks.remove(task.getId());
     }
 }
