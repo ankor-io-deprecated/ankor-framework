@@ -20,9 +20,7 @@
         <module>ankor-servlet</module>
         <module>ankor-fx</module>
         <module>ankor-js</module>
-        <module>samples/todo-sample</module>
-        <module>samples/animals-sample</module>
-        <module>samples/fxrates-sample</module>
+        <module>samples</module>
     </modules>
 
     <properties>
@@ -162,9 +160,33 @@
 
     </dependencies>
 
+    <distributionManagement>
+        <repository>
+            <id>ankor-release</id>
+            <name>Ankor - Release</name>
+            <url>http://repo.irian.at/content/repositories/ankor-release/</url>
+        </repository>
+
+        <snapshotRepository>
+            <id>ankor-snapshot</id>
+            <name>Ankor - Snapshot</name>
+            <url>http://repo.irian.at/content/repositories/ankor-snapshot/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <scm>
+        <connection>scm:git:https://svn.irian.at/ankor/.git</connection>
+        <developerConnection>scm:git:https://svn.irian.at/ankor/.git</developerConnection>
+        <url>https://svn.irian.at/ankor/.git</url>
+    </scm>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.4.2</version>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
