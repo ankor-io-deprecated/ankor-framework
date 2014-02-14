@@ -4,12 +4,12 @@
     <parent>
         <groupId>at.irian.ankorsamples</groupId>
         <artifactId>ankor-samples</artifactId>
-        <version>0.1</version>
+        <version>0.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>todo-sample</artifactId>
     <packaging>pom</packaging>
-    <version>0.1</version>
+    <version>0.2-SNAPSHOT</version>
     <name>Todo Sample - Project</name>
 
     <modules>
@@ -23,7 +23,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <ankor.version>0.1</ankor.version>
+        <ankor.version>0.2-SNAPSHOT</ankor.version>
     </properties>
 
     <dependencyManagement>
