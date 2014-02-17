@@ -9,12 +9,22 @@
         <span class="fa fa-anchor hidden-xs"></span>
 
         <h1>Ankor</h1>
+        <p class="lead">
+            App development framework<br/>
+            Synchronize your view model across multiple platforms<br/>
+        </p>
 
-        <p class="lead">Web application development made easy.
-            <br/>Support for JavaFX, HTML5 and WPF Clients.
-            <br/>Multiple server platforms Netty, J2EE, Node.</p>
 
-        <a class="btn btn-lg btn-primary" href="#">Get started today</a>
+        <ul class="lead list-inline">
+            <li><span class="glyphicon glyphicon-ok"></span>&nbsp;JavaFX</li>
+            <li><span class="glyphicon glyphicon-ok"></span>&nbsp;HTML5</li>
+            <li><span class="glyphicon glyphicon-ok"></span>&nbsp;.NET / WPF</li>
+            <li><span class="glyphicon glyphicon-ok"></span>&nbsp;iOS</li>
+            <li><span class="glyphicon glyphicon-ok"></span>&nbsp;Android</li>
+            <li><span class="glyphicon glyphicon-ok"></span>&nbsp;Java/JEE</li>
+        </ul>
+
+        <a href="../tutorials" type="button" class="btn btn-info">Get started today</a>
     </div>
 </div>
 
@@ -22,21 +32,32 @@
 
 {% block content %}
 <div class="row">
-    <div class="col-md-6">
-        <h2>Simple to use</h2>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore
-        magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-        consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-        pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est
-        laborum.
-        <p><a class="btn" href="#">View details &raquo;</a></p>
+    <div class="col-md-4">
+        <h2>JavaFX</h2>
+        <div class="list-group">
+            <p>Implement your model server side in Java and connect it to your FX client using Ankor.</p>
+            <p>Benefit from automatic model synchronisation.</p>
+            <p>No need for RPC like calls.</p>
+            <p>Changes to your model on server will automatically update your UI (changes get pushed).</p>
+        </div>
     </div>
-    <div class="col-md-6">
-        <h2>MVVM Pattern</h2>
-        {% load staticfiles %}
-        <img src="{% static 'images/ankor_mvvm_pattern.png' %}"/>
-
-        <p><a class="btn" href="#">View details &raquo;</a></p>
+    <div class="col-md-4">
+        <h2>HTML 5</h2>
+        <div class="list-group">
+            <p>Develop web applications using your favorite HTML5 frameworks.</p>
+            <p>Bind your UI controls to server side view model using Ankor framework.</p>
+            <p>Ankor will synchronize your model. No need for RPC like calls.</p>
+            <p>Support for jQuery, Dojo, AngularJS.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <h2>View Model</h2>
+        <div class="list-group">
+            <p>Implement your View Model in Java.</p>
+            <p>Benefit from existing Java technologies (JEE, Spring, JPA).</p>
+            <p>Manage the state of your View Model (restore on login).</p>
+            <p>Support for JEE servers (Tomcat, GlassFish).</p>
+        </div>
     </div>
 </div>
 
