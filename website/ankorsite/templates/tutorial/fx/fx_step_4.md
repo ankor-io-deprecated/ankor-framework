@@ -16,7 +16,7 @@ First we need the reference to the `TextField`, so we add another field to our c
     @FXML
     public TextField newTodo;
 
-![fx-step-4-1](/static/images/tutorial/fx-step-4-1.png)
+![fx-step-4-1](http://ankor.io/static/images/tutorial/fx-step-4-1.png)
 
 Now we can get the text form the text field like this. Inside the `newTodo` method write:
 

@@ -10,7 +10,7 @@ First of all we need a reference to the UI component `tasksList`, which is a [`V
     @FXML
     public VBox tasksList;
 
-![fx-step-5-1](/static/images/tutorial/fx-step-5-1.png)
+![fx-step-5-1](http://ankor.io/static/images/tutorial/fx-step-5-1.png)
 
 In order to add todos to the list we need to add a change listener.
 We want to render the list whenever the list of todos changes:
@@ -68,7 +68,7 @@ Open `TaskPane.java` and add the following properties:
     @FXML
     public Button deleteButton;
 
-![fx-step-5-2](/static/images/tutorial/fx-step-5-2.png)
+![fx-step-5-2](http://ankor.io/static/images/tutorial/fx-step-5-2.png)
 
 The constructor is structured like this:
 

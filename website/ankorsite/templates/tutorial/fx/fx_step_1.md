@@ -75,7 +75,7 @@ You can now start the app and check if it throws any exceptions.
 The window should look exactly like the one below. As you can see the UI structure has already been defined and
 styled for you. Building an JavaFX app from ground up is outside the scope of this tutorial.</p>
 
-![fx-step-1-1](/static/images/tutorial/fx-step-1-1.png)
+![fx-step-1-1](http://ankor.io/static/images/tutorial/fx-step-1-1.png)
 
 If the app doesn't start the test server could be offline.
 You can check the online status via
@@ -85,4 +85,4 @@ A running Ankor server should send an UUID when a connection is established.
 If the server appears to be offline you can still [write your own server][2].
 
 [1]: https://github.com/ankor-io/ankor-todo/blob/fx-step-1/todo-javafx-client/src/main/java/io/ankor/tutorial/App.java
-[2]: /tutorials/server/0
+[2]: http://ankor.io/tutorials/server/0

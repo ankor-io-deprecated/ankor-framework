@@ -10,7 +10,7 @@ Ankor comes with some utility classes that make using them easy.
 
 This his how the app will look like when we are done:
 
-![fx-step-0-1](/static/images/tutorial/fx-step-0-1.png)
+![fx-step-0-1](http://ankor.io/static/images/tutorial/fx-step-0-1.png)
 
 This might look familiar to you (it's the todo app form [TodoMVC](http://todomvc.com/)).
 However this one is fully written and styled using JavaFX.

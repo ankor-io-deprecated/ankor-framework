@@ -22,7 +22,7 @@ Its ids are `footerTop` and `footerBottom`, so we'll need those two fields in ou
     @FXML
     public Node footerBottom;
 
-![fx-step-3-1](/static/images/tutorial/fx-step-3-1.png)
+![fx-step-3-1](http://ankor.io/static/images/tutorial/fx-step-3-1.png)
 
 #### Navigating Ankor with Refs
 

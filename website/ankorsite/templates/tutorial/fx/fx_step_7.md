@@ -19,7 +19,7 @@ For the sake of simplicity we skipped them in step 3.
     @FXML
     public RadioButton filterCompleted;
 
-![fx-step-7-1](/static/images/tutorial/fx-step-7-1.png)
+![fx-step-7-1](http://ankor.io/static/images/tutorial/fx-step-7-1.png)
 
 We add the bindings in our root change listener (`myInit`):
 
@@ -65,4 +65,4 @@ And that's it. Now we have a basic todo app that is backed by an Ankor server.
 If you haven't done so already, check out the [server tutorial][1].
 There you will learn how to write an Ankor server that can be used with this app.
 
-[1]: /tutorials/server
+[1]: http://ankor.io/tutorials/server
