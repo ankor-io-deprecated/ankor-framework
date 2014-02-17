@@ -1,10 +1,6 @@
 package at.irian.ankorsamples.todosample.domain.task;
 
-import at.irian.ankorsamples.todosample.viewmodel.Filter;
-import scala.collection.parallel.Tasks;
-
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class TaskRepository {
     private Map<String, Task> tasks = new LinkedHashMap<>();
@@ -15,15 +11,6 @@ public class TaskRepository {
 
     public synchronized Task findTask(String id) {
         return tasks.get(id);
-    }
-
-    public synchronized List<Task> filterTasks(Filter filter) {
-        switch (filter) {
-            case all:  return getTasks();
-            case active: return getActiveTasks();
-            case completed: return getCompletedTasks();
-        }
-        return null;
     }
 
     public synchronized List<Task> getTasks() {

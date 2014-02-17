@@ -42,11 +42,11 @@ public class TaskListModel {
     private Boolean filterActiveSelected;
     private Boolean filterCompletedSelected;
 
-    public TaskListModel(Ref viewModelRef, TaskRepository taskRepository) {
-        AnkorPatterns.initViewModel(this, viewModelRef);
+    public TaskListModel(Ref modelRef, TaskRepository taskRepository) {
+        AnkorPatterns.initViewModel(this, modelRef);
 
         this.taskRepository = taskRepository;
-        this.thisRef = viewModelRef;
+        this.thisRef = modelRef;
 
         filter = Filter.all.toString();
         filterAllSelected = true;
@@ -210,8 +210,17 @@ public class TaskListModel {
         return thisRef.appendPath("tasks").appendIndex(index);
     }
 
+    public List<Task> filterTasks(Filter filter) {
+        switch (filter) {
+            case all:  return taskRepository.getTasks();
+            case active: return taskRepository.getActiveTasks();
+            case completed: return taskRepository.getCompletedTasks();
+        }
+        return null;
+    }
+
     private List<TaskModel> fetchTasksData(Filter filterEnum) {
-        List<Task> tasks = taskRepository.filterTasks(filterEnum);
+        List<Task> tasks = filterTasks(filterEnum);
         List<TaskModel> res = new ArrayList<>(tasks.size());
 
         for (Task t : tasks) {
