@@ -12,8 +12,11 @@ def path_to_steps(type, step):
 
 
 def get_num_tutorials(type):
-    path, dirs, files = os.walk(SITE_ROOT + '/templates/tutorial/' + type + '/').next()
-    return len(files)
+    typePath = SITE_ROOT + '/templates/tutorial/' + type + '/'
+    if os.path.isdir(typePath):
+        return len(os.listdir(typePath))
+    else:
+        return 0
 
 
 def get_titles(type):
