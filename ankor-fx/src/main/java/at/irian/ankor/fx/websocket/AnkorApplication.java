@@ -17,6 +17,7 @@ import javax.websocket.DeploymentException;
 import javax.websocket.WebSocketContainer;
 import java.io.IOException;
 import java.net.URI;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -58,7 +59,7 @@ public abstract class AnkorApplication extends Application {
      * @return An optional id for the model context.
      */
     protected String getModelContextId() {
-        return null;
+        return UUID.randomUUID().toString();
     }
 
     /**
@@ -85,13 +86,10 @@ public abstract class AnkorApplication extends Application {
                 = new ViewModelJsonMessageMapper(systemBuilder.getBeanMetadataProvider());
         WebSocketMessageBus messageBus = new WebSocketMessageBus(messageMapper);
         systemBuilder = systemBuilder
+                .withModelContextId(getModelContextId())
                 .withMessageBus(messageBus)
                 .withRefContextFactoryProvider(new FxRefContextFactoryProvider())
                 .withDispatcherFactory(new JavaFxEventDispatcherFactory());
-
-        if (getModelContextId() != null) {
-            systemBuilder.withModelContextId(getModelContextId());
-        }
 
         CountDownLatch latch = new CountDownLatch(2);
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
