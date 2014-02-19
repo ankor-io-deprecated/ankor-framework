@@ -22,7 +22,7 @@ public class TaskListModel {
     @AnkorIgnore
     private final TaskRepository taskRepository;
     @AnkorIgnore
-    private final Ref thisRef;
+    private final Ref modelRef;
 
     private List<TaskModel> tasks;
 
@@ -45,8 +45,8 @@ public class TaskListModel {
     public TaskListModel(Ref modelRef, TaskRepository taskRepository) {
         AnkorPatterns.initViewModel(this, modelRef);
 
+        this.modelRef = modelRef;
         this.taskRepository = taskRepository;
-        this.thisRef = modelRef;
 
         filter = Filter.all.toString();
         filterAllSelected = true;
@@ -65,6 +65,7 @@ public class TaskListModel {
 
         toggleAll = false;
 
+        // TODO: Still no better way to do this?
         RefListeners.addTreeChangeListener(tasksRef(), new RefChangeListener() {
             @Override
             public void processChange(Ref changedProperty) {
@@ -87,16 +88,16 @@ public class TaskListModel {
     public void updateFilterSelected() {
         switch (Filter.valueOf(filter)) {
             case all:
-                thisRef.appendPath("filterActiveSelected").setValue(false);
-                thisRef.appendPath("filterCompletedSelected").setValue(false);
+                modelRef.appendPath("filterActiveSelected").setValue(false);
+                modelRef.appendPath("filterCompletedSelected").setValue(false);
                 break;
             case active:
-                thisRef.appendPath("filterAllSelected").setValue(false);
-                thisRef.appendPath("filterCompletedSelected").setValue(false);
+                modelRef.appendPath("filterAllSelected").setValue(false);
+                modelRef.appendPath("filterCompletedSelected").setValue(false);
                 break;
             case completed:
-                thisRef.appendPath("filterAllSelected").setValue(false);
-                thisRef.appendPath("filterActiveSelected").setValue(false);
+                modelRef.appendPath("filterAllSelected").setValue(false);
+                modelRef.appendPath("filterActiveSelected").setValue(false);
                 break;
         }
     }
@@ -104,7 +105,7 @@ public class TaskListModel {
     @ChangeListener(pattern = "root.model.filterAllSelected")
     public void filterAllSelected() {
         if (this.filterAllSelected) {
-            thisRef.appendPath("filter").setValue(Filter.all.toString());
+            modelRef.appendPath("filter").setValue(Filter.all.toString());
             updateTasksData();
         }
     }
@@ -112,7 +113,7 @@ public class TaskListModel {
     @ChangeListener(pattern = "root.model.filterActiveSelected")
     public void filterActiveSelected() {
         if (this.filterActiveSelected) {
-            thisRef.appendPath("filter").setValue(Filter.active.toString());
+            modelRef.appendPath("filter").setValue(Filter.active.toString());
             updateTasksData();
         }
     }
@@ -120,7 +121,7 @@ public class TaskListModel {
     @ChangeListener(pattern = "root.model.filterCompletedSelected")
     public void filterCompletedSelected() {
         if (this.filterCompletedSelected) {
-            thisRef.appendPath("filter").setValue(Filter.completed.toString());
+            modelRef.appendPath("filter").setValue(Filter.completed.toString());
             updateTasksData();
         }
     }
@@ -129,19 +130,19 @@ public class TaskListModel {
             "root.model.itemsLeft",
             "root.model.itemsComplete" })
     public void updateFooterVisibility() {
-        thisRef.appendPath("footerVisibility").setValue(taskRepository.getTasks().size() != 0);
+        modelRef.appendPath("footerVisibility").setValue(taskRepository.getTasks().size() != 0);
     }
 
     @ChangeListener(pattern="root.model.itemsLeft")
     public void itemsLeftChanged() {
-        thisRef.appendPath("itemsLeftText").setValue(itemsLeftText(itemsLeft));
-        thisRef.appendPath("toggleAll").setValue(itemsLeft == 0);
+        modelRef.appendPath("itemsLeftText").setValue(itemsLeftText(itemsLeft));
+        modelRef.appendPath("toggleAll").setValue(itemsLeft == 0);
     }
 
     @ChangeListener(pattern="root.model.itemsComplete")
     public void updateClearButton() {
-        thisRef.appendPath("clearButtonVisibility").setValue(itemsComplete != 0);
-        thisRef.appendPath("itemsCompleteText").setValue(itemsCompleteText(itemsComplete));
+        modelRef.appendPath("clearButtonVisibility").setValue(itemsComplete != 0);
+        modelRef.appendPath("itemsCompleteText").setValue(itemsCompleteText(itemsComplete));
     }
 
     @ActionListener
@@ -150,7 +151,7 @@ public class TaskListModel {
 
         Task task = new Task(title);
         taskRepository.saveTask(task);
-        thisRef.appendPath("itemsLeft").setValue(taskRepository.getActiveTasks().size());
+        modelRef.appendPath("itemsLeft").setValue(taskRepository.getActiveTasks().size());
 
         if (!Filter.valueOf(filter).equals(Filter.completed)) {
             int index = tasks.size();
@@ -202,12 +203,12 @@ public class TaskListModel {
 
     // helper for dealing with list refs
     private Ref tasksRef() {
-        return thisRef.appendPath("tasks");
+        return modelRef.appendPath("tasks");
     }
 
     // helper for dealing with list refs
     private Ref tasksRef(int index) {
-        return thisRef.appendPath("tasks").appendIndex(index);
+        return modelRef.appendPath("tasks").appendIndex(index);
     }
 
     public List<Task> filterTasks(Filter filter) {
@@ -240,8 +241,8 @@ public class TaskListModel {
     }
 
     private void updateItemsValues() {
-        thisRef.appendPath("itemsLeft").setValue(taskRepository.getActiveTasks().size());
-        thisRef.appendPath("itemsComplete").setValue(taskRepository.getCompletedTasks().size());
+        modelRef.appendPath("itemsLeft").setValue(taskRepository.getActiveTasks().size());
+        modelRef.appendPath("itemsComplete").setValue(taskRepository.getCompletedTasks().size());
     }
 
     private String itemsLeftText(int itemsLeft) {

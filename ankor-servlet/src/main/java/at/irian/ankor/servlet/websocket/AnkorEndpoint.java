@@ -43,20 +43,23 @@ import java.util.concurrent.TimeUnit;
  * @author Florian Klampfer
  */
 public abstract class AnkorEndpoint extends Endpoint implements ServerApplicationConfig {
+    private static Logger LOG = LoggerFactory.getLogger(AnkorEndpoint.class);
+
     /**
      * Must be greater than the clients heartbeat interval.
      */
     private static final int TIMEOUT = 30000;
+
     /**
      * The frequency of timeout checks.
      */
     private static final int TIMEOUT_CHECK_INTERVAL = 15000;
-    private static Logger LOG = LoggerFactory.getLogger(AnkorEndpoint.class);
-    private static ScheduledExecutorService timer = Executors.newSingleThreadScheduledExecutor();
+
     private static volatile boolean created = false;
+    private static ScheduledExecutorService timer = Executors.newSingleThreadScheduledExecutor();
     private static AnkorSystem ankorSystem;
     private static WebSocketMessageBus webSocketMessageBus;
-    private static Set<String> uniqueIds = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+
     private String clientId;
     private WebSocketRemoteSystem remoteSystem;
 
@@ -81,15 +84,6 @@ public abstract class AnkorEndpoint extends Endpoint implements ServerApplicatio
         try {
             clientId = UUID.randomUUID().toString();
 
-            if (clientId == null) {
-                LOG.error("Trying to connect without supplying an id");
-                throw new IllegalArgumentException();
-            } else if (uniqueIds.contains(clientId)) {
-                LOG.error("Id is not unique");
-                throw new IllegalArgumentException();
-            }
-
-            uniqueIds.add(clientId);
             session.getBasicRemote().sendText(clientId);
             LOG.info("New client connected {}", clientId);
 
