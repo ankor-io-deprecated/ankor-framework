@@ -7,6 +7,8 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
+import java.util.UUID;
+
 public class App extends AnkorApplication {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(App.class);
 

@@ -54,7 +54,7 @@ which hold the actual state of the UI.
 To navigate the tree we can "append" a path to a `Ref`, yielding a new `Ref` to the specified child node.
 
     :::java
-    FxRef rootRef = refFactory().ref("root");
+    FxRef rootRef = App.refFactory().ref("root");
     FxRef modelRef = rootRef.appendPath("model");
     FxRef footerVisibilityRef = modelRef.appendPath("footerVisibility");
 

@@ -10,8 +10,8 @@ Inside `initialize` we have to take care of two things:
     :::java
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        Ref rootRef = refFactory().ref("root"); // 1
-        rootRef.fire(new Action("init")); // 2
+        Ref rootRef = App.refFactory().ref("root");
+        rootRef.fire(new Action("init"));
     }
 
 The first statement will return a `Ref`, the second one will send an `Action` to the server.
