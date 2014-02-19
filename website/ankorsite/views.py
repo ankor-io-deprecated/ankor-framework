@@ -30,7 +30,6 @@ def get_titles(type):
             print("Tutorials needs to start with '### '")
     return titles
 
-
 type_names = {
     'fx': 'JavaFX Client',
     'js': 'JavaScript Client',
@@ -57,6 +56,7 @@ def index(request):
     template = loader.get_template('index.html')
     context = RequestContext(request, {
         'activeMenu': 'home',
+        'activeMenuText': 'Home',
     })
     return HttpResponse(template.render(context))
 
@@ -65,6 +65,7 @@ def download(request):
     template = loader.get_template('download.html')
     context = RequestContext(request, {
         'activeMenu': 'download',
+        'activeMenuText': 'Download',
     })
     return HttpResponse(template.render(context))
 
@@ -73,6 +74,7 @@ def tutorials_overview(request):
     template = loader.get_template('tutorials.html')
     context = RequestContext(request, {
         'activeMenu': 'tutorials',
+        'activeMenuText': 'Tutorials',
     })
     return HttpResponse(template.render(context))
 
@@ -95,6 +97,7 @@ def tutorial_helper(request, type, step, template):
 
     context = RequestContext(request, {
         'activeMenu': 'tutorials',
+        'activeMenuText': 'Tutorials',
         'type': type,
         'type_name': type_names[type],
         'step': step,
@@ -120,6 +123,7 @@ def documentation(request):
     template = loader.get_template('documentation.html')
     context = RequestContext(request, {
         'activeMenu': 'documentation',
+        'activeMenuText': 'Documentation'
     })
     return HttpResponse(template.render(context))
 
@@ -128,5 +132,6 @@ def contribute(request):
     template = loader.get_template('contribute.html')
     context = RequestContext(request, {
         'activeMenu': 'contribute',
+        'activeMenuText': 'Contribute'
     })
     return HttpResponse(template.render(context))

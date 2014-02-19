@@ -2,23 +2,24 @@
 
 {% block title %}Home{% endblock %}
 
-{% block masthead %}
-
-<div class="jumbotron">
+{% block container %}
+{% load staticfiles %}
+<section class="jumbotron main">
     <div class="container">
         <span class="fa fa-anchor hidden-xs"></span>
 
         <h1>Ankor</h1>
+
         <p class="lead">
-            App development framework<br/>
-            Synchronize your view model across multiple platforms<br/>
+            App development framework.<br/>
+            Synchronize your view model across multiple platforms.<br/>
         </p>
 
 
         <ul class="lead list-inline">
             <li><span class="glyphicon glyphicon-ok"></span>&nbsp;JavaFX</li>
             <li><span class="glyphicon glyphicon-ok"></span>&nbsp;HTML5</li>
-            <li><span class="glyphicon glyphicon-ok"></span>&nbsp;.NET / WPF</li>
+            <li><span class="glyphicon glyphicon-ok"></span>&nbsp;.NET</li>
             <li><span class="glyphicon glyphicon-ok"></span>&nbsp;iOS</li>
             <li><span class="glyphicon glyphicon-ok"></span>&nbsp;Android</li>
             <li><span class="glyphicon glyphicon-ok"></span>&nbsp;Java/JEE</li>
@@ -26,51 +27,48 @@
 
         <a href="/tutorials" type="button" class="btn btn-primary btn-lg">Get started today</a>
     </div>
-</div>
-
-{% endblock %}
-
-{% block content %}
-<div class="row">
-    <div class="col-md-4">
-        <h2>JavaFX</h2>
-        <div class="list-group">
-            <p>Implement your model server side in Java and connect it to your FX client using Ankor.</p>
-            <p>Benefit from automatic model synchronisation.</p>
-            <p>No need for RPC like calls.</p>
-            <p>Changes to your model on server will automatically update your UI (changes get pushed).</p>
+</section>
+<section class="row">
+    <div class="container">
+        <div class="col-md-4">
+            <h2>JavaFX</h2>
+            <ul class="list-unstyled">
+                <li>Implement your model server side in Java and connect it to your FX client using Ankor.</li>
+                <li>Benefit from automatic model synchronisation.</li>
+                <li>No need for RPC like calls.</li>
+                <li>Changes to your model on server will automatically update your UI (changes get pushed).</li>
+            </ul>
+        </div>
+        <div class="col-md-4">
+            <h2>HTML5</h2>
+            <ul class="list-unstyled">
+                <li>Develop web applications using your favorite HTML5 frameworks.</li>
+                <li>Bind your UI controls to server side view model using Ankor framework.</li>
+                <li>Ankor will synchronize your model. No need for RPC like calls.</li>
+                <li>Support for jQuery, Dojo, AngularJS.</li>
+            </ul>
+        </div>
+        <div class="col-md-4">
+            <h2>ViewModel</h2>
+            <ul class="list-unstyled">
+                <li>Implement your View Model in Java.</li>
+                <li>Benefit from existing Java technologies (JEE, Spring, JPA).</li>
+                <li>Manage the state of your View Model (restore on login).</li>
+                <li>Support for JEE servers (Tomcat, GlassFish).</li>
+            </ul>
         </div>
     </div>
-    <div class="col-md-4">
-        <h2>HTML 5</h2>
-        <div class="list-group">
-            <p>Develop web applications using your favorite HTML5 frameworks.</p>
-            <p>Bind your UI controls to server side view model using Ankor framework.</p>
-            <p>Ankor will synchronize your model. No need for RPC like calls.</p>
-            <p>Support for jQuery, Dojo, AngularJS.</p>
+</section>
+<section class="row" style="background-color:#f8f8f8">
+    <div class="container">
+        <div class="col-md-12">
+            <!--<object type="image/svg+xml" data="{% static 'images/ankor-architecture.svg' %}">
+              Ankor Architecture
+            </object>-->
+            <img src="{% static 'images/ankor-architecture.svg' %}"
+                 onerror="this.onerror=null; this.src='{% static 'images/ankor-architecture.png' %}'" alt="Ankor Architecture"/>
         </div>
     </div>
-    <div class="col-md-4">
-        <h2>View Model</h2>
-        <div class="list-group">
-            <p>Implement your View Model in Java.</p>
-            <p>Benefit from existing Java technologies (JEE, Spring, JPA).</p>
-            <p>Manage the state of your View Model (restore on login).</p>
-            <p>Support for JEE servers (Tomcat, GlassFish).</p>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-4">
-        {% load staticfiles %}
-        <img src="{% static 'images/ankor-architecture.png' %}" alt="Ankor Architecture" style="max-width:100%;"/>
-    </div>
-    <div class="col-md-4">
-    </div>
-    <div class="col-md-4">
-        {% load staticfiles %}
-        <img src="{% static 'images/ankor_mvvm_pattern.png' %}" alt="Ankor Architecture" style="max-width:100%;"/>
-    </div>
-</div>
+</section>
 
 {% endblock %}
