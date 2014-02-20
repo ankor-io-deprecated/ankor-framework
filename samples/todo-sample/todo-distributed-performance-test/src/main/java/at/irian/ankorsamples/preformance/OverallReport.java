@@ -2,8 +2,9 @@ package at.irian.ankorsamples.preformance;
 
 public class OverallReport {
     private String type = OverallReport.class.getSimpleName();
-    private double avg;
-    private double std;
+    private int avg;
+    private int mad;
+    private int std;
     private int failures;
     private int numClients;
     private int numSimulatedClients;
@@ -16,22 +17,6 @@ public class OverallReport {
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public double getAvg() {
-        return avg;
-    }
-
-    public void setAvg(double avg) {
-        this.avg = avg;
-    }
-
-    public double getStd() {
-        return std;
-    }
-
-    public void setStd(double std) {
-        this.std = std;
     }
 
     public int getFailures() {
@@ -72,6 +57,30 @@ public class OverallReport {
 
     public void setMax(int max) {
         this.max = max;
+    }
+
+    public int getMad() {
+        return mad;
+    }
+
+    public void setMad(int mad) {
+        this.mad = mad;
+    }
+
+    public int getStd() {
+        return std;
+    }
+
+    public void setStd(int std) {
+        this.std = std;
+    }
+
+    public int getAvg() {
+        return avg;
+    }
+
+    public void setAvg(int avg) {
+        this.avg = avg;
     }
 }
 

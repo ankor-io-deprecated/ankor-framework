@@ -48,7 +48,7 @@
         } else if (data.hasOwnProperty("type") && data.type == "OverallReport") {
             button.removeAttribute("disabled");
             document.getElementById("report").innerHTML = data.numClients + '  clients (' + data.numSimulatedClients +
-                ' simulated): Avg: ' + data.avg + 'ms, Std: ' + data.std + 'ms, 90% of requests are below: ' +
+                ' simulated): Avg: ' + data.avg + 'ms, MAD: '+ data.mad +'ms, Std: ' + data.std + 'ms, 90% of requests are below: ' +
                 data.quartile90 + 'ms, Max: ' + data.max + 'ms, Failures: ' + data.failures;
         } else if (data.hasOwnProperty("numClients")) {
             // num clients update

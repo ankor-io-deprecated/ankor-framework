@@ -77,7 +77,8 @@ public class Master {
         }
     }
 
-    private static double average(List<Integer> responseTimes, int n) {
+    private static double average(List<Integer> responseTimes) {
+        int n = responseTimes.size();
         double sum = 0;
         for (int time : responseTimes) {
             sum += time;
@@ -85,7 +86,8 @@ public class Master {
         return sum / n;
     }
 
-    private static double variance(List<Integer> responseTimes, int n, double avg) {
+    private static double variance(List<Integer> responseTimes, double avg) {
+        int n = responseTimes.size();
         if (n == 1) return 0;
 
         double sum = 0;
@@ -95,6 +97,20 @@ public class Master {
             sum += term * term; // ^2
         }
         return sum / (n - 1);
+    }
+
+    private static int mad(List<Integer> responseTimes) {
+        int n = responseTimes.size();
+        if (n == 1) return 0;
+
+        double median = responseTimes.get(n / 2);
+        List<Integer> absoluteDeviations = new ArrayList<>(n);
+
+        for (int time : responseTimes) {
+            absoluteDeviations.add((int) Math.abs(time - median));
+        }
+
+        return absoluteDeviations.get(n / 2);
     }
 
     private static void watchForTimeout() {
@@ -179,21 +195,23 @@ public class Master {
             failures += r.getFailures();
         }
 
-        double avg = average(responseTimes, responseTimes.size());
-        double std = Math.sqrt(variance(responseTimes, responseTimes.size(), avg));
+        double avg = average(responseTimes);
+        int mad = mad(responseTimes);
+        double std = Math.sqrt(variance(responseTimes, avg));
 
         Collections.sort(responseTimes);
         int quartile90 = responseTimes.get((int) (responseTimes.size() * 0.9));
         int max = responseTimes.get(responseTimes.size() - 1);
 
-        LOG.info("OverallReport report from {} clients ({} simulated): Avg: {}ms, Std: {}ms, 90% of requests are below: {}ms, Max: {}ms, Failures: {}",
-                numMinions, numClientsPerMinion * numMinions, avg, std, quartile90, max, failures);
+        LOG.info("OverallReport report from {} clients ({} simulated): Avg: {}ms, MAD: {}ms, Std: {}ms, 90% of requests are below: {}ms, Max: {}ms, Failures: {}",
+                numMinions, numClientsPerMinion * numMinions, avg, mad, std, quartile90, max, failures);
 
         OverallReport report = new OverallReport();
         report.setNumClients(numMinions);
         report.setNumSimulatedClients(numClientsPerMinion * numMinions);
-        report.setAvg(avg);
-        report.setStd(std);
+        report.setAvg((int) Math.round(avg));
+        report.setMad(mad);
+        report.setStd((int) Math.round(std));
         report.setFailures(failures);
         report.setQuartile90(quartile90);
         report.setMax(max);
