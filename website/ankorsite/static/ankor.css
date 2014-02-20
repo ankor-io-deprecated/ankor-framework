@@ -5,10 +5,6 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
-.navbar {
-    font-weight: 500;
-}
-
 .container {
     position: relative;
 }
@@ -26,15 +22,14 @@ section.row li {
 }
 
 .jumbotron.main h1 {
-    margin-top: 0;
     font-weight: bold;
 }
 
 .jumbotron.main .fa-anchor {
     position: absolute;
-    right: 0;
-    top: 0;
-    font-size: 230px;
+    right: 15px;
+    top: 15px;
+    font-size: 250px;
     opacity: 0.1;
 }
 

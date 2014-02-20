@@ -82,9 +82,9 @@ The [`AnkorEndpoint`][1] extends the WebSocket API's `Endpoint` class and handle
 It starts an Ankor system, accepts new WebSocket connections, assigns Ankor sessions to them and so on.
 
 The only thing that is required of the developer is to overwrite the `getModelRoot` method. 
-When called, it should return a new `ModelRoot` instance.
+When called, it should return a new instance of our own `ModelRoot` implementation.
 
-Such a class already exists in the `todo-servlet` module.
+The class already exists in the `todo-servlet` module.
 Open `TodoEndpoint.java` and implement the `getModelRoot` method.
     
     :::java
@@ -97,7 +97,7 @@ Open `TodoEndpoint.java` and implement the `getModelRoot` method.
     
 #### Check if the bindings work
     
-In the `ankor-todo` directory type `mvn install`.
+Start the servlet by typing `mvn install` in the `ankor-todo` directory.
 When the process has finished point your browser to [`http://localhost:8080`](http://localhost:8080).
 Your dummy text should appear in the footer.
 

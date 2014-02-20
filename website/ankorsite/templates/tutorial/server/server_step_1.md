@@ -9,7 +9,7 @@ To start the web server `cd` into the `todo-servlet` directory and execute this 
     mvn embedded-glassfish:run
 
 This can take a while. GlassFish will be downloaded.
-After the process completes point your browser to `http://localhost:8080/`.
+After the process completes point your browser to [`http://localhost:8080/test.html`](http://localhost:8080/test.html).
 The page should look something like this:
 
     :::text
@@ -17,21 +17,14 @@ The page should look something like this:
     WebSocket connection established
     UUID received: 9b1ac725-5bdd-46d2-9b9e-e5a283ae057b
 
-When we make changes to the code we want to redeploy them.
-In order to do so, in a new command prompt `cd` into `todo-server` and run:
-
-    mvn package
-
-Now you can redeploy your app by pressing `Enter` in the command line that started the server.
-You can shut down the server by typing `X`.
-
 #### Connecting a client
 
-If you went through one of the client tutorials you can use these.
+If you went through one of the client tutorials you can use your own implementation.
 Just make sure they connect to `ws://localhost:8080/websockets/ankor`.
-Otherwise you can use the JavaFX client implementation provided in this repository:
 
-    cd todo-fx
-    mvn jfx:run
+Otherwise you can use the JavaScript client provided by this servlet.
+Simply point your browser to `http://localhost:8080/`.
+As of now you will only see a blank page and the servlet will throw an `NotImplementedException`.
+Will will fix this in the next step.
 
 [1]: https://glassfish.java.net/

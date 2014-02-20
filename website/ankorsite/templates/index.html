@@ -4,28 +4,29 @@
 
 {% block container %}
 {% load staticfiles %}
-<section class="jumbotron main">
+<section class="row jumbotron main">
     <div class="container">
-        <span class="fa fa-anchor hidden-xs"></span>
+        <div class="col-md-12">
+            <span class="fa fa-anchor hidden-xs hidden-sm"></span>
 
-        <h1>Ankor</h1>
+            <h1>Ankor</h1>
 
-        <p class="lead">
-            App development framework.<br/>
-            Synchronize your view model across multiple platforms.<br/>
-        </p>
+            <p class="lead">
+                App development framework.<br/>
+                Synchronize your view model across multiple platforms.<br/>
+            </p>
 
+            <ul class="lead list-inline">
+                <li><span class="glyphicon glyphicon-ok"></span>&nbsp;JavaFX</li>
+                <li><span class="glyphicon glyphicon-ok"></span>&nbsp;HTML5</li>
+                <li><span class="glyphicon glyphicon-ok"></span>&nbsp;.NET</li>
+                <li><span class="glyphicon glyphicon-ok"></span>&nbsp;iOS</li>
+                <li><span class="glyphicon glyphicon-ok"></span>&nbsp;Android</li>
+                <li><span class="glyphicon glyphicon-ok"></span>&nbsp;Java/JEE</li>
+            </ul>
 
-        <ul class="lead list-inline">
-            <li><span class="glyphicon glyphicon-ok"></span>&nbsp;JavaFX</li>
-            <li><span class="glyphicon glyphicon-ok"></span>&nbsp;HTML5</li>
-            <li><span class="glyphicon glyphicon-ok"></span>&nbsp;.NET</li>
-            <li><span class="glyphicon glyphicon-ok"></span>&nbsp;iOS</li>
-            <li><span class="glyphicon glyphicon-ok"></span>&nbsp;Android</li>
-            <li><span class="glyphicon glyphicon-ok"></span>&nbsp;Java/JEE</li>
-        </ul>
-
-        <a href="/tutorials" type="button" class="btn btn-primary btn-lg">Get started today</a>
+            <a href="/tutorials" type="button" class="btn btn-primary btn-lg">Get started today</a>
+        </div>
     </div>
 </section>
 <section class="row">
@@ -66,7 +67,8 @@
               Ankor Architecture
             </object>-->
             <img src="{% static 'images/ankor-architecture.svg' %}"
-                 onerror="this.onerror=null; this.src='{% static 'images/ankor-architecture.png' %}'" alt="Ankor Architecture"/>
+                 onerror="this.onerror=null; this.src='{% static 'images/ankor-architecture.png' %}'"
+                 alt="Ankor Architecture"/>
         </div>
     </div>
 </section>
