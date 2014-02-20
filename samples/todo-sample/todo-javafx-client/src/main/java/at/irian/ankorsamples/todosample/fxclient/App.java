@@ -23,11 +23,16 @@ public class App extends AnkorApplication {
         return "ws://localhost:8080/websocket/ankor";
     }
 
+//    @Override
+//    protected String getModelContextId() {
+//        return "collabTest";
+//    }
+
     @Override
     protected void startFXClient(Stage primaryStage) throws Exception {
         services = getHostServices();
 
-        primaryStage.setTitle("Ankor FX Sample");
+        primaryStage.setTitle("Ankor JavaFX Todo Sample");
         Pane myPane = FXMLLoader.load(getClass().getClassLoader().getResource("tasks.fxml"));
 
         Scene myScene = new Scene(myPane);
