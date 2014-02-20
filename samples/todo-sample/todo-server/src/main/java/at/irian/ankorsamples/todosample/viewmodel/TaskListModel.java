@@ -26,7 +26,7 @@ public class TaskListModel {
 
     private List<TaskModel> tasks;
 
-    private String filter;
+    private Filter filter;
 
     private Integer itemsLeft;
     private String itemsLeftText;
@@ -48,12 +48,12 @@ public class TaskListModel {
         this.modelRef = modelRef;
         this.taskRepository = taskRepository;
 
-        filter = Filter.all.toString();
+        filter = Filter.all;
         filterAllSelected = true;
         filterActiveSelected = false;
         filterCompletedSelected = false;
 
-        tasks = new ArrayList<>(fetchTasksData(Filter.valueOf(filter)));
+        tasks = new ArrayList<>(fetchTasksData(filter));
 
         itemsLeft = taskRepository.getActiveTasks().size();
         itemsLeftText = itemsLeftText(itemsLeft);
@@ -86,7 +86,7 @@ public class TaskListModel {
 
     @ChangeListener(pattern = "root.model.filter")
     public void updateFilterSelected() {
-        switch (Filter.valueOf(filter)) {
+        switch (filter) {
             case all:
                 modelRef.appendPath("filterActiveSelected").setValue(false);
                 modelRef.appendPath("filterCompletedSelected").setValue(false);
@@ -153,7 +153,7 @@ public class TaskListModel {
         taskRepository.saveTask(task);
         modelRef.appendPath("itemsLeft").setValue(taskRepository.getActiveTasks().size());
 
-        if (!Filter.valueOf(filter).equals(Filter.completed)) {
+        if (!filter.equals(Filter.completed)) {
             int index = tasks.size();
             TaskModel model = new TaskModel(task);
             tasksRef().toCollectionRef().insert(index, model);
@@ -235,8 +235,8 @@ public class TaskListModel {
     private void updateTasksData() {
         LOG.info("reloading tasks");
 
-        Filter filterEnum = Filter.valueOf(filter);
-        (new ListDiff<>(tasks, fetchTasksData(filterEnum))).withThreshold(10).applyChangesTo(tasksRef());
+        // (new ListDiff<>(tasks, fetchTasksData(filter))).withThreshold(10).applyChangesTo(tasksRef());
+        tasksRef().setValue(fetchTasksData(filter));
         updateItemsValues();
     }
 
@@ -246,13 +246,7 @@ public class TaskListModel {
     }
 
     private String itemsLeftText(int itemsLeft) {
-        String text;
-        if (itemsLeft == 1) {
-            text = "item left";
-        } else {
-            text = "items left";
-        }
-        return text;
+        return (itemsLeft == 1) ? "item left" : "items left";
     }
 
     private String itemsCompleteText(int itemsComplete) {
@@ -276,11 +270,11 @@ public class TaskListModel {
     }
 
     public String getFilter() {
-        return filter;
+        return filter.toString();
     }
 
     public void setFilter(String filter) {
-        this.filter = filter;
+        this.filter = Filter.valueOf(filter);
     }
 
     public Boolean getFooterVisibility() {

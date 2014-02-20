@@ -22,7 +22,12 @@ public class App extends AnkorApplication {
     @Override
     protected String getWebSocketUri() {
         return "wss://ankor-todo-sample.irian.at/websocket/ankor";
-        // return "ws://localhost:8080/websocket/ankor";
+        //return "ws://localhost:8080/websocket/ankor";
+    }
+
+    @Override
+    protected String getModelContextId() {
+        return "collabTest";
     }
 
     @Override
