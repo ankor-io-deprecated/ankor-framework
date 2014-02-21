@@ -141,6 +141,8 @@ public class AnnotationBeanMetadataProvider implements BeanMetadataProvider {
                 for (String pattern : changeListenerAnnotation.pattern()) {
                     ParameterMetadata[] parameters = getMethodParameters(method);
                     InvocationMetadata invocation = new InvocationMetadata(method, parameters);
+
+                    // TODO: Check backRef count in pattern against method parameter count
                     changeListeners.add(new ChangeListenerMetadata(refMatcherFactory.getRefMatcher(pattern),
                                                                    invocation));
                 }
