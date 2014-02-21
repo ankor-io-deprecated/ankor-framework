@@ -64,24 +64,17 @@ public class TaskListModel {
         clearButtonVisibility = itemsComplete != 0;
 
         toggleAll = false;
+    }
 
-        // TODO: Still no better way to do this?
-        RefListeners.addTreeChangeListener(tasksRef(), new RefChangeListener() {
-            @Override
-            public void processChange(Ref changedProperty) {
-                String name = changedProperty.propertyName();
+    @ChangeListener(pattern = "root.model.tasks.(*).title")
+    public void taskChanged(Ref taskModelRef) {
+        updateTask(taskModelRef);
+    }
 
-                if ("completed".equals(name) || "title".equals(name)) {
-                    TaskModel model = changedProperty.parent().getValue();
-                    Task task = model.getTask();
-                    TaskListModel.this.taskRepository.saveTask(task);
-
-                    if ("completed".equals(name)) {
-                        updateItemsValues();
-                    }
-                }
-            }
-        });
+    @ChangeListener(pattern = "root.model.tasks.(*).completed")
+    public void taskCompletedChanged(Ref taskModelRef) {
+        updateTask(taskModelRef);
+        updateItemsValues();
     }
 
     @ChangeListener(pattern = "root.model.filter")
@@ -128,18 +121,18 @@ public class TaskListModel {
 
     @ChangeListener(pattern = {
             "root.model.itemsLeft",
-            "root.model.itemsComplete" })
+            "root.model.itemsComplete"})
     public void updateFooterVisibility() {
         modelRef.appendPath("footerVisibility").setValue(taskRepository.getTasks().size() != 0);
     }
 
-    @ChangeListener(pattern="root.model.itemsLeft")
+    @ChangeListener(pattern = "root.model.itemsLeft")
     public void itemsLeftChanged() {
         modelRef.appendPath("itemsLeftText").setValue(itemsLeftText(itemsLeft));
         modelRef.appendPath("toggleAll").setValue(itemsLeft == 0);
     }
 
-    @ChangeListener(pattern="root.model.itemsComplete")
+    @ChangeListener(pattern = "root.model.itemsComplete")
     public void updateClearButton() {
         modelRef.appendPath("clearButtonVisibility").setValue(itemsComplete != 0);
         modelRef.appendPath("itemsCompleteText").setValue(itemsCompleteText(itemsComplete));
@@ -191,16 +184,6 @@ public class TaskListModel {
         updateTasksData();
     }
 
-    @ChangeListener(pattern = "root.model.tasks[*].completed")
-    public void completedChanged() {
-        LOG.info("completed changed");
-    }
-
-    @ChangeListener(pattern = "root.model.tasks[*].title")
-    public void titleChanged() {
-        LOG.info("title changed");
-    }
-
     // helper for dealing with list refs
     private Ref tasksRef() {
         return modelRef.appendPath("tasks");
@@ -213,9 +196,12 @@ public class TaskListModel {
 
     public List<Task> filterTasks(Filter filter) {
         switch (filter) {
-            case all:  return taskRepository.getTasks();
-            case active: return taskRepository.getActiveTasks();
-            case completed: return taskRepository.getCompletedTasks();
+            case all:
+                return taskRepository.getTasks();
+            case active:
+                return taskRepository.getActiveTasks();
+            case completed:
+                return taskRepository.getCompletedTasks();
         }
         return null;
     }
@@ -243,6 +229,12 @@ public class TaskListModel {
     private void updateItemsValues() {
         modelRef.appendPath("itemsLeft").setValue(taskRepository.getActiveTasks().size());
         modelRef.appendPath("itemsComplete").setValue(taskRepository.getCompletedTasks().size());
+    }
+
+    private void updateTask(Ref taskModelRef) {
+        TaskModel model = taskModelRef.getValue();
+        Task task = model.getTask();
+        TaskListModel.this.taskRepository.saveTask(task);
     }
 
     private String itemsLeftText(int itemsLeft) {
