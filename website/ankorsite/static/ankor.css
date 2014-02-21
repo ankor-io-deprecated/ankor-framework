@@ -30,7 +30,7 @@ section.row li {
     right: 15px;
     top: 15px;
     font-size: 250px;
-    opacity: 0.1;
+    color: #dbdbdb;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -114,6 +114,7 @@ a.panel-heading:hover {
 }
 
 .foreground {
+    position: relative;
     padding-top: 50px;
     position: relative;
     z-index: 2;
@@ -131,7 +132,7 @@ a.panel-heading:hover {
     
     z-index: 1;
     text-align: center;
-    height: 100px;
+    height: 110px;
     padding-top: 30px;
 }
 
@@ -149,11 +150,3 @@ a.panel-heading:hover {
         padding-right: 0;
     }
 }
-
-.style8 {
-  fill: #94d31b; 
-}
-.style8:hover {
-  fill: #ace63c; 
-}
-
