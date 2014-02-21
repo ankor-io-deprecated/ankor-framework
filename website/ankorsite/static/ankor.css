@@ -13,12 +13,40 @@ section.row {
     padding: 40px 0;
 }
 
+section.row, .foreground {
+    border-bottom: 10px solid rgba(0, 0, 0, 0.05);
+}
+
+section.row:last-child {
+    border-bottom: 0;
+}
+
+.btn {
+    border-radius: 0;
+    border-bottom: 7px solid rgba(0, 0, 0, 0.05);
+}
+
 section.row li {
     margin-bottom: 5px;
 }
 
+.container .jumbotron {
+    padding: 30px;
+    border-radius: 0;
+    border-bottom: 10px solid rgba(0, 0, 0, 0.05);
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
 .jumbotron.main {
     margin-bottom: 0;
+}
+
+.navbar-fixed-top {
+    border-bottom: 7px solid rgba(0, 0, 0, 0.075);
+}
+
+.navbar-fixed-top li.active {
+    box-shadow: 0 7px 0 rgba(0, 0, 0, 0.05);
 }
 
 .jumbotron.main h1 {
@@ -48,19 +76,25 @@ p a {
 
 code, pre {
     font-family: Menlo, Consolas, "Courier New", monospace;
+    border-radius: 0;
+    border: none;
 }
 
 pre {
     margin: 20px 0;
     overflow-x: auto;
     word-wrap: normal;
+    border-bottom: 7px solid rgba(0, 0, 0, 0.05);
 }
 
 code {
+    padding-top: 1px;
+    padding-bottom: 1px;
     color: rgba(0, 0, 0, 0.75);
     background-color: rgba(0, 0, 0, 0.05);
     border-color: rgba(0, 0, 0, 0.1);
     word-wrap: break-word;
+    border-bottom: 3px solid rgba(0, 0, 0, 0.05);
 }
 
 a code {
@@ -116,10 +150,13 @@ a.panel-heading:hover {
 .foreground {
     position: relative;
     padding-top: 50px;
-    position: relative;
     z-index: 2;
     background: #fff;
     overflow-x: hidden;
+}
+
+#footer, body {
+    background-color: #e8e8e8;
 }
 
 #footer {
@@ -127,26 +164,84 @@ a.panel-heading:hover {
     position: fixed;
     bottom: 0;
     left: 0;
-    background-color: #eee;
     color: #999;
-    
+
     z-index: 1;
     text-align: center;
     height: 110px;
-    padding-top: 30px;
+    padding-top: 40px;
 }
 
 #footer a {
     color: #555;
 }
 
+@media (min-width: 768px) {
+    section.row > .container {
+        padding-left: 0;
+        padding-right: 0;
+    }
+}
+
 @media (max-width: 992px) {
     .affix {
         position: relative;
     }
-    
+
     .jumbotron.main {
         padding-left: 0;
         padding-right: 0;
     }
+    .navbar-fixed-top li.active {
+        box-shadow: none;
+    }
+}
+
+.panel, .panel a {
+    border-radius: 0!important;
+    border: none;
+}
+
+.panel .list-group-item {
+    margin-bottom: 0;
+}
+
+.panel .list-group-item, .panel .panel-heading {
+    border: none!important;
+    border-bottom: 7px solid rgba(0, 0, 0, 0.05)!important;
+}
+
+.breadcrumb {
+    background-color: #f5f5f5;
+    border-radius: 0;
+    border: none;
+    border-bottom: 7px solid rgba(0, 0, 0, 0.05);
+    padding-left: 4px;
+}
+
+.breadcrumb > li > * {
+    border: none;
+    margin-top: 0;
+    color: #777;
+}
+
+.breadcrumb > li:hover > * {
+    box-shadow: 0 7px 0 rgba(0, 0, 0, 0.025);
+}
+
+.breadcrumb > li.active > * {
+    box-shadow: 0 7px 0 rgba(0, 0, 0, 0.05);
+}
+
+.alert {
+    border-radius: 0;
+    border: none;
+    border-bottom: 7px solid rgba(0, 0, 0, 0.05);
+}
+
+.navbar-toggle {
+    border-radius: 0;
+    border: none;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-bottom: 5px solid rgba(0, 0, 0, 0.05);
 }

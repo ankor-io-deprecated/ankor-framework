@@ -3,9 +3,8 @@
   margin-bottom: 20px;
   list-style: none;
   border-radius: 4px;
-  overflow: hidden;
   border: 1px solid #dddddd;
-  background-color: #ffffff;
+  background-color: #e8e8e8;
 }
 .breadcrumb > li {
   display: inline-block;
@@ -15,7 +14,7 @@
   padding: 10px 10px 10px 25px;
   position: relative;
   display: block;
-  background-color: #ffffff;
+  background-color: #e8e8e8;
   margin-top: -1px;
   border-top: 1px solid #dddddd;
   border-bottom: 1px solid #dddddd;
@@ -26,14 +25,14 @@
   background-color: #f5f5f5;
 }
 .breadcrumb > li > *:after {
-  content: " ";
+  content: "";
   display: block;
   width: 0;
   height: 0;
   border-top: 20px solid transparent;
   /* Go big on the size, and let overflow hide */
   border-bottom: 20px solid transparent;
-  border-left: 15px solid #ffffff;
+  border-left: 15px solid #e8e8e8;
   position: absolute;
   top: 50%;
   margin-top: -20px;
@@ -41,7 +40,7 @@
   z-index: 2;
 }
 .breadcrumb > li > *:before {
-  content: " ";
+  content: "";
   display: block;
   width: 0;
   height: 0;

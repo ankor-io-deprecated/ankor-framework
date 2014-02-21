@@ -13,7 +13,7 @@ It contains the title of the new task as a parameter.
 
 #### Before we start
 
-Let's set the initial state of our three view model properties based on the database:
+Let's set the initial state of our view model properties based on the database:
 
     :::java
     itemsLeft = taskRepository.getActiveTasks().size();
@@ -105,5 +105,9 @@ We can obtain this Ref by appending `"itemsLeft"` to our `modelRef`.
 
 This will send a change event to the client and trigger any events there.
 It will also update the local variable, so that `(this.itemsLeft == itemsLeft)` evaluates to `true`.
+
+Unfortunately we won't be able to see the changes in the UI yet.
+This is due to the `footerVisibility`, which is set to `false` when there are no todos in the list.
+In the next step we will use a `ChangeListener` to keep the `footerVisibility` updated based on the number of todos.
 
 [4]: #TODOLinkToDocumentationAction
