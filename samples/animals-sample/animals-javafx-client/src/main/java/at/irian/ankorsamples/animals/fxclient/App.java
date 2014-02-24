@@ -246,7 +246,6 @@ public class App extends javafx.application.Application {
         SocketMessageLoop.Host clientHost = parseHost(client);
 
         SocketAnkorSystemStarter appBuilder = new SocketAnkorSystemStarter()
-                .withModelRootFactory(new MyModelRootFactory())
                 .withLocalHost(clientHost)
                 .withServerHost(parseHost(server))
                 .withRefContextFactoryProvider(new FxRefContextFactoryProvider());
