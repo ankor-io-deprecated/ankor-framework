@@ -30,13 +30,16 @@
 </div><!--/row-->
 <script type="text/javascript">
     $(function() {
-        $(window).resize(function () {
+        var setPosition = function() {
             $('.affix').width($('.col-md-3').width());
-        });
-
-        $("#tutorial-menu").on("affixed.bs.affix", function() {
-            $('.affix').width($('.col-md-3').width());
-        });
+            var offset = $('.col-md-3').offset();
+            $('.affix').css({
+                left: offset.left + 15,
+                top: offset.top
+            });
+        };
+        $(window).resize(setPosition);
+        $("#tutorial-menu").on("affixed.bs.affix", setPosition);
 
         $("p > img").parent().css({textAlign: "center"});
     });

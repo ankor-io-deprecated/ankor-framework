@@ -1,4 +1,4 @@
-### Basics
+### The Model Root
 
 An Ankor server is basically a composition of POJOs.
 These objects have properties that reflect the current state of the UI.

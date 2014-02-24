@@ -5,10 +5,8 @@ import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.annotation.Param;
 import at.irian.ankor.messaging.AnkorIgnore;
 import at.irian.ankor.pattern.AnkorPatterns;
+import at.irian.ankor.ref.CollectionRef;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.ref.listener.RefChangeListener;
-import at.irian.ankor.ref.listener.RefListeners;
-import at.irian.ankor.viewmodel.diff.ListDiff;
 import at.irian.ankorsamples.todosample.domain.task.Task;
 import at.irian.ankorsamples.todosample.domain.task.TaskRepository;
 
@@ -18,40 +16,28 @@ import java.util.List;
 @SuppressWarnings("UnusedDeclaration")
 public class TaskListModel {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TaskListModel.class);
-
     @AnkorIgnore
     private final TaskRepository taskRepository;
     @AnkorIgnore
     private final Ref modelRef;
-
     private List<TaskModel> tasks;
-
-    private Filter filter;
-
+    private Filter filter = Filter.all;
     private Integer itemsLeft;
     private String itemsLeftText;
     private Boolean footerVisibility;
-
     private Integer itemsComplete;
     private String itemsCompleteText;
     private Boolean clearButtonVisibility;
-
-    private Boolean toggleAll;
-
-    private Boolean filterAllSelected;
-    private Boolean filterActiveSelected;
-    private Boolean filterCompletedSelected;
+    private Boolean filterAllSelected = true;
+    private Boolean filterActiveSelected = false;
+    private Boolean filterCompletedSelected = false;
+    private Boolean toggleAll = false;
 
     public TaskListModel(Ref modelRef, TaskRepository taskRepository) {
         AnkorPatterns.initViewModel(this, modelRef);
 
         this.modelRef = modelRef;
         this.taskRepository = taskRepository;
-
-        filter = Filter.all;
-        filterAllSelected = true;
-        filterActiveSelected = false;
-        filterCompletedSelected = false;
 
         tasks = new ArrayList<>(fetchTasksData(filter));
 
@@ -62,19 +48,13 @@ public class TaskListModel {
         itemsComplete = taskRepository.getCompletedTasks().size();
         itemsCompleteText = itemsCompleteText(itemsComplete);
         clearButtonVisibility = itemsComplete != 0;
-
-        toggleAll = false;
     }
 
-    @ChangeListener(pattern = "root.model.tasks.(*).title")
+    @ChangeListener(pattern = {
+            "root.model.tasks.(*).title",
+            "root.model.tasks.(*).completed"})
     public void taskChanged(Ref taskModelRef) {
         updateTask(taskModelRef);
-    }
-
-    @ChangeListener(pattern = "root.model.tasks.(*).completed")
-    public void taskCompletedChanged(Ref taskModelRef) {
-        updateTask(taskModelRef);
-        updateItemsValues();
     }
 
     @ChangeListener(pattern = "root.model.filter")
@@ -98,7 +78,7 @@ public class TaskListModel {
     @ChangeListener(pattern = "root.model.filterAllSelected")
     public void filterAllSelected() {
         if (this.filterAllSelected) {
-            modelRef.appendPath("filter").setValue(Filter.all.toString());
+            modelRef.appendPath("filter").setValue(Filter.all);
             updateTasksData();
         }
     }
@@ -106,7 +86,7 @@ public class TaskListModel {
     @ChangeListener(pattern = "root.model.filterActiveSelected")
     public void filterActiveSelected() {
         if (this.filterActiveSelected) {
-            modelRef.appendPath("filter").setValue(Filter.active.toString());
+            modelRef.appendPath("filter").setValue(Filter.active);
             updateTasksData();
         }
     }
@@ -114,7 +94,7 @@ public class TaskListModel {
     @ChangeListener(pattern = "root.model.filterCompletedSelected")
     public void filterCompletedSelected() {
         if (this.filterCompletedSelected) {
-            modelRef.appendPath("filter").setValue(Filter.completed.toString());
+            modelRef.appendPath("filter").setValue(Filter.completed);
             updateTasksData();
         }
     }
@@ -147,9 +127,8 @@ public class TaskListModel {
         modelRef.appendPath("itemsLeft").setValue(taskRepository.getActiveTasks().size());
 
         if (!filter.equals(Filter.completed)) {
-            int index = tasks.size();
             TaskModel model = new TaskModel(task);
-            tasksRef().toCollectionRef().insert(index, model);
+            tasksRef().add(model);
         }
     }
 
@@ -159,9 +138,8 @@ public class TaskListModel {
 
         Task task = tasks.get(index).getTask();
         taskRepository.deleteTask(task);
-        updateItemsValues();
 
-        tasksRef(index).delete();
+        tasksRef().delete(index);
     }
 
     @ActionListener
@@ -185,13 +163,13 @@ public class TaskListModel {
     }
 
     // helper for dealing with list refs
-    private Ref tasksRef() {
-        return modelRef.appendPath("tasks");
+    private CollectionRef tasksRef() {
+        return modelRef.appendPath("tasks").toCollectionRef();
     }
 
     // helper for dealing with list refs
     private Ref tasksRef(int index) {
-        return modelRef.appendPath("tasks").appendIndex(index);
+        return tasksRef().appendIndex(index);
     }
 
     public List<Task> filterTasks(Filter filter) {
@@ -206,8 +184,8 @@ public class TaskListModel {
         return null;
     }
 
-    private List<TaskModel> fetchTasksData(Filter filterEnum) {
-        List<Task> tasks = filterTasks(filterEnum);
+    private List<TaskModel> fetchTasksData(Filter filter) {
+        List<Task> tasks = filterTasks(filter);
         List<TaskModel> res = new ArrayList<>(tasks.size());
 
         for (Task t : tasks) {
@@ -223,10 +201,12 @@ public class TaskListModel {
 
         // (new ListDiff<>(tasks, fetchTasksData(filter))).withThreshold(10).applyChangesTo(tasksRef());
         tasksRef().setValue(fetchTasksData(filter));
-        updateItemsValues();
     }
 
-    private void updateItemsValues() {
+    @ChangeListener(pattern = {
+            "root.model.tasks",
+            "root.model.tasks.**"})
+    public void updateItemsValues() {
         modelRef.appendPath("itemsLeft").setValue(taskRepository.getActiveTasks().size());
         modelRef.appendPath("itemsComplete").setValue(taskRepository.getCompletedTasks().size());
     }
