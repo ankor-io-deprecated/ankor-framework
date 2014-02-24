@@ -1,4 +1,4 @@
-### Sharing properties
+### Sharing Properties
 
 #### Creating another view model
 
