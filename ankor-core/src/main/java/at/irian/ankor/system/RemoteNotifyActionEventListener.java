@@ -3,7 +3,7 @@ package at.irian.ankor.system;
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionEvent;
 import at.irian.ankor.action.ActionEventListener;
-import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.messaging.Message;
 import at.irian.ankor.messaging.MessageFactory;
 import at.irian.ankor.messaging.modify.Modifier;
@@ -15,7 +15,7 @@ import java.util.Collection;
 
 /**
  * Global ActionEventListener that relays locally happened {@link ActionEvent ActionEvents} to all remote systems
- * connected to the underlying ModelContext.
+ * connected to the underlying ModelSession.
  *
  * @author Manfred Geiler
  */
@@ -46,8 +46,8 @@ public class RemoteNotifyActionEventListener extends ActionEventListener {
         Action action = event.getAction();
         Ref actionProperty = event.getActionProperty();
         Action modifiedAction = preSendModifier.modifyBeforeSend(action, actionProperty);
-        ModelContext modelContext = actionProperty.context().modelContext();
-        Collection<ModelConnection> modelConnections = modelConnectionManager.getAllFor(modelContext);
+        ModelSession modelSession = actionProperty.context().modelSession();
+        Collection<ModelConnection> modelConnections = modelConnectionManager.getAllFor(modelSession);
         for (ModelConnection modelConnection : modelConnections) {
             if (event.getSource() instanceof RemoteSource) {
                 ModelConnection initiatingModelConnection = ((RemoteSource) event.getSource()).getModelConnection();
@@ -58,7 +58,7 @@ public class RemoteNotifyActionEventListener extends ActionEventListener {
             }
 
             String actionPropertyPath = actionProperty.path();
-            Message message = messageFactory.createActionMessage(actionProperty.context().modelContext(),
+            Message message = messageFactory.createActionMessage(actionProperty.context().modelSession(),
                                                                  actionPropertyPath,
                                                                  modifiedAction);
             LOG.debug("server sends {}", message);

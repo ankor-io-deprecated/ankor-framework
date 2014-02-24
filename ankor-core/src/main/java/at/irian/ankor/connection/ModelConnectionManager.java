@@ -1,6 +1,6 @@
 package at.irian.ankor.connection;
 
-import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.session.ModelSession;
 
 import java.util.Collection;
 
@@ -10,9 +10,9 @@ import java.util.Collection;
 @SuppressWarnings("UnusedDeclaration")
 public interface ModelConnectionManager {
 
-    ModelConnection getOrCreate(ModelContext modelContext, RemoteSystem remoteSystem);
+    ModelConnection getOrCreate(ModelSession modelSession, RemoteSystem remoteSystem);
 
-    Collection<ModelConnection> getAllFor(ModelContext modelContext);
+    Collection<ModelConnection> getAllFor(ModelSession modelSession);
 
     Collection<ModelConnection> getAllFor(RemoteSystem remoteSystem);
 

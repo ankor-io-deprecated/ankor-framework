@@ -1,4 +1,4 @@
-package at.irian.ankor.context;
+package at.irian.ankor.session;
 
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.event.dispatch.EventDispatcher;
@@ -6,14 +6,14 @@ import at.irian.ankor.event.dispatch.EventDispatcher;
 import java.util.Map;
 
 /**
- * The ModelContext provides access to all information that belongs to one specific model instance. It represents
+ * The ModelSession provides access to all information that belongs to one specific model instance. It represents
  * the model instance during runtime.
- * Every ModelContext has a unique identifier that identifies the model. Besides that the ModelContext provides access
+ * Every ModelSession has a unique identifier that identifies the model. Besides that the ModelSession provides access
  * to the event listeners of the model and one or more "model roots".
  *
  * @author Manfred Geiler
  */
-public interface ModelContext {
+public interface ModelSession {
 
     /**
      * @return  the unique identifier of the corresponding model
@@ -42,7 +42,7 @@ public interface ModelContext {
      * Close this model and free all resources.
      * After a model is closed, the framework is free to cleanup all resources that might have been used by this
      * model.
-     * ModelContext implementations should close the associated EventDispatcher(s) and omit all references to
+     * ModelSession implementations should close the associated EventDispatcher(s) and omit all references to
      * model root instances.
      */
     void close();

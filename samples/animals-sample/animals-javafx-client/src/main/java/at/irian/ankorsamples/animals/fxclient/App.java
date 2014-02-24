@@ -153,7 +153,7 @@ public class App extends javafx.application.Application {
                 .withMessageBus(messageBus)
                 .withDispatcherFactory(new JavaFxEventDispatcherFactory())
                 .withRefContextFactoryProvider(new FxRefContextFactoryProvider())
-                .withModelContextId("collabTest");
+                .withModelSessionId("collabTest");
 
         final CountDownLatch latch = new CountDownLatch(1);
 
@@ -290,7 +290,7 @@ public class App extends javafx.application.Application {
         AnkorSystem clientSystem = new AnkorSystemBuilder()
                 .withName(clientId)
                 .withMessageBus(clientMessageLoop.getMessageBus())
-                .withModelContextId("collabTest")
+                .withModelSessionId("collabTest")
                 .withDispatcherFactory(new JavaFxEventDispatcherFactory())
                 .withRefContextFactoryProvider(new FxRefContextFactoryProvider())
                 .createClient();

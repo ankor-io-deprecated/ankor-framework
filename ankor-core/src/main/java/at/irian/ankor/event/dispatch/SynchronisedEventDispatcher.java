@@ -1,6 +1,6 @@
 package at.irian.ankor.event.dispatch;
 
-import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.event.ModelEvent;
 
 /**
@@ -9,17 +9,17 @@ import at.irian.ankor.event.ModelEvent;
 public class SynchronisedEventDispatcher extends SimpleEventDispatcher {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SynchronisedEventDispatcher.class);
 
-    private final ModelContext modelContext;
+    private final ModelSession modelSession;
 
-    public SynchronisedEventDispatcher(ModelContext modelContext) {
-        super(modelContext.getEventListeners());
-        this.modelContext = modelContext;
+    public SynchronisedEventDispatcher(ModelSession modelSession) {
+        super(modelSession.getEventListeners());
+        this.modelSession = modelSession;
     }
 
     @Override
     public void dispatch(ModelEvent event) {
-        synchronized (modelContext) {
-            DispatchThreadChecker dispatchThreadChecker = new DispatchThreadChecker(modelContext);
+        synchronized (modelSession) {
+            DispatchThreadChecker dispatchThreadChecker = new DispatchThreadChecker(modelSession);
             boolean registered = dispatchThreadChecker.registerCurrentThread();
             try {
                 super.dispatch(event);

@@ -1,4 +1,4 @@
-package at.irian.ankor.context;
+package at.irian.ankor.session;
 
 import at.irian.ankor.event.ArrayListEventListeners;
 import at.irian.ankor.event.EventListeners;
@@ -14,8 +14,8 @@ import java.util.Map;
 /**
  * @author Manfred Geiler
  */
-class DefaultModelContext implements ModelContext, DispatchThreadAware {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelContext.class);
+class DefaultModelSession implements ModelSession, DispatchThreadAware {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelSession.class);
 
     private final String id;
     private final EventListeners eventListeners;
@@ -25,7 +25,7 @@ class DefaultModelContext implements ModelContext, DispatchThreadAware {
 
     private volatile Thread dispatchThread;
 
-    DefaultModelContext(String id, EventListeners eventListeners) {
+    DefaultModelSession(String id, EventListeners eventListeners) {
         this.id = id;
         this.eventListeners = eventListeners;
         this.eventDispatcherStack = new ArrayDeque<EventDispatcher>();
@@ -33,13 +33,13 @@ class DefaultModelContext implements ModelContext, DispatchThreadAware {
         this.attributes = null;
     }
 
-    public static ModelContext create(EventDispatcherFactory eventDispatcherFactory,
+    public static ModelSession create(EventDispatcherFactory eventDispatcherFactory,
                                       String id,
                                       EventListeners globalEventListeners) {
         EventListeners eventListeners = new ArrayListEventListeners(globalEventListeners);
-        DefaultModelContext modelContext = new DefaultModelContext(id, eventListeners);
-        modelContext.pushEventDispatcher(eventDispatcherFactory.createFor(modelContext));
-        return modelContext;
+        DefaultModelSession modelSession = new DefaultModelSession(id, eventListeners);
+        modelSession.pushEventDispatcher(eventDispatcherFactory.createFor(modelSession));
+        return modelSession;
     }
 
     public String getId() {
@@ -86,7 +86,7 @@ class DefaultModelContext implements ModelContext, DispatchThreadAware {
 
     @Override
     public String toString() {
-        return "DefaultModelContext{" +
+        return "DefaultModelSession{" +
                "id='" + id + '\'' +
                '}';
     }

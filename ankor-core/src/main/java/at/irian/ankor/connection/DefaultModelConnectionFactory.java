@@ -1,6 +1,6 @@
 package at.irian.ankor.connection;
 
-import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.event.dispatch.EventDispatcherFactory;
 import at.irian.ankor.messaging.MessageSenderProvider;
 import at.irian.ankor.ref.RefContext;
@@ -25,12 +25,12 @@ public class DefaultModelConnectionFactory implements ModelConnectionFactory {
     }
 
     /**
-     * Creates a connection between the ModelContext and the given remote system.
+     * Creates a connection between the ModelSession and the given remote system.
      */
     @Override
-    public DefaultModelConnection create(ModelContext modelContext, RemoteSystem remoteSystem) {
-        RefContext refContext = refContextFactory.createRefContextFor(modelContext);
-        return new DefaultModelConnection(modelContext, refContext,
+    public DefaultModelConnection create(ModelSession modelSession, RemoteSystem remoteSystem) {
+        RefContext refContext = refContextFactory.createRefContextFor(modelSession);
+        return new DefaultModelConnection(modelSession, refContext,
                                  messageSenderProvider.getMessageSenderFor(remoteSystem));
     }
 

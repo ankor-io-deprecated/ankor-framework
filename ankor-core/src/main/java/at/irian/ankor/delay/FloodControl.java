@@ -24,7 +24,7 @@ public class FloodControl {
     }
 
     public FloodControl(RefContext refContext, long delay) {
-        this(refContext.scheduler(), refContext.modelContext().getEventDispatcher(), delay);
+        this(refContext.scheduler(), refContext.modelSession().getEventDispatcher(), delay);
     }
 
     public FloodControl(Scheduler scheduler, EventDispatcher eventDispatcher, long delay) {

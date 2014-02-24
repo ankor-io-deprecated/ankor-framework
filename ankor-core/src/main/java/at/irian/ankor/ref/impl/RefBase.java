@@ -32,28 +32,28 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
 
     @Override
     public void setValue(final Object newValue) {
-        apply(new LocalSource(context().modelContext()), Change.valueChange(newValue));
+        apply(new LocalSource(context().modelSession()), Change.valueChange(newValue));
     }
 
     @Override
     public void delete(String key) {
-        apply(new LocalSource(context().modelContext()), Change.deleteChange(key));
+        apply(new LocalSource(context().modelSession()), Change.deleteChange(key));
     }
 
     @Override
     public void delete(int idx) {
-        apply(new LocalSource(context().modelContext()), Change.deleteChange(idx));
+        apply(new LocalSource(context().modelSession()), Change.deleteChange(idx));
     }
 
     @Override
     public void delete() {
-        ((RefImplementor)parent()).apply(new LocalSource(context().modelContext()),
+        ((RefImplementor)parent()).apply(new LocalSource(context().modelSession()),
                                          Change.deleteChange(propertyName()));
     }
 
     @Override
     public void insert(int idx, Object value) {
-        apply(new LocalSource(context().modelContext()), Change.insertChange(idx, value));
+        apply(new LocalSource(context().modelSession()), Change.insertChange(idx, value));
     }
 
     @Override
@@ -73,12 +73,12 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
             throw new IllegalArgumentException("collection or array of type " + collOrArray.getClass());
         }
 
-        apply(new LocalSource(context().modelContext()), Change.insertChange(size, value));
+        apply(new LocalSource(context().modelSession()), Change.insertChange(size, value));
     }
 
     @Override
     public void replace(int fromIdx, Collection elements) {
-        apply(new LocalSource(context().modelContext()), Change.replaceChange(fromIdx, elements));
+        apply(new LocalSource(context().modelSession()), Change.replaceChange(fromIdx, elements));
     }
 
     @Override
@@ -86,12 +86,12 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
 
         // buffer events
         BufferingEventDispatcher bufferingEventDispatcher = new BufferingEventDispatcher();
-        context().modelContext().pushEventDispatcher(bufferingEventDispatcher);
+        context().modelSession().pushEventDispatcher(bufferingEventDispatcher);
         try {
             // apply change to local view model
             handleChange(change);
         } finally {
-            context().modelContext().popEventDispatcher();
+            context().modelSession().popEventDispatcher();
         }
 
         if (change.getType() == ChangeType.value) {
@@ -112,13 +112,13 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
                         }
                     }
                 }
-                context().modelContext().getEventDispatcher().dispatch(modelEvent);
+                context().modelSession().getEventDispatcher().dispatch(modelEvent);
             }
         }
 
         // fire change event
         ChangeEvent changeEvent = new ChangeEvent(source, this, change);
-        context().modelContext().getEventDispatcher().dispatch(changeEvent);
+        context().modelSession().getEventDispatcher().dispatch(changeEvent);
     }
 
     private void handleChange(Change change) {
@@ -360,14 +360,14 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
 
     @Override
     public void signalValueChange() {
-        signal(new LocalSource(context().modelContext()), Change.valueChange(getValue()));
+        signal(new LocalSource(context().modelSession()), Change.valueChange(getValue()));
     }
 
     @Override
     public void signal(Source source, Change change) {
         LOG.trace("{} signal {}", this, change);
         ChangeEvent changeEvent = new ChangeEvent(source, this, change);
-        context().modelContext().getEventDispatcher().dispatch(changeEvent);
+        context().modelSession().getEventDispatcher().dispatch(changeEvent);
     }
 
     @SuppressWarnings("unchecked")
@@ -477,12 +477,12 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
 
     @Override
     public void fire(Action action) {
-        fire(new LocalSource(context().modelContext()), action);
+        fire(new LocalSource(context().modelSession()), action);
     }
 
     @Override
     public void fire(Source source, Action action) {
-        context().modelContext().getEventDispatcher().dispatch(new ActionEvent(source, this, action));
+        context().modelSession().getEventDispatcher().dispatch(new ActionEvent(source, this, action));
     }
 
     @Override

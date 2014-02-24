@@ -3,7 +3,7 @@ package at.irian.ankor.system;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.change.ChangeEventListener;
-import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.messaging.Message;
 import at.irian.ankor.messaging.MessageFactory;
 import at.irian.ankor.messaging.modify.Modifier;
@@ -19,7 +19,7 @@ import java.util.Set;
 
 /**
  * Global ChangeEventListener that relays locally happened {@link ChangeEvent ChangeEvents} to all remote systems
- * connected to the underlying ModelContext.
+ * connected to the underlying ModelSession.
  *
  * @author Manfred Geiler
  */
@@ -53,8 +53,8 @@ public class RemoteNotifyChangeEventListener extends ChangeEventListener impleme
         Change change = event.getChange();
         Ref changedProperty = event.getChangedProperty();
         Change modifiedChange = preSendModifier.modifyBeforeSend(change, changedProperty);
-        ModelContext modelContext = changedProperty.context().modelContext();
-        Collection<ModelConnection> modelConnections = modelConnectionManager.getAllFor(modelContext);
+        ModelSession modelSession = changedProperty.context().modelSession();
+        Collection<ModelConnection> modelConnections = modelConnectionManager.getAllFor(modelSession);
         for (ModelConnection modelConnection : modelConnections) {
             if (event.getSource() instanceof RemoteSource) {
                 ModelConnection initiatingModelConnection = ((RemoteSource)event.getSource()).getModelConnection();
@@ -65,7 +65,7 @@ public class RemoteNotifyChangeEventListener extends ChangeEventListener impleme
             }
 
             String changedPropertyPath = changedProperty.path();
-            Message message = messageFactory.createChangeMessage(changedProperty.context().modelContext(),
+            Message message = messageFactory.createChangeMessage(changedProperty.context().modelSession(),
                                                                  changedPropertyPath,
                                                                  modifiedChange);
             LOG.debug("server sends {}", message);
@@ -78,7 +78,7 @@ public class RemoteNotifyChangeEventListener extends ChangeEventListener impleme
     public void processModelConnectionInit(ModelConnectionInitEvent event) {
         ModelConnection modelConnection = event.getModelConnection();
         RefContext refContext = modelConnection.getRefContext();
-        ModelContext modelContext = refContext.modelContext();
+        ModelSession modelSession = refContext.modelSession();
 
         for (String rootName : rootNames) {
             Ref rootRef = refContext.refFactory().ref(rootName);
@@ -86,7 +86,7 @@ public class RemoteNotifyChangeEventListener extends ChangeEventListener impleme
             if (rootObj != null) {
                 Change change = Change.valueChange(rootObj);
                 Change modifiedChange = preSendModifier.modifyBeforeSend(change, rootRef);
-                Message message = messageFactory.createChangeMessage(modelContext,
+                Message message = messageFactory.createChangeMessage(modelSession,
                                                                      rootRef.path(),
                                                                      modifiedChange);
                 LOG.debug("server sends {}", message);

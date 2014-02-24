@@ -55,9 +55,9 @@ public abstract class AnkorApplication extends Application {
     /**
      * You can use this to make two clients share the state of an app.
      *
-     * @return An optional id for the model context.
+     * @return An optional id for the model session.
      */
-    protected String getModelContextId() {
+    protected String getModelSessionId() {
         return null;
     }
 
@@ -89,8 +89,8 @@ public abstract class AnkorApplication extends Application {
                 .withRefContextFactoryProvider(new FxRefContextFactoryProvider())
                 .withDispatcherFactory(new JavaFxEventDispatcherFactory());
 
-        if (getModelContextId() != null) {
-            systemBuilder.withModelContextId(getModelContextId());
+        if (getModelSessionId() != null) {
+            systemBuilder.withModelSessionId(getModelSessionId());
         }
 
         CountDownLatch latch = new CountDownLatch(2);

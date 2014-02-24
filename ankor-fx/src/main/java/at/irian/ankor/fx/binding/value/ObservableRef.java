@@ -40,7 +40,7 @@ public class ObservableRef<T> implements ObservableValue<T> {
                 }
             }
         };
-        this.ref.context().modelContext().getEventListeners().add(this.changeEventListener);
+        this.ref.context().modelSession().getEventListeners().add(this.changeEventListener);
     }
 
 
@@ -90,7 +90,7 @@ public class ObservableRef<T> implements ObservableValue<T> {
     }
 
     protected void finalize() throws Throwable {
-        this.ref.context().modelContext().getEventListeners().remove(this.changeEventListener);
+        this.ref.context().modelSession().getEventListeners().remove(this.changeEventListener);
         super.finalize();
     }
 

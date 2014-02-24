@@ -2,7 +2,7 @@ package at.irian.ankor.akka;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
-import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.event.ModelEvent;
 
 /**
@@ -31,15 +31,15 @@ public class AnkorActorSystem {
         return new AnkorActorSystem(actorSystem, controllerActor);
     }
 
-    public void register(ModelContext modelContext) {
-        controllerActor.tell(new RegisterMsg(modelContext), ActorRef.noSender());
+    public void register(ModelSession modelSession) {
+        controllerActor.tell(new RegisterMsg(modelSession), ActorRef.noSender());
     }
 
-    public void unregister(ModelContext modelContext) {
-        controllerActor.tell(new UnregisterMsg(modelContext), ActorRef.noSender());
+    public void unregister(ModelSession modelSession) {
+        controllerActor.tell(new UnregisterMsg(modelSession), ActorRef.noSender());
     }
 
-    public void send(ModelContext context, final ModelEvent event) {
+    public void send(ModelSession context, final ModelEvent event) {
         controllerActor.tell(new ModelEventMsg(context, event), ActorRef.noSender());
     }
 

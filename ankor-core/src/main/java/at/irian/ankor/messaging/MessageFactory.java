@@ -2,7 +2,7 @@ package at.irian.ankor.messaging;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.change.Change;
-import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.session.ModelSession;
 
 /**
  * @author Manfred Geiler
@@ -18,12 +18,12 @@ public class MessageFactory {
         this.messageIdGenerator = messageIdGenerator;
     }
 
-    public Message createActionMessage(ModelContext modelContext, String actionPropertyPath, Action action) {
-        return new ActionMessage(systemName, modelContext.getId(), messageIdGenerator.create(), actionPropertyPath, action);
+    public Message createActionMessage(ModelSession modelSession, String actionPropertyPath, Action action) {
+        return new ActionMessage(systemName, modelSession.getId(), messageIdGenerator.create(), actionPropertyPath, action);
     }
 
-    public Message createChangeMessage(ModelContext modelContext, String changedPropertyPath, Change change) {
-        return new ChangeMessage(systemName, modelContext.getId(), messageIdGenerator.create(), changedPropertyPath, change);
+    public Message createChangeMessage(ModelSession modelSession, String changedPropertyPath, Change change) {
+        return new ChangeMessage(systemName, modelSession.getId(), messageIdGenerator.create(), changedPropertyPath, change);
     }
 
     public Message createGlobalActionMessage(Action action) {

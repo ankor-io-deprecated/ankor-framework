@@ -1,4 +1,4 @@
-package at.irian.ankor.context;
+package at.irian.ankor.session;
 
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.event.dispatch.EventDispatcherFactory;
@@ -6,22 +6,22 @@ import at.irian.ankor.event.dispatch.EventDispatcherFactory;
 /**
  * @author Manfred Geiler
  */
-public class DefaultModelContextFactory implements ModelContextFactory {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelContextFactory.class);
+public class DefaultModelSessionFactory implements ModelSessionFactory {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelSessionFactory.class);
 
     private final EventDispatcherFactory eventDispatcherFactory;
     private final EventListeners globalEventListeners;
 
-    public DefaultModelContextFactory(EventDispatcherFactory eventDispatcherFactory,
+    public DefaultModelSessionFactory(EventDispatcherFactory eventDispatcherFactory,
                                       EventListeners globalEventListeners) {
         this.eventDispatcherFactory = eventDispatcherFactory;
         this.globalEventListeners = globalEventListeners;
     }
 
     @Override
-    public ModelContext createModelContext(String modelContextId) {
-        return DefaultModelContext.create(eventDispatcherFactory,
-                                          modelContextId,
+    public ModelSession createModelSession(String modelSessionId) {
+        return DefaultModelSession.create(eventDispatcherFactory,
+                                          modelSessionId,
                                           globalEventListeners);
     }
 

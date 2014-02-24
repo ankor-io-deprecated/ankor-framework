@@ -3,7 +3,7 @@ package at.irian.ankor.messaging.json.viewmodel;
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.CloseAction;
 import at.irian.ankor.change.Change;
-import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.messaging.*;
 import at.irian.ankor.viewmodel.metadata.EmptyBeanMetadataProvider;
 import com.google.common.collect.Maps;
@@ -22,14 +22,14 @@ import static org.mockito.Mockito.when;
 public class ViewModelJsonMessageMapperTest {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ViewModelJsonMessageMapperTest.class);
 
-    private ModelContext modelContext;
+    private ModelSession modelSession;
     private MessageFactory messageFactory;
     private ViewModelJsonMessageMapper msgMapper;
 
     @Before
     public void setUp() throws Exception {
-        modelContext = mock(ModelContext.class);
-        when(modelContext.getId()).thenReturn("mc1");
+        modelSession = mock(ModelSession.class);
+        when(modelSession.getId()).thenReturn("mc1");
 
         messageFactory = new MessageFactory("test", new CounterMessageIdGenerator(""));
         msgMapper = new ViewModelJsonMessageMapper(new EmptyBeanMetadataProvider());
@@ -38,7 +38,7 @@ public class ViewModelJsonMessageMapperTest {
     @Test
     public void testSimpleAction() throws Exception {
         Action action = new Action("test");
-        Message msg = messageFactory.createActionMessage(modelContext, "context.model", action);
+        Message msg = messageFactory.createActionMessage(modelSession, "session.model", action);
 
         Message desMsg = serializeAndDeserialize(msg);
 
@@ -53,7 +53,7 @@ public class ViewModelJsonMessageMapperTest {
         Map<String, Object> params = Maps.newHashMap();
         params.put("key", "value");
         Action action = new Action("test", params);
-        Message msg = messageFactory.createActionMessage(modelContext, "context.model", action);
+        Message msg = messageFactory.createActionMessage(modelSession, "session.model", action);
 
         Message desMsg = serializeAndDeserialize(msg);
 
@@ -69,7 +69,7 @@ public class ViewModelJsonMessageMapperTest {
     public void testCloseAction() throws Exception {
         CloseAction action = new CloseAction();
 
-        Message msg = messageFactory.createActionMessage(modelContext, "context.model", action);
+        Message msg = messageFactory.createActionMessage(modelSession, "session.model", action);
         Message desMsg = serializeAndDeserialize(msg);
 
         assertEquals(ActionMessage.class, desMsg.getClass());
@@ -90,7 +90,7 @@ public class ViewModelJsonMessageMapperTest {
 
     @Test
     public void testValueChange() throws Exception {
-        Message msg = messageFactory.createChangeMessage(modelContext, "root.test1", Change.valueChange("new-value"));
+        Message msg = messageFactory.createChangeMessage(modelSession, "root.test1", Change.valueChange("new-value"));
         Message desMsg = serializeAndDeserialize(msg);
 
         assertEquals(ChangeMessage.class, desMsg.getClass());
@@ -100,7 +100,7 @@ public class ViewModelJsonMessageMapperTest {
 
     @Test
     public void testValueChangeRoot() throws Exception {
-        Message msg = messageFactory.createChangeMessage(modelContext, "root", Change.valueChange("new-value"));
+        Message msg = messageFactory.createChangeMessage(modelSession, "root", Change.valueChange("new-value"));
         Message desMsg = serializeAndDeserialize(msg);
 
         assertEquals(ChangeMessage.class, desMsg.getClass());

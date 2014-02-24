@@ -1,7 +1,7 @@
 package at.irian.ankor.fx.binding.fxref;
 
 import at.irian.ankor.base.BeanResolver;
-import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.delay.Scheduler;
 import at.irian.ankor.el.AnkorELSupport;
 import at.irian.ankor.el.ELSupport;
@@ -42,10 +42,10 @@ class FxRefContextFactory implements RefContextFactory {
     }
 
     @Override
-    public RefContext createRefContextFor(ModelContext modelContext) {
-        ELSupport elSupport = new AnkorELSupport(modelContext, beanResolver, modelRootFactory);
+    public RefContext createRefContextFor(ModelSession modelSession) {
+        ELSupport elSupport = new AnkorELSupport(modelSession, beanResolver, modelRootFactory);
         return DefaultFxRefContext.create(elSupport,
-                                          modelContext,
+                                          modelSession,
                                           viewModelPostProcessors,
                                           scheduler,
                                           metadataProvider,

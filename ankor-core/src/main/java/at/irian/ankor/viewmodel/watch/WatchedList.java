@@ -46,14 +46,14 @@ public class WatchedList<E> extends ExtendedListWrapper<E> {
     @Override
     public void add(int index, E element) {
         wrappedList.add(index, element);
-        ((RefImplementor)listRef).signal(new LocalSource(listRef.context().modelContext()),
+        ((RefImplementor)listRef).signal(new LocalSource(listRef.context().modelSession()),
                                          Change.insertChange(index, element));
     }
 
     @Override
     public E remove(int index) {
         E removedElement = wrappedList.remove(index);
-        ((RefImplementor)listRef).signal(new LocalSource(listRef.context().modelContext()),
+        ((RefImplementor)listRef).signal(new LocalSource(listRef.context().modelSession()),
                                          Change.deleteChange(index));
         return removedElement;
     }
@@ -73,7 +73,7 @@ public class WatchedList<E> extends ExtendedListWrapper<E> {
                 added |= wrappedList.add(element);
             }
             if (diffChanges != null) {
-                ListDiff.signalChanges(new LocalSource(listRef.context().modelContext()),
+                ListDiff.signalChanges(new LocalSource(listRef.context().modelSession()),
                                        listRef, diffChanges);
             } else {
                 listRef.signalValueChange();

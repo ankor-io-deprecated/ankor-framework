@@ -1,6 +1,6 @@
 package at.irian.ankor.ref;
 
-import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.delay.Scheduler;
 import at.irian.ankor.path.PathSyntax;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
@@ -20,7 +20,7 @@ public interface RefContext {
 
     List<ViewModelPostProcessor> viewModelPostProcessors();
 
-    ModelContext modelContext();
+    ModelSession modelSession();
 
     Scheduler scheduler();
 

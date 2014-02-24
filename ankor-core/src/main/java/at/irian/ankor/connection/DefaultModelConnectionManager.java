@@ -1,6 +1,6 @@
 package at.irian.ankor.connection;
 
-import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.session.ModelSession;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,15 +25,15 @@ public class DefaultModelConnectionManager implements ModelConnectionManager {
     }
 
     @Override
-    public ModelConnection getOrCreate(ModelContext modelContext, RemoteSystem remoteSystem) {
-        String connectionId = getConnectionIdFrom(modelContext, remoteSystem);
+    public ModelConnection getOrCreate(ModelSession modelSession, RemoteSystem remoteSystem) {
+        String connectionId = getConnectionIdFrom(modelSession, remoteSystem);
         ModelConnection modelConnection;
         modelConnection = connectionMap.get(connectionId);
         if (modelConnection == null) {
             synchronized (connectionMap) {
                 modelConnection = connectionMap.get(connectionId);
                 if (modelConnection == null) {
-                    modelConnection = createAndInitConnection(modelContext, remoteSystem);
+                    modelConnection = createAndInitConnection(modelSession, remoteSystem);
                     connectionMap.put(connectionId, modelConnection);
                 }
             }
@@ -42,10 +42,10 @@ public class DefaultModelConnectionManager implements ModelConnectionManager {
     }
 
     @Override
-    public Collection<ModelConnection> getAllFor(ModelContext modelContext) {
+    public Collection<ModelConnection> getAllFor(ModelSession modelSession) {
         Collection<ModelConnection> result = null;
         for (ModelConnection modelConnection : connectionMap.values()) {
-            if (modelConnection.getModelContext().equals(modelContext)) {
+            if (modelConnection.getModelSession().equals(modelSession)) {
                 if (result == null) {
                     result = Collections.singleton(modelConnection);
                 } else {
@@ -78,8 +78,8 @@ public class DefaultModelConnectionManager implements ModelConnectionManager {
         return result == null ? Collections.<ModelConnection>emptyList() : result;
     }
 
-    private String getConnectionIdFrom(ModelContext modelContext, RemoteSystem remoteSystem) {
-        return remoteSystem.getId() + "_" + modelContext.getId();
+    private String getConnectionIdFrom(ModelSession modelSession, RemoteSystem remoteSystem) {
+        return remoteSystem.getId() + "_" + modelSession.getId();
     }
 
     private String getRemoteSystemIdFromConnectionId(String connectionId) {
@@ -90,8 +90,8 @@ public class DefaultModelConnectionManager implements ModelConnectionManager {
         return connectionId.substring(0, i);
     }
 
-    protected ModelConnection createAndInitConnection(ModelContext modelContext, RemoteSystem remoteSystem) {
-        ModelConnection modelConnection = modelConnectionFactory.create(modelContext, remoteSystem);
+    protected ModelConnection createAndInitConnection(ModelSession modelSession, RemoteSystem remoteSystem) {
+        ModelConnection modelConnection = modelConnectionFactory.create(modelSession, remoteSystem);
         modelConnection.init();
         return modelConnection;
     }

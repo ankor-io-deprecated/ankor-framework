@@ -1,6 +1,6 @@
 package at.irian.ankor.connection;
 
-import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.event.source.CustomSource;
 import at.irian.ankor.messaging.MessageSender;
 import at.irian.ankor.ref.RefContext;
@@ -11,21 +11,21 @@ import at.irian.ankor.ref.RefContext;
 public class DefaultModelConnection implements ModelConnection {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(DefaultModelConnection.class);
 
-    private final ModelContext modelContext;
+    private final ModelSession modelSession;
     private final RefContext refContext;
     private final MessageSender messageSender;
 
-    public DefaultModelConnection(ModelContext modelContext,
+    public DefaultModelConnection(ModelSession modelSession,
                                   RefContext refContext,
                                   MessageSender messageSender) {
-        this.modelContext = modelContext;
+        this.modelSession = modelSession;
         this.refContext = refContext;
         this.messageSender = messageSender;
     }
 
     @Override
     public void init() {
-        refContext.modelContext().getEventDispatcher().dispatch(new ModelConnectionInitEvent(new CustomSource(this),
+        refContext.modelSession().getEventDispatcher().dispatch(new ModelConnectionInitEvent(new CustomSource(this),
                                                                                      this));
     }
 
@@ -34,8 +34,8 @@ public class DefaultModelConnection implements ModelConnection {
     }
 
     @Override
-    public ModelContext getModelContext() {
-        return modelContext;
+    public ModelSession getModelSession() {
+        return modelSession;
     }
 
     @Override

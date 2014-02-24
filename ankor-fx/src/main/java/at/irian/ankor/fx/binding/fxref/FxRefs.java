@@ -96,7 +96,7 @@ public final class FxRefs {
                 }
             }
         });
-        ref.context().modelContext().getEventListeners().add(new ChangeEventListener(ref) {
+        ref.context().modelSession().getEventListeners().add(new ChangeEventListener(ref) {
             @Override
             public void process(ChangeEvent event) {
                 if (event.getChangedProperty().equals(getWatchedProperty())) {

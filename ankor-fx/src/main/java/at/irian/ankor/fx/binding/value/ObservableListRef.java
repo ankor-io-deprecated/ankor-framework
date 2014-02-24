@@ -51,7 +51,7 @@ public class ObservableListRef<E> extends RefList<E> implements ObservableList<E
                 }
             }
         };
-        this.listRef.context().modelContext().getEventListeners().add(this.changeEventListener);
+        this.listRef.context().modelSession().getEventListeners().add(this.changeEventListener);
     }
 
 
@@ -143,7 +143,7 @@ public class ObservableListRef<E> extends RefList<E> implements ObservableList<E
     // misc
 
     protected void finalize() throws Throwable {
-        this.listRef.context().modelContext().getEventListeners().remove(this.changeEventListener);
+        this.listRef.context().modelSession().getEventListeners().remove(this.changeEventListener);
         super.finalize();
     }
 

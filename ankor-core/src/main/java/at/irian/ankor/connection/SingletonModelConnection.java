@@ -1,6 +1,6 @@
 package at.irian.ankor.connection;
 
-import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.messaging.MessageSender;
 import at.irian.ankor.ref.RefContext;
 
@@ -13,14 +13,14 @@ import at.irian.ankor.ref.RefContext;
 public class SingletonModelConnection implements ModelConnection {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SingletonModelConnection.class);
 
-    private final ModelContext modelContext;
+    private final ModelSession modelSession;
     private final RefContext refContext;
     private final MessageSender messageSender;
 
-    public SingletonModelConnection(ModelContext modelContext,
+    public SingletonModelConnection(ModelSession modelSession,
                                     RefContext refContext,
                                     MessageSender messageSender) {
-        this.modelContext = modelContext;
+        this.modelSession = modelSession;
         this.refContext = refContext;
         this.messageSender = messageSender;
     }
@@ -34,8 +34,8 @@ public class SingletonModelConnection implements ModelConnection {
     }
 
     @Override
-    public ModelContext getModelContext() {
-        return modelContext;
+    public ModelSession getModelSession() {
+        return modelSession;
     }
 
     @Override

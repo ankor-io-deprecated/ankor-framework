@@ -1,6 +1,6 @@
 package at.irian.ankor.event.source;
 
-import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.session.ModelSession;
 
 /**
  * Local source of an event.
@@ -9,13 +9,13 @@ import at.irian.ankor.context.ModelContext;
  */
 public class LocalSource implements Source {
 
-    private final ModelContext modelContext;
+    private final ModelSession modelSession;
 
-    public LocalSource(ModelContext modelContext) {
-        this.modelContext = modelContext;
+    public LocalSource(ModelSession modelSession) {
+        this.modelSession = modelSession;
     }
 
-    public ModelContext getModelContext() {
-        return modelContext;
+    public ModelSession getModelSession() {
+        return modelSession;
     }
 }

@@ -1,13 +1,13 @@
 package at.irian.ankor.connection;
 
-import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.session.ModelSession;
 
 /**
  * @author Manfred Geiler
  */
 public interface ModelConnectionFactory {
 
-    ModelConnection create(ModelContext modelContext, RemoteSystem remoteSystem);
+    ModelConnection create(ModelSession modelSession, RemoteSystem remoteSystem);
 
     void close();
 }

@@ -1,6 +1,6 @@
 package at.irian.ankor.el;
 
-import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.connection.ModelRootFactory;
@@ -16,14 +16,14 @@ import java.util.List;
 /**
 * @author Manfred Geiler
 */
-public class ModelContextELResolver extends ELResolver {
+public class ModelSessionELResolver extends ELResolver {
 
-    private final ModelContext modelContext;
+    private final ModelSession modelSession;
     private final RefFactory refFactory;
     private final ModelRootFactory modelRootFactory;
 
-    public ModelContextELResolver(ModelContext modelContext, RefFactory refFactory, ModelRootFactory modelRootFactory) {
-        this.modelContext = modelContext;
+    public ModelSessionELResolver(ModelSession modelSession, RefFactory refFactory, ModelRootFactory modelRootFactory) {
+        this.modelSession = modelSession;
         this.refFactory = refFactory;
         this.modelRootFactory = modelRootFactory;
     }
@@ -34,7 +34,7 @@ public class ModelContextELResolver extends ELResolver {
             String propertyName = property.toString();
             if (modelRootFactory.getKnownRootNames().contains(propertyName)) {
                 context.setPropertyResolved(true);
-                return modelContext.getModelRoot(propertyName);
+                return modelSession.getModelRoot(propertyName);
             } else if (propertyName.startsWith("&") && modelRootFactory.getKnownRootNames().contains(propertyName.substring(1))) {
                 context.setPropertyResolved(true);
                 return refFactory.ref(propertyName.substring(1));
@@ -49,7 +49,7 @@ public class ModelContextELResolver extends ELResolver {
             String propertyName = property.toString();
             if (modelRootFactory.getKnownRootNames().contains(propertyName)) {
                 context.setPropertyResolved(true);
-                Object modelRoot = modelContext.getModelRoot(propertyName);
+                Object modelRoot = modelSession.getModelRoot(propertyName);
                 return modelRoot != null ? modelRoot.getClass() : Object.class;
             } else if (propertyName.startsWith("&")) {
                 context.setPropertyResolved(true);
@@ -65,7 +65,7 @@ public class ModelContextELResolver extends ELResolver {
             String propertyName = property.toString();
             if (modelRootFactory.getKnownRootNames().contains(propertyName)) {
                 context.setPropertyResolved(true);
-                modelContext.setModelRoot(propertyName, value);
+                modelSession.setModelRoot(propertyName, value);
             } else if (propertyName.startsWith("&")) {
                 throw new PropertyNotWritableException(property.toString());
             }

@@ -1,6 +1,6 @@
 package at.irian.ankor.ref.el;
 
-import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.delay.Scheduler;
 import at.irian.ankor.el.ELSupport;
 import at.irian.ankor.event.EventListeners;
@@ -24,7 +24,7 @@ public class ELRefContext implements RefContext, RefContextImplementor {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ELRefContext.class);
 
     private final ELSupport elSupport;
-    private final ModelContext modelContext;
+    private final ModelSession modelSession;
     private final List<ViewModelPostProcessor> viewModelPostProcessors;
     private final Scheduler scheduler;
     private final RefFactory refFactory;
@@ -32,12 +32,12 @@ public class ELRefContext implements RefContext, RefContextImplementor {
     private final BeanFactory beanFactory;
 
     protected ELRefContext(ELSupport elSupport,
-                           ModelContext modelContext,
+                           ModelSession modelSession,
                            List<ViewModelPostProcessor> viewModelPostProcessors,
                            Scheduler scheduler,
                            RefFactory refFactory, BeanMetadataProvider metadataProvider, BeanFactory beanFactory) {
         this.elSupport = elSupport;
-        this.modelContext = modelContext;
+        this.modelSession = modelSession;
         this.viewModelPostProcessors = viewModelPostProcessors;
         this.scheduler = scheduler;
         this.refFactory = refFactory;
@@ -46,13 +46,13 @@ public class ELRefContext implements RefContext, RefContextImplementor {
     }
 
     protected static ELRefContext create(ELSupport elSupport,
-                                         ModelContext modelContext,
+                                         ModelSession modelSession,
                                          List<ViewModelPostProcessor> viewModelPostProcessors,
                                          Scheduler scheduler,
                                          BeanMetadataProvider metadataProvider, BeanFactory beanFactory) {
         ELRefFactory refFactory = new ELRefFactory();
         ELRefContext refContext = new ELRefContext(elSupport,
-                                                   modelContext,
+                                                   modelSession,
                                                    viewModelPostProcessors,
                                                    scheduler,
                                                    refFactory,
@@ -76,7 +76,7 @@ public class ELRefContext implements RefContext, RefContextImplementor {
 
     @Override
     public EventListeners eventListeners() {
-        return modelContext.getEventListeners();
+        return modelSession.getEventListeners();
     }
 
     @Override
@@ -90,8 +90,8 @@ public class ELRefContext implements RefContext, RefContextImplementor {
     }
 
     @Override
-    public ModelContext modelContext() {
-        return modelContext;
+    public ModelSession modelSession() {
+        return modelSession;
     }
 
     @Override

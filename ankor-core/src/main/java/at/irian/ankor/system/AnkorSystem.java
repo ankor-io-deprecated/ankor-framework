@@ -1,6 +1,6 @@
 package at.irian.ankor.system;
 
-import at.irian.ankor.context.ModelContextManager;
+import at.irian.ankor.session.ModelSessionManager;
 import at.irian.ankor.messaging.MessageBus;
 import at.irian.ankor.messaging.MessageFactory;
 import at.irian.ankor.messaging.RemoteMessageListener;
@@ -23,7 +23,7 @@ public class AnkorSystem {
     private final MessageFactory messageFactory;
     private final MessageBus messageBus;
     private final RefContextFactory refContextFactory;
-    private final ModelContextManager modelContextManager;
+    private final ModelSessionManager modelSessionManager;
     private final ModelConnectionManager modelConnectionManager;
     private final RemoteMessageListener remoteMessageListener;
 
@@ -31,14 +31,14 @@ public class AnkorSystem {
                           MessageFactory messageFactory,
                           MessageBus messageBus,
                           RefContextFactory refContextFactory,
-                          ModelContextManager modelContextManager,
+                          ModelSessionManager modelSessionManager,
                           ModelConnectionManager modelConnectionManager,
                           RemoteMessageListener remoteMessageListener) {
         this.systemName = systemName;
         this.messageFactory = messageFactory;
         this.messageBus = messageBus;
         this.refContextFactory = refContextFactory;
-        this.modelContextManager = modelContextManager;
+        this.modelSessionManager = modelSessionManager;
         this.modelConnectionManager = modelConnectionManager;
         this.remoteMessageListener = remoteMessageListener;
     }
@@ -59,8 +59,8 @@ public class AnkorSystem {
         return modelConnectionManager;
     }
 
-    public ModelContextManager getModelContextManager() {
-        return modelContextManager;
+    public ModelSessionManager getModelSessionManager() {
+        return modelSessionManager;
     }
 
     @Override

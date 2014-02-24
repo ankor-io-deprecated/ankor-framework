@@ -1,6 +1,6 @@
 package at.irian.ankor.fx.binding.fxref;
 
-import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.delay.Scheduler;
 import at.irian.ankor.el.ELSupport;
 import at.irian.ankor.ref.RefFactory;
@@ -18,24 +18,24 @@ class DefaultFxRefContext extends ELRefContext implements FxRefContext {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(DefaultFxRefContext.class);
 
     protected DefaultFxRefContext(ELSupport elSupport,
-                                  ModelContext modelContext,
+                                  ModelSession modelSession,
                                   List<ViewModelPostProcessor> viewModelPostProcessors,
                                   Scheduler scheduler,
                                   RefFactory refFactory,
                                   BeanMetadataProvider metadataProvider,
                                   BeanFactory beanFactory) {
-        super(elSupport, modelContext, viewModelPostProcessors, scheduler, refFactory, metadataProvider, beanFactory);
+        super(elSupport, modelSession, viewModelPostProcessors, scheduler, refFactory, metadataProvider, beanFactory);
     }
 
     protected static DefaultFxRefContext create(ELSupport elSupport,
-                                                ModelContext modelContext,
+                                                ModelSession modelSession,
                                                 List<ViewModelPostProcessor> viewModelPostProcessors,
                                                 Scheduler scheduler,
                                                 BeanMetadataProvider metadataProvider,
                                                 BeanFactory beanFactory) {
         DefaultFxRefFactory refFactory = new DefaultFxRefFactory();
         DefaultFxRefContext refContext = new DefaultFxRefContext(elSupport,
-                                                   modelContext,
+                                                                 modelSession,
                                                    viewModelPostProcessors,
                                                    scheduler,
                                                    refFactory, metadataProvider, beanFactory);

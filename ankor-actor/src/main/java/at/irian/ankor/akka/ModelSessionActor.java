@@ -2,7 +2,7 @@ package at.irian.ankor.akka;
 
 import akka.actor.Props;
 import akka.actor.UntypedActor;
-import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.event.ModelEvent;
 import at.irian.ankor.event.dispatch.DispatchThreadChecker;
 import at.irian.ankor.event.dispatch.EventDispatcher;
@@ -11,23 +11,23 @@ import at.irian.ankor.event.dispatch.SimpleEventDispatcher;
 /**
  * @author Manfred Geiler
  */
-public class ModelContextActor extends UntypedActor {
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelContextActor.class);
+public class ModelSessionActor extends UntypedActor {
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelSessionActor.class);
 
-    public static Props props(ModelContext modelContext) {
-        return Props.create(ModelContextActor.class, modelContext);
+    public static Props props(ModelSession modelSession) {
+        return Props.create(ModelSessionActor.class, modelSession);
     }
 
-    public static String name(ModelContext modelContext) {
-        return "ankor_" + modelContext.getId();
+    public static String name(ModelSession modelSession) {
+        return "ankor_" + modelSession.getId();
     }
 
     private final EventDispatcher eventDispatcher;
     private final DispatchThreadChecker dispatchThreadChecker;
 
-    public ModelContextActor(ModelContext modelContext) {
-        this.eventDispatcher = new SimpleEventDispatcher(modelContext.getEventListeners());
-        this.dispatchThreadChecker = new DispatchThreadChecker(modelContext);
+    public ModelSessionActor(ModelSession modelSession) {
+        this.eventDispatcher = new SimpleEventDispatcher(modelSession.getEventListeners());
+        this.dispatchThreadChecker = new DispatchThreadChecker(modelSession);
     }
 
     @Override
