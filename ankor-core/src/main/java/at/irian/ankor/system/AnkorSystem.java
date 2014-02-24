@@ -5,7 +5,7 @@ import at.irian.ankor.messaging.MessageBus;
 import at.irian.ankor.messaging.MessageFactory;
 import at.irian.ankor.messaging.RemoteMessageListener;
 import at.irian.ankor.ref.RefContextFactory;
-import at.irian.ankor.session.SessionManager;
+import at.irian.ankor.connection.ModelConnectionManager;
 
 /**
  * This is the main system object that sticks all the Ankor parts together.
@@ -24,7 +24,7 @@ public class AnkorSystem {
     private final MessageBus messageBus;
     private final RefContextFactory refContextFactory;
     private final ModelContextManager modelContextManager;
-    private final SessionManager sessionManager;
+    private final ModelConnectionManager modelConnectionManager;
     private final RemoteMessageListener remoteMessageListener;
 
     protected AnkorSystem(String systemName,
@@ -32,14 +32,14 @@ public class AnkorSystem {
                           MessageBus messageBus,
                           RefContextFactory refContextFactory,
                           ModelContextManager modelContextManager,
-                          SessionManager sessionManager,
+                          ModelConnectionManager modelConnectionManager,
                           RemoteMessageListener remoteMessageListener) {
         this.systemName = systemName;
         this.messageFactory = messageFactory;
         this.messageBus = messageBus;
         this.refContextFactory = refContextFactory;
         this.modelContextManager = modelContextManager;
-        this.sessionManager = sessionManager;
+        this.modelConnectionManager = modelConnectionManager;
         this.remoteMessageListener = remoteMessageListener;
     }
 
@@ -55,8 +55,8 @@ public class AnkorSystem {
         return refContextFactory;
     }
 
-    public SessionManager getSessionManager() {
-        return sessionManager;
+    public ModelConnectionManager getModelConnectionManager() {
+        return modelConnectionManager;
     }
 
     public ModelContextManager getModelContextManager() {

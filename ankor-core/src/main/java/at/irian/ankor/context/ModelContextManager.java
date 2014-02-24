@@ -2,7 +2,7 @@ package at.irian.ankor.context;
 
 /**
  * The ModelContextManager handles all ModelContexts that are currently active.
- * "Active" means that an application (i.e. user session) is currently connected to this model.
+ * "Active" means that an application is currently connected to this model.
  *
  * @author Manfred Geiler
  */

@@ -3,7 +3,7 @@ package at.irian.ankorsamples.animals.servlet;
 import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.servlet.polling.AnkorServletContextListener;
-import at.irian.ankor.session.ModelRootFactory;
+import at.irian.ankor.connection.ModelRootFactory;
 import at.irian.ankorsamples.animals.domain.animal.AnimalRepository;
 import at.irian.ankorsamples.animals.viewmodel.ModelRoot;
 

@@ -7,7 +7,7 @@ import at.irian.ankor.el.AnkorELSupport;
 import at.irian.ankor.el.ELSupport;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefContextFactory;
-import at.irian.ankor.session.ModelRootFactory;
+import at.irian.ankor.connection.ModelRootFactory;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
 import at.irian.ankor.viewmodel.factory.BeanFactory;
 import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;

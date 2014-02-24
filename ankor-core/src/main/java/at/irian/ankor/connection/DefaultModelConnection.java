@@ -1,25 +1,23 @@
-package at.irian.ankor.session;
+package at.irian.ankor.connection;
 
 import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.event.source.CustomSource;
 import at.irian.ankor.messaging.MessageSender;
 import at.irian.ankor.ref.RefContext;
 
 /**
- * Simple Session, typically used on client systems that handle only one view model at the same time.
- *
  * @author Manfred Geiler
- * @see SingletonSessionManager
  */
-public class SingletonSession implements Session {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ServerSession.class);
+public class DefaultModelConnection implements ModelConnection {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(DefaultModelConnection.class);
 
     private final ModelContext modelContext;
     private final RefContext refContext;
     private final MessageSender messageSender;
 
-    public SingletonSession(ModelContext modelContext,
-                            RefContext refContext,
-                            MessageSender messageSender) {
+    public DefaultModelConnection(ModelContext modelContext,
+                                  RefContext refContext,
+                                  MessageSender messageSender) {
         this.modelContext = modelContext;
         this.refContext = refContext;
         this.messageSender = messageSender;
@@ -27,6 +25,8 @@ public class SingletonSession implements Session {
 
     @Override
     public void init() {
+        refContext.modelContext().getEventDispatcher().dispatch(new ModelConnectionInitEvent(new CustomSource(this),
+                                                                                     this));
     }
 
     @Override

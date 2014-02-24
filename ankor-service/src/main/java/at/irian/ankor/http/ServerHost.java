@@ -1,6 +1,6 @@
 package at.irian.ankor.http;
 
-import at.irian.ankor.session.SimpleRemoteSystem;
+import at.irian.ankor.connection.SimpleRemoteSystem;
 
 /**
  * @author Manfred Geiler

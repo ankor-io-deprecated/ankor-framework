@@ -1,14 +1,12 @@
 package at.irian.ankor.websocket;
 
-import at.irian.ankor.session.RemoteSystem;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import at.irian.ankor.connection.RemoteSystem;
 
 import javax.websocket.Session;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class WebSocketRemoteSystem implements RemoteSystem {
-    private static Logger LOG = LoggerFactory.getLogger(WebSocketRemoteSystem.class);
+    //private static Logger LOG = LoggerFactory.getLogger(WebSocketRemoteSystem.class);
 
     private String id;
     private Session client;

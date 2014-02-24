@@ -5,8 +5,9 @@ import at.irian.ankor.delay.AkkaScheduler;
 import at.irian.ankor.event.dispatch.AkkaEventDispatcherFactory;
 import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.session.ModelRootFactory;
-import at.irian.ankor.session.RemoteSystem;
+import at.irian.ankor.connection.ModelConnection;
+import at.irian.ankor.connection.ModelRootFactory;
+import at.irian.ankor.connection.RemoteSystem;
 import at.irian.ankor.system.AnkorSystem;
 import at.irian.ankor.system.AnkorSystemBuilder;
 import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
@@ -266,9 +267,9 @@ public abstract class AnkorEndpoint extends Endpoint implements ServerApplicatio
 
     private void invalidate() {
         RemoteSystem remoteSystem = webSocketMessageBus.removeRemoteSystem(clientId);
-        Collection<at.irian.ankor.session.Session> ankorSessions = ankorSystem.getSessionManager().getAllFor(remoteSystem);
-        for (at.irian.ankor.session.Session ankorSession : ankorSessions) {
-            ankorSystem.getSessionManager().invalidate(ankorSession);
+        Collection<ModelConnection> modelConnections = ankorSystem.getModelConnectionManager().getAllFor(remoteSystem);
+        for (ModelConnection modelConnection : modelConnections) {
+            ankorSystem.getModelConnectionManager().invalidate(modelConnection);
         }
 
     }

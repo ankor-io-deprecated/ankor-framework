@@ -11,8 +11,8 @@ import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.websocket.WebSocketMessageBus;
 import at.irian.ankor.websocket.WebSocketRemoteSystem;
-import at.irian.ankor.session.ModelRootFactory;
-import at.irian.ankor.session.SingletonSessionManager;
+import at.irian.ankor.connection.ModelRootFactory;
+import at.irian.ankor.connection.SingletonModelConnectionManager;
 import at.irian.ankor.socket.SocketAnkorSystemStarter;
 import at.irian.ankor.socket.SocketMessageLoop;
 import at.irian.ankor.system.AnkorSystem;
@@ -163,7 +163,7 @@ public class App extends javafx.application.Application {
         container.connectToServer(new Endpoint() {
 
             @Override
-            public void onOpen(javax.websocket.Session session, EndpointConfig config) {
+            public void onOpen(Session session, EndpointConfig config) {
                 session.addMessageHandler(new MessageHandler.Whole<String>() {
 
                     @Override
@@ -179,7 +179,7 @@ public class App extends javafx.application.Application {
             }
 
             private Timer timer = new Timer();
-            private void startHeartbeat(final javax.websocket.Session session) {
+            private void startHeartbeat(final Session session) {
                 TimerTask task = new TimerTask() {
 
                     @Override
@@ -194,7 +194,7 @@ public class App extends javafx.application.Application {
         }, URI.create(uri));
 
         if (latch.await(10, TimeUnit.SECONDS)) {
-            RefContext clientRefContext = ((SingletonSessionManager) clientSystem[0].getSessionManager()).getSession().getRefContext();
+            RefContext clientRefContext = ((SingletonModelConnectionManager) clientSystem[0].getModelConnectionManager()).getModelConnection().getRefContext();
             refFactory = (FxRefFactory) clientRefContext.refFactory();
         } else {
             throw new Exception("WebSocket could not connect to " + uri);
@@ -299,7 +299,7 @@ public class App extends javafx.application.Application {
         clientSystem.start();
         clientMessageLoop.start(true);
 
-        RefContext clientRefContext = ((SingletonSessionManager)clientSystem.getSessionManager()).getSession().getRefContext();
+        RefContext clientRefContext = ((SingletonModelConnectionManager)clientSystem.getModelConnectionManager()).getModelConnection().getRefContext();
         refFactory = (FxRefFactory) clientRefContext.refFactory();
     }
 

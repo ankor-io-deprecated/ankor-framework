@@ -4,8 +4,8 @@ import at.irian.ankor.messaging.Message;
 import at.irian.ankor.messaging.MessageBus;
 import at.irian.ankor.messaging.MessageSender;
 import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
-import at.irian.ankor.session.RemoteSystem;
-import at.irian.ankor.session.SimpleRemoteSystem;
+import at.irian.ankor.connection.RemoteSystem;
+import at.irian.ankor.connection.SimpleRemoteSystem;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

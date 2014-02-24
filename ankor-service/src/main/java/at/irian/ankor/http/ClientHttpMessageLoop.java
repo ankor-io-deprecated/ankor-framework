@@ -4,7 +4,7 @@ import at.irian.ankor.messaging.AbstractMessageLoop;
 import at.irian.ankor.messaging.Message;
 import at.irian.ankor.messaging.PassThroughMessageMapper;
 import at.irian.ankor.messaging.json.simpletree.SimpleTreeJsonMessageMapper;
-import at.irian.ankor.session.RemoteSystem;
+import at.irian.ankor.connection.RemoteSystem;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;

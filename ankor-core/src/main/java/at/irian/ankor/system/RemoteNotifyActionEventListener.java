@@ -8,8 +8,8 @@ import at.irian.ankor.messaging.Message;
 import at.irian.ankor.messaging.MessageFactory;
 import at.irian.ankor.messaging.modify.Modifier;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.session.Session;
-import at.irian.ankor.session.SessionManager;
+import at.irian.ankor.connection.ModelConnection;
+import at.irian.ankor.connection.ModelConnectionManager;
 
 import java.util.Collection;
 
@@ -23,15 +23,15 @@ public class RemoteNotifyActionEventListener extends ActionEventListener {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RemoteNotifyActionEventListener.class);
 
     private final MessageFactory messageFactory;
-    private final SessionManager sessionManager;
+    private final ModelConnectionManager modelConnectionManager;
     private final Modifier preSendModifier;
 
     public RemoteNotifyActionEventListener(MessageFactory messageFactory,
-                                           SessionManager sessionManager,
+                                           ModelConnectionManager modelConnectionManager,
                                            Modifier preSendModifier) {
         super(null); //global listener
         this.messageFactory = messageFactory;
-        this.sessionManager = sessionManager;
+        this.modelConnectionManager = modelConnectionManager;
         this.preSendModifier = preSendModifier;
     }
 
@@ -47,11 +47,11 @@ public class RemoteNotifyActionEventListener extends ActionEventListener {
         Ref actionProperty = event.getActionProperty();
         Action modifiedAction = preSendModifier.modifyBeforeSend(action, actionProperty);
         ModelContext modelContext = actionProperty.context().modelContext();
-        Collection<Session> sessions = sessionManager.getAllFor(modelContext);
-        for (Session session : sessions) {
+        Collection<ModelConnection> modelConnections = modelConnectionManager.getAllFor(modelContext);
+        for (ModelConnection modelConnection : modelConnections) {
             if (event.getSource() instanceof RemoteSource) {
-                Session initiatingSession = ((RemoteSource) event.getSource()).getSession();
-                if (session.equals(initiatingSession)) {
+                ModelConnection initiatingModelConnection = ((RemoteSource) event.getSource()).getModelConnection();
+                if (modelConnection.equals(initiatingModelConnection)) {
                     // do not relay remote actions back to the remote system
                     continue;
                 }
@@ -62,7 +62,7 @@ public class RemoteNotifyActionEventListener extends ActionEventListener {
                                                                  actionPropertyPath,
                                                                  modifiedAction);
             LOG.debug("server sends {}", message);
-            session.getMessageSender().sendMessage(message);
+            modelConnection.getMessageSender().sendMessage(message);
         }
     }
 }

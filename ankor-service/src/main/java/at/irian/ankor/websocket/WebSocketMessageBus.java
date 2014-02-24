@@ -2,12 +2,11 @@ package at.irian.ankor.websocket;
 
 import at.irian.ankor.messaging.MessageBus;
 import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
-import at.irian.ankor.session.RemoteSystem;
+import at.irian.ankor.connection.RemoteSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.websocket.Session;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

@@ -1,7 +1,7 @@
 package at.irian.ankorsamples.fxrates.server;
 
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.session.ModelRootFactory;
+import at.irian.ankor.connection.ModelRootFactory;
 import at.irian.ankor.socket.SocketAnkorSystemStarter;
 import at.irian.ankor.socket.SocketMessageLoop;
 

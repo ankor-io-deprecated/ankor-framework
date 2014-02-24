@@ -22,7 +22,7 @@ import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.ref.RefContextFactoryProvider;
 import at.irian.ankor.ref.el.ELRefContextFactoryProvider;
-import at.irian.ankor.session.*;
+import at.irian.ankor.connection.*;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
 import at.irian.ankor.viewmodel.factory.BeanFactory;
 import at.irian.ankor.viewmodel.factory.ReflectionBeanFactory;
@@ -166,17 +166,17 @@ public class AnkorSystemBuilder {
 
         MessageFactory messageFactory = getServerMessageFactory();
 
-        SessionFactory sessionFactory = new ServerSessionFactory(refContextFactory,
+        ModelConnectionFactory modelConnectionFactory = new DefaultModelConnectionFactory(refContextFactory,
                                                                  eventDispatcherFactory,
                                                                  messageBus);
-        SessionManager sessionManager = new DefaultSessionManager(sessionFactory);
+        ModelConnectionManager modelConnectionManager = new DefaultModelConnectionManager(modelConnectionFactory);
 
         Modifier defaultModifier = getDefaultModifier();
         Modifier bigDataModifier = new ServerSideBigDataModifier(defaultModifier);
         Modifier modifier = new CoerceTypeModifier(bigDataModifier);
 
         EventListeners globalEventListeners = getGlobalEventListeners(messageFactory,
-                                                                      sessionManager,
+                                                                      modelConnectionManager,
                                                                       modelRootFactory,
                                                                       modifier);
 
@@ -185,7 +185,7 @@ public class AnkorSystemBuilder {
         ModelContextManager modelContextManager = new DefaultModelContextManager(modelContextFactory);
 
         RemoteMessageListener remoteMessageListener = new DefaultRemoteMessageListener(modelContextManager,
-                                                                                       sessionManager,
+                                                                                       modelConnectionManager,
                                                                                        modelRootFactory,
                                                                                        modifier);
         return new AnkorSystem(systemName,
@@ -193,7 +193,7 @@ public class AnkorSystemBuilder {
                                messageBus,
                                refContextFactory,
                                modelContextManager,
-                               sessionManager,
+                               modelConnectionManager,
                                remoteMessageListener);
     }
 
@@ -254,12 +254,12 @@ public class AnkorSystemBuilder {
 
         String modelContextId = getModelContextId();
 
-        SingletonSessionManager sessionManager = new SingletonSessionManager();
+        SingletonModelConnectionManager connectionManager = new SingletonModelConnectionManager();
         Modifier defaultModifier = getDefaultModifier();
         Modifier modifier = new ClientSideBigDataModifier(defaultModifier);
 
         EventListeners globalEventListeners = getGlobalEventListeners(messageFactory,
-                                                                      sessionManager,
+                                                                      connectionManager,
                                                                       modelRootFactory,
                                                                       modifier);
 
@@ -274,12 +274,12 @@ public class AnkorSystemBuilder {
 
         MessageSender messageSender = messageBus.getMessageSenderFor(remoteSystem);
 
-        sessionManager.setSession(new SingletonSession(modelContext, refContext, messageSender));
+        connectionManager.setModelConnection(new SingletonModelConnection(modelContext, refContext, messageSender));
 
         ModelContextManager modelContextManager = new SingletonModelContextManager(modelContextId, modelContext);
 
         RemoteMessageListener remoteMessageListener = new DefaultRemoteMessageListener(modelContextManager,
-                                                                                       sessionManager,
+                                                                                       connectionManager,
                                                                                        modelRootFactory,
                                                                                        modifier);
         return new AnkorSystem(systemName,
@@ -287,23 +287,23 @@ public class AnkorSystemBuilder {
                                messageBus,
                                refContextFactory,
                                modelContextManager,
-                               sessionManager,
+                               connectionManager,
                                remoteMessageListener);
     }
 
     private EventListeners createDefaultGlobalEventListeners(MessageFactory messageFactory,
-                                                             SessionManager sessionManager,
+                                                             ModelConnectionManager modelConnectionManager,
                                                              ModelRootFactory modelRootFactory,
                                                              Modifier modifier) {
 
         EventListeners eventListeners = new ArrayListEventListeners();
 
         // action event listener for sending action events to remote partner
-        eventListeners.add(new RemoteNotifyActionEventListener(messageFactory, sessionManager, modifier));
+        eventListeners.add(new RemoteNotifyActionEventListener(messageFactory, modelConnectionManager, modifier));
 
         // global change event listener for sending change events to remote partner
         eventListeners.add(new RemoteNotifyChangeEventListener(messageFactory,
-                                                               sessionManager,
+                                                               modelConnectionManager,
                                                                modelRootFactory,
                                                                modifier));
 
@@ -421,13 +421,13 @@ public class AnkorSystemBuilder {
     }
 
     public EventListeners getGlobalEventListeners(MessageFactory messageFactory,
-                                                  SessionManager sessionManager,
+                                                  ModelConnectionManager modelConnectionManager,
                                                   ModelRootFactory modelRootFactory,
                                                   Modifier modifier) {
         EventListeners globalEventListeners;
         if (defaultGlobalEventListeners == null) {
             globalEventListeners = createDefaultGlobalEventListeners(messageFactory,
-                                                                     sessionManager,
+                                                                     modelConnectionManager,
                                                                      modelRootFactory,
                                                                      modifier);
         } else {

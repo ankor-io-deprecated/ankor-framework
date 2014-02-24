@@ -1,4 +1,4 @@
-package at.irian.ankor.session;
+package at.irian.ankor.connection;
 
 import at.irian.ankor.ref.Ref;
 

@@ -12,7 +12,7 @@ import at.irian.ankor.messaging.modify.Modifier;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.impl.RefImplementor;
-import at.irian.ankor.session.*;
+import at.irian.ankor.connection.*;
 
 /**
  * Main system message listener that propagates remote events (actions and changes)
@@ -25,16 +25,16 @@ public class DefaultRemoteMessageListener implements RemoteMessageListener {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(DefaultRemoteMessageListener.class);
 
     private final ModelContextManager modelContextManager;
-    private final SessionManager sessionManager;
+    private final ModelConnectionManager modelConnectionManager;
     private final ModelRootFactory modelRootFactory;
     private final Modifier modifier;
 
     DefaultRemoteMessageListener(ModelContextManager modelContextManager,
-                                 SessionManager sessionManager,
+                                 ModelConnectionManager modelConnectionManager,
                                  ModelRootFactory modelRootFactory,
                                  Modifier modifier) {
         this.modelContextManager = modelContextManager;
-        this.sessionManager = sessionManager;
+        this.modelConnectionManager = modelConnectionManager;
         this.modelRootFactory = modelRootFactory;
         this.modifier = modifier;
     }
@@ -49,8 +49,8 @@ public class DefaultRemoteMessageListener implements RemoteMessageListener {
         }
 
         ModelContext modelContext = modelContextManager.getOrCreate(message.getModelId());
-        final Session session = sessionManager.getOrCreate(modelContext, getRemoteSystemOf(message));
-        final Ref actionProperty = session.getRefContext().refFactory().ref(message.getProperty());
+        final ModelConnection modelConnection = modelConnectionManager.getOrCreate(modelContext, getRemoteSystemOf(message));
+        final Ref actionProperty = modelConnection.getRefContext().refFactory().ref(message.getProperty());
 
         if (actionProperty.isRoot() && actionProperty.getValue() == null) {
             // this model root does not yet exist
@@ -71,7 +71,7 @@ public class DefaultRemoteMessageListener implements RemoteMessageListener {
         AnkorPatterns.runLater(actionProperty, new Runnable() {
             @Override
             public void run() {
-                ((RefImplementor)actionProperty).fire(new RemoteSource(session), action);
+                ((RefImplementor)actionProperty).fire(new RemoteSource(modelConnection), action);
             }
         });
     }
@@ -81,14 +81,14 @@ public class DefaultRemoteMessageListener implements RemoteMessageListener {
         LOG.debug("received {}", message);
 
         ModelContext modelContext = modelContextManager.getOrCreate(message.getModelId());
-        final Session session = sessionManager.getOrCreate(modelContext, getRemoteSystemOf(message));
-        final Ref changedProperty = session.getRefContext().refFactory().ref(message.getProperty());
+        final ModelConnection modelConnection = modelConnectionManager.getOrCreate(modelContext, getRemoteSystemOf(message));
+        final Ref changedProperty = modelConnection.getRefContext().refFactory().ref(message.getProperty());
         final Change change = modifier.modifyAfterReceive(message.getChange(), changedProperty);
 
         AnkorPatterns.runLater(changedProperty, new Runnable() {
             @Override
             public void run() {
-                ((RefImplementor)changedProperty).apply(new RemoteSource(session), change);
+                ((RefImplementor)changedProperty).apply(new RemoteSource(modelConnection), change);
             }
         });
     }

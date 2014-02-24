@@ -3,7 +3,7 @@ package at.irian.ankor.el;
 import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.context.ModelContext;
 import at.irian.ankor.ref.RefFactory;
-import at.irian.ankor.session.ModelRootFactory;
+import at.irian.ankor.connection.ModelRootFactory;
 
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
