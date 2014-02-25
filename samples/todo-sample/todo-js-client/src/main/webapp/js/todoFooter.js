@@ -5,7 +5,6 @@
 /*jshint white:false */
 /*jshint trailing:false */
 /*jshint newcap:false */
-/*global React */
 
 define([
   "react",
@@ -42,25 +41,19 @@ define([
           ),
           React.DOM.ul( {id:"filters"}, 
             React.DOM.li(null, 
-              React.DOM.a(
-              {href:"#/",
-              className:filterAll}, 
+              React.DOM.a( {href:"#/", className:filterAll}, 
               "All"
               )
             ),
 						' ',
             React.DOM.li(null, 
-              React.DOM.a(
-              {href:"#/active",
-              className:filterActive}, 
+              React.DOM.a( {href:"#/active", className:filterActive}, 
               "Active"
               )
             ),
 						' ',
             React.DOM.li(null, 
-              React.DOM.a(
-              {href:"#/completed",
-              className:filterCompleted}, 
+              React.DOM.a( {href:"#/completed", className:filterCompleted}, 
               "Completed"
               )
             )

@@ -28,10 +28,10 @@ define([
 
     function render() {
       React.renderComponent(
-        TodoApp( 
-          {model:model,
-          modelRef:rootRef.appendPath("model")}
-        ),
+        <TodoApp 
+          model={model}
+          modelRef={rootRef.appendPath("model")}
+        />,
         document.getElementById('todoapp')
       );
     }

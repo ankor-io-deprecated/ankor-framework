@@ -5,12 +5,11 @@
 /*jshint white:false */
 /*jshint trailing:false */
 /*jshint newcap:false */
-/*global React, Router*/
 
 define([
   "react",
   "director",
-  "footer",
+  "todoFooter",
   "todoModel",
   "todoItem",
   "filter",
@@ -18,13 +17,9 @@ define([
 ], function (React, Router, TodoFooter, TodoModel, TodoItem, app) {
   'use strict';
 
-	app.ALL = 'all';
-	app.ACTIVE = 'active';
-	app.COMPLETED = 'completed';
-
 	var ENTER_KEY = 13;
 
-	var TodoApp = React.createClass({
+	return React.createClass({
 		getInitialState: function () {
 			return {
 				filter: app.ALL,
@@ -33,11 +28,13 @@ define([
 		},
     
 		componentDidMount: function () {
-			var setState = this.setState;
+			var setFilter = function(path) {
+        this.props.modelRef.appendPath(path).setValue(true);
+      };
 			var router = Router({
-				'/': setState.bind(this, {filter: app.ALL}),
-				'/active': setState.bind(this, {filter: app.ACTIVE}),
-				'/completed': setState.bind(this, {filter: app.COMPLETED})
+				'/': setFilter.bind(this, "filterAllSelected"),
+				'/active': setFilter.bind(this, "filterActiveSelected"),
+				'/completed': setFilter.bind(this, "filterCompleteSelected")
 			});
 			router.init('/');
 		},
@@ -50,7 +47,7 @@ define([
 			var val = this.refs.newField.getDOMNode().value.trim();
 
 			if (val) {
-				this.props.model.addTodo(val);
+        this.props.modelRef.fire("newTask", {title: val});
 				this.refs.newField.getDOMNode().value = '';
 			}
 
@@ -94,24 +91,16 @@ define([
 		render: function () {
 			var footer;
 			var main;
-			var todos = this.props.model.todos;
-
-			var shownTodos = todos.filter(function (todo) {
-				switch (this.state.filter) {
-				case app.ACTIVE:
-					return !todo.completed;
-				case app.COMPLETED:
-					return todo.completed;
-				default:
-					return true;
-				}
-			}, this);
-
-			var todoItems = shownTodos.map(function (todo) {
+      var todosRef = this.props.modelRef.appendPath("tasks"); 
+			var todos = todosRef.getValue();
+      var i = 0;
+      
+			var todoItems = todos.map(function (todo) {
 				return (
 					<TodoItem
 						key={todo.id}
 						todo={todo}
+            modelRef={todosRef.appendIndex(i++)}
 						onToggle={this.toggle.bind(this, todo)}
 						onDestroy={this.destroy.bind(this, todo)}
 						onEdit={this.edit.bind(this, todo)}
@@ -122,11 +111,9 @@ define([
 				);
 			}, this);
 
-			var activeTodoCount = todos.reduce(function (accum, todo) {
-				return todo.completed ? accum : accum + 1;
-			}, 0);
+			var activeTodoCount = this.props.modelRef.appendPath("itemsLeft").getValue();
 
-			var completedCount = todos.length - activeTodoCount;
+			var completedCount = this.props.modelRef.appendPath("itemsComplete").getValue();
 
 			if (activeTodoCount || completedCount) {
 				footer =
@@ -172,16 +159,4 @@ define([
 			);
 		}
 	});
-
-	var model = new TodoModel('react-todos');
-
-	function render() {
-		React.renderComponent(
-			<TodoApp model={model}/>,
-			document.getElementById('todoapp')
-		);
-	}
-
-	model.subscribe(render);
-	render();
 });

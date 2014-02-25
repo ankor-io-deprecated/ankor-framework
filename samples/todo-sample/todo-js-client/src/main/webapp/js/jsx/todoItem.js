@@ -5,7 +5,6 @@
 /*jshint white: false */
 /*jshint trailing: false */
 /*jshint newcap: false */
-/*global React */
 
 define([
   "react"
@@ -17,40 +16,23 @@ define([
 
   return React.createClass({
     handleSubmit: function () {
-      var val = this.state.editText.trim();
-      if (val) {
-        this.props.onSave(val);
-        this.setState({editText: val});
-      } else {
-        this.props.onDestroy();
-      }
-      return false;
     },
 
     handleEdit: function () {
-      // react optimizes renders by batching them. This means you can't call
-      // parent's `onEdit` (which in this case triggeres a re-render), and
-      // immediately manipulate the DOM as if the rendering's over. Put it as a
-      // callback. Refer to app.js' `edit` method
-      this.props.onEdit(function () {
-        var node = this.refs.editField.getDOMNode();
-        node.focus();
-        node.setSelectionRange(node.value.length, node.value.length);
-      }.bind(this));
-      this.setState({editText: this.props.todo.title});
+      this.props.modelRef.appendPath("editing").setValue(true);
     },
 
     handleKeyDown: function (event) {
+      var ref = this.props.modelRef.appendPath("editing");
       if (event.which === ESCAPE_KEY) {
-        this.setState({editText: this.props.todo.title});
-        this.props.onCancel();
+        ref.setValue(false);
       } else if (event.which === ENTER_KEY) {
-        this.handleSubmit();
+        ref.setValue(false);
       }
     },
 
     handleChange: function (event) {
-      this.setState({editText: event.target.value});
+      this.props.modelRef.appendPath("title").setValue(event.target.value);
     },
 
     getInitialState: function () {
@@ -63,12 +45,19 @@ define([
      * work correctly (and still be very performant!), we just use it as an example
      * of how little code it takes to get an order of magnitude performance improvement.
      */
+    /*
     shouldComponentUpdate: function (nextProps, nextState) {
       return (
         nextProps.todo !== this.props.todo ||
           nextProps.editing !== this.props.editing ||
           nextState.editText !== this.state.editText
         );
+    },
+    */
+    
+    onToggle: function() {
+      var ref = this.props.modelRef;
+      ref.setValue(!ref.getValue());
     },
 
     render: function () {
@@ -83,7 +72,7 @@ define([
               className="toggle"
               type="checkbox"
               checked={this.props.todo.completed}
-              onChange={this.props.onToggle}
+              onChange={this.onToggle}
             />
             <label onDoubleClick={this.handleEdit}>
               {this.props.todo.title}

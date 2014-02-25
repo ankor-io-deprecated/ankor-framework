@@ -5,7 +5,6 @@
 /*jshint white:false */
 /*jshint trailing:false */
 /*jshint newcap:false */
-/*global React */
 
 define([
   "react",
@@ -42,25 +41,19 @@ define([
           </span>
           <ul id="filters">
             <li>
-              <a
-              href="#/"
-              className={filterAll}>
+              <a href="#/" className={filterAll}>
               All
               </a>
             </li>
 						{' '}
             <li>
-              <a
-              href="#/active"
-              className={filterActive}>
+              <a href="#/active" className={filterActive}>
               Active
               </a>
             </li>
 						{' '}
             <li>
-              <a
-              href="#/completed"
-              className={filterCompleted}>
+              <a href="#/completed" className={filterCompleted}>
               Completed
               </a>
             </li>
