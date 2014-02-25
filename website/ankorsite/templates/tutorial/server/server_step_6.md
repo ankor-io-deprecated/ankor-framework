@@ -5,7 +5,20 @@ In this step we'll be using the `@ChangeListener` annotation to react to changes
 
 #### Before we start
 
-First we add some additional properties:
+Let's set the initial state of our view model properties based on the database:
+
+    :::java
+    itemsLeft = taskRepository.getActiveTasks().size();
+    itemsLeftText = itemsLeftText(itemsLeft);
+
+The `itemsLeftText` helper method is simply:
+
+    :::java
+    private String itemsLeftText(int itemsLeft) {
+        return (itemsLeft == 1) ? "item left" : "items left";
+    }
+
+It's time to add some additional properties:
 
     :::java
     private Integer itemsComplete = 0;

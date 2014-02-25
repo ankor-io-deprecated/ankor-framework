@@ -95,6 +95,11 @@ def tutorial_helper(request, type, step, template):
     if next_step > num_tutorials[type] - 1:
         has_next_step = False
 
+    prev_step = step - 1
+    has_prev_step = True
+    if prev_step < 0:
+        has_prev_step = False
+
     context = RequestContext(request, {
         'activeMenu': 'tutorials',
         'activeMenuText': 'Tutorials',
@@ -103,6 +108,8 @@ def tutorial_helper(request, type, step, template):
         'step': step,
         'tutorial_titles': tutorial_titles[type],
         'tutorial_title': tutorial_titles[type][step],
+        'hasPrevStep': has_prev_step,
+        'prevStep': prev_step,
         'hasNextStep': has_next_step,
         'nextStep': next_step,
         'content': content

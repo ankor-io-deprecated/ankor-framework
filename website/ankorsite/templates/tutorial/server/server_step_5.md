@@ -36,86 +36,44 @@ However, a todo in the UI can also be edited.
 This is why it needs an `editing` field as well.
 But this field is only relevant in the UI and should not be part of the `Task` class.
 
-So the `TaskModel` class wraps a `Task` and contains an additional `editing` property.
+So the `TaskModel` class extends the `Task` class and defines an additional `editing` property.
 
     :::java
-    public class TaskModel {
-        @AnkorIgnore
-        private Task task;
-    
+    public class TaskModel extends Task {
         private boolean editing = false;
-    
+
         public TaskModel(Task task) {
-            this.task = task;
+            super(task);
         }
-    
-        public Task getTask() {
-            return task;
-        }
-    
-        public void setTask(Task task) {
-            this.task = task;
-        }
-    
-        public String getId() {
-            return task.getId();
-        }
-    
-        public void setId(String id) {
-            this.task.setId(id);
-        }
-    
-        public String getTitle() {
-            return task.getTitle();
-        }
-    
-        public void setTitle(String title) {
-            task.setTitle(title);
-        }
-    
-        public boolean isCompleted() {
-            return task.isCompleted();
-        }
-    
-        public void setCompleted(boolean completed) {
-            task.setCompleted(completed);
-        }
-    
+
         public boolean isEditing() {
             return editing;
         }
-    
+
         public void setEditing(boolean editing) {
             this.editing = editing;
         }
     }
-    
-<div class="alert alert-info">
-    <strong>Note:</strong>
-    The wrapped <code>Task</code> object is annotated with <code>@AnkorIgnore</code>,
-    but there are getters and setters for its properties.
-</div>
-    
-Since we will create `TaskModels` on the fly they should have `equals` and `hashCode` methods.
-You can let your IDE create them for you or use these:
+
+Since we will create `TaskModel`s on the fly they should have `equals` and `hashCode` methods.
+You can let your IDE create them for you. You can also use these:
 
     :::java
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
 
         TaskModel taskModel = (TaskModel) o;
 
-        if (editing != taskModel.editing) return false;
-        if (task != null ? !task.equals(taskModel.task) : taskModel.task != null) return false;
+        return editing == taskModel.editing;
 
-        return true;
     }
 
     @Override
     public int hashCode() {
-        int result = task != null ? task.hashCode() : 0;
+        int result = super.hashCode();
         result = 31 * result + (editing ? 1 : 0);
         return result;
     }
@@ -132,9 +90,9 @@ As we've seen before, changing properties directly will not be noticed by Ankor.
 Instead we've used `Ref`s.
 For changing collections we can use a [`CollectionRef`][1] which is a subtype of `Ref`.
 It has methods for manipulating the underlying collection. 
-Doing so will only send the entries that have changed to client.
+Doing so will only send changed entries to the client.
 
-`tasksRef` is a helper method that returns the `CollectionRef` to our tasks property. 
+`tasksRef()` is a helper method that returns the `CollectionRef` to our tasks property.
 It is defined like this:
 
     :::java
@@ -144,13 +102,17 @@ It is defined like this:
     
 #### Implementing the the delete action
 
-Now we can also react to the `deleteTask` Action.
+Knowing about `CollectionRef`s we can also implement the `deleteTask` method:
 
     :::java
     @ActionListener
     public void deleteTask(@Param("index") final int index) {
-        Task task = tasks.get(index).getTask();
+        Task task = tasks.get(index);
         taskRepository.deleteTask(task);
+
+        int itemsLeft = taskRepository.getActiveTasks().size();
+        modelRef.appendPath("itemsLeft").setValue(itemsLeft);
+
         tasksRef().delete(index);
     }
 

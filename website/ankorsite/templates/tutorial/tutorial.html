@@ -16,6 +16,12 @@
         {% endautoescape %}
 
         <br/>
+        {% if hasPrevStep %}
+        <a class="btn btn-default pull-left visible-lg visible-md" href="/tutorials/{{type}}/{{prevStep}}" style="margin-bottom:20px">
+            <span class="glyphicon glyphicon-chevron-left muted"></span>
+            Previous
+        </a>
+        {% endif %}
         {% if hasNextStep %}
         <a class="btn btn-primary pull-right visible-lg visible-md" href="/tutorials/{{type}}/{{nextStep}}" style="margin-bottom:20px">
             Next
