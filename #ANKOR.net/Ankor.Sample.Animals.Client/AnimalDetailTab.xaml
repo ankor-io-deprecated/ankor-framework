@@ -1,0 +1,36 @@
+<UserControl x:Class="Ankor.Sample.Animals.Client.AnimalDetailTab" x:Name="this"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+	DataContext="{Binding ElementName=this, Path=TabRef}">
+						 
+	<StackPanel Margin="5" IsEnabled="{Binding Path=model.editable.Value}">
+		<StackPanel Orientation="Horizontal" Margin="5">
+			<Label Content="Name"  Name="label1"  Width="60" />
+			<TextBox Name="txtName"  VerticalAlignment="Center" Width="200"
+							 Text="{Binding Path=model.animal.name.Value, UpdateSourceTrigger=PropertyChanged}">
+			</TextBox>
+			<Label Content="{Binding Path=model.nameStatus.Value}" Name="lblStatus" Foreground="OrangeRed"/>
+		</StackPanel>
+		<StackPanel Orientation="Horizontal" Margin="5"  >
+			<Label Content="Type" Name="label2"  Width="60" />
+			<ComboBox Name="cmbTypes" Width="200"
+								ItemsSource="{Binding Path=model.selectItems.types.Value, PresentationTraceSources.TraceLevel=High }"
+								SelectedItem="{Binding Path=model.animal.type.Value}">
+			</ComboBox>
+
+			<TextBox Name="txtType" Width="200"
+							 Text="{Binding Path=model.animal.type.Value}" >
+			</TextBox>
+		</StackPanel>
+		<StackPanel Orientation="Horizontal" Margin="5">
+			<Label Content="Family" Name="label3" Width="60" />
+			<ComboBox Name="cmbFamily" Width="200"
+								ItemsSource="{Binding Path=model.selectItems.families.Value}"
+								SelectedItem="{Binding Path=model.animal.family.Value}">				
+			</ComboBox>
+			<TextBox Name="txtFamily" Width="200" Text="{Binding Path=model.animal.family.Value}"></TextBox>
+
+		</StackPanel>
+		<Button Name="btnSave" Content="Save" Click="Save" Width="50" HorizontalAlignment="Left"/>		
+	</StackPanel>
+</UserControl>
