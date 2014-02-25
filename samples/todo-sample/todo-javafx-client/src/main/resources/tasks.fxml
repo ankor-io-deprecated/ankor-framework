@@ -27,13 +27,13 @@
                   <children>
                     <HBox id="filters" alignment="CENTER" prefHeight="35.0" prefWidth="530.0" spacing="5.0" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                       <children>
-                        <RadioButton fx:id="filterAll" mnemonicParsing="false" selected="true" text="All">
+                        <RadioButton fx:id="filterAll" mnemonicParsing="false" selected="true" text="All" onAction="#filterAllClicked">
                           <toggleGroup>
                             <ToggleGroup fx:id="filterToggleGroup" />
                           </toggleGroup>
                         </RadioButton>
-                        <RadioButton fx:id="filterActive" mnemonicParsing="false" text="Active" toggleGroup="$filterToggleGroup" HBox.hgrow="NEVER" />
-                        <RadioButton fx:id="filterCompleted" mnemonicParsing="false" text="Completed" toggleGroup="$filterToggleGroup" />
+                        <RadioButton fx:id="filterActive" mnemonicParsing="false" text="Active" toggleGroup="$filterToggleGroup" HBox.hgrow="NEVER" onAction="#filterActiveClicked" />
+                        <RadioButton fx:id="filterCompleted" mnemonicParsing="false" text="Completed" toggleGroup="$filterToggleGroup" onAction="#filterCompletedClicked" />
                       </children>
                       <padding>
                         <Insets />

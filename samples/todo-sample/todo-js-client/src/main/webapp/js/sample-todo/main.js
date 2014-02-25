@@ -25,16 +25,3 @@ define([
         rootRef.fire("init");
     });
 });
-
-var test = {
-    "senderId": "679a2b45-10bf-4d17-8b09-f2fc3aa9dba0",
-    "modelId": "collabTest",
-    "messageId": "679a2b45-10bf-4d17-8b09-f2fc3aa9dba0#1",
-    "property": "root.model",
-    "action": {
-        "name": "newTask",
-        "params": {
-            "title": "test"
-        }
-    }
-};

@@ -7,8 +7,6 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
-import java.util.UUID;
-
 public class App extends AnkorApplication {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(App.class);
 
@@ -21,8 +19,8 @@ public class App extends AnkorApplication {
 
     @Override
     protected String getWebSocketUri() {
-        return "wss://ankor-todo-sample.irian.at/websocket/ankor";
-        //return "ws://localhost:8080/websocket/ankor";
+        // return "wss://ankor-todo-sample.irian.at/websocket/ankor";
+        return "ws://localhost:8080/websocket/ankor";
     }
 
     @Override
