@@ -7,6 +7,7 @@ import at.irian.ankor.messaging.AnkorIgnore;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.CollectionRef;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankorsamples.todosample.domain.task.Filter;
 import at.irian.ankorsamples.todosample.domain.task.Task;
 import at.irian.ankorsamples.todosample.domain.task.TaskRepository;
 
@@ -20,34 +21,31 @@ public class TaskListModel {
     private final TaskRepository taskRepository;
     @AnkorIgnore
     private final Ref modelRef;
-    private List<TaskModel> tasks;
     private Filter filter = Filter.all;
-    private Integer itemsLeft;
+    private List<TaskModel> tasks;
+
+    private Boolean footerVisibility = false;
+    private Integer itemsLeft = 0;
     private String itemsLeftText;
-    private Boolean footerVisibility;
-    private Integer itemsComplete;
+
+    private Boolean clearButtonVisibility = false;
+    private Integer itemsComplete = 0;
     private String itemsCompleteText;
-    private Boolean clearButtonVisibility;
+    
     private Boolean filterAllSelected = true;
     private Boolean filterActiveSelected = false;
     private Boolean filterCompletedSelected = false;
+    
     private Boolean toggleAll = false;
 
     public TaskListModel(Ref modelRef, TaskRepository taskRepository) {
         AnkorPatterns.initViewModel(this, modelRef);
-
         this.modelRef = modelRef;
         this.taskRepository = taskRepository;
-
+        
         tasks = new ArrayList<>(fetchTaskModels(filter));
-
-        itemsLeft = taskRepository.getActiveTasks().size();
-        itemsLeftText = itemsLeftText(itemsLeft);
-        footerVisibility = taskRepository.getTasks().size() != 0;
-
-        itemsComplete = taskRepository.getCompletedTasks().size();
-        itemsCompleteText = itemsCompleteText(itemsComplete);
-        clearButtonVisibility = itemsComplete != 0;
+        this.itemsLeftText = itemsLeftText(itemsLeft);
+        this.itemsCompleteText = itemsCompleteText(itemsComplete);
     }
 
     @ChangeListener(pattern = "root.model.tasks.*.completed")
@@ -60,7 +58,7 @@ public class TaskListModel {
             "root.model.tasks.(*).title",
             "root.model.tasks.(*).completed"})
     public void saveTask(Ref ref) {
-        TaskModel model = ref.getValue();
+        Task model = ref.getValue();
         taskRepository.saveTask(model);
     }
 
@@ -121,11 +119,7 @@ public class TaskListModel {
     public void toggleAll(@Param("toggleAll") final boolean toggleAll) {
         LOG.info("Setting completed of all tasks to {}", toggleAll);
 
-        for (Task t : taskRepository.getTasks()) {
-            t.setCompleted(toggleAll);
-            taskRepository.saveTask(t);
-        }
-
+        taskRepository.toggleAll(toggleAll);
         updateItemsCount();
         reloadTasks(filter);
     }
@@ -135,14 +129,13 @@ public class TaskListModel {
         LOG.info("Clearing completed tasks");
 
         taskRepository.clearTasks();
-
         updateItemsCount();
         reloadTasks(filter);
     }
 
     private void updateItemsCount() {
-        modelRef.appendPath("itemsLeft").setValue(taskRepository.getActiveTasks().size());
-        modelRef.appendPath("itemsComplete").setValue(taskRepository.getCompletedTasks().size());
+        modelRef.appendPath("itemsLeft").setValue(taskRepository.fetchActiveTasks().size());
+        modelRef.appendPath("itemsComplete").setValue(taskRepository.fetchCompletedTasks().size());
     }
 
     // helper for dealing with list refs
@@ -157,7 +150,7 @@ public class TaskListModel {
     }
 
     private List<TaskModel> fetchTaskModels(Filter filter) {
-        List<Task> tasks = fetchTasks(filter);
+        List<Task> tasks = taskRepository.fetchTasks(filter);
         List<TaskModel> res = new ArrayList<>(tasks.size());
 
         for (Task t : tasks) {
@@ -166,18 +159,6 @@ public class TaskListModel {
         }
 
         return res;
-    }
-
-    private List<Task> fetchTasks(Filter filter) {
-        switch (filter) {
-            case all:
-                return taskRepository.getTasks();
-            case active:
-                return taskRepository.getActiveTasks();
-            case completed:
-                return taskRepository.getCompletedTasks();
-        }
-        return null;
     }
 
     private String itemsLeftText(int itemsLeft) {
