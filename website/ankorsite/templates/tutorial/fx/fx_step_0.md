@@ -44,7 +44,7 @@ Please make sure that all software components are installed properly.
                 <li>and that %MAVEN_HOME%\bin is in your Path environment variable</li>
             </ul>
             <p>Open command line and test</p>
-            <pre><code>mvn -version</code></pre>
+            <pre>mvn -version</pre>
         </div>
         <div class="tab-pane" id="tab3">
             <p>Install Git, download from <a href="http://git-scm.com/download">the Git site</a>.</p>
