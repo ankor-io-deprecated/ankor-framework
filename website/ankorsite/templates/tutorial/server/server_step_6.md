@@ -5,25 +5,12 @@ In this step we'll be using the `@ChangeListener` annotation to react to changes
 
 #### Before we start
 
-Let's set the initial state of our view model properties based on the database:
-
-    :::java
-    itemsLeft = taskRepository.getActiveTasks().size();
-    itemsLeftText = itemsLeftText(itemsLeft);
-
-The `itemsLeftText` helper method is simply:
-
-    :::java
-    private String itemsLeftText(int itemsLeft) {
-        return (itemsLeft == 1) ? "item left" : "items left";
-    }
-
 It's time to add some additional properties:
 
     :::java
-    private Integer itemsComplete = 0;
-    private String itemsCompleteText = "";
     private Boolean clearButtonVisibility = false;
+    private Integer itemsComplete = 0;
+    private String itemsCompleteText;
     private Boolean toggleAll = false;
     
 * `itemsComplete` is the number of todos that have been completed.
@@ -35,6 +22,29 @@ It's time to add some additional properties:
     <strong>Note:</strong>
     Don't forget to create getters and setters for these properties.
 </div>
+
+Let's set the initial state of our view model text properties:
+
+    :::java
+    public TaskListModel(Ref modelRef, TaskRepository taskRepository) {
+        AnkorPatterns.initViewModel(this, modelRef);
+        this.modelRef = modelRef;
+        this.taskRepository = taskRepository;
+        
+        this.itemsLeftText = itemsLeftText(itemsLeft);
+        this.itemsCompleteText = itemsCompleteText(itemsComplete);
+    }
+
+The `itemsLeftText` and `itemsCompleteText` helper methods are:
+
+    :::java
+    private String itemsLeftText(int itemsLeft) {
+        return (itemsLeft == 1) ? "item left" : "items left";
+    }
+    
+    private String itemsCompleteText(int itemsComplete) {
+        return String.format("Clear completed (%d)", itemsComplete);
+    }
 
 #### Methods as Change Listeners
 
@@ -56,7 +66,8 @@ In our chase we have `"root.model.itemsLeft"`.
 
 ##### Updating itemsLeftText
 
-We will also set `toggleAll` to the correct value:
+This will keep `itemsLeftText` in sync with `itemsLeft`.
+We will also set `toggleAll`, since it depends on `itemsLeft` as well:
 
     :::java
     @ChangeListener(pattern = "root.model.itemsLeft")
@@ -76,10 +87,6 @@ Another one for the clear button:
         modelRef.appendPath("itemsCompleteText").setValue(itemsCompleteText(itemsComplete));
     }
     
-    private String itemsCompleteText(int itemsComplete) {
-        return String.format("Clear completed (%d)", itemsComplete);
-    }
-    
 ##### Changing the footer visibility 
 
 We can also listen to multiple patterns: 
@@ -89,26 +96,31 @@ We can also listen to multiple patterns:
             "root.model.itemsLeft",
             "root.model.itemsComplete"})
     public void updateFooterVisibility() {
-        modelRef.appendPath("footerVisibility").setValue(taskRepository.getTasks().size() != 0);
+        modelRef.appendPath("footerVisibility").setValue(itemsLeft != 0 || itemsComplete != 0);
     }
     
 ##### Keeping the item counters updated
     
-Until now `itemsLeft` and `itemsComplete` weren't changing.
-We can fix this using another change listener.
-This one introduces special syntax.
-By `**` we listen for any changes in the sub tree. 
-This includes add/removed todos as well as any changes of their properties.
-
+As you can see all these listeners depended on `itemsLeft` and `itemsComplete`.
+But these properties are currently not consistent with the repository.
+To fix this we define a helper method that sets these properties based on the number of entries in the repository.
+    
     :::java
-    @ChangeListener(pattern = {
-            "root.model.tasks",
-            "root.model.tasks.**"})
-    public void updateItemsValues() {
-        modelRef.appendPath("itemsLeft").setValue(taskRepository.getActiveTasks().size());
-        modelRef.appendPath("itemsComplete").setValue(taskRepository.getCompletedTasks().size());
+    private void updateItemsCount() {
+        modelRef.appendPath("itemsLeft").setValue(taskRepository.fetchActiveTasks().size());
+        modelRef.appendPath("itemsComplete").setValue(taskRepository.fetchCompletedTasks().size());
     }
     
+Inside our `newTask` and `deleteTask` methods we can now replace:
+
+    :::java
+    int itemsLeft = taskRepository.fetchActiveTasks().size();
+    modelRef.appendPath("itemsLeft").setValue(itemsLeft);
+ 
+with:
+
+    :::java
+    updateItemsCount();
 
 
 [1]: #linkToDocu

@@ -74,7 +74,7 @@ We want to change the `itemsLeft` property to reflect the actual number of tasks
 Simply setting the property will not trigger any events though:
 
     :::java
-    int itemsLeft = taskRepository.getActiveTasks().size();
+    int itemsLeft = taskRepository.fetchActiveTasks().size();
 
     // Ankor will not notice this
     this.itemsLeft = itemsLeft;
@@ -90,7 +90,7 @@ The full path to `itemsLeft` would be `"root.model.itemsLeft"`.
 Since we already have a `Ref` for the path `"root.model"` we can simply append `"itemsLeft"`.
 
     :::java
-    int itemsLeft = taskRepository.getActiveTasks().size();
+    int itemsLeft = taskRepository.fetchActiveTasks().size();
     modelRef.appendPath("itemsLeft").setValue(itemsLeft);
 
 This will send a change event to the client and trigger any events there.
