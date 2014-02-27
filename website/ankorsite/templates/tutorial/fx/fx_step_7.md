@@ -34,6 +34,32 @@ We add the bindings in our root change listener (`myInit`):
     filterActive.selectedProperty().bindBidirectional(modelRef.appendPath("filterActiveSelected").<Boolean>fxProperty());
     filterCompleted.selectedProperty().bindBidirectional(modelRef.appendPath("filterCompletedSelected").<Boolean>fxProperty());
 
+#### Changing the filter
+
+There is a clicked methods for each of the filters in the footer.
+In order to reload the task list with a different filter the `filter` property needs to be set.
+The obvious solution would be to set the property directly.
+Due to multi threading reasons this will not work though:
+
+    :::java
+    @FXML
+    public void filterAllClicked(ActionEvent actionEvent) {
+        // This will not work!
+        modelRef.appendPath("filter").setValue("all");
+    }
+
+Ankor provides a solution for this problem.
+The utility class `AnkorPatterns` has a static method `changeValueLater` that will set the value on the correct thread.
+
+    :::java
+    @FXML
+    public void filterAllClicked(ActionEvent actionEvent) {
+        AnkorPatterns.changeValueLater(modelRef.appendPath("filter"), "all");
+    }
+
+Do the same for `filterActiveClicked` and `filterCompletedClicked`,
+changing `filter` to `"active"` and `"completed"` respectively.
+
 #### Clear completed todos
 
 The implementation is straight-forward.

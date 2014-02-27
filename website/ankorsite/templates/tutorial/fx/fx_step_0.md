@@ -34,7 +34,7 @@ Please make sure that all software components are installed properly.
                 <li>and that %JAVA_HOME%\bin is in your Path environment variable</li>
             </ul>
             <p>Open command line and test</p>
-            <pre><code>java -version</code></pre>
+            <pre>java -version</pre>
         </div>
         <div class="tab-pane" id="tab2">
             <p>Maven 3.0.5 or higher, download from <a href="http://maven.apache.org/download.cgi">here</a>.</p>

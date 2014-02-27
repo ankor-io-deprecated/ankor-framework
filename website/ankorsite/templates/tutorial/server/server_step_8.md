@@ -25,8 +25,9 @@ This should update the item counts and reload the list entries.
 (We reload the list because a completed todo should not remain in the active list and vice versa).
 
     :::java
-    @ChangeListener(pattern = "root.model.tasks.*.completed")
-    public void completedChanged() {
+    @ChangeListener(pattern = {
+            "root.model.tasks.*.completed"})
+    public void saveTask() {
         updateItemsCount();
         reloadTasks(filter);
     }
@@ -45,7 +46,7 @@ The method should be called when any of them changes.
 Currently changes to todos are not persisted in the repository.
 A todo should be persisted when either it's `title` or `completed` property changes.
 
-Again, we can use a `*` in the pattern to register the change listener for all todos.
+We can change the previous pattern to include changes to the title as well.
 Unlike before we will also need a `Ref` to the todo that has changed.
 Otherwise we would not know which todo to persist.
 
@@ -57,11 +58,14 @@ In case of a list the we put parenthesis around the index to get a `Ref` to the 
 
     :::java
     @ChangeListener(pattern = {
-            "root.model.tasks.(*).title",
-            "root.model.tasks.(*).completed"})
+            "root.model.tasks.(*).completed",
+            "root.model.tasks.(*).title"})
     public void saveTask(Ref ref) {
         Task model = ref.getValue();
         taskRepository.saveTask(model);
+
+        updateItemsCount();
+        reloadTasks(filter);
     }
     
 This completes the Ankor server tutorial. 
