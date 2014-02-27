@@ -75,6 +75,6 @@ Let your IDE do that for you.
     }
 
 
-[1]: https://github.com/ankor-io/ankor-todo/blob/server-step-2/todo-server/src/main/java/io/ankor/tutorial/model/Task.java
-[2]: #Ref
-[3]: https://github.com/ankor-io/ankor-todo/blob/server-step-2/todo-server/src/main/java/io/ankor/tutorial/model/TaskRepository.java
+[1]: https://github.com/ankor-io/ankor-todo-tutorial/blob/server-step-2/todo-server/src/main/java/io/ankor/tutorial/model/Task.java
+[2]: http://ankor.io/static/javadoc/apidocs/at/irian/ankor/ref/Ref.html
+[3]: https://github.com/ankor-io/ankor-todo-tutorial/blob/server-step-2/todo-server/src/main/java/io/ankor/tutorial/model/TaskRepository.java

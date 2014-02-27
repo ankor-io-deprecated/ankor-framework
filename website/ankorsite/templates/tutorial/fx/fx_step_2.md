@@ -83,7 +83,7 @@ The `pattern` is the path to the property that we want to listen for, in this ca
 
 In this method we will then implement bindings to UI components.
 
-[1]: https://github.com/ankor-io/ankor-todo/blob/fx-step-2/todo-javafx-client/src/main/java/io/ankor/tutorial/TaskListController.java
-[2]: https://github.com/ankor-io/ankor-todo/blob/fx-step-2/todo-javafx-client/src/main/resources/tasks.fxml
-[3]: #TODOLinkToDocumentationRef
-[4]: #TODOLinkToDocumentationAction
+[1]: https://github.com/ankor-io/ankor-todo-tutorial/blob/fx-step-2/todo-fx/src/main/java/io/ankor/tutorial/TaskListController.java
+[2]: https://github.com/ankor-io/ankor-todo-tutorial/blob/fx-step-2/todo-fx/src/main/resources/tasks.fxml
+[3]: http://ankor.io/static/javadoc/apidocs/at/irian/ankor/ref/Ref.html
+[4]: http://ankor.io/static/javadoc/apidocs/at/irian/ankor/action/Action.html

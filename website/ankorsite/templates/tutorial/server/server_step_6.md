@@ -123,5 +123,5 @@ with:
     updateItemsCount();
 
 
-[1]: #linkToDocu
+[1]: http://ankor.io/static/javadoc/apidocs/at/irian/ankor/annotation/ChangeListener.html
 

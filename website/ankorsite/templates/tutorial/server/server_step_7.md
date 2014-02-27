@@ -89,4 +89,4 @@ Again we just update the item count and reload the task list.
         reloadTasks(filter);
     }
 
-[1]: #linktofilter
+[1]: https://github.com/ankor-io/ankor-todo-tutorial/blob/server-step-7/todo-server/src/main/java/io/ankor/tutorial/model/Filter.java

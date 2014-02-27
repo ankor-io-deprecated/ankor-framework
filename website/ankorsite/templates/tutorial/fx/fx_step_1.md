@@ -7,9 +7,10 @@ which starts the Ankor system for you, or you can set up your own Ankor system m
 Both work the same way under the hood and the rest of the tutorial does not depend on
 your choice here. However, choose the first option if you want to start quickly.
 
-The fastest way to create a Ankor JavaFX app is to extend the `AnkorApplication` class. This
+The fastest way to create a Ankor JavaFX app is to extend the [`AnkorApplication`][1] class.
+This class itself is a subtype of the JavaFX [`Application`][3] class.
 
-Open [`App.java`][1] and add the following lines:
+Open `App.java` and add the following lines:
 
     :::java
     public class App extends AnkorApplication {
@@ -50,7 +51,9 @@ has received an id from the server and heartbeat messages are being sent to the 
 For now we are connecting to an existing Ankor server at `wss://ankor-todo-sample.irian.at/websocket/ankor`.
 This server will be able to understand and process the messages that our todo application is going to send.
 This will give you the experience of an application developer adding a new client platform to an existing Ankor system.
-However, if you want to write your own server first you can learn how to do so in the [server section][2].
+
+However, if you want to write your own server first you can learn how to do so in the [server tutorial][2].
+If you want to run your own server locally [you can do so as well][2].
 
 #### Adding JavaFX to the classpath
 
@@ -64,7 +67,10 @@ The following command fixes this:
 
     mvn jfx:fix-classpath
 
-<div class="alert alert-info"><strong>Note: </strong>You have to run this command as super user / with administrator privileges.</div>
+<div class="alert alert-info">
+    <strong>Note:</strong>
+    You have to run this command as super user / with administrator privileges.
+</div>
 
 #### Starting the application
 
@@ -82,7 +88,8 @@ You can check the online status via
 [websocket.org](http://www.websocket.org/echo.html) (the WebSocket url is `wss://ankor-todo-sample.irian.at/websocket/ankor`).
 A running Ankor server should send an UUID when a connection is established.
 
-If the server appears to be offline you can still [write your own server][2].
+If the server appears to be offline you can still [run your own server][2].
 
-[1]: https://github.com/ankor-io/ankor-todo/blob/fx-step-1/todo-javafx-client/src/main/java/io/ankor/tutorial/App.java
-[2]: http://ankor.io/tutorials/server/0
+[1]: http://ankor.io/static/javadoc/apidocs/at/irian/ankor/fx/websocket/AnkorApplication.html
+[2]: http://ankor.io/tutorials/server/1
+[3]: http://docs.oracle.com/javafx/2/api/javafx/application/Application.html

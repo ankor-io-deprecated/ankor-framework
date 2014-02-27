@@ -101,4 +101,4 @@ Start the servlet by typing `mvn install` in the `ankor-todo` directory.
 When the process has finished point your browser to [`http://localhost:8080`](http://localhost:8080).
 Your dummy text should appear in the footer.
 
-[1]: #linkToDocu
+[1]: http://ankor.io/static/javadoc/apidocs/at/irian/ankor/servlet/websocket/AnkorEndpoint.html

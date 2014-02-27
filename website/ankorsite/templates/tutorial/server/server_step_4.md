@@ -5,7 +5,7 @@ In this step we will deal with Actions that are sent from the client.
 #### Actions
 
 Actions are a core concept of Ankor.
-An [`Action`][4] is generally used to make user interaction explicit.
+An [`Action`][1] is generally used to make user interaction explicit.
 
 In this case we will deal with the `"newTask"` action.
 This `Action` is triggered when the users creates a new todo.
@@ -45,7 +45,7 @@ If so, each of the parameters mast have a name as well.
 #### Server: Reacting to Actions
 
 Instead of adding event listeners ourselves we will use Ankor's support for annotations.
-We can turn a method into an action listener by annotating it with `@ActionListener`.
+We can turn a method into an action listener by annotating it with [`@ActionListener`][2].
 However there are a few things to consider:
 
 1. The name of the method must be the same as the name of the Action.
@@ -98,4 +98,5 @@ It will also update the local variable, so that `(this.itemsLeft == itemsLeft)` 
 
 Now you can add todos to the list an see how the number changes.
 
-[4]: #TODOLinkToDocumentationAction
+[1]: http://ankor.io/static/javadoc/apidocs/at/irian/ankor/action/Action.html
+[2]: http://ankor.io/static/javadoc/apidocs/at/irian/ankor/annotation/ActionListener.html

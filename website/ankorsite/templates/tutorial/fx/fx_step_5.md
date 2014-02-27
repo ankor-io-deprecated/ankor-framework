@@ -115,4 +115,4 @@ The `loadFXML` method loads the markup from the resource folder and sets our `Ta
     }
 
 [1]: http://docs.oracle.com/javafx/2/api/javafx/scene/layout/VBox.html
-[2]: https://github.com/ankor-io/ankor-todo/blob/fx-step-5/todo-fx/src/main/resources/task.fxml
+[2]: https://github.com/ankor-io/ankor-todo-tutorial/blob/fx-step-3/todo-fx/src/main/resources/task.fxml
