@@ -32,7 +32,8 @@
 }
 
 - (void)tasksChanged:(id) value {
-    self.toDoItems = value;
+    [[self toDoItems]removeAllObjects];
+    [[self toDoItems]addObjectsFromArray:value];
     [self.tableView reloadData];
 }
 
