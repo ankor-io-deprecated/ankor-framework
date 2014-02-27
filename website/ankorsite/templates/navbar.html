@@ -29,7 +29,8 @@
 					<a href="/tutorials">Tutorials</a>
 				</li>
 				<li class="{% if activeMenu == 'documentation' %}active{% endif %}">
-					<a href="/documentation">Documentation</a>
+                    {% load staticfiles %}
+					<a href="{% static 'javadoc/apidocs/index.html' %}">Documentation</a>
 				</li>
 				<li class="{% if activeMenu == 'contribute' %}active{% endif %}">
 					<a href="https://github.com/ankor-io/ankor-framework">Contribute</a>
