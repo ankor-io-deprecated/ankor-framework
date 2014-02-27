@@ -5,7 +5,7 @@
 In the last step we introduced a bug.
 It happens only when the `filter` is set the `Filter.completed`.
 If we add a todo in this state the todo appears in the list even though it is not completed.
-The origin of this bug is in the `newTask` method. 
+The origin of this bug is in the `newTask` method.
 When we first wrote it we didn't have a filter.
 We can fix it with an additional if statement:
 
@@ -31,13 +31,13 @@ This should update the item counts and reload the list entries.
         updateItemsCount();
         reloadTasks(filter);
     }
-    
-Here we use `*` in the pattern to indicate that we do not care which task's `completed` property changes. 
+
+Here we use `*` in the pattern to indicate that we do not care which task's `completed` property changes.
 The method should be called when any of them changes.
-    
+
 <div class="alert alert-info">
     <strong>Note:</strong>
-    <code>"tasks.*.completed"</code> is equivalent to <code>"tasks[*].completed"</code>. 
+    <code>"tasks.*.completed"</code> is equivalent to <code>"tasks[*].completed"</code>.
     E.g. if you wanted to access the third element, you could either say <code>"tasks.3"</code> or <code>"tasks[3]"</code>.
 </div>
 
@@ -67,8 +67,8 @@ In case of a list the we put parenthesis around the index to get a `Ref` to the 
         updateItemsCount();
         reloadTasks(filter);
     }
-    
-This completes the Ankor server tutorial. 
+
+This completes the Ankor server tutorial.
 You can now follow any of the [client tutorials][1] and let the client interact with this server.
 
 [1]: http://www.ankor.io/tutorials

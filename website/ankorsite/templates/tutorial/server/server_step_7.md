@@ -10,7 +10,7 @@ We also add a boolean property for the active state of each of the filter button
     private Boolean filterAllSelected = true;
     private Boolean filterActiveSelected = false;
     private Boolean filterCompletedSelected = false;
-    
+
 <div class="alert alert-info">
     <strong>Note:</strong>
     Don't forget to create getters and setters for these properties.
@@ -41,7 +41,7 @@ sets those tasks as the value of our task `Ref`.
         List<TaskModel> taskModels = mapTasksToTaskModels(tasks);
         tasksRef().setValue(taskModels);
     }
-    
+
 `mapTasksToTaskModels` will loop through the task list and wrap each `Task` in a `TaskModel`:
 
     :::java
@@ -52,7 +52,7 @@ sets those tasks as the value of our task `Ref`.
         }
         return res;
     }
-    
+
 Now we can click the filter in the UI and the list updates.
 
 #### Implementing the remaining actions
@@ -72,7 +72,7 @@ We do so by calling our two helper methods:
         updateItemsCount();
         reloadTasks(filter);
     }
-    
+
 ##### Toggle all tasks
 
 The other action is changes the `completed` property of all todos to `true` if at least one todo isn't completed.

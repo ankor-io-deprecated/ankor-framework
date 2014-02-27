@@ -22,7 +22,7 @@ Now we can get the text form the text field like this. Inside the `newTodo` meth
 
     :::java
     String title = newTodo.getText();
-    
+
 #### Firing an Action with Parameters
 
 We will use an `Action` to tell the server that the user wants to add a new todo.
@@ -45,7 +45,7 @@ In addition you might want to prevent empty tasks from reaching the server:
   a private field in the controller and save the reference from the init method or call <code>appendPath</code> on the root ref as in the previous step.
 </div>
 
-After you insert a new todo and press Enter you should see the footer appear. This means that our bindings from step 3 work. 
+After you insert a new todo and press Enter you should see the footer appear. This means that our bindings from step 3 work.
 However, we still don't see our todos in the list yet.
 
 [1]: https://github.com/ankor-io/ankor-todo/blob/fx-step-4/todo-javafx-client/src/main/java/io/ankor/tutorial/TaskListController.java

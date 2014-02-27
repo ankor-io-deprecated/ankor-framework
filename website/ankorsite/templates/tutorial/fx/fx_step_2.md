@@ -32,7 +32,7 @@ In this case we use it to tell the Ankor server to set up a new view model for u
 The server will process the action and return a response containing the initial state of the application.
 The data is JSON encoded and will look like this:
 
-    ::javascript
+    :::javascript
     {
         "senderId": "ankor-servlet-server",
         "modelId": "...",
@@ -66,18 +66,18 @@ a lot of boilerplate code for adding individual event listeners.
 
 We add this line to our initialize method:
 
-    ::java
+    :::java
     FXControllerSupport.init(this, rootRef);
 
 We can now create our own initialize method, the one that will be called when the response from the server returns
 after the `init` action has been fired:
 
-    ::java
+    :::java
     @ChangeListener(pattern = "root")
     public void myInit() {
         // TODO
     }
-    
+
 The `ChangeListener` annotation says that we want to watch for changes on a property.
 The `pattern` is the path to the property that we want to listen for, in this case it's the `root`.
 

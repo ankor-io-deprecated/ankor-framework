@@ -69,4 +69,3 @@ The `todo-fx` contains a minimal JavaFX client to test your setup.
 
 [1]: http://www.oracle.com/technetwork/articles/java/jsr356-1937161.html
 [2]: https://glassfish.java.net/
-

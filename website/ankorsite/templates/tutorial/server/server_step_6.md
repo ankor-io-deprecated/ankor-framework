@@ -12,7 +12,7 @@ It's time to add some additional properties:
     private Integer itemsComplete = 0;
     private String itemsCompleteText;
     private Boolean toggleAll = false;
-    
+
 * `itemsComplete` is the number of todos that have been completed.
 * `itemsCompleteText` is the text inside the clear button.
 * Since the clear button should not be visible when there are no completed todos, we need a `clearButtonVisibility`.
@@ -30,7 +30,7 @@ Let's set the initial state of our view model text properties:
         AnkorPatterns.initViewModel(this, modelRef);
         this.modelRef = modelRef;
         this.taskRepository = taskRepository;
-        
+
         this.itemsLeftText = itemsLeftText(itemsLeft);
         this.itemsCompleteText = itemsCompleteText(itemsComplete);
     }
@@ -41,7 +41,7 @@ The `itemsLeftText` and `itemsCompleteText` helper methods are:
     private String itemsLeftText(int itemsLeft) {
         return (itemsLeft == 1) ? "item left" : "items left";
     }
-    
+
     private String itemsCompleteText(int itemsComplete) {
         return String.format("Clear completed (%d)", itemsComplete);
     }
@@ -58,7 +58,7 @@ We can get this behaviour with a change listener.
 
 A method annotated with the [`@ChangeListener`][1] annotation gets called whenever a certain property changes.
 The property is specified by a `pattern`.
-Roughly speaking the pattern is the same syntax as if you were accessing the property in JSON.  
+Roughly speaking the pattern is the same syntax as if you were accessing the property in JSON.
 We will see more advanced patterns later.
 
 In our chase we have `"root.model.itemsLeft"`.
@@ -75,9 +75,9 @@ We will also set `toggleAll`, since it depends on `itemsLeft` as well:
         modelRef.appendPath("itemsLeftText").setValue(itemsLeftText(itemsLeft));
         modelRef.appendPath("toggleAll").setValue(itemsLeft == 0);
     }
-    
+
 ##### Updating the clear button
-    
+
 Another one for the clear button:
 
     :::java
@@ -86,10 +86,10 @@ Another one for the clear button:
         modelRef.appendPath("clearButtonVisibility").setValue(itemsComplete != 0);
         modelRef.appendPath("itemsCompleteText").setValue(itemsCompleteText(itemsComplete));
     }
-    
-##### Changing the footer visibility 
 
-We can also listen to multiple patterns: 
+##### Changing the footer visibility
+
+We can also listen to multiple patterns:
 
     :::java
     @ChangeListener(pattern = {
@@ -98,25 +98,25 @@ We can also listen to multiple patterns:
     public void updateFooterVisibility() {
         modelRef.appendPath("footerVisibility").setValue(itemsLeft != 0 || itemsComplete != 0);
     }
-    
+
 ##### Keeping the item counters updated
-    
+
 As you can see all these listeners depended on `itemsLeft` and `itemsComplete`.
 But these properties are currently not consistent with the repository.
 To fix this we define a helper method that sets these properties based on the number of entries in the repository.
-    
+
     :::java
     private void updateItemsCount() {
         modelRef.appendPath("itemsLeft").setValue(taskRepository.fetchActiveTasks().size());
         modelRef.appendPath("itemsComplete").setValue(taskRepository.fetchCompletedTasks().size());
     }
-    
+
 Inside our `newTask` and `deleteTask` methods we can now replace:
 
     :::java
     int itemsLeft = taskRepository.fetchActiveTasks().size();
     modelRef.appendPath("itemsLeft").setValue(itemsLeft);
- 
+
 with:
 
     :::java

@@ -1,6 +1,6 @@
 ### Adding Todos to the List
 
-In the previous step we added todos to the repository. 
+In the previous step we added todos to the repository.
 This was equivalent to adding them to a database.
 
 This alone will not make them appear in the UI though.
@@ -15,7 +15,7 @@ We can use a simple `ArrayList` for this:
 
     :::java
     private List<TaskModel> tasks = new ArrayList<>();
-    
+
     public List<TaskModel> getTasks() {
         return tasks;
     }
@@ -24,15 +24,15 @@ We can use a simple `ArrayList` for this:
         this.tasks = tasks;
     }
 
-  
-As you will notice we haven't defined a `TaskModel` yet. 
+
+As you will notice we haven't defined a `TaskModel` yet.
 
 #### Building view models form domain objects
 
 The reason we need a `TaskModel` is that we want to keep the business layer and the UI separate.
 
 A todo in the database has a `title` and a `completed` field.
-However, a todo in the UI can also be edited. 
+However, a todo in the UI can also be edited.
 This is why it needs an `editing` field as well.
 But this field is only relevant in the UI and should not be part of the `Task` class.
 
@@ -85,11 +85,11 @@ With this in place we can add to our `newTask` method:
     :::java
     TaskModel model = new TaskModel(task);
     tasksRef().add(model);
-    
-As we've seen before, changing properties directly will not be noticed by Ankor. 
+
+As we've seen before, changing properties directly will not be noticed by Ankor.
 Instead we've used `Ref`s.
 For changing collections we can use a [`CollectionRef`][1] which is a subtype of `Ref`.
-It has methods for manipulating the underlying collection. 
+It has methods for manipulating the underlying collection.
 Doing so will only send changed entries to the client.
 
 `tasksRef()` is a helper method that returns the `CollectionRef` to our tasks property.
@@ -99,7 +99,7 @@ It is defined like this:
     private CollectionRef tasksRef() {
         return modelRef.appendPath("tasks").toCollectionRef();
     }
-    
+
 #### Implementing the the delete action
 
 Knowing about `CollectionRef`s we can also implement the `deleteTask` method:

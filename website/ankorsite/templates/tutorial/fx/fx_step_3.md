@@ -6,7 +6,7 @@ to be as close to the JavaFX API as possible. If have used JavaFX before, this w
 #### Accessing JavaFX components
 
 Before we can bind Ankor properties to UI components we need references to them in our controller.
-In order to do so we need to specify the type of our component (`Node` being the most general one) and name 
+In order to do so we need to specify the type of our component (`Node` being the most general one) and name
 it exactly like its id attribute in [`tasks.fxml`][2].
 Adding the [`@FXML`][5] annotation makes it explicit that this field is defined in the markup.
 
