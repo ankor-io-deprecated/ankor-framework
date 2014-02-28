@@ -6,7 +6,7 @@ import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.delay.AkkaScheduler;
 import at.irian.ankor.event.dispatch.AkkaEventDispatcherFactory;
 import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
-import at.irian.ankor.session.ModelRootFactory;
+import at.irian.ankor.connection.ModelRootFactory;
 import at.irian.ankor.system.AnkorSystem;
 import at.irian.ankor.system.AnkorSystemBuilder;
 import at.irian.ankor.viewmodel.proxy.CglibProxyBeanFactory;

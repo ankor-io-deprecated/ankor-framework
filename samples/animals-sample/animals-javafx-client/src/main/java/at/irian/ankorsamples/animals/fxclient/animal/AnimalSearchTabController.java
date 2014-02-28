@@ -84,7 +84,7 @@ public class AnimalSearchTabController extends BaseTabController {
                         int rowNum = t.getTablePosition().getRow();
                         Ref rowNameRef = getTabRef().appendPath(String.format("model.animals[%d].name", rowNum));
                         AnkorPatterns.changeValueLater(rowNameRef,
-                                                       t.getNewValue()); // we must not directly access the model context from a non-dispatching thread
+                                                       t.getNewValue()); // we must not directly access the model session from a non-dispatching thread
                     }
                 });
 

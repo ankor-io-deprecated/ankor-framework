@@ -1,13 +1,13 @@
 package at.irian.ankor.ref.el;
 
 import at.irian.ankor.base.BeanResolver;
-import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.delay.Scheduler;
 import at.irian.ankor.el.AnkorELSupport;
 import at.irian.ankor.el.ELSupport;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefContextFactory;
-import at.irian.ankor.session.ModelRootFactory;
+import at.irian.ankor.connection.ModelRootFactory;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
 import at.irian.ankor.viewmodel.factory.BeanFactory;
 import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
@@ -42,10 +42,10 @@ public class ELRefContextFactory implements RefContextFactory {
     }
 
     @Override
-    public RefContext createRefContextFor(ModelContext modelContext) {
-        ELSupport elSupport = new AnkorELSupport(modelContext, beanResolver, modelRootFactory);
+    public RefContext createRefContextFor(ModelSession modelSession) {
+        ELSupport elSupport = new AnkorELSupport(modelSession, beanResolver, modelRootFactory);
         return ELRefContext.create(elSupport,
-                                   modelContext,
+                                   modelSession,
                                    viewModelPostProcessors,
                                    scheduler,
                                    metadataProvider,

@@ -1,6 +1,6 @@
 package at.irian.ankor.event.dispatch;
 
-import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.session.ModelSession;
 
 /**
  * @author Manfred Geiler
@@ -8,13 +8,13 @@ import at.irian.ankor.context.ModelContext;
 public class DispatchThreadChecker {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(DispatchThreadChecker.class);
 
-    private final DispatchThreadAware modelContext;
+    private final DispatchThreadAware modelSession;
 
-    public DispatchThreadChecker(ModelContext modelContext) {
-        if (modelContext instanceof DispatchThreadAware) {
-            this.modelContext = (DispatchThreadAware)modelContext;
+    public DispatchThreadChecker(ModelSession modelSession) {
+        if (modelSession instanceof DispatchThreadAware) {
+            this.modelSession = (DispatchThreadAware) modelSession;
         } else {
-            this.modelContext = null;
+            this.modelSession = null;
         }
     }
 
@@ -23,16 +23,16 @@ public class DispatchThreadChecker {
      * @throws IllegalStateException if another thread was registered before
      */
     public boolean registerCurrentThread() {
-        if (modelContext != null) {
-            Thread previousDispatchThread = modelContext.getCurrentDispatchThread();
+        if (modelSession != null) {
+            Thread previousDispatchThread = modelSession.getCurrentDispatchThread();
             Thread currentThread = Thread.currentThread();
             if (previousDispatchThread != null) {
                 if (previousDispatchThread != currentThread) {
-                    throw new IllegalStateException("ModelContext already being dispatched by another Thread: " + previousDispatchThread);
+                    throw new IllegalStateException("ModelSession already being dispatched by another Thread: " + previousDispatchThread);
                 }
                 return false;
             } else {
-                modelContext.setCurrentDispatchThread(Thread.currentThread());
+                modelSession.setCurrentDispatchThread(Thread.currentThread());
                 return true;
             }
         }
@@ -40,16 +40,16 @@ public class DispatchThreadChecker {
     }
 
     public void clear() {
-        if (modelContext != null) {
-            modelContext.setCurrentDispatchThread(null);
+        if (modelSession != null) {
+            modelSession.setCurrentDispatchThread(null);
         }
     }
 
     public void check() {
-        if (modelContext != null) {
-            if (modelContext.getCurrentDispatchThread() != Thread.currentThread()) {
-                throw new IllegalStateException("access to ModelContext from a non-dispatching thread");
-                //LOG.warn("access to ModelContext from a non-dispatching thread");
+        if (modelSession != null) {
+            if (modelSession.getCurrentDispatchThread() != Thread.currentThread()) {
+                throw new IllegalStateException("access to ModelSession from a non-dispatching thread");
+                //LOG.warn("access to ModelSession from a non-dispatching thread");
             }
         }
     }

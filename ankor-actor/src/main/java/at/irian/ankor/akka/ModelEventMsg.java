@@ -1,6 +1,6 @@
 package at.irian.ankor.akka;
 
-import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.event.ModelEvent;
 
 /**
@@ -9,16 +9,16 @@ import at.irian.ankor.event.ModelEvent;
 public class ModelEventMsg {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelEventMsg.class);
 
-    private final ModelContext modelContext;
+    private final ModelSession modelSession;
     private final ModelEvent modelEvent;
 
-    public ModelEventMsg(ModelContext modelContext, ModelEvent modelEvent) {
-        this.modelContext = modelContext;
+    public ModelEventMsg(ModelSession modelSession, ModelEvent modelEvent) {
+        this.modelSession = modelSession;
         this.modelEvent = modelEvent;
     }
 
-    public ModelContext getModelContext() {
-        return modelContext;
+    public ModelSession getModelSession() {
+        return modelSession;
     }
 
     public ModelEvent getModelEvent() {

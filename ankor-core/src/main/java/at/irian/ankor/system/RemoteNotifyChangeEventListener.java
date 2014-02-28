@@ -3,41 +3,41 @@ package at.irian.ankor.system;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.change.ChangeEventListener;
-import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.messaging.Message;
 import at.irian.ankor.messaging.MessageFactory;
 import at.irian.ankor.messaging.modify.Modifier;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
-import at.irian.ankor.session.ModelRootFactory;
-import at.irian.ankor.session.Session;
-import at.irian.ankor.session.SessionInitEvent;
-import at.irian.ankor.session.SessionManager;
+import at.irian.ankor.connection.ModelConnectionInitEvent;
+import at.irian.ankor.connection.ModelConnectionManager;
+import at.irian.ankor.connection.ModelRootFactory;
+import at.irian.ankor.connection.ModelConnection;
 
 import java.util.Collection;
 import java.util.Set;
 
 /**
  * Global ChangeEventListener that relays locally happened {@link ChangeEvent ChangeEvents} to all remote systems
- * connected to the underlying ModelContext.
+ * connected to the underlying ModelSession.
  *
  * @author Manfred Geiler
  */
-public class RemoteNotifyChangeEventListener extends ChangeEventListener implements SessionInitEvent.Listener {
+public class RemoteNotifyChangeEventListener extends ChangeEventListener implements ModelConnectionInitEvent.Listener {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RemoteNotifyChangeEventListener.class);
 
     private final MessageFactory messageFactory;
-    private final SessionManager sessionManager;
+    private final ModelConnectionManager modelConnectionManager;
     private final Modifier preSendModifier;
     private Set<String> rootNames;
 
     public RemoteNotifyChangeEventListener(MessageFactory messageFactory,
-                                           SessionManager sessionManager,
+                                           ModelConnectionManager modelConnectionManager,
                                            ModelRootFactory modelRootFactory,
                                            Modifier preSendModifier) {
         super(null); //global listener
         this.messageFactory = messageFactory;
-        this.sessionManager = sessionManager;
+        this.modelConnectionManager = modelConnectionManager;
         this.preSendModifier = preSendModifier;
         this.rootNames = modelRootFactory.getKnownRootNames();
     }
@@ -53,32 +53,32 @@ public class RemoteNotifyChangeEventListener extends ChangeEventListener impleme
         Change change = event.getChange();
         Ref changedProperty = event.getChangedProperty();
         Change modifiedChange = preSendModifier.modifyBeforeSend(change, changedProperty);
-        ModelContext modelContext = changedProperty.context().modelContext();
-        Collection<Session> sessions = sessionManager.getAllFor(modelContext);
-        for (Session session : sessions) {
+        ModelSession modelSession = changedProperty.context().modelSession();
+        Collection<ModelConnection> modelConnections = modelConnectionManager.getAllFor(modelSession);
+        for (ModelConnection modelConnection : modelConnections) {
             if (event.getSource() instanceof RemoteSource) {
-                Session initiatingSession = ((RemoteSource)event.getSource()).getSession();
-                if (session.equals(initiatingSession)) {
+                ModelConnection initiatingModelConnection = ((RemoteSource)event.getSource()).getModelConnection();
+                if (modelConnection.equals(initiatingModelConnection)) {
                     // do not relay remote actions back to the remote system
                     continue;
                 }
             }
 
             String changedPropertyPath = changedProperty.path();
-            Message message = messageFactory.createChangeMessage(changedProperty.context().modelContext(),
+            Message message = messageFactory.createChangeMessage(changedProperty.context().modelSession(),
                                                                  changedPropertyPath,
                                                                  modifiedChange);
             LOG.debug("server sends {}", message);
-            session.getMessageSender().sendMessage(message);
+            modelConnection.getMessageSender().sendMessage(message);
         }
 
     }
 
     @Override
-    public void processSessionInit(SessionInitEvent event) {
-        Session session = event.getSession();
-        RefContext refContext = session.getRefContext();
-        ModelContext modelContext = refContext.modelContext();
+    public void processModelConnectionInit(ModelConnectionInitEvent event) {
+        ModelConnection modelConnection = event.getModelConnection();
+        RefContext refContext = modelConnection.getRefContext();
+        ModelSession modelSession = refContext.modelSession();
 
         for (String rootName : rootNames) {
             Ref rootRef = refContext.refFactory().ref(rootName);
@@ -86,11 +86,11 @@ public class RemoteNotifyChangeEventListener extends ChangeEventListener impleme
             if (rootObj != null) {
                 Change change = Change.valueChange(rootObj);
                 Change modifiedChange = preSendModifier.modifyBeforeSend(change, rootRef);
-                Message message = messageFactory.createChangeMessage(modelContext,
+                Message message = messageFactory.createChangeMessage(modelSession,
                                                                      rootRef.path(),
                                                                      modifiedChange);
                 LOG.debug("server sends {}", message);
-                session.getMessageSender().sendMessage(message);
+                modelConnection.getMessageSender().sendMessage(message);
             }
         }
 

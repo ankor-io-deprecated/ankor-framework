@@ -1,9 +1,9 @@
 package at.irian.ankor.el;
 
 import at.irian.ankor.base.BeanResolver;
-import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.ref.RefFactory;
-import at.irian.ankor.session.ModelRootFactory;
+import at.irian.ankor.connection.ModelRootFactory;
 
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
@@ -21,14 +21,14 @@ public class AnkorELSupport implements ELSupport {
     }
 
     private final ExpressionFactory expressionFactory;
-    private final ModelContext modelContext;
+    private final ModelSession modelSession;
     private final BeanResolverELResolver beanResolverELResolver;
     private final ModelRootFactory modelRootFactory;
 
-    public AnkorELSupport(ModelContext modelContext, BeanResolver beanResolver, ModelRootFactory modelRootFactory) {
+    public AnkorELSupport(ModelSession modelSession, BeanResolver beanResolver, ModelRootFactory modelRootFactory) {
         this.modelRootFactory = modelRootFactory;
         this.expressionFactory = ExpressionFactory.newInstance();
-        this.modelContext = modelContext;
+        this.modelSession = modelSession;
         this.beanResolverELResolver = new BeanResolverELResolver(beanResolver);
     }
 
@@ -38,9 +38,9 @@ public class AnkorELSupport implements ELSupport {
 
     @Override
     public ELContext getELContextFor(RefFactory refFactory) {
-        ModelContextELResolver modelContextELResolver = new ModelContextELResolver(modelContext,
+        ModelSessionELResolver modelSessionELResolver = new ModelSessionELResolver(modelSession,
                                                                                    refFactory,
                                                                                    modelRootFactory);
-        return new StandardELContext(modelContextELResolver, beanResolverELResolver);
+        return new StandardELContext(modelSessionELResolver, beanResolverELResolver);
     }
 }

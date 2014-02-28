@@ -4,7 +4,7 @@ import at.irian.ankor.event.dispatch.JavaFxEventDispatcherFactory;
 import at.irian.ankor.fx.binding.fxref.FxRefContextFactoryProvider;
 import at.irian.ankor.fx.binding.fxref.FxRefFactory;
 import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
-import at.irian.ankor.session.SingletonSessionManager;
+import at.irian.ankor.connection.SingletonModelConnectionManager;
 import at.irian.ankor.system.AnkorSystem;
 import at.irian.ankor.system.AnkorSystemBuilder;
 import at.irian.ankor.websocket.AnkorClientEndpoint;
@@ -42,8 +42,8 @@ public abstract class AnkorApplication extends Application {
     @Override
     public final void start(Stage primaryStage) throws Exception {
         AnkorSystem clientSystem = createWebSocketClientSystem(getWebSocketUri());
-        refFactory = (FxRefFactory) ((SingletonSessionManager) clientSystem.getSessionManager())
-                .getSession().getRefContext().refFactory();
+        refFactory = (FxRefFactory) ((SingletonModelConnectionManager) clientSystem.getModelConnectionManager())
+                .getModelConnection().getRefContext().refFactory();
 
         startFXClient(primaryStage);
     }
@@ -56,9 +56,9 @@ public abstract class AnkorApplication extends Application {
     /**
      * You can use this to make two clients share the state of an app.
      *
-     * @return An optional id for the model context.
+     * @return An optional id for the model session.
      */
-    protected String getModelContextId() {
+    protected String getModelSessionId() {
         return UUID.randomUUID().toString();
     }
 
@@ -86,7 +86,7 @@ public abstract class AnkorApplication extends Application {
                 = new ViewModelJsonMessageMapper(systemBuilder.getBeanMetadataProvider());
         WebSocketMessageBus messageBus = new WebSocketMessageBus(messageMapper);
         systemBuilder = systemBuilder
-                .withModelContextId(getModelContextId())
+                .withModelSessionId(getModelSessionId())
                 .withMessageBus(messageBus)
                 .withRefContextFactoryProvider(new FxRefContextFactoryProvider())
                 .withDispatcherFactory(new JavaFxEventDispatcherFactory());

@@ -1,6 +1,6 @@
 package at.irian.ankor.event.dispatch;
 
-import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.event.ModelEvent;
 import javafx.application.Platform;
 
@@ -10,8 +10,8 @@ import javafx.application.Platform;
 public class JavaFxEventDispatcher extends SynchronisedEventDispatcher {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(JavaFxEventDispatcher.class);
 
-    public JavaFxEventDispatcher(ModelContext modelContext) {
-        super(modelContext);
+    public JavaFxEventDispatcher(ModelSession modelSession) {
+        super(modelSession);
     }
 
     @Override

@@ -3,7 +3,7 @@ package at.irian.ankorsamples.todo.servlet;
 import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.servlet.polling.AnkorServletContextListener;
-import at.irian.ankor.session.ModelRootFactory;
+import at.irian.ankor.connection.ModelRootFactory;
 import at.irian.ankorsamples.todosample.domain.task.Task;
 import at.irian.ankorsamples.todosample.domain.task.TaskRepository;
 import at.irian.ankorsamples.todosample.viewmodel.ModelRoot;

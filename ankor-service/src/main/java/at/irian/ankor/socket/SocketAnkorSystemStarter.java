@@ -13,8 +13,8 @@ import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefContextFactoryProvider;
 import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.ref.el.ELRefContextFactoryProvider;
-import at.irian.ankor.session.ModelRootFactory;
-import at.irian.ankor.session.SingletonSessionManager;
+import at.irian.ankor.connection.ModelRootFactory;
+import at.irian.ankor.connection.SingletonModelConnectionManager;
 import at.irian.ankor.system.AnkorSystem;
 import at.irian.ankor.system.AnkorSystemBuilder;
 import at.irian.ankor.viewmodel.proxy.CglibProxyBeanFactory;
@@ -152,7 +152,7 @@ public class SocketAnkorSystemStarter {
         clientSystem.start();
         clientMessageLoop.start(true);
 
-        RefContext clientRefContext = ((SingletonSessionManager)clientSystem.getSessionManager()).getSession().getRefContext();
+        RefContext clientRefContext = ((SingletonModelConnectionManager)clientSystem.getModelConnectionManager()).getModelConnection().getRefContext();
         return clientRefContext.refFactory();
 
     }

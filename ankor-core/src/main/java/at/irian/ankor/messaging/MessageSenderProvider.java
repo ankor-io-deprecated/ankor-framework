@@ -1,6 +1,6 @@
 package at.irian.ankor.messaging;
 
-import at.irian.ankor.session.RemoteSystem;
+import at.irian.ankor.connection.RemoteSystem;
 
 import java.util.Collection;
 

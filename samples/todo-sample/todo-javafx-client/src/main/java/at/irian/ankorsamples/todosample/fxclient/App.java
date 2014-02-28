@@ -8,7 +8,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 public class App extends AnkorApplication {
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(App.class);
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(App.class);
 
     // used to open the browser
     private static HostServices services;
@@ -24,7 +24,7 @@ public class App extends AnkorApplication {
     }
 
     @Override
-    protected String getModelContextId() {
+    protected String getModelSessionId() {
         return "collabTest";
     }
 
@@ -32,7 +32,7 @@ public class App extends AnkorApplication {
     protected void startFXClient(Stage primaryStage) throws Exception {
         services = getHostServices();
 
-        primaryStage.setTitle("Ankor FX Sample");
+        primaryStage.setTitle("Ankor JavaFX Todo Sample");
         Pane myPane = FXMLLoader.load(getClass().getClassLoader().getResource("tasks.fxml"));
 
         Scene myScene = new Scene(myPane);

@@ -1,0 +1,38 @@
+<Window x:Class="Ankor.Sample.Animals.Client.MainWindow" x:Name="this"
+				xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+				xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="Ankor .Net WPF Animal Sample" Height="500" Width="700"				
+				DataContext="{Binding ElementName=this, Path=RootRef}">
+	<DockPanel>
+		
+		<Menu DockPanel.Dock="Top"  HorizontalAlignment="Stretch" Name="mainMenu">
+			<MenuItem Header="_Animal">
+				<MenuItem Header="Animal _Search" Click="OpenAnimalSearchTab"/>
+				<MenuItem Header="_New Animal" Click="OpenAnimalDetailTab"/>
+			</MenuItem>
+				<MenuItem Header="_Help">
+				<MenuItem Header="_About"/>
+			</MenuItem>
+		</Menu>
+		
+		<StatusBar DockPanel.Dock="Bottom" Height="35" HorizontalAlignment="Stretch" Name="statusBar1" >
+			<Label>User: </Label>
+			<Label Name="lblUser" Content="{Binding Path=userName.Value}" Foreground="Blue" />
+			<TextBox Name="boxUser" Text="{Binding Path=userName.Value, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0}}"/>
+			<Button Name="bx" Click="bx_Click" Content="x"/>
+			<Separator/>
+			<Label>Server says:</Label>
+			<Label Name="lblServerInfor" Content="{Binding Path=serverStatus.Value}" Foreground="Red"/>
+			<Separator/>
+			<StackPanel FlowDirection="RightToLeft">
+				<Button Name="btnDebug" Click="BtnDebugClick" Content="debug" HorizontalAlignment="Right"/>
+			</StackPanel>
+
+		</StatusBar>
+		
+		<!-- has to be last child in the dockpanel to fill all space -->
+		<TabControl Name="tabControl" >
+		</TabControl>
+	
+	</DockPanel>
+
+</Window>

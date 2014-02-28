@@ -1,0 +1,24 @@
+﻿﻿<Application x:Class="Ankor.Sample.Animals.Client.App"
+						 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+						 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+						 StartupUri="MainWindow.xaml">
+
+		<Application.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				
+<!--				<ResourceDictionary Source="/PresentationFramework.Aero;component/themes/Aero.NormalColor.xaml"/>-->
+				<ResourceDictionary Source="/PresentationFramework.Luna;component/themes/Luna.Homestead.xaml"/>
+<!--				<ResourceDictionary Source="Themes/BureauBlue2.xaml"/>-->
+				
+				<!--<ResourceDictionary Source="Themes/WithGrids/ExpressionDark.xaml"/>-->
+
+				<ResourceDictionary Source="Themes/MyControlsThemeMapping.xaml"/>
+				<!--<ResourceDictionary Source="Themes/DataGridCustomizations.xaml"/>-->
+				
+				<!--<ResourceDictionary Source="Themes/_DataGridStyles.xaml"/>-->
+				
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</Application.Resources>
+</Application>

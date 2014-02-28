@@ -23,3 +23,5 @@ node-ankor/demo/lib/util
 .project
 .classpath
 .settings/
+xcuserdata/
+xcshareddata/
