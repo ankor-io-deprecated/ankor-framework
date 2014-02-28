@@ -1,6 +1,6 @@
 package at.irian.ankor.servlet.polling;
 
-import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.event.source.CustomSource;
 import at.irian.ankor.messaging.Message;
@@ -83,8 +83,8 @@ public class AnkorServlet extends HttpServlet {
         final BlockingQueue<String> finishedModelRequests = new LinkedBlockingQueue<String>();
         for (final String modelId : requestedModelIds) {
 
-            ModelContext modelContext = ankorSystem.getModelContextManager().getOrCreate(modelId);
-            final EventListeners eventListeners = modelContext.getEventListeners();
+            ModelSession modelSession = ankorSystem.getModelSessionManager().getOrCreate(modelId);
+            final EventListeners eventListeners = modelSession.getEventListeners();
             eventListeners.add(new RequestFinishedEvent.Listener() {
                 @Override
                 public boolean isDiscardable() {
@@ -98,7 +98,7 @@ public class AnkorServlet extends HttpServlet {
                 }
             });
 
-            modelContext.getEventDispatcher().dispatch(new RequestFinishedEvent(new CustomSource(this)));
+            modelSession.getEventDispatcher().dispatch(new RequestFinishedEvent(new CustomSource(this)));
         }
 
         boolean interrupted = false;

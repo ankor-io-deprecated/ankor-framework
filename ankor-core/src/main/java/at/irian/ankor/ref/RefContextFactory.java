@@ -1,12 +1,12 @@
 package at.irian.ankor.ref;
 
-import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.session.ModelSession;
 
 /**
  * @author Manfred Geiler
  */
 public interface RefContextFactory {
 
-    RefContext createRefContextFor(ModelContext modelContext);
+    RefContext createRefContextFor(ModelSession modelSession);
 
 }

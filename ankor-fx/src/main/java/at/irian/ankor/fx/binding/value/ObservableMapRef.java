@@ -50,7 +50,7 @@ public class ObservableMapRef<K,V> extends RefMap<K,V> implements ObservableMap<
                 }
             }
         };
-        this.mapRef.context().modelContext().getEventListeners().add(this.changeEventListener);
+        this.mapRef.context().modelSession().getEventListeners().add(this.changeEventListener);
     }
 
 
@@ -90,7 +90,7 @@ public class ObservableMapRef<K,V> extends RefMap<K,V> implements ObservableMap<
     // misc
 
     protected void finalize() throws Throwable {
-        this.mapRef.context().modelContext().getEventListeners().remove(this.changeEventListener);
+        this.mapRef.context().modelSession().getEventListeners().remove(this.changeEventListener);
         super.finalize();
     }
 

@@ -2,7 +2,7 @@ package at.irian.ankor.messaging.json.simpletree;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.change.Change;
-import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.messaging.*;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Maps;
@@ -38,21 +38,21 @@ public class SimpleTreeJsonMessageMapperTest {
 
     private SimpleTreeJsonMessageMapper mapper = new SimpleTreeJsonMessageMapper();
     private MessageFactory messageFactory;
-    private ModelContext modelContextMock;
+    private ModelSession modelSessionMock;
 
     @Before
     public void setup() {
         MessageIdGenerator idGenerator = mock(MessageIdGenerator.class);
         when(idGenerator.create()).thenReturn("testClient#1");
         messageFactory = new MessageFactory("testSystem", idGenerator);
-        modelContextMock = mock(ModelContext.class);
-        when(modelContextMock.getId()).thenReturn("1");
+        modelSessionMock = mock(ModelSession.class);
+        when(modelSessionMock.getId()).thenReturn("1");
     }
 
     @Test
     public void testSimpleChangeMessage() throws Exception {
 
-        String json = mapper.serialize(messageFactory.createChangeMessage(modelContextMock, "changed.path", Change.valueChange(14)));
+        String json = mapper.serialize(messageFactory.createChangeMessage(modelSessionMock, "changed.path", Change.valueChange(14)));
 
         assertJsonEquals("simpleChange", json);
 
@@ -147,7 +147,7 @@ public class SimpleTreeJsonMessageMapperTest {
     }
 
     private Message createActionMessage(String name, Map<String, Object> params) {
-        return messageFactory.createActionMessage(modelContextMock, "root.next", new Action(name, params));
+        return messageFactory.createActionMessage(modelSessionMock, "root.next", new Action(name, params));
     }
 
     private void assertJsonEquals(String expectedRefMsg, String actualJson) throws JSONException,

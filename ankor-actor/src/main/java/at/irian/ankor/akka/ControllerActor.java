@@ -4,7 +4,7 @@ import akka.actor.ActorRef;
 import akka.actor.PoisonPill;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
-import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.session.ModelSession;
 import com.typesafe.config.Config;
 
 /**
@@ -28,23 +28,23 @@ public class ControllerActor extends UntypedActor {
     public void onReceive(Object msg) throws Exception {
         LOG.debug("{} received {}", self(), msg);
         if (msg instanceof  ModelEventMsg) {
-            String actorName = getActorNameFor(((ModelEventMsg) msg).getModelContext());
+            String actorName = getActorNameFor(((ModelEventMsg) msg).getModelSession());
             context().actorSelection("/user/" + actorName).tell(((ModelEventMsg)msg).getModelEvent(), self());
         } else if (msg instanceof RegisterMsg) {
-            ModelContext modelContext = ((RegisterMsg) msg).getModelContext();
-            String actorName = getActorNameFor(modelContext);
-            ActorRef actor = getContext().system().actorOf(ModelContextActor.props(modelContext), actorName);
+            ModelSession modelSession = ((RegisterMsg) msg).getModelSession();
+            String actorName = getActorNameFor(modelSession);
+            ActorRef actor = getContext().system().actorOf(ModelSessionActor.props(modelSession), actorName);
             LOG.debug("created {}", actor);
         } else if (msg instanceof UnregisterMsg) {
-            String actorName = getActorNameFor(((UnregisterMsg) msg).getModelContext());
+            String actorName = getActorNameFor(((UnregisterMsg) msg).getModelSession());
             context().actorSelection(actorName).tell(PoisonPill.getInstance(), self());
         } else {
             unhandled(msg);
         }
     }
 
-    private String getActorNameFor(ModelContext modelContext) {
-        return ModelContextActor.name(modelContext);
+    private String getActorNameFor(ModelSession modelSession) {
+        return ModelSessionActor.name(modelSession);
     }
 
 }

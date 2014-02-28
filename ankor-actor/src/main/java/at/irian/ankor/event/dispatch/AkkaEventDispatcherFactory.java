@@ -1,7 +1,7 @@
 package at.irian.ankor.event.dispatch;
 
 import at.irian.ankor.akka.AnkorActorSystem;
-import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.event.ModelEvent;
 
 /**
@@ -21,19 +21,19 @@ public class AkkaEventDispatcherFactory implements EventDispatcherFactory {
     }
 
     @Override
-    public EventDispatcher createFor(final ModelContext modelContext) {
+    public EventDispatcher createFor(final ModelSession modelSession) {
 
-        ankorActorSystem.register(modelContext);
+        ankorActorSystem.register(modelSession);
 
         return new EventDispatcher() {
             @Override
             public void dispatch(ModelEvent event) {
-                ankorActorSystem.send(modelContext, event);
+                ankorActorSystem.send(modelSession, event);
             }
 
             @Override
             public void close() {
-                ankorActorSystem.unregister(modelContext);
+                ankorActorSystem.unregister(modelSession);
             }
         };
     }

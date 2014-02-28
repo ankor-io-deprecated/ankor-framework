@@ -4,7 +4,7 @@ import at.irian.ankor.event.dispatch.JavaFxEventDispatcherFactory;
 import at.irian.ankor.fx.binding.fxref.FxRefContextFactoryProvider;
 import at.irian.ankor.fx.binding.fxref.FxRefFactory;
 import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
-import at.irian.ankor.session.SingletonSessionManager;
+import at.irian.ankor.connection.SingletonModelConnectionManager;
 import at.irian.ankor.system.AnkorSystem;
 import at.irian.ankor.system.AnkorSystemBuilder;
 import at.irian.ankor.websocket.WebSocketMessageBus;
@@ -52,7 +52,7 @@ public class AltApp extends javafx.application.Application {
         AnkorSystem app = appBuilder.createWebSocketClient("ws://localhost:8080/websocket/ankor").start();
 
         // TODO: Hide this from the user
-        refFactory = (FxRefFactory) ((SingletonSessionManager) app.getSessionManager()).getSession().getRefContext().refFactory();
+        refFactory = (FxRefFactory) ((SingletonModelConnectionManager) app.getModelConnectionManager()).getModelConnection().getRefContext().refFactory();
     }
 
     public static FxRefFactory refFactory() {

@@ -1,13 +1,13 @@
 package at.irian.ankor.event.dispatch;
 
-import at.irian.ankor.context.ModelContext;
+import at.irian.ankor.session.ModelSession;
 
 /**
  * @author Manfred Geiler
  */
 public interface EventDispatcherFactory {
 
-    EventDispatcher createFor(ModelContext modelContext);
+    EventDispatcher createFor(ModelSession modelSession);
 
     void close();
 }

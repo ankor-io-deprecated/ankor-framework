@@ -25,7 +25,7 @@ public class ELRef extends RefBase {
     public void internalSetValue(Object newValue) {
 
         // check if we are correctly running in an event dispatcher thread
-        new DispatchThreadChecker(context().modelContext()).check();
+        new DispatchThreadChecker(context().modelSession()).check();
 
         ve.setValue(elRefContext().createELContext(), newValue);
     }

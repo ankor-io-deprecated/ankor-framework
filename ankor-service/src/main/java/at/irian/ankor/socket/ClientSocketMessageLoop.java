@@ -4,7 +4,7 @@ import at.irian.ankor.messaging.Message;
 import at.irian.ankor.messaging.MessageFactory;
 import at.irian.ankor.messaging.MessageMapper;
 import at.irian.ankor.messaging.MessageSender;
-import at.irian.ankor.session.RemoteSystem;
+import at.irian.ankor.connection.RemoteSystem;
 
 /**
  * @author Manfred Geiler

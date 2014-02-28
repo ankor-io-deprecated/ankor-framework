@@ -2,7 +2,7 @@ package at.irian.ankor.socket;
 
 import at.irian.ankor.messaging.AbstractMessageLoop;
 import at.irian.ankor.messaging.MessageMapper;
-import at.irian.ankor.session.RemoteSystem;
+import at.irian.ankor.connection.RemoteSystem;
 
 import java.io.*;
 import java.net.ServerSocket;

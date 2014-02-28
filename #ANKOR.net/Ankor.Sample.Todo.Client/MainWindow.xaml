@@ -1,0 +1,172 @@
+﻿<Window x:Class="Ankor.Sample.Todo.Client.MainWindow" x:Name="this"
+				xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+				xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+				xmlns:Ankor="clr-namespace:Ankor.Wpf.Extensions;assembly=Ankor.Wpf"
+				xmlns:xctk="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
+				Title="Ankor .Net Todo Sample" Height="600" Width="560"
+				DataContext="{Binding ElementName=this, Path=RootRef}">
+	<Window.Background>
+		<ImageBrush ImageSource="/Ankor.Sample.Todo.Client;component/Resources/bg.png" Stretch="None" TileMode="Tile" Viewport="0,0,100,100" ViewportUnits="Absolute" />
+	</Window.Background>
+	<Window.Resources>
+		
+		<BooleanToVisibilityConverter x:Key="boolToVisibility" />
+		
+		<Style x:Key="FadeOutButton" TargetType="{x:Type Button}">
+			<Style.Triggers>
+				<EventTrigger RoutedEvent="Control.MouseEnter">
+					<BeginStoryboard>
+						<Storyboard >
+							<DoubleAnimation Duration="0:0:0.2" To="1" Storyboard.TargetProperty="Opacity"/>
+						</Storyboard>
+					</BeginStoryboard>
+				</EventTrigger>
+				<EventTrigger RoutedEvent="Control.MouseLeave">
+					<BeginStoryboard>
+						<Storyboard >
+							<DoubleAnimation Duration="0:0:1" To="0.2" Storyboard.TargetProperty="Opacity"/>
+						</Storyboard>
+					</BeginStoryboard>
+				</EventTrigger>
+			</Style.Triggers>
+		</Style>
+
+		<Style x:Key="blackOnReadonly"  TargetType="{x:Type TextBox}">
+			<Setter Property="Foreground" Value="Black"/>
+			<Style.Triggers>
+				<Trigger Property="IsReadOnly" Value="True">
+					<Setter Property="Foreground" Value="Black"/>
+				</Trigger>
+			</Style.Triggers>
+		</Style>
+		
+		<Style x:Key="toggleToBoldButton" TargetType="{x:Type ToggleButton}">
+			<Setter Property="BorderBrush" Value="Transparent"/>
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="VerticalAlignment" Value="Center"/>
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type ToggleButton}">
+						<ContentPresenter/>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsChecked" Value="True">
+								<Setter Property="FontWeight" Value="Bold"/>
+							</Trigger>
+							<Trigger Property="IsChecked" Value="False">
+								<Setter Property="FontWeight" Value="Normal"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+		
+		<Style x:Key="checkMarkToggleButton" TargetType="{x:Type ToggleButton}">
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type ToggleButton}">
+						<ContentPresenter/>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsChecked" Value="True">
+								<Setter Property="Foreground" Value="Green"/>
+							</Trigger>
+							<Trigger Property="IsChecked" Value="False">
+								<Setter Property="Foreground" Value="LightGray"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
+		<Style x:Key="boldFontStyle">
+			<Setter Property="Control.FontWeight" Value="Bold"/>
+			<Style.Triggers>
+				<Trigger Property="Control.IsEnabled" Value="False">
+					<Setter Property="Control.FontWeight" Value="Normal"/>
+				</Trigger>
+			</Style.Triggers>
+		</Style>
+		<!--Style="{StaticResource ResourceKey=FadeOutButton}"-->
+	</Window.Resources>
+	<DockPanel Background="{x:Null}">
+		
+		<Label Content="todos" DockPanel.Dock="Top" Height="80" HorizontalAlignment="Center" HorizontalContentAlignment="Center" 
+					 VerticalContentAlignment="Center" FontSize="30" FontWeight="Bold" />
+
+		<Label Content="" DockPanel.Dock="Left" Width="40" />
+
+		<Label Content="" DockPanel.Dock="Right" Width="40"/>
+
+		<StatusBar DockPanel.Dock="Bottom" Height="35" HorizontalAlignment="Stretch" Name="statusBar1" >
+			<StackPanel FlowDirection="RightToLeft">
+				<Button Name="btnDebug" Click="BtnDebugClick" Content="debug" HorizontalAlignment="Right"/>
+			</StackPanel>
+		</StatusBar>
+
+		<StackPanel TextElement.FontSize="16">
+			<StackPanel FlowDirection="LeftToRight" Orientation="Horizontal" Margin="5" Background="White">
+				<ToggleButton Name="btnToggleAll" Content="  ˅  " Style="{StaticResource toggleToBoldButton}"
+											IsChecked="{Binding model.toggleAll.Value}" Click="ToggleAll"/>
+				<Separator />
+				<xctk:WatermarkTextBox Name="txtNewTask" Watermark="What needs to be done?" Width="426"
+															 KeyDown="TxtNewTaskKeyDown"/>
+			</StackPanel>
+
+			<ItemsControl Name="todoList" ItemsSource="{Binding Path=model.tasks}" Margin="5" Background="White" >
+				<ItemsControl.ItemTemplate>
+					<DataTemplate>
+						<StackPanel FlowDirection="LeftToRight" Orientation="Horizontal" Margin="5">
+							<ToggleButton Content="  ✔  " BorderBrush="Transparent" Style="{StaticResource checkMarkToggleButton}"
+														IsChecked="{Binding completed.Value}">
+							</ToggleButton>
+							<Separator />
+							<TextBox	Name="todoTextBox" Width="380" BorderThickness="0" IsReadOnlyCaretVisible="True" 
+												Text="{Binding Path=title.Value, UpdateSourceTrigger=PropertyChanged}" Tag="{Binding}" 
+												IsEnabled="True" IsReadOnly="True" Focusable="False" Style="{StaticResource blackOnReadonly}"
+												TextDecorations="{Binding Path=completed.Value, Converter={Ankor:BoolToDecoration Decoration=Strikethrough}}" 
+												MouseDoubleClick="StartEditTodo" 
+												LostFocus="LostEditTodoFocus" 
+												KeyDown="EnterEditTodo"
+												>
+							</TextBox>
+							<Button Content=" ✖ " Background="Transparent" Foreground="DarkGray" BorderBrush="Transparent"
+											Click="RemoveTaskClick" Tag="{Binding}"/>
+						</StackPanel>
+					</DataTemplate>
+					</ItemsControl.ItemTemplate>
+			</ItemsControl>
+			
+			<DockPanel Name="footerPanel" Background="DarkGray" Margin="8" TextElement.FontSize="12" 
+								 Visibility="{Binding model.footerVisibility.Value, Converter={StaticResource boolToVisibility}}">
+				
+				<Label DockPanel.Dock="Left" Content="{Binding model.itemsLeft.Value}" FontWeight="Bold"/>
+				<Label DockPanel.Dock="Left" Content="{Binding model.itemsLeftText.Value}"/>				
+
+				<Button DockPanel.Dock="Right" Margin="2" HorizontalAlignment="Right"
+								Content="{Binding model.itemsCompleteText.Value}"
+								Visibility="{Binding model.clearButtonVisibility.Value, Converter={StaticResource boolToVisibility}}"
+								Click="ClearCompleted"/>
+
+				<DockPanel HorizontalAlignment="Center" >
+					
+					<!-- would be nicer to use a radio box, but all the restyling... -->
+					<ToggleButton Name="btnFilterAll" Content="All "  Style="{StaticResource toggleToBoldButton}" 
+												Tag="{Binding model.filterAllSelected}"
+												IsChecked="{Binding model.filterAllSelected.Value, Mode=OneWay}" Checked="HandleFilterButton"
+												IsEnabled="{Binding model.filterAllSelected.Value, Mode=OneWay, Converter={Ankor:ReverseBoolean}}"												
+												/>
+					<ToggleButton Name="btnFilterActive" Content="Active " Style="{StaticResource toggleToBoldButton}"
+												Tag="{Binding model.filterActiveSelected}"
+												IsChecked="{Binding model.filterActiveSelected.Value, Mode=OneWay}" Checked="HandleFilterButton"
+												IsEnabled="{Binding model.filterActiveSelected.Value, Mode=OneWay, Converter={Ankor:ReverseBoolean}}" />
+					<ToggleButton Name="btnFilterCompleted" Content="Completed " Style="{StaticResource toggleToBoldButton}"
+												Tag="{Binding model.filterCompletedSelected}"
+												IsChecked="{Binding model.filterCompletedSelected.Value, Mode=OneWay}" Checked="HandleFilterButton"
+												IsEnabled="{Binding model.filterCompletedSelected.Value, Mode=OneWay, Converter={Ankor:ReverseBoolean}}" />
+				</DockPanel>
+			</DockPanel>
+		</StackPanel>
+
+	</DockPanel>
+</Window>

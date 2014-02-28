@@ -1,0 +1,94 @@
+﻿<UserControl x:Class="Ankor.Sample.Animals.Client.AnimalSearchTab"  x:Name="this"
+						 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+						 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+						 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+						 mc:Ignorable="d" 
+						 DataContext="{Binding ElementName=this, Path=TabRef}">
+
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+		<!-- Define two columns: -->
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition/>
+		</Grid.ColumnDefinitions>
+
+		<StackPanel Grid.Row="0" Margin="5">
+			<StackPanel.Resources>
+			</StackPanel.Resources>
+			<StackPanel Orientation="Horizontal" Margin="5">
+				<Label Content="Name"  Name="label1"  Width="60" />
+				<TextBox Name="txtName"  VerticalAlignment="Center" Width="200"
+							 Text="{Binding Path=model.filter.name.Value, UpdateSourceTrigger=PropertyChanged}">
+				</TextBox>
+			</StackPanel>
+			<StackPanel Orientation="Horizontal" Margin="5"  >
+				<Label Content="Type" Name="label2"  Width="60" />
+				<ComboBox Name="cmbTypes" Width="200"
+								ItemsSource="{Binding Path=model.selectItems.types.Value, PresentationTraceSources.TraceLevel=High }"
+								SelectedItem="{Binding Path=model.filter.type.Value}">
+				</ComboBox>
+			</StackPanel>
+			<StackPanel Orientation="Horizontal" Margin="5">
+				<Label Content="Family" Name="label3" Width="60" />
+				<ComboBox Name="cmbFamily" Width="200"
+								ItemsSource="{Binding Path=model.selectItems.families.Value}"
+								SelectedItem="{Binding Path=model.filter.family.Value}">
+				</ComboBox>
+
+			</StackPanel>			
+		</StackPanel>
+
+
+		<ScrollViewer Grid.Row="1" Margin="5" >
+			<DataGrid Name="gridAnimals" ItemsSource="{Binding Path=model.animals.Value, PresentationTraceSources.TraceLevel=High}" 
+								AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" >
+				<DataGrid.Columns>
+					<DataGridTextColumn MinWidth="150" Header="Name"	Binding="{Binding [name]}" />
+					<DataGridTextColumn MinWidth="80" Header="Type"		Binding="{Binding [type]}" IsReadOnly="True" />
+					<DataGridTextColumn MinWidth="80" Header="Family"	Binding="{Binding [family]}" IsReadOnly="True"/>
+					<DataGridTemplateColumn MinWidth="100" Width="SizeToCells" IsReadOnly="True">
+						<DataGridTemplateColumn.CellTemplate>
+							<DataTemplate>
+								<StackPanel Orientation="Horizontal">
+									<Button Content="delete" Click="DeleteRow" Tag="{Binding [uuid]}" Height="23"/>
+									<Button Content="edit" Click="EditRow" Tag="{Binding [uuid]}" Height="23"/>
+								</StackPanel>
+							</DataTemplate>
+						</DataGridTemplateColumn.CellTemplate>
+					</DataGridTemplateColumn>
+				</DataGrid.Columns>
+
+			</DataGrid>
+		</ScrollViewer>
+
+		<!--<ScrollViewer Grid.Row="1" Margin="5" >
+			<DataGrid Name="gridAnimals" ItemsSource="{Binding Path=model.animals.Value, PresentationTraceSources.TraceLevel=High}" AutoGenerateColumns="False" >
+				<DataGrid.Columns>
+					<DataGridTextColumn MinWidth="150" Header="Name"	Binding="{Binding [name].Value}" />
+					<DataGridTextColumn MinWidth="80" Header="Type"		Binding="{Binding [type].Value}" IsReadOnly="True" />
+					<DataGridTextColumn MinWidth="80" Header="Family"	Binding="{Binding [family].Value}" IsReadOnly="True"/>
+					<DataGridTemplateColumn MinWidth="100" Width="SizeToCells" IsReadOnly="True">
+						<DataGridTemplateColumn.CellTemplate>
+							<DataTemplate>
+								<StackPanel Orientation="Horizontal">
+									<Button Content="delete" Click="DeleteRow" Tag="{Binding [uuid].Value}" Height="23"/>
+									<Button Content="edit" Click="EditRow" Tag="{Binding [uuid].Value}" Height="23"/>
+								</StackPanel>
+							</DataTemplate>
+						</DataGridTemplateColumn.CellTemplate>
+					</DataGridTemplateColumn>
+				</DataGrid.Columns>
+
+			</DataGrid>
+		</ScrollViewer>-->
+
+		<Button Margin="5" Grid.Row="2" Name="btnSave" Content="Save" Click="Save" Width="50" HorizontalAlignment="Left"/>
+	</Grid>
+
+
+</UserControl>

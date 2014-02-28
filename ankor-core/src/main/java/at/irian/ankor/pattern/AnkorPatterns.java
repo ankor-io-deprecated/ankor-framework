@@ -36,7 +36,7 @@ public final class AnkorPatterns {
     }
 
     private static EventDispatcher getEventDispatcherFor(Ref property) {
-        return property.context().modelContext().getEventDispatcher();
+        return property.context().modelSession().getEventDispatcher();
     }
 
 
