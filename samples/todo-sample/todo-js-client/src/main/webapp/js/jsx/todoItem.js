@@ -16,6 +16,8 @@ define([
 
   return React.createClass({
     handleSubmit: function () {
+      var ref = this.props.modelRef.appendPath("editing");
+      ref.setValue(false);
     },
 
     handleEdit: function () {
@@ -35,36 +37,17 @@ define([
       this.props.modelRef.appendPath("title").setValue(event.target.value);
     },
 
-    getInitialState: function () {
-      return {editText: this.props.todo.title};
-    },
-
-    /**
-     * This is a completely optional performance enhancement that you can implement
-     * on any React component. If you were to delete this method the app would still
-     * work correctly (and still be very performant!), we just use it as an example
-     * of how little code it takes to get an order of magnitude performance improvement.
-     */
-    /*
-    shouldComponentUpdate: function (nextProps, nextState) {
-      return (
-        nextProps.todo !== this.props.todo ||
-          nextProps.editing !== this.props.editing ||
-          nextState.editText !== this.state.editText
-        );
-    },
-    */
-    
     onToggle: function() {
-      var ref = this.props.modelRef;
-      ref.setValue(!ref.getValue());
+      var ref = this.props.modelRef.appendPath("completed");
+      ref.setValue(!this.props.todo.completed);
     },
-
+    
     render: function () {
       var classes = React.addons.classSet({
         completed: this.props.todo.completed,
-        editing: this.props.editing
+        editing: this.props.todo.editing
       });
+      
       return (
         <li className={classes}>
           <div className="view">
@@ -82,7 +65,7 @@ define([
           <input
             ref = "editField"
             className = "edit"
-            value = {this.state.editText}
+            value = {this.props.todo.title}
             onBlur = {this.handleSubmit}
             onChange = {this.handleChange}
             onKeyDown = {this.handleKeyDown}

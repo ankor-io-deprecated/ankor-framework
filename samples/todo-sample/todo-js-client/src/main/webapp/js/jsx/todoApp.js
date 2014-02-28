@@ -10,129 +10,84 @@ define([
   "react",
   "director",
   "todoFooter",
-  "todoModel",
   "todoItem",
-  "filter",
   'base'
-], function (React, Router, TodoFooter, TodoModel, TodoItem, app) {
+], function (React, Router, TodoFooter, TodoItem) {
   'use strict';
 
 	var ENTER_KEY = 13;
 
 	return React.createClass({
-		getInitialState: function () {
-			return {
-				filter: app.ALL,
-				editing: null
-			};
-		},
-    
 		componentDidMount: function () {
-			var setFilter = function(path) {
-        this.props.modelRef.appendPath(path).setValue(true);
+			var setFilter = function(value) {
+        this.props.modelRef.appendPath("filter").setValue(value);
       };
 			var router = Router({
-				'/': setFilter.bind(this, "filterAllSelected"),
-				'/active': setFilter.bind(this, "filterActiveSelected"),
-				'/completed': setFilter.bind(this, "filterCompleteSelected")
+				'/': setFilter.bind(this, "all"),
+				'/active': setFilter.bind(this, "active"),
+				'/completed': setFilter.bind(this, "completed")
 			});
 			router.init('/');
 		},
 
 		handleNewTodoKeyDown: function (event) {
-			if (event.which !== ENTER_KEY) {
-				return;
-			}
-
-			var val = this.refs.newField.getDOMNode().value.trim();
-
-			if (val) {
-        this.props.modelRef.fire("newTask", {title: val});
-				this.refs.newField.getDOMNode().value = '';
-			}
-
-			return false;
+			if (event.which === ENTER_KEY) {
+        var val = this.refs.newField.getDOMNode().value.trim();
+        if (val) {
+          this.props.modelRef.fire("newTask", {title: val});
+          this.refs.newField.getDOMNode().value = '';
+        }
+      }
 		},
 
-		toggleAll: function (event) {
-			var checked = event.target.checked;
-			this.props.model.toggleAll(checked);
+		toggleAll: function () {
+      this.props.modelRef.fire("toggleAll", {toggleAll: !this.props.model.toggleAll});
 		},
 
-		toggle: function (todoToToggle) {
-			this.props.model.toggle(todoToToggle);
-		},
-
-		destroy: function (todo) {
-			this.props.model.destroy(todo);
-		},
-
-		edit: function (todo, callback) {
-			// refer to todoItem.js `handleEdit` for the reasoning behind the
-			// callback
-			this.setState({editing: todo.id}, function () {
-				callback();
-			});
-		},
-
-		save: function (todoToSave, text) {
-			this.props.model.save(todoToSave, text);
-			this.setState({editing: null});
-		},
-
-		cancel: function () {
-			this.setState({editing: null});
+		destroy: function (i) {
+      this.props.modelRef.fire("deleteTask", {index: i});
 		},
 
 		clearCompleted: function () {
-			this.props.model.clearCompleted();
-		},
+      this.props.modelRef.fire("clearTasks");
+    },
 
 		render: function () {
 			var footer;
 			var main;
-      var todosRef = this.props.modelRef.appendPath("tasks"); 
-			var todos = todosRef.getValue();
-      var i = 0;
       
-			var todoItems = todos.map(function (todo) {
-				return (
-					<TodoItem
-						key={todo.id}
-						todo={todo}
-            modelRef={todosRef.appendIndex(i++)}
-						onToggle={this.toggle.bind(this, todo)}
-						onDestroy={this.destroy.bind(this, todo)}
-						onEdit={this.edit.bind(this, todo)}
-						editing={this.state.editing === todo.id}
-						onSave={this.save.bind(this, todo)}
-						onCancel={this.cancel}
-					/>
-				);
+      var tasksRef = this.props.modelRef.appendPath("tasks");
+			var task = this.props.model.tasks;
+      
+			var todoItems = task.map(function (todo, i) {
+        return (
+          <TodoItem
+          key={todo.id}
+          todo={todo}
+          modelRef={tasksRef.appendIndex(i)}
+          onDestroy={this.destroy.bind(this, i)}
+          />
+          );
 			}, this);
 
-			var activeTodoCount = this.props.modelRef.appendPath("itemsLeft").getValue();
-
-			var completedCount = this.props.modelRef.appendPath("itemsComplete").getValue();
-
-			if (activeTodoCount || completedCount) {
+			if (this.props.model.footerVisibility) {
 				footer =
 					<TodoFooter
-						count={activeTodoCount}
-						completedCount={completedCount}
-						filter={this.state.filter}
-						onClearCompleted={this.clearCompleted}
-					/>;
-			}
-
-			if (todos.length) {
+            filter={this.props.model.filter}
+            clearButtonVisibility={this.props.model.clearButtonVisibility}
+            itemsLeft={this.props.model.itemsLeft}
+            itemsLeftText={this.props.model.itemsLeftText}
+            itemsCompleteText={this.props.model.itemsCompleteText}
+            onClearCompleted={this.clearCompleted}
+          />;
+        
 				main = (
 					<section id="main">
 						<input
 							id="toggle-all"
 							type="checkbox"
 							onChange={this.toggleAll}
-							checked={activeTodoCount === 0}
+							checked={this.props.model.toggleAll}
 						/>
 						<ul id="todo-list">
 							{todoItems}
