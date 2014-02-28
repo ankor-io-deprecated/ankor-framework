@@ -62,10 +62,13 @@ def index(request):
 
 
 def download(request):
+    content = File(open(SITE_ROOT + '/templates/download.md', 'r')).read()
+    
     template = loader.get_template('download.html')
     context = RequestContext(request, {
         'activeMenu': 'download',
         'activeMenuText': 'Download',
+        'content': content
     })
     return HttpResponse(template.render(context))
 

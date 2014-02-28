@@ -5,7 +5,10 @@
 {% block content %}
 
 <h2>Download</h2>
-<pre>
-</pre>
+        
+{% load markdownlib %}
+{% autoescape off %}
+{{ content|markdown:"codehilite" }}
+{% endautoescape %}
 
 {% endblock %}
