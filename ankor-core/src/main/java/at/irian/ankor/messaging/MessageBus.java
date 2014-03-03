@@ -8,6 +8,7 @@ import java.util.List;
 /**
  * @author Manfred Geiler
  */
+@Deprecated
 public abstract class MessageBus<S> implements MessageSenderProvider {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(MessageBus.class);
 
@@ -65,6 +66,6 @@ public abstract class MessageBus<S> implements MessageSenderProvider {
     protected abstract void sendSerializedMessage(String remoteSystemId, S msg);
 
     public void receiveSerializedMessage(S msg) {
-        receiveMessage(messageDeserializer.deserialize(msg));
+        receiveMessage(messageDeserializer.deserialize(msg, Message.class));
     }
 }

@@ -1,5 +1,6 @@
 package at.irian.ankor.event.source;
 
+import at.irian.ankor.connector.local.LocalModelSessionParty;
 import at.irian.ankor.session.ModelSession;
 
 /**
@@ -7,11 +8,12 @@ import at.irian.ankor.session.ModelSession;
  *
  * @author Manfred Geiler
  */
-public class LocalSource implements Source {
+public class ModelSessionSource extends PartySource {
 
     private final ModelSession modelSession;
 
-    public LocalSource(ModelSession modelSession) {
+    public ModelSessionSource(ModelSession modelSession) {
+        super(new LocalModelSessionParty(modelSession.getId()));
         this.modelSession = modelSession;
     }
 

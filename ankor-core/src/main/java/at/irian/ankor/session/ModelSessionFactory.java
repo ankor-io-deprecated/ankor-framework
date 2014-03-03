@@ -1,5 +1,7 @@
 package at.irian.ankor.session;
 
+import at.irian.ankor.application.ApplicationInstance;
+
 /**
  * Factory for ModelSession.
  *
@@ -7,9 +9,9 @@ package at.irian.ankor.session;
  */
 public interface ModelSessionFactory {
     /**
-     * Create a new ModelSession with the given unique id.
-     * @param modelSessionId  unique model id
+     * Create a new ModelSession for the given application instance.
+     * @param applicationInstance  application instance
      * @return the newly created ModelSession
      */
-    ModelSession createModelSession(String modelSessionId);
+    ModelSession createModelSession(ApplicationInstance applicationInstance);
 }

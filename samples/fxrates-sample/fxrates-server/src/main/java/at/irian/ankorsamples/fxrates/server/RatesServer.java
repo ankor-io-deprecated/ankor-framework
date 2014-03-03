@@ -1,12 +1,9 @@
 package at.irian.ankorsamples.fxrates.server;
 
-import at.irian.ankor.ref.Ref;
-import at.irian.ankor.connection.ModelRootFactory;
+import at.irian.ankor.application.SimpleSingleRootApplication;
+import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.socket.SocketAnkorSystemStarter;
 import at.irian.ankor.socket.SocketMessageLoop;
-
-import java.util.Collections;
-import java.util.Set;
 
 /**
  * @author Thomas Spiegl
@@ -17,22 +14,15 @@ public class RatesServer {
 
     public static void main(String... args) {
         SocketAnkorSystemStarter appBuilder = new SocketAnkorSystemStarter()
-                .withModelRootFactory(new MyModelRootFactory())
+                .withApplication(new SimpleSingleRootApplication("rates", "root") {
+                    @Override
+                    public Object createRoot(RefContext refContext) {
+                        return new RatesViewModel(refContext.refFactory().ref("root"), new RatesRepository());
+                    }
+                })
                 .withLocalHost(parseHost("server@localhost:8080"));
         appBuilder.createAndStartServerSystem(false);
 
-    }
-
-    private static class MyModelRootFactory implements ModelRootFactory {
-        @Override
-        public Set<String> getKnownRootNames() {
-            return Collections.singleton("root");
-        }
-
-        @Override
-        public Object createModelRoot(Ref rootRef) {
-            return new RatesViewModel(rootRef, new RatesRepository());
-        }
     }
 
     private static SocketMessageLoop.Host parseHost(String systemIdAndHost) {

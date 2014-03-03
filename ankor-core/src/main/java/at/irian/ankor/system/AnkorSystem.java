@@ -1,11 +1,19 @@
 package at.irian.ankor.system;
 
-import at.irian.ankor.session.ModelSessionManager;
-import at.irian.ankor.messaging.MessageBus;
-import at.irian.ankor.messaging.MessageFactory;
-import at.irian.ankor.messaging.RemoteMessageListener;
+import at.irian.ankor.application.Application;
+import at.irian.ankor.connector.ConnectorLoader;
+import at.irian.ankor.messaging.modify.Modifier;
+import at.irian.ankor.msg.MessageBus;
+import at.irian.ankor.msg.MessageListener;
+import at.irian.ankor.msg.SwitchingCenter;
 import at.irian.ankor.ref.RefContextFactory;
-import at.irian.ankor.connection.ModelConnectionManager;
+import at.irian.ankor.session.ModelSessionManager;
+import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
+import com.typesafe.config.Config;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This is the main system object that sticks all the Ankor parts together.
@@ -19,58 +27,98 @@ import at.irian.ankor.connection.ModelConnectionManager;
 public class AnkorSystem {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnkorSystem.class);
 
-    private final String systemName;
-    private final MessageFactory messageFactory;
+    private final Application application;
+    private final Config config;
     private final MessageBus messageBus;
     private final RefContextFactory refContextFactory;
     private final ModelSessionManager modelSessionManager;
-    private final ModelConnectionManager modelConnectionManager;
-    private final RemoteMessageListener remoteMessageListener;
+    private final SwitchingCenter switchingCenter;
+    private final Modifier modifier;
+    private final List<MessageListener> defaultMessageListeners;
+    private final ConnectorLoader connectorLoader;
+    private final Map<String,Object> attributes;
+    private final BeanMetadataProvider beanMetadataProvider;
 
-    protected AnkorSystem(String systemName,
-                          MessageFactory messageFactory,
+    protected AnkorSystem(Application application,
+                          Config config,
                           MessageBus messageBus,
                           RefContextFactory refContextFactory,
                           ModelSessionManager modelSessionManager,
-                          ModelConnectionManager modelConnectionManager,
-                          RemoteMessageListener remoteMessageListener) {
-        this.systemName = systemName;
-        this.messageFactory = messageFactory;
+                          SwitchingCenter switchingCenter,
+                          Modifier modifier,
+                          List<MessageListener> defaultMessageListeners,
+                          BeanMetadataProvider beanMetadataProvider) {
+        this.application = application;
+        this.config = config;
         this.messageBus = messageBus;
         this.refContextFactory = refContextFactory;
         this.modelSessionManager = modelSessionManager;
-        this.modelConnectionManager = modelConnectionManager;
-        this.remoteMessageListener = remoteMessageListener;
+        this.switchingCenter = switchingCenter;
+        this.modifier = modifier;
+        this.defaultMessageListeners = defaultMessageListeners;
+        this.beanMetadataProvider = beanMetadataProvider;
+        this.connectorLoader = new ConnectorLoader();
+        this.attributes = new HashMap<String, Object>();
     }
 
     public String getSystemName() {
-        return systemName;
+        return application.getName();
+    }
+
+    public Config getConfig() {
+        return config;
     }
 
     public MessageBus getMessageBus() {
         return messageBus;
     }
 
-    public RefContextFactory getRefContextFactory() {
-        return refContextFactory;
+    public SwitchingCenter getSwitchingCenter() {
+        return switchingCenter;
     }
 
-    public ModelConnectionManager getModelConnectionManager() {
-        return modelConnectionManager;
+    public RefContextFactory getRefContextFactory() {
+        return refContextFactory;
     }
 
     public ModelSessionManager getModelSessionManager() {
         return modelSessionManager;
     }
 
+    public Application getApplication() {
+        return application;
+    }
+
+    public Modifier getModifier() {
+        return modifier;
+    }
+
+    public BeanMetadataProvider getBeanMetadataProvider() {
+        return beanMetadataProvider;
+    }
+
+    public void setAttribute(String key, Object value) {
+        attributes.put(key, value);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T getAttribute(String key) {
+        return (T) attributes.get(key);
+    }
+
     @Override
     public String toString() {
-        return "AnkorSystem{'" + systemName + "'}";
+        return "AnkorSystem{'" + getSystemName() + "'}";
     }
 
     public AnkorSystem start() {
         LOG.info("Starting {}", this);
-        messageBus.registerMessageListener(remoteMessageListener);
+        for (MessageListener messageListener : defaultMessageListeners) {
+            messageBus.registerMessageListener(messageListener);
+        }
+        connectorLoader.loadAndInitConnectors(this);
+        connectorLoader.startAllConnectors();
+        messageBus.start();
         return this;
     }
 
@@ -78,7 +126,11 @@ public class AnkorSystem {
     @SuppressWarnings("UnusedDeclaration")
     public void stop() {
         LOG.info("Stopping {}", this);
-        messageBus.unregisterMessageListener(remoteMessageListener);
+        messageBus.stop();
+        connectorLoader.stopAllConnectors();
+        for (MessageListener messageListener : defaultMessageListeners) {
+            messageBus.unregisterMessageListener(messageListener);
+        }
     }
 
 }

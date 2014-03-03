@@ -83,7 +83,7 @@ public class AnkorServlet extends HttpServlet {
         final BlockingQueue<String> finishedModelRequests = new LinkedBlockingQueue<String>();
         for (final String modelId : requestedModelIds) {
 
-            ModelSession modelSession = ankorSystem.getModelSessionManager().getOrCreate(modelId);
+            ModelSession modelSession = null; //todo ankorSystem.getModelSessionManager().getOrCreate(modelId);
             final EventListeners eventListeners = modelSession.getEventListeners();
             eventListeners.add(new RequestFinishedEvent.Listener() {
                 @Override

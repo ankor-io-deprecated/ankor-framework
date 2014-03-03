@@ -2,9 +2,9 @@ package at.irian.ankor.socket;
 
 import at.irian.ankor.akka.AnkorActorSystem;
 import at.irian.ankor.annotation.AnnotationBeanMetadataProvider;
+import at.irian.ankor.application.Application;
 import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.delay.AkkaScheduler;
-import at.irian.ankor.event.ModelEventListener;
 import at.irian.ankor.event.dispatch.AkkaEventDispatcherFactory;
 import at.irian.ankor.event.dispatch.JavaFxEventDispatcherFactory;
 import at.irian.ankor.messaging.json.simpletree.SimpleTreeJsonMessageMapper;
@@ -13,8 +13,8 @@ import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefContextFactoryProvider;
 import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.ref.el.ELRefContextFactoryProvider;
-import at.irian.ankor.connection.ModelRootFactory;
-import at.irian.ankor.connection.SingletonModelConnectionManager;
+import at.irian.ankor.session.ModelSession;
+import at.irian.ankor.session.SingletonModelSessionManager;
 import at.irian.ankor.system.AnkorSystem;
 import at.irian.ankor.system.AnkorSystemBuilder;
 import at.irian.ankor.viewmodel.proxy.CglibProxyBeanFactory;
@@ -49,14 +49,12 @@ public class SocketAnkorSystemStarter {
     private SocketMessageLoop.Host localHost;
     private SocketMessageLoop.Host serverHost;
 
-    private ModelRootFactory modelRootFactory;
-
-    private ModelEventListener globalEventListener;
+    private Application application;
 
     private RefContextFactoryProvider refContextFactoryProvider = new ELRefContextFactoryProvider();
 
-    public SocketAnkorSystemStarter withModelRootFactory(ModelRootFactory modelRootFactory) {
-        this.modelRootFactory = modelRootFactory;
+    public SocketAnkorSystemStarter withApplication(Application application) {
+        this.application = application;
         return this;
     }
 
@@ -72,11 +70,6 @@ public class SocketAnkorSystemStarter {
 
     public SocketAnkorSystemStarter withServerHost(SocketMessageLoop.Host host) {
         this.serverHost = host;
-        return this;
-    }
-
-    public SocketAnkorSystemStarter withGlobalEventListener(ModelEventListener globalEventListener) {
-        this.globalEventListener = globalEventListener;
         return this;
     }
 
@@ -111,24 +104,20 @@ public class SocketAnkorSystemStarter {
         AnnotationBeanMetadataProvider beanMetadataProvider = new AnnotationBeanMetadataProvider();
 
         SocketMessageLoop.Host server = getServerLocalHost();
-        SocketMessageLoop<String> serverMessageLoop
-                = new ServerSocketMessageLoop<String>(server, new ViewModelJsonMessageMapper(beanMetadataProvider));
 
         AnkorActorSystem ankorActorSystem = AnkorActorSystem.create();
         AnkorSystem serverSystem = new AnkorSystemBuilder()
                 .withName(server.getId())
                 .withBeanResolver(beanResolver)
-                .withModelRootFactory(modelRootFactory)
-                .withMessageBus(serverMessageLoop.getMessageBus())
+                .withApplication(application)
                 .withDispatcherFactory(new AkkaEventDispatcherFactory(ankorActorSystem))
-                .withGlobalEventListener(globalEventListener)
                 .withScheduler(new AkkaScheduler(ankorActorSystem))
                 .withRefContextFactoryProvider(refContextFactoryProvider)
+                .withBeanMetadataProvider(beanMetadataProvider)
                 .withBeanFactory(new CglibProxyBeanFactory(beanMetadataProvider))
                 .createServer();
 
         serverSystem.start();
-        serverMessageLoop.start(daemon);
     }
 
 
@@ -137,22 +126,17 @@ public class SocketAnkorSystemStarter {
         SocketMessageLoop.Host client = getClientLocalHost();
 
         AnkorSystemBuilder builder = new AnkorSystemBuilder().withName(client.getId());
-        SocketMessageLoop<String> clientMessageLoop = new ClientSocketMessageLoop<String>(client, new SimpleTreeJsonMessageMapper(),
-                                                                                     getServerHost(),
-                                                                                     builder.getClientMessageFactory());
-        builder.withGlobalEventListener(globalEventListener);
 
         AnkorSystem clientSystem = builder
-                .withMessageBus(clientMessageLoop.getMessageBus())
                 .withDispatcherFactory(new JavaFxEventDispatcherFactory())
                 .withRefContextFactoryProvider(refContextFactoryProvider)
                 .createClient();
 
         // start
         clientSystem.start();
-        clientMessageLoop.start(true);
 
-        RefContext clientRefContext = ((SingletonModelConnectionManager)clientSystem.getModelConnectionManager()).getModelConnection().getRefContext();
+        ModelSession singletonModelSession = ((SingletonModelSessionManager) clientSystem.getModelSessionManager()).getModelSession();
+        RefContext clientRefContext = singletonModelSession.getRefContext();
         return clientRefContext.refFactory();
 
     }

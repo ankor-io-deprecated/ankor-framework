@@ -1,4 +1,4 @@
-package at.irian.ankor.socket;
+package at.irian.ankor.connector.socket;
 
 import at.irian.ankor.action.Action;
 

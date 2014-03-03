@@ -1,16 +1,17 @@
 package at.irian.ankorsamples.todo.servlet;
 
+import at.irian.ankor.application.Application;
+import at.irian.ankor.application.SimpleSingleRootApplication;
 import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.servlet.polling.AnkorServletContextListener;
-import at.irian.ankor.connection.ModelRootFactory;
 import at.irian.ankorsamples.todosample.domain.task.Task;
 import at.irian.ankorsamples.todosample.domain.task.TaskRepository;
 import at.irian.ankorsamples.todosample.viewmodel.ModelRoot;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Set;
 
 /**
  * @author Thomas Spiegl
@@ -39,19 +40,14 @@ public class TodoSampleServletContextListener extends AnkorServletContextListene
     }
 
     @Override
-    protected ModelRootFactory getModelRootFactory() {
-        return new ModelRootFactory() {
-
+    protected Application getApplication() {
+        return new SimpleSingleRootApplication("Todo", "root") {
             @Override
-            public Set<String> getKnownRootNames() {
-                return Collections.singleton("root");
-            }
-
-            @Override
-            public Object createModelRoot(Ref rootRef) {
+            public Object createRoot(RefContext refContext) {
                 TaskRepository taskRepository = new TaskRepository();
                 taskRepository.saveTask(new Task("Test task 1"));
                 taskRepository.saveTask(new Task("Test task 2"));
+                Ref rootRef = refContext.refFactory().ref("root");
                 return new ModelRoot(rootRef, taskRepository);
             }
         };

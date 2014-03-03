@@ -14,6 +14,7 @@ import java.util.Map;
 /**
  * @author Manfred Geiler
  */
+@Deprecated
 public class SocketMessageLoop<S> extends AbstractMessageLoop<S> {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SocketMessageLoop.class);
 

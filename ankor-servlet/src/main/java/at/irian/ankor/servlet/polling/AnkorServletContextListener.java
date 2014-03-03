@@ -2,11 +2,10 @@ package at.irian.ankor.servlet.polling;
 
 import at.irian.ankor.akka.AnkorActorSystem;
 import at.irian.ankor.annotation.AnnotationBeanMetadataProvider;
+import at.irian.ankor.application.Application;
 import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.delay.AkkaScheduler;
 import at.irian.ankor.event.dispatch.AkkaEventDispatcherFactory;
-import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
-import at.irian.ankor.connection.ModelRootFactory;
 import at.irian.ankor.system.AnkorSystem;
 import at.irian.ankor.system.AnkorSystemBuilder;
 import at.irian.ankor.viewmodel.proxy.CglibProxyBeanFactory;
@@ -30,13 +29,16 @@ public abstract class AnkorServletContextListener implements ServletContextListe
         AnkorSystem ankorSystem = new AnkorSystemBuilder()
                 .withName(getName())
                 .withBeanResolver(getBeanResolver())
-                .withModelRootFactory(getModelRootFactory())
-                .withMessageBus(new ServletMessageBus(new ViewModelJsonMessageMapper(beanMetadataProvider)))
+                .withApplication(getApplication())
+                //.withMessageBus(new ServletMessageBus(new ViewModelJsonMessageMapper(beanMetadataProvider)))
                 .withDispatcherFactory(new AkkaEventDispatcherFactory(actorSystem))
                 .withScheduler(new AkkaScheduler(actorSystem))
+                .withBeanMetadataProvider(beanMetadataProvider)
                 .withBeanFactory(new CglibProxyBeanFactory(beanMetadataProvider))
                 .createServer();
 
+        // todo  register ServletEventMessageListener
+        // todo  forward received servlet messages to MessageBus
 
         sce.getServletContext().setAttribute(ANKOR_SYSTEM_ATTR, ankorSystem);
 
@@ -55,6 +57,6 @@ public abstract class AnkorServletContextListener implements ServletContextListe
 
     protected abstract String getName();
     protected abstract BeanResolver getBeanResolver();
-    protected abstract ModelRootFactory getModelRootFactory();
+    protected abstract Application getApplication();
 
 }

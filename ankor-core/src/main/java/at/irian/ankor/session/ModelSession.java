@@ -1,7 +1,9 @@
 package at.irian.ankor.session;
 
+import at.irian.ankor.application.ApplicationInstance;
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.event.dispatch.EventDispatcher;
+import at.irian.ankor.ref.RefContext;
 
 import java.util.Map;
 
@@ -24,19 +26,6 @@ public interface ModelSession {
      * @return  the event listeners of this model
      */
     EventListeners getEventListeners();
-
-    /**
-     * @param rootName  name of the model root variable
-     * @return the root object with the given variable name or null if no such root object exists
-     */
-    Object getModelRoot(String rootName);
-
-    /**
-     * Adds a new model root object.
-     * @param rootName  name of the model root variable
-     * @param modelRoot root of the object tree to be added to the model
-     */
-    void setModelRoot(String rootName, Object modelRoot);
 
     /**
      * Close this model and free all resources.
@@ -73,4 +62,13 @@ public interface ModelSession {
      */
     EventDispatcher popEventDispatcher();
 
+    /**
+     * @return the associated ApplicationInstance
+     */
+    ApplicationInstance getApplicationInstance();
+
+    /**
+     * @return the RefContext for this ModelSession
+     */
+    RefContext getRefContext();
 }

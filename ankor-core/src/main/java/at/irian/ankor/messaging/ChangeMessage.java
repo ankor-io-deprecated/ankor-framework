@@ -5,6 +5,7 @@ import at.irian.ankor.change.Change;
 /**
  * @author Manfred Geiler
  */
+@Deprecated
 public class ChangeMessage extends Message {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ChangeMessage.class);
 

@@ -4,7 +4,9 @@ import at.irian.ankor.event.dispatch.JavaFxEventDispatcherFactory;
 import at.irian.ankor.fx.binding.fxref.FxRefContextFactoryProvider;
 import at.irian.ankor.fx.binding.fxref.FxRefFactory;
 import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
-import at.irian.ankor.connection.SingletonModelConnectionManager;
+import at.irian.ankor.ref.RefContext;
+import at.irian.ankor.session.ModelSession;
+import at.irian.ankor.session.SingletonModelSessionManager;
 import at.irian.ankor.system.AnkorSystem;
 import at.irian.ankor.system.AnkorSystemBuilder;
 import at.irian.ankor.websocket.AnkorClientEndpoint;
@@ -42,8 +44,10 @@ public abstract class AnkorApplication extends Application {
     @Override
     public final void start(Stage primaryStage) throws Exception {
         AnkorSystem clientSystem = createWebSocketClientSystem(getWebSocketUri());
-        refFactory = (FxRefFactory) ((SingletonModelConnectionManager) clientSystem.getModelConnectionManager())
-                .getModelConnection().getRefContext().refFactory();
+
+        ModelSession singletonModelSession = ((SingletonModelSessionManager) clientSystem.getModelSessionManager()).getModelSession();
+        RefContext clientRefContext = singletonModelSession.getRefContext();
+        refFactory = (FxRefFactory) clientRefContext.refFactory();
 
         startFXClient(primaryStage);
     }
@@ -82,14 +86,16 @@ public abstract class AnkorApplication extends Application {
     private AnkorSystem createWebSocketClientSystem(String uri) throws IOException, DeploymentException, InterruptedException {
         AnkorSystem clientSystem;
         AnkorSystemBuilder systemBuilder = new AnkorSystemBuilder();
-        ViewModelJsonMessageMapper messageMapper
-                = new ViewModelJsonMessageMapper(systemBuilder.getBeanMetadataProvider());
-        WebSocketMessageBus messageBus = new WebSocketMessageBus(messageMapper);
+//        ViewModelJsonMessageMapper messageMapper
+//                = new ViewModelJsonMessageMapper(systemBuilder.getBeanMetadataProvider());
+        WebSocketMessageBus messageBus = null; //todo new WebSocketMessageBus(messageMapper);
         systemBuilder = systemBuilder
-                .withModelSessionId(getModelSessionId())
-                .withMessageBus(messageBus)
+                //.withMessageBus(messageBus)
                 .withRefContextFactoryProvider(new FxRefContextFactoryProvider())
                 .withDispatcherFactory(new JavaFxEventDispatcherFactory());
+
+        // todo  register WebsocketEventMessageListener
+        // todo  forard received websocket messages to MessageBus
 
         CountDownLatch latch = new CountDownLatch(2);
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();

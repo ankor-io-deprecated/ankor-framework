@@ -1,9 +1,8 @@
 package at.irian.ankor.el;
 
-import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefFactory;
-import at.irian.ankor.connection.ModelRootFactory;
+import at.irian.ankor.session.ModelSession;
 
 import javax.el.ELContext;
 import javax.el.ELResolver;
@@ -20,22 +19,20 @@ public class ModelSessionELResolver extends ELResolver {
 
     private final ModelSession modelSession;
     private final RefFactory refFactory;
-    private final ModelRootFactory modelRootFactory;
 
-    public ModelSessionELResolver(ModelSession modelSession, RefFactory refFactory, ModelRootFactory modelRootFactory) {
+    public ModelSessionELResolver(ModelSession modelSession, RefFactory refFactory) {
         this.modelSession = modelSession;
         this.refFactory = refFactory;
-        this.modelRootFactory = modelRootFactory;
     }
 
     @Override
     public Object getValue(ELContext context, Object base, Object property) {
         if (base == null) {
             String propertyName = property.toString();
-            if (modelRootFactory.getKnownRootNames().contains(propertyName)) {
+            if (modelSession.getApplicationInstance().getKnownRootNames().contains(propertyName)) {
                 context.setPropertyResolved(true);
-                return modelSession.getModelRoot(propertyName);
-            } else if (propertyName.startsWith("&") && modelRootFactory.getKnownRootNames().contains(propertyName.substring(1))) {
+                return modelSession.getApplicationInstance().getModelRoot(propertyName);
+            } else if (propertyName.startsWith("&") && modelSession.getApplicationInstance().getKnownRootNames().contains(propertyName.substring(1))) {
                 context.setPropertyResolved(true);
                 return refFactory.ref(propertyName.substring(1));
             }
@@ -47,9 +44,9 @@ public class ModelSessionELResolver extends ELResolver {
     public Class<?> getType(ELContext context, Object base, Object property) {
         if (base == null) {
             String propertyName = property.toString();
-            if (modelRootFactory.getKnownRootNames().contains(propertyName)) {
+            if (modelSession.getApplicationInstance().getKnownRootNames().contains(propertyName)) {
                 context.setPropertyResolved(true);
-                Object modelRoot = modelSession.getModelRoot(propertyName);
+                Object modelRoot = modelSession.getApplicationInstance().getModelRoot(propertyName);
                 return modelRoot != null ? modelRoot.getClass() : Object.class;
             } else if (propertyName.startsWith("&")) {
                 context.setPropertyResolved(true);
@@ -63,9 +60,9 @@ public class ModelSessionELResolver extends ELResolver {
     public void setValue(ELContext context, Object base, Object property, Object value) {
         if (base == null) {
             String propertyName = property.toString();
-            if (modelRootFactory.getKnownRootNames().contains(propertyName)) {
+            if (modelSession.getApplicationInstance().getKnownRootNames().contains(propertyName)) {
                 context.setPropertyResolved(true);
-                modelSession.setModelRoot(propertyName, value);
+                modelSession.getApplicationInstance().setModelRoot(propertyName, value);
             } else if (propertyName.startsWith("&")) {
                 throw new PropertyNotWritableException(property.toString());
             }
@@ -76,7 +73,7 @@ public class ModelSessionELResolver extends ELResolver {
     public boolean isReadOnly(ELContext context, Object base, Object property) {
         if (base == null) {
             String propertyName = property.toString();
-            if (modelRootFactory.getKnownRootNames().contains(propertyName)) {
+            if (modelSession.getApplicationInstance().getKnownRootNames().contains(propertyName)) {
                 return false;
             } else if (propertyName.startsWith("&")) {
                 return true;
@@ -91,7 +88,7 @@ public class ModelSessionELResolver extends ELResolver {
             List<FeatureDescriptor> featureDescriptors = new ArrayList<FeatureDescriptor>();
 
             FeatureDescriptor fd;
-            for (String rootName : modelRootFactory.getKnownRootNames()) {
+            for (String rootName : modelSession.getApplicationInstance().getKnownRootNames()) {
                 fd = new FeatureDescriptor();
                 fd.setName(rootName);
                 fd.setDisplayName(rootName);

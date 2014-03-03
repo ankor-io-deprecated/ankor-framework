@@ -1,5 +1,6 @@
 package at.irian.ankorsamples.animals.fxclient;
 
+import at.irian.ankor.application.SimpleSingleRootApplication;
 import at.irian.ankor.event.dispatch.JavaFxEventDispatcherFactory;
 import at.irian.ankor.fx.binding.fxref.FxRefContextFactoryProvider;
 import at.irian.ankor.fx.binding.fxref.FxRefFactory;
@@ -9,14 +10,14 @@ import at.irian.ankor.http.ServerHost;
 import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
-import at.irian.ankor.websocket.WebSocketMessageBus;
-import at.irian.ankor.websocket.WebSocketRemoteSystem;
-import at.irian.ankor.connection.ModelRootFactory;
-import at.irian.ankor.connection.SingletonModelConnectionManager;
+import at.irian.ankor.session.ModelSession;
+import at.irian.ankor.session.SingletonModelSessionManager;
 import at.irian.ankor.socket.SocketAnkorSystemStarter;
 import at.irian.ankor.socket.SocketMessageLoop;
 import at.irian.ankor.system.AnkorSystem;
 import at.irian.ankor.system.AnkorSystemBuilder;
+import at.irian.ankor.websocket.WebSocketMessageBus;
+import at.irian.ankor.websocket.WebSocketRemoteSystem;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -24,7 +25,10 @@ import javafx.stage.Stage;
 import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
-import java.util.*;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -147,13 +151,16 @@ public class App extends javafx.application.Application {
         final String clientId = UUID.randomUUID().toString();
         final AnkorSystem[] clientSystem = new AnkorSystem[1];
         AnkorSystemBuilder systemBuilder = new AnkorSystemBuilder();
-        final WebSocketMessageBus messageBus = new WebSocketMessageBus(new ViewModelJsonMessageMapper(systemBuilder.getBeanMetadataProvider()));
+        final WebSocketMessageBus messageBus = null;// todo  new WebSocketMessageBus(new ViewModelJsonMessageMapper(systemBuilder.getBeanMetadataProvider()));
         final AnkorSystemBuilder finalSystemBuilder = systemBuilder
                 .withName(clientId)
-                .withMessageBus(messageBus)
+                //.withMessageBus(messageBus)
                 .withDispatcherFactory(new JavaFxEventDispatcherFactory())
-                .withRefContextFactoryProvider(new FxRefContextFactoryProvider())
-                .withModelSessionId("collabTest");
+                //.withModelSessionId("collabTest") --> applicationInstance
+                .withRefContextFactoryProvider(new FxRefContextFactoryProvider());
+
+        // todo  register WebsocketEventMessageListener
+        // todo  forard received websocket messages to MessageBus
 
         final CountDownLatch latch = new CountDownLatch(1);
 
@@ -194,7 +201,9 @@ public class App extends javafx.application.Application {
         }, URI.create(uri));
 
         if (latch.await(10, TimeUnit.SECONDS)) {
-            RefContext clientRefContext = ((SingletonModelConnectionManager) clientSystem[0].getModelConnectionManager()).getModelConnection().getRefContext();
+
+            ModelSession singletonModelSession = ((SingletonModelSessionManager) clientSystem[0].getModelSessionManager()).getModelSession();
+            RefContext clientRefContext = singletonModelSession.getRefContext();
             refFactory = (FxRefFactory) clientRefContext.refFactory();
         } else {
             throw new Exception("WebSocket could not connect to " + uri);
@@ -227,7 +236,7 @@ public class App extends javafx.application.Application {
     private void createServerSystem(String server, boolean daemon) {
 
         SocketAnkorSystemStarter appBuilder = new SocketAnkorSystemStarter()
-                .withModelRootFactory(new MyModelRootFactory())
+                .withApplication(new MyApplication2())
                 .withLocalHost(parseHost(server));
 
         appBuilder.createAndStartServerSystem(daemon);
@@ -258,18 +267,18 @@ public class App extends javafx.application.Application {
         return refFactory;
     }
 
-    private static class MyModelRootFactory implements ModelRootFactory {
-        @Override
-        public Set<String> getKnownRootNames() {
-            return Collections.singleton("root");
+    private static class MyApplication2 extends SimpleSingleRootApplication {
+        public MyApplication2() {
+            super("Animals", "root");
         }
 
         @Override
-        public Object createModelRoot(Ref rootRef) {
+        public Object createRoot(RefContext refContext) {
             try {
                 Class<?> modelRootType = Class.forName("at.irian.ankorsamples.animals.viewmodel.ModelRoot");
                 Class<?> repoType = Class.forName("at.irian.ankorsamples.animals.domain.animal.AnimalRepository");
                 Object repo = repoType.newInstance();
+                Ref rootRef = refContext.refFactory().ref("root");
                 return modelRootType.getConstructor(Ref.class, repoType).newInstance(rootRef, repo);
             } catch (Exception e) {
                 throw new RuntimeException("Unable to create model root", e);
@@ -289,17 +298,21 @@ public class App extends javafx.application.Application {
 
         AnkorSystem clientSystem = new AnkorSystemBuilder()
                 .withName(clientId)
-                .withMessageBus(clientMessageLoop.getMessageBus())
-                .withModelSessionId("collabTest")
+                //.withMessageBus(clientMessageLoop.getMessageBus())
+                //.withModelSessionId("collabTest") --> applicationInstance
                 .withDispatcherFactory(new JavaFxEventDispatcherFactory())
                 .withRefContextFactoryProvider(new FxRefContextFactoryProvider())
                 .createClient();
+
+        // todo  register HttpPollingEventMessageListener
+        // todo  forard received http messages to MessageBus
 
         // start
         clientSystem.start();
         clientMessageLoop.start(true);
 
-        RefContext clientRefContext = ((SingletonModelConnectionManager)clientSystem.getModelConnectionManager()).getModelConnection().getRefContext();
+        ModelSession singletonModelSession = ((SingletonModelSessionManager) clientSystem.getModelSessionManager()).getModelSession();
+        RefContext clientRefContext = singletonModelSession.getRefContext();
         refFactory = (FxRefFactory) clientRefContext.refFactory();
     }
 

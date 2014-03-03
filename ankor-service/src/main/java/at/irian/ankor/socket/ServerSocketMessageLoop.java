@@ -1,11 +1,13 @@
 package at.irian.ankor.socket;
 
+import at.irian.ankor.connector.socket.SocketConnectAction;
 import at.irian.ankor.messaging.ActionMessage;
 import at.irian.ankor.messaging.MessageMapper;
 
 /**
  * @author Manfred Geiler
  */
+@Deprecated
 public class ServerSocketMessageLoop<S> extends SocketMessageLoop<S>  {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ServerSocketMessageLoop.class);
 

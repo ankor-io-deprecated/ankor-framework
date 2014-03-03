@@ -1,13 +1,15 @@
 package at.irian.ankor.servlet.websocket;
 
 import at.irian.ankor.akka.AnkorActorSystem;
+import at.irian.ankor.application.Application;
+import at.irian.ankor.application.SimpleSingleRootApplication;
+import at.irian.ankor.connection.ModelRootFactory;
+import at.irian.ankor.connection.RemoteSystem;
 import at.irian.ankor.delay.AkkaScheduler;
 import at.irian.ankor.event.dispatch.AkkaEventDispatcherFactory;
 import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.connection.ModelConnection;
-import at.irian.ankor.connection.ModelRootFactory;
-import at.irian.ankor.connection.RemoteSystem;
+import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.system.AnkorSystem;
 import at.irian.ankor.system.AnkorSystemBuilder;
 import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
@@ -22,7 +24,6 @@ import javax.websocket.server.ServerEndpointConfig;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
@@ -183,12 +184,16 @@ public abstract class AnkorEndpoint extends Endpoint implements ServerApplicatio
 
     private void startAnkorSystem() {
         AnkorSystemBuilder ankorSystemBuilder = getAnkorSystemBuilder();
-        BeanMetadataProvider beanMetadataProvider = ankorSystemBuilder.getBeanMetadataProvider();
-        webSocketMessageBus = new WebSocketMessageBus(new ViewModelJsonMessageMapper(beanMetadataProvider));
+        //BeanMetadataProvider beanMetadataProvider = ankorSystemBuilder.getBeanMetadataProvider();
+        //webSocketMessageBus = new WebSocketMessageBus(new ViewModelJsonMessageMapper(beanMetadataProvider));
         ankorSystem = ankorSystemBuilder
-                .withMessageBus(webSocketMessageBus)
+                //.withMessageBus(webSocketMessageBus)
                 .withDispatcherFactory(new AkkaEventDispatcherFactory())
                 .createServer();
+
+        // todo  register EventMessageListener
+        // todo  forward received messages to MessageBus
+
         ankorSystem.start();
     }
 
@@ -196,7 +201,7 @@ public abstract class AnkorEndpoint extends Endpoint implements ServerApplicatio
         AnkorActorSystem actorSystem = AnkorActorSystem.create();
         return new AnkorSystemBuilder()
                 .withName(getName())
-                .withModelRootFactory(getModelRootFactory())
+                .withApplication(getApplication())
                 .withDispatcherFactory(new AkkaEventDispatcherFactory((actorSystem)))
                 .withScheduler(new AkkaScheduler(actorSystem));
     }
@@ -223,16 +228,11 @@ public abstract class AnkorEndpoint extends Endpoint implements ServerApplicatio
      *
      * @return A {@link ModelRootFactory} the provides the root model of your application.
      */
-    protected ModelRootFactory getModelRootFactory() {
-        return new ModelRootFactory() {
+    protected Application getApplication() {
+        return new SimpleSingleRootApplication(getName(), "root") {
             @Override
-            public Set<String> getKnownRootNames() {
-                return Collections.singleton("root");
-            }
-
-            @Override
-            public Object createModelRoot(Ref rootRef) {
-                return getModelRoot(rootRef);
+            public Object createRoot(RefContext refContext) {
+                return getModelRoot(refContext.refFactory().ref("root"));
             }
         };
     }
@@ -261,11 +261,10 @@ public abstract class AnkorEndpoint extends Endpoint implements ServerApplicatio
 
     private void invalidate() {
         RemoteSystem remoteSystem = webSocketMessageBus.removeRemoteSystem(clientId);
-        Collection<ModelConnection> modelConnections = ankorSystem.getModelConnectionManager().getAllFor(remoteSystem);
-        for (ModelConnection modelConnection : modelConnections) {
-            ankorSystem.getModelConnectionManager().invalidate(modelConnection);
-        }
-
+//        Collection<ModelConnection> modelConnections = ankorSystem.getModelConnectionManager().getAllFor(remoteSystem);
+//        for (ModelConnection modelConnection : modelConnections) {
+//            ankorSystem.getModelConnectionManager().invalidate(modelConnection);
+//        }
     }
 }
 

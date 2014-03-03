@@ -83,7 +83,7 @@ public class ViewModelJsonMessageMapperTest {
         String json = msgMapper.serialize(msg);
         LOG.info("JSON: {}", json);
 
-        Message desMsg = msgMapper.deserialize(json);
+        Message desMsg = msgMapper.deserialize(json, Message.class);
         LOG.info("Message: {}", desMsg);
         return desMsg;
     }

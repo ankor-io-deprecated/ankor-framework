@@ -56,7 +56,7 @@ public class SimpleTreeJsonMessageMapperTest {
 
         assertJsonEquals("simpleChange", json);
 
-        ChangeMessage msg = (ChangeMessage) mapper.deserialize(json);
+        ChangeMessage msg = (ChangeMessage) mapper.deserialize(json, Message.class);
         assertThat(msg).isInstanceOf(ChangeMessage.class);
         assertThat(msg.getChange().getValue()).isEqualTo(14);
         assertThat(msg.getProperty()).isEqualTo("changed.path");
@@ -66,7 +66,7 @@ public class SimpleTreeJsonMessageMapperTest {
     @Test
     public void testComplexChangeMessage() throws Exception {
 
-        ChangeMessage msg = (ChangeMessage) mapper.deserialize(getReferenceMsg("complexChange"));
+        ChangeMessage msg = (ChangeMessage) mapper.deserialize(getReferenceMsg("complexChange"), Message.class);
         assertThat(msg).isNotNull();
         assertThat(msg.getChange().getValue()).isInstanceOf(Map.class);
     }
@@ -78,7 +78,7 @@ public class SimpleTreeJsonMessageMapperTest {
 
         assertJsonEquals("simpleAction", json);
 
-        ActionMessage msg = (ActionMessage) mapper.deserialize(json);
+        ActionMessage msg = (ActionMessage) mapper.deserialize(json, Message.class);
         assertThat(msg).isInstanceOf(ActionMessage.class);
         assertThat(msg.getAction().getName()).isEqualTo("init");
         assertThat(msg.getProperty()).isEqualTo("root.next");
@@ -93,7 +93,7 @@ public class SimpleTreeJsonMessageMapperTest {
 
         assertJsonEquals("badStringAction", json);
 
-        ActionMessage msg = (ActionMessage) mapper.deserialize(json);
+        ActionMessage msg = (ActionMessage) mapper.deserialize(json, Message.class);
         assertThat(msg.getAction().getName()).isEqualTo(badString);
     }
 
@@ -116,7 +116,7 @@ public class SimpleTreeJsonMessageMapperTest {
 
         assertJsonEquals("multiParamsAction", json);
 
-        ActionMessage msg = (ActionMessage) mapper.deserialize(json);
+        ActionMessage msg = (ActionMessage) mapper.deserialize(json, Message.class);
         assertThat(msg).isInstanceOf(ActionMessage.class);
         assertThat(msg.getMessageId()).isEqualTo("testClient#1");
         Map<String, Object> outParams = msg.getAction().getParams();

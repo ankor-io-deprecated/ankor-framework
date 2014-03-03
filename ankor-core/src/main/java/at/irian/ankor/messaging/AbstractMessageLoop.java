@@ -7,6 +7,7 @@ import java.util.Collection;
 /**
  * @author Manfred Geiler
  */
+@Deprecated
 public abstract class AbstractMessageLoop<S> implements MessageLoop<S> {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AbstractMessageLoop.class);
 

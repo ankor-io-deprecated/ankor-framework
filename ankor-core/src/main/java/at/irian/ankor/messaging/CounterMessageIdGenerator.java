@@ -3,6 +3,7 @@ package at.irian.ankor.messaging;
 /**
  * @author Manfred Geiler
  */
+@Deprecated
 public class CounterMessageIdGenerator implements MessageIdGenerator{
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(UuidMessageIdGenerator.class);
 

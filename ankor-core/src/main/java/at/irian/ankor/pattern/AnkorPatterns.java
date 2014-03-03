@@ -6,6 +6,7 @@ import at.irian.ankor.event.dispatch.EventDispatcher;
 import at.irian.ankor.event.source.CustomSource;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.impl.RefImplementor;
+import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.viewmodel.RefAware;
 import at.irian.ankor.viewmodel.ViewModels;
 
@@ -23,8 +24,7 @@ public final class AnkorPatterns {
     private AnkorPatterns() {}
 
     public static void runLater(Ref property, Runnable task) {
-        getEventDispatcherFor(property).dispatch(new TaskRequestEvent(STATIC_SOURCE,
-                                                                      task));
+        runLater(getEventDispatcherFor(property), task);
     }
 
     public static void runLater(Object viewModelBean, Runnable task) {
@@ -33,6 +33,15 @@ public final class AnkorPatterns {
         } else {
             throw new IllegalArgumentException("View model bean must implement " + RefAware.class.getName());
         }
+    }
+
+    public static void runLater(ModelSession modelSession, Runnable task) {
+        EventDispatcher eventDispatcher = modelSession.getEventDispatcher();
+        runLater(eventDispatcher, task);
+    }
+
+    public static void runLater(EventDispatcher eventDispatcher, Runnable task) {
+        eventDispatcher.dispatch(new TaskRequestEvent(STATIC_SOURCE, task));
     }
 
     private static EventDispatcher getEventDispatcherFor(Ref property) {

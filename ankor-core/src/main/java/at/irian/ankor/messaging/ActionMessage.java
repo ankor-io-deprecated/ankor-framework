@@ -5,6 +5,7 @@ import at.irian.ankor.action.Action;
 /**
  * @author Manfred Geiler
  */
+@Deprecated
 public class ActionMessage extends Message {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ActionMessage.class);
 

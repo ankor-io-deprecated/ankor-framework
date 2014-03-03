@@ -19,13 +19,11 @@ public class ELRefContextFactoryProvider extends RefContextFactoryProvider {
     public RefContextFactory createRefContextFactory(BeanResolver beanResolver,
                                                      List<ViewModelPostProcessor> viewModelPostProcessors,
                                                      Scheduler scheduler,
-                                                     ModelRootFactory modelRootFactory,
                                                      BeanMetadataProvider metadataProvider,
                                                      BeanFactory beanFactory) {
         return new ELRefContextFactory(beanResolver,
                                        viewModelPostProcessors,
                                        scheduler,
-                                       modelRootFactory,
                                        metadataProvider,
                                        beanFactory);
     }

@@ -13,7 +13,6 @@
     <logger name="at.irian.ankor.servlet" level="INFO" />
     <!--<logger name="at.irian.ankor.akka" level="DEBUG" />-->
 
-    <!--<logger name="at.irian.ankor.system.DefaultRemoteMessageListener" level="DEBUG" />-->
     <logger name="at.irian.ankor.akka.ModelSessionActor" level="DEBUG" />
 
     <root level="INFO">

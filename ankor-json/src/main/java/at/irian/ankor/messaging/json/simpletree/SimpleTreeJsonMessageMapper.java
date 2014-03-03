@@ -69,7 +69,7 @@ public class SimpleTreeJsonMessageMapper implements MessageMapper<String>,
     }
 
     @Override
-    public String serialize(Message msg) {
+    public String serialize(Object msg) {
         try {
             return mapper.writeValueAsString(msg);
         } catch (IOException e) {
@@ -78,9 +78,9 @@ public class SimpleTreeJsonMessageMapper implements MessageMapper<String>,
     }
 
     @Override
-    public Message deserialize(String serializedMsg) {
+    public <M> M deserialize(String serializedMsg, Class<M> type) {
         try {
-            return mapper.readValue(serializedMsg, Message.class);
+            return mapper.readValue(serializedMsg, type);
         } catch (IOException e) {
             throw new IllegalArgumentException("Cannot deserialize " + serializedMsg, e);
         }

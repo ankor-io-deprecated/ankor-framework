@@ -1,15 +1,15 @@
 package at.irian.ankor.session;
 
+import at.irian.ankor.application.ApplicationInstance;
 import at.irian.ankor.event.ArrayListEventListeners;
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.event.dispatch.DispatchThreadAware;
 import at.irian.ankor.event.dispatch.EventDispatcher;
 import at.irian.ankor.event.dispatch.EventDispatcherFactory;
+import at.irian.ankor.ref.RefContext;
+import at.irian.ankor.ref.RefContextFactory;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Manfred Geiler
@@ -20,24 +20,32 @@ class DefaultModelSession implements ModelSession, DispatchThreadAware {
     private final String id;
     private final EventListeners eventListeners;
     private final Deque<EventDispatcher> eventDispatcherStack;
-    private final Map<String, Object> modelRoots;
+    private final ApplicationInstance applicationInstance;
     private Map<String, Object> attributes;
+    private RefContext refContext;
 
     private volatile Thread dispatchThread;
 
-    DefaultModelSession(String id, EventListeners eventListeners) {
-        this.id = id;
+    DefaultModelSession(String modelSessionId,
+                        ApplicationInstance applicationInstance,
+                        EventListeners eventListeners) {
+        this.id = modelSessionId;
         this.eventListeners = eventListeners;
+        this.applicationInstance = applicationInstance;
         this.eventDispatcherStack = new ArrayDeque<EventDispatcher>();
-        this.modelRoots = new HashMap<String, Object>();
         this.attributes = null;
+        this.refContext = null;
     }
 
     public static ModelSession create(EventDispatcherFactory eventDispatcherFactory,
-                                      String id,
-                                      EventListeners globalEventListeners) {
-        EventListeners eventListeners = new ArrayListEventListeners(globalEventListeners);
-        DefaultModelSession modelSession = new DefaultModelSession(id, eventListeners);
+                                      EventListeners defaultEventListeners,
+                                      ApplicationInstance applicationInstance,
+                                      RefContextFactory refContextFactory) {
+        EventListeners eventListeners = new ArrayListEventListeners(defaultEventListeners);
+        DefaultModelSession modelSession = new DefaultModelSession(UUID.randomUUID().toString(),
+                                                                   applicationInstance,
+                                                                   eventListeners);
+        modelSession.refContext = refContextFactory.createRefContextFor(modelSession);
         modelSession.pushEventDispatcher(eventDispatcherFactory.createFor(modelSession));
         return modelSession;
     }
@@ -49,16 +57,6 @@ class DefaultModelSession implements ModelSession, DispatchThreadAware {
     @Override
     public EventListeners getEventListeners() {
         return eventListeners;
-    }
-
-    @Override
-    public Object getModelRoot(String rootName) {
-        return modelRoots.get(rootName);
-    }
-
-    @Override
-    public void setModelRoot(String rootName, Object modelRoot) {
-        this.modelRoots.put(rootName, modelRoot);
     }
 
     @Override
@@ -81,7 +79,7 @@ class DefaultModelSession implements ModelSession, DispatchThreadAware {
         for (EventDispatcher eventDispatcher : eventDispatcherStack) {
             eventDispatcher.close();
         }
-        modelRoots.clear();
+        applicationInstance.release();
     }
 
     @Override
@@ -107,5 +105,15 @@ class DefaultModelSession implements ModelSession, DispatchThreadAware {
             attributes = new HashMap<String, Object>();
         }
         return attributes;
+    }
+
+    @Override
+    public ApplicationInstance getApplicationInstance() {
+        return applicationInstance;
+    }
+
+    @Override
+    public RefContext getRefContext() {
+        return refContext;
     }
 }

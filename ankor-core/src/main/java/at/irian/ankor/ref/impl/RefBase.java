@@ -9,7 +9,7 @@ import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.change.ChangeType;
 import at.irian.ankor.event.ModelEvent;
 import at.irian.ankor.event.dispatch.BufferingEventDispatcher;
-import at.irian.ankor.event.source.LocalSource;
+import at.irian.ankor.event.source.ModelSessionSource;
 import at.irian.ankor.event.source.Source;
 import at.irian.ankor.path.PathSyntax;
 import at.irian.ankor.ref.*;
@@ -32,28 +32,28 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
 
     @Override
     public void setValue(final Object newValue) {
-        apply(new LocalSource(context().modelSession()), Change.valueChange(newValue));
+        apply(new ModelSessionSource(context().modelSession()), Change.valueChange(newValue));
     }
 
     @Override
     public void delete(String key) {
-        apply(new LocalSource(context().modelSession()), Change.deleteChange(key));
+        apply(new ModelSessionSource(context().modelSession()), Change.deleteChange(key));
     }
 
     @Override
     public void delete(int idx) {
-        apply(new LocalSource(context().modelSession()), Change.deleteChange(idx));
+        apply(new ModelSessionSource(context().modelSession()), Change.deleteChange(idx));
     }
 
     @Override
     public void delete() {
-        ((RefImplementor)parent()).apply(new LocalSource(context().modelSession()),
+        ((RefImplementor)parent()).apply(new ModelSessionSource(context().modelSession()),
                                          Change.deleteChange(propertyName()));
     }
 
     @Override
     public void insert(int idx, Object value) {
-        apply(new LocalSource(context().modelSession()), Change.insertChange(idx, value));
+        apply(new ModelSessionSource(context().modelSession()), Change.insertChange(idx, value));
     }
 
     @Override
@@ -73,12 +73,12 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
             throw new IllegalArgumentException("collection or array of type " + collOrArray.getClass());
         }
 
-        apply(new LocalSource(context().modelSession()), Change.insertChange(size, value));
+        apply(new ModelSessionSource(context().modelSession()), Change.insertChange(size, value));
     }
 
     @Override
     public void replace(int fromIdx, Collection elements) {
-        apply(new LocalSource(context().modelSession()), Change.replaceChange(fromIdx, elements));
+        apply(new ModelSessionSource(context().modelSession()), Change.replaceChange(fromIdx, elements));
     }
 
     @Override
@@ -360,7 +360,7 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
 
     @Override
     public void signalValueChange() {
-        signal(new LocalSource(context().modelSession()), Change.valueChange(getValue()));
+        signal(new ModelSessionSource(context().modelSession()), Change.valueChange(getValue()));
     }
 
     @Override
@@ -477,7 +477,7 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
 
     @Override
     public void fire(Action action) {
-        fire(new LocalSource(context().modelSession()), action);
+        fire(new ModelSessionSource(context().modelSession()), action);
     }
 
     @Override

@@ -1,15 +1,16 @@
 package at.irian.ankorsamples.animals.servlet;
 
+import at.irian.ankor.application.Application;
+import at.irian.ankor.application.SimpleSingleRootApplication;
 import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.servlet.polling.AnkorServletContextListener;
-import at.irian.ankor.connection.ModelRootFactory;
 import at.irian.ankorsamples.animals.domain.animal.AnimalRepository;
 import at.irian.ankorsamples.animals.viewmodel.ModelRoot;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Set;
 
 /**
  * @author Manfred Geiler
@@ -38,16 +39,11 @@ public class AnimalsSampleServletContextListener extends AnkorServletContextList
     }
 
     @Override
-    protected ModelRootFactory getModelRootFactory() {
-        return new ModelRootFactory() {
-
+    protected Application getApplication() {
+        return new SimpleSingleRootApplication("Animals", "root") {
             @Override
-            public Set<String> getKnownRootNames() {
-                return Collections.singleton("root");
-            }
-
-            @Override
-            public Object createModelRoot(Ref rootRef) {
+            public Object createRoot(RefContext refContext) {
+                Ref rootRef = refContext.refFactory().ref("root");
                 return new ModelRoot(rootRef, new AnimalRepository());
             }
         };
