@@ -7,7 +7,6 @@ import at.irian.ankor.fx.binding.fxref.FxRefFactory;
 import at.irian.ankor.fx.controller.AnkorFXMLLoader;
 import at.irian.ankor.http.ClientHttpMessageLoop;
 import at.irian.ankor.http.ServerHost;
-import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.session.ModelSession;
@@ -236,7 +235,7 @@ public class App extends javafx.application.Application {
     private void createServerSystem(String server, boolean daemon) {
 
         SocketAnkorSystemStarter appBuilder = new SocketAnkorSystemStarter()
-                .withApplication(new MyApplication2())
+                .withApplication(new MyApplication())
                 .withLocalHost(parseHost(server));
 
         appBuilder.createAndStartServerSystem(daemon);
@@ -267,18 +266,17 @@ public class App extends javafx.application.Application {
         return refFactory;
     }
 
-    private static class MyApplication2 extends SimpleSingleRootApplication {
-        public MyApplication2() {
+    private static class MyApplication extends SimpleSingleRootApplication {
+        public MyApplication() {
             super("Animals", "root");
         }
 
         @Override
-        public Object createRoot(RefContext refContext) {
+        public Object createRoot(Ref rootRef) {
             try {
                 Class<?> modelRootType = Class.forName("at.irian.ankorsamples.animals.viewmodel.ModelRoot");
                 Class<?> repoType = Class.forName("at.irian.ankorsamples.animals.domain.animal.AnimalRepository");
                 Object repo = repoType.newInstance();
-                Ref rootRef = refContext.refFactory().ref("root");
                 return modelRootType.getConstructor(Ref.class, repoType).newInstance(rootRef, repo);
             } catch (Exception e) {
                 throw new RuntimeException("Unable to create model root", e);

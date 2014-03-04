@@ -41,8 +41,11 @@ import java.util.*;
  */
 public class AnkorSystemBuilder {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnkorSystemBuilder.class);
+
+    private static final String MESSAGE_MAPPER_CONFIG_KEY = "at.irian.ankor.messaging.MessageMapper";
+
     private String systemName;
-    private Config config;
+    private Map<String, Object> configValues;
     private List<ViewModelPostProcessor> viewModelPostProcessors;
     private EventDispatcherFactory eventDispatcherFactory;
     private Scheduler scheduler;
@@ -53,10 +56,10 @@ public class AnkorSystemBuilder {
     private RefContextFactoryProvider refContextFactoryProvider;
     private BeanMetadataProvider beanMetadataProvider;
     private BeanFactory beanFactory;
+    private boolean socketConnector;
 
     public AnkorSystemBuilder() {
         this.systemName = null;
-        this.config = ConfigFactory.load();
         this.viewModelPostProcessors = null;
         this.eventDispatcherFactory = null;
         this.scheduler = null;
@@ -64,6 +67,7 @@ public class AnkorSystemBuilder {
         this.refContextFactoryProvider = new ELRefContextFactoryProvider();
         this.beanMetadataProvider = null;
         this.beanFactory = null;
+        this.configValues = new HashMap<String, Object>();
     }
 
     public AnkorSystemBuilder withName(String name) {
@@ -73,6 +77,11 @@ public class AnkorSystemBuilder {
 
     public AnkorSystemBuilder withApplication(Application application) {
         this.application = application;
+        return this;
+    }
+
+    public AnkorSystemBuilder withConfigValue(String key, Object value) {
+        this.configValues.put(key, value);
         return this;
     }
 
@@ -147,11 +156,12 @@ public class AnkorSystemBuilder {
 
         List<MessageListener> defaultMessageListeners = createDefaultMessageListeners(switchingCenter, messageBus);
 
-        Config config = ConfigFactory.parseString("at.irian.ankor.messaging.MessageMapper = " + ViewModelJsonMessageMapper.class.getName())
-                                     .withFallback(this.config);
+        if (!configValues.containsKey(MESSAGE_MAPPER_CONFIG_KEY)) {
+            configValues.put(MESSAGE_MAPPER_CONFIG_KEY, ViewModelJsonMessageMapper.class.getName());
+        }
 
         return new AnkorSystem(application,
-                               config,
+                               getConfig(),
                                messageBus,
                                refContextFactory,
                                modelSessionManager,
@@ -199,11 +209,12 @@ public class AnkorSystemBuilder {
 
         List<MessageListener> defaultMessageListeners = createDefaultMessageListeners(switchingCenter, messageBus);
 
-        Config config = ConfigFactory.parseString("at.irian.ankor.messaging.MessageMapper = " + SimpleTreeJsonMessageMapper.class.getName())
-                .withFallback(this.config);
+        if (!configValues.containsKey(MESSAGE_MAPPER_CONFIG_KEY)) {
+            configValues.put(MESSAGE_MAPPER_CONFIG_KEY, SimpleTreeJsonMessageMapper.class.getName());
+        }
 
         return new AnkorSystem(application,
-                               config,
+                               getConfig(),
                                messageBus,
                                refContextFactory,
                                modelSessionManager,
@@ -336,6 +347,11 @@ public class AnkorSystemBuilder {
             scheduler = new SimpleScheduler();
         }
         return scheduler;
+    }
+
+    private Config getConfig() {
+        return ConfigFactory.parseMap(configValues, "AnkorSystemBuilder")
+                .withFallback(ConfigFactory.load());
     }
 
     private EventDispatcherFactory getEventDispatcherFactory() {

@@ -7,22 +7,32 @@
         <version>0.2-SNAPSHOT</version>
     </parent>
 
-    <artifactId>animals-server</artifactId>
+    <artifactId>animals-socket-server</artifactId>
     <packaging>jar</packaging>
-    <name>Animals Sample - Server</name>
+    <name>Animals Sample - Socket Server</name>
+    <description>
+        Socket-based standalone server for the "Animals" example.
+    </description>
 
     <dependencies>
 
         <dependency>
             <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-service</artifactId>
+            <artifactId>ankor-socket-connector</artifactId>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
-            <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-proxy</artifactId>
+            <groupId>at.irian.ankorsamples</groupId>
+            <artifactId>animals-application</artifactId>
+            <version>${project.version}</version>
             <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
     </dependencies>

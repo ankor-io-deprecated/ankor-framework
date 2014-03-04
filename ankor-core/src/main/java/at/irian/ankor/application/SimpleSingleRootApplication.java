@@ -1,5 +1,6 @@
 package at.irian.ankor.application;
 
+import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 
 import java.util.Collections;
@@ -12,14 +13,20 @@ import java.util.Set;
 public abstract class SimpleSingleRootApplication extends BaseApplication {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SimpleSingleRootApplication.class);
 
+    private static final String DEFAULT_ROOT_VAR_NAME = "root";
+
     private final String rootVarName;
+
+    public SimpleSingleRootApplication(String applicationName) {
+        this(applicationName, DEFAULT_ROOT_VAR_NAME);
+    }
 
     public SimpleSingleRootApplication(String applicationName, String rootVarName) {
         super(applicationName);
         this.rootVarName = rootVarName;
     }
 
-    public abstract Object createRoot(RefContext refContext);
+    public abstract Object createRoot(Ref rootRef);
 
     @Override
     public ApplicationInstance getApplicationInstance(Map<String, Object> connectParameters) {
@@ -29,7 +36,8 @@ public abstract class SimpleSingleRootApplication extends BaseApplication {
 
             @Override
             public void init(RefContext refContext) {
-                this.root = createRoot(refContext);
+                Ref rootRef = refContext.refFactory().ref(rootVarName);
+                this.root = createRoot(rootRef);
             }
 
             @Override

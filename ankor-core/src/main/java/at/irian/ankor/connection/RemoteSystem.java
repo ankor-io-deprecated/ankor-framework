@@ -1,11 +1,9 @@
 package at.irian.ankor.connection;
 
 /**
- *
- * todo  rename to Party
- *
  * @author Manfred Geiler
  */
+@Deprecated   // use Party instead
 public interface RemoteSystem {
 
     String getId();

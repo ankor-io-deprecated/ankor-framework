@@ -4,7 +4,6 @@ import at.irian.ankor.application.Application;
 import at.irian.ankor.application.SimpleSingleRootApplication;
 import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.servlet.polling.AnkorServletContextListener;
 import at.irian.ankorsamples.todosample.domain.task.Task;
 import at.irian.ankorsamples.todosample.domain.task.TaskRepository;
@@ -43,11 +42,10 @@ public class TodoSampleServletContextListener extends AnkorServletContextListene
     protected Application getApplication() {
         return new SimpleSingleRootApplication("Todo", "root") {
             @Override
-            public Object createRoot(RefContext refContext) {
+            public Object createRoot(Ref rootRef) {
                 TaskRepository taskRepository = new TaskRepository();
                 taskRepository.saveTask(new Task("Test task 1"));
                 taskRepository.saveTask(new Task("Test task 2"));
-                Ref rootRef = refContext.refFactory().ref("root");
                 return new ModelRoot(rootRef, taskRepository);
             }
         };

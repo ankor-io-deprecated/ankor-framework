@@ -4,7 +4,6 @@ import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.delay.Scheduler;
 import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.ref.RefContextFactoryProvider;
-import at.irian.ankor.connection.ModelRootFactory;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
 import at.irian.ankor.viewmodel.factory.BeanFactory;
 import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;

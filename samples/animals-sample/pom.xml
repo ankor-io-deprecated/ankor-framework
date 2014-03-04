@@ -13,7 +13,8 @@
     <name>Animals Sample - Project</name>
 
     <modules>
-        <module>animals-server</module>
+        <module>animals-application</module>
+        <module>animals-socket-server</module>
         <module>animals-javafx-client</module>
         <module>animals-js-client</module>
     </modules>
@@ -36,25 +37,31 @@
             <dependency>
                 <groupId>at.irian.ankor</groupId>
                 <artifactId>ankor-fx</artifactId>
-                <version>${project.version}</version>
+                <version>${ankor.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>at.irian.ankor</groupId>
                 <artifactId>ankor-proxy</artifactId>
-                <version>${project.version}</version>
+                <version>${ankor.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>at.irian.ankor</groupId>
                 <artifactId>ankor-servlet</artifactId>
-                <version>${project.version}</version>
+                <version>${ankor.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>at.irian.ankor</groupId>
+                <artifactId>ankor-socket-connector</artifactId>
+                <version>${ankor.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>at.irian.ankor</groupId>
                 <artifactId>ankor-js</artifactId>
-                <version>${project.version}</version>
+                <version>${ankor.version}</version>
                 <type>war</type>
             </dependency>
 

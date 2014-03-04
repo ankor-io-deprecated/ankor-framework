@@ -1,6 +1,7 @@
 package at.irian.ankor.messaging;
 
 import at.irian.ankor.system.AnkorSystem;
+import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
 
 import java.lang.reflect.Constructor;
 
@@ -28,9 +29,9 @@ public class MessageMapperFactory<T> {
         }
 
         try {
-            Constructor<MessageMapper> constructor = type.getConstructor(AnkorSystem.class);
+            Constructor<MessageMapper> constructor = type.getConstructor(BeanMetadataProvider.class);
             try {
-                return constructor.newInstance(ankorSystem);
+                return constructor.newInstance(ankorSystem.getBeanMetadataProvider());
             } catch (Exception e) {
                 throw new IllegalStateException("Unable to create instance of type " + type, e);
             }

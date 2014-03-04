@@ -28,7 +28,7 @@
 
         <dependency>
             <groupId>at.irian.ankorsamples</groupId>
-            <artifactId>animals-server</artifactId>
+            <artifactId>animals-application</artifactId>
             <scope>compile</scope>
             <version>${project.version}</version>
         </dependency>

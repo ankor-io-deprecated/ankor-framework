@@ -3,16 +3,12 @@ package at.irian.ankor.servlet.websocket;
 import at.irian.ankor.akka.AnkorActorSystem;
 import at.irian.ankor.application.Application;
 import at.irian.ankor.application.SimpleSingleRootApplication;
-import at.irian.ankor.connection.ModelRootFactory;
 import at.irian.ankor.connection.RemoteSystem;
 import at.irian.ankor.delay.AkkaScheduler;
 import at.irian.ankor.event.dispatch.AkkaEventDispatcherFactory;
-import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.system.AnkorSystem;
 import at.irian.ankor.system.AnkorSystemBuilder;
-import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
 import at.irian.ankor.websocket.WebSocketMessageBus;
 import at.irian.ankor.websocket.WebSocketRemoteSystem;
 import org.slf4j.Logger;
@@ -27,7 +23,6 @@ import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -226,13 +221,13 @@ public abstract class AnkorEndpoint extends Endpoint implements ServerApplicatio
     /**
      * You can override this method in your implementation.
      *
-     * @return A {@link ModelRootFactory} the provides the root model of your application.
+     * @return an {@link Application} that provides the root model of your application.
      */
     protected Application getApplication() {
         return new SimpleSingleRootApplication(getName(), "root") {
             @Override
-            public Object createRoot(RefContext refContext) {
-                return getModelRoot(refContext.refFactory().ref("root"));
+            public Object createRoot(Ref rootRef) {
+                return getModelRoot(rootRef);
             }
         };
     }

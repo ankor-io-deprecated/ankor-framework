@@ -3,6 +3,7 @@ package at.irian.ankor.connection;
 /**
 * @author Manfred Geiler
 */
+@Deprecated
 public class SimpleRemoteSystem implements RemoteSystem {
 
     private final String id;

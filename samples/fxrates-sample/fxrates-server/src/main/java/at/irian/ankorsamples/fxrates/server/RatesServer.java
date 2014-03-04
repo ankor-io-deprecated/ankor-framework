@@ -1,7 +1,7 @@
 package at.irian.ankorsamples.fxrates.server;
 
 import at.irian.ankor.application.SimpleSingleRootApplication;
-import at.irian.ankor.ref.RefContext;
+import at.irian.ankor.ref.Ref;
 import at.irian.ankor.socket.SocketAnkorSystemStarter;
 import at.irian.ankor.socket.SocketMessageLoop;
 
@@ -16,8 +16,8 @@ public class RatesServer {
         SocketAnkorSystemStarter appBuilder = new SocketAnkorSystemStarter()
                 .withApplication(new SimpleSingleRootApplication("rates", "root") {
                     @Override
-                    public Object createRoot(RefContext refContext) {
-                        return new RatesViewModel(refContext.refFactory().ref("root"), new RatesRepository());
+                    public Object createRoot(Ref rootRef) {
+                        return new RatesViewModel(rootRef, new RatesRepository());
                     }
                 })
                 .withLocalHost(parseHost("server@localhost:8080"));

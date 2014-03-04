@@ -4,7 +4,6 @@ import at.irian.ankor.application.Application;
 import at.irian.ankor.application.SimpleSingleRootApplication;
 import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.servlet.polling.AnkorServletContextListener;
 import at.irian.ankorsamples.animals.domain.animal.AnimalRepository;
 import at.irian.ankorsamples.animals.viewmodel.ModelRoot;
@@ -42,8 +41,7 @@ public class AnimalsSampleServletContextListener extends AnkorServletContextList
     protected Application getApplication() {
         return new SimpleSingleRootApplication("Animals", "root") {
             @Override
-            public Object createRoot(RefContext refContext) {
-                Ref rootRef = refContext.refFactory().ref("root");
+            public Object createRoot(Ref rootRef) {
                 return new ModelRoot(rootRef, new AnimalRepository());
             }
         };

@@ -5,6 +5,7 @@ import at.irian.ankor.connection.SimpleRemoteSystem;
 /**
  * @author Manfred Geiler
  */
+@Deprecated
 public class ServerHost extends SimpleRemoteSystem {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ServerHost.class);
 

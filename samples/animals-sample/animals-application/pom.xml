@@ -2,28 +2,29 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>at.irian.ankor</groupId>
-        <artifactId>ankor-project</artifactId>
+        <groupId>at.irian.ankorsamples</groupId>
+        <artifactId>animals-sample</artifactId>
         <version>0.2-SNAPSHOT</version>
     </parent>
 
-    <artifactId>ankor-socket-connector</artifactId>
+    <artifactId>animals-application</artifactId>
     <packaging>jar</packaging>
-    <name>Ankor - Socket Connector</name>
+    <name>Animals Sample - Application</name>
+    <description>
+        Domain Logic, Application Layer and ViewModel for the "Animals" example.
+    </description>
 
     <dependencies>
 
         <dependency>
             <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-core</artifactId>
-            <version>${project.version}</version>
+            <artifactId>ankor-service</artifactId>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-json</artifactId>
-            <version>${project.version}</version>
+            <artifactId>ankor-proxy</artifactId>
             <scope>compile</scope>
         </dependency>
 
