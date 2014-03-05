@@ -19,7 +19,7 @@ public class SocketMessage {
      */
     protected SocketMessage() {}
 
-    public SocketMessage(String senderId, String property, Action action, Change change) {
+    private SocketMessage(String senderId, String property, Action action, Change change) {
         this.senderId = senderId;
         this.property = property;
         this.action = action;
@@ -41,4 +41,19 @@ public class SocketMessage {
     public Change getChange() {
         return change;
     }
+
+
+
+    public static SocketMessage createActionMsg(String senderAddress, String property, Action action) {
+        return new SocketMessage(senderAddress, property, action, null);
+    }
+
+    public static SocketMessage createChangeMsg(String senderAddress, String property, Change change) {
+        return new SocketMessage(senderAddress, property, null, change);
+    }
+
+    public static SocketMessage createConnectMsg(String senderAddress, String modelName) {
+        return new SocketMessage(senderAddress, modelName, null, null);
+    }
+
 }

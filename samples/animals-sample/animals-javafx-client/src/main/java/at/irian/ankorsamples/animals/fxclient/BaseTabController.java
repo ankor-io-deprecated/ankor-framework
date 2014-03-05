@@ -1,6 +1,7 @@
 package at.irian.ankorsamples.animals.fxclient;
 
 import at.irian.ankor.fx.binding.fxref.FxRef;
+import at.irian.ankor.fx.binding.fxref.FxRefs;
 import at.irian.ankor.pattern.AnkorPatterns;
 import javafx.application.Platform;
 import javafx.event.Event;
@@ -10,8 +11,6 @@ import javafx.fxml.Initializable;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-
-import static at.irian.ankorsamples.animals.fxclient.App.refFactory;
 
 /**
  * @author Thomas Spiegl
@@ -28,7 +27,7 @@ public abstract class BaseTabController implements Initializable {
     }
 
     public FxRef getTabRef() {
-        return refFactory().ref(String.format("root.contentPane.panels.%s", tabId));
+        return FxRefs.refFactory().ref(String.format("root.contentPane.panels.%s", tabId));
     }
 
     @Override
@@ -39,7 +38,7 @@ public abstract class BaseTabController implements Initializable {
         tab.setOnClosed(new EventHandler<Event>() {
             @Override
             public void handle(Event event) {
-                AnkorPatterns.deleteItemLater(refFactory().ref("root.contentPane.panels"), tabId);
+                AnkorPatterns.deleteItemLater(FxRefs.refFactory().ref("root.contentPane.panels"), tabId);
             }
         });
 

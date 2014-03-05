@@ -1,7 +1,7 @@
 package at.irian.ankor.util;
 
 import at.irian.ankor.change.Change;
-import at.irian.ankor.event.source.CustomSource;
+import at.irian.ankor.event.source.ModelSource;
 import at.irian.ankor.ref.MapRef;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.impl.RefImplementor;
@@ -63,7 +63,7 @@ public class RefMap<K,V> extends AbstractMap<K,V> {
             throw new IllegalArgumentException("unsupported key " + key);
         }
         V oldVal = getReferencedMap().get(key);
-        ((RefImplementor)mapRef.appendLiteralKey((String)key)).apply(new CustomSource(this),
+        ((RefImplementor)mapRef.appendLiteralKey((String)key)).apply(new ModelSource(mapRef, this),
                                                                      Change.valueChange(value));
         return oldVal;
     }
@@ -72,7 +72,7 @@ public class RefMap<K,V> extends AbstractMap<K,V> {
     @Override
     public V remove(Object key) {
         V oldVal = getReferencedMap().get(key);
-        ((RefImplementor)mapRef).apply(new CustomSource(this), Change.deleteChange(key));
+        ((RefImplementor)mapRef).apply(new ModelSource(mapRef, this), Change.deleteChange(key));
         return oldVal;
     }
 
@@ -127,7 +127,7 @@ public class RefMap<K,V> extends AbstractMap<K,V> {
                             throw new IllegalStateException();
                         }
                         iterator.remove();
-                        ((RefImplementor)mapRef).signal(new CustomSource(RefMap.this),
+                        ((RefImplementor)mapRef).signal(new ModelSource(mapRef, this),
                                                         Change.deleteChange(lastEntry.getKey()));
                     }
                 };

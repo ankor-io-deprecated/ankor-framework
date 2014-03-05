@@ -1,6 +1,5 @@
 package at.irian.ankor.event.source;
 
-import at.irian.ankor.event.source.Source;
 import at.irian.ankor.msg.party.Party;
 
 /**
@@ -13,12 +12,26 @@ public class PartySource implements Source {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(PartySource.class);
 
     private final Party party;
+    private final Object origination;
 
-    public PartySource(Party party) {
+    public PartySource(Party party, Object origination) {
         this.party = party;
+        this.origination = origination;
     }
 
     public Party getParty() {
         return party;
+    }
+
+    public Object getOrigination() {
+        return origination;
+    }
+
+    @Override
+    public String toString() {
+        return "PartySource{" +
+               "party=" + party +
+               ", origination=" + origination +
+               '}';
     }
 }

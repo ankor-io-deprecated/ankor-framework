@@ -10,11 +10,17 @@ import java.util.Map;
 public class ConnectMessage extends Message {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ConnectMessage.class);
 
+    private final String modelName;
     private final Map<String,Object> connectParameters;
 
-    public ConnectMessage(Party sender, Map<String, Object> connectParameters) {
+    public ConnectMessage(Party sender, String modelName, Map<String, Object> connectParameters) {
         super(sender);
+        this.modelName = modelName;
         this.connectParameters = connectParameters;
+    }
+
+    public String getModelName() {
+        return modelName;
     }
 
     public Map<String, Object> getConnectParameters() {

@@ -7,6 +7,8 @@ import java.util.Map;
  */
 public interface Application {
 
+    static final String APPLICATION_INSTANCE_ID_PARAM = Application.class.getName() + ".INSTANCE_ID";
+
     /**
      * @return the name of this application
      */

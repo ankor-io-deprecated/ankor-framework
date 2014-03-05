@@ -3,7 +3,7 @@ package at.irian.ankor.fx.binding.value;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.change.ChangeEventListener;
-import at.irian.ankor.event.source.CustomSource;
+import at.irian.ankor.event.source.ModelSource;
 import at.irian.ankor.ref.Ref;
 
 /**
@@ -24,8 +24,8 @@ abstract class ObservableChangeEventListener extends ChangeEventListener {
     public void process(ChangeEvent event) {
 
         // first, let us determine the origination of this event...
-        if (event.getSource() instanceof CustomSource) {
-            if (((CustomSource) event.getSource()).getCustomSourceObject() == observable) {
+        if (event.getSource() instanceof ModelSource) {
+            if (((ModelSource) event.getSource()).getOrigination() == observable) {
                 // ignore this change event because it originates from this Observable itself
                 return;
             }

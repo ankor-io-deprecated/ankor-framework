@@ -22,11 +22,11 @@ public class LocalModelSessionConnector implements Connector {
         messageBus = system.getMessageBus();
         messageListeners = new ArrayList<MessageListener>();
         messageListeners.add(new LocalModelSessionConnectMessageListener(system.getModelSessionManager(),
-                                                                  system.getSwitchingCenter(),
-                                                                  system.getApplication()));
+                                                                  system.getRoutingTable(),
+                                                                  system.getApplication(), messageBus));
         messageListeners.add(new LocalModelSessionEventMessageListener(system.getModelSessionManager(),
-                                                                system.getSwitchingCenter(),
-                                                                system.getModifier()));
+                                                                system.getRoutingTable(),
+                                                                system.getModifier(), messageBus));
         messageListeners.add(new LocalModelSessionCloseMessageListener(system.getModelSessionManager()));
     }
 

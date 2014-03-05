@@ -3,10 +3,10 @@ package at.irian.ankor.system;
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionEvent;
 import at.irian.ankor.action.ActionEventListener;
+import at.irian.ankor.connector.local.LocalModelSessionParty;
 import at.irian.ankor.messaging.modify.Modifier;
 import at.irian.ankor.msg.ActionEventMessage;
 import at.irian.ankor.msg.MessageBus;
-import at.irian.ankor.connector.local.LocalModelSessionParty;
 import at.irian.ankor.msg.party.Party;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.session.ModelSession;
@@ -37,11 +37,14 @@ public class RemoteNotifyActionEventListener extends ActionEventListener {
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public void process(ActionEvent event) {
-        Action action = event.getAction();
-        Ref actionProperty = event.getActionProperty();
-        Action modifiedAction = preSendModifier.modifyBeforeSend(action, actionProperty);
-        ModelSession modelSession = actionProperty.context().modelSession();
-        Party sender = new LocalModelSessionParty(modelSession.getId());
-        messageBus.broadcast(new ActionEventMessage(sender, actionProperty.path(), modifiedAction));
+        if (event.isLocalEvent()) {
+            Action action = event.getAction();
+            Ref actionProperty = event.getActionProperty();
+            Action modifiedAction = preSendModifier.modifyBeforeSend(action, actionProperty);
+            ModelSession modelSession = actionProperty.context().modelSession();
+            Party sender = new LocalModelSessionParty(modelSession.getId(), actionProperty.root().propertyName());
+            messageBus.broadcast(new ActionEventMessage(sender, event.getSource(), actionProperty.path(), modifiedAction));
+        }
     }
+
 }

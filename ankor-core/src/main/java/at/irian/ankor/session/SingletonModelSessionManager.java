@@ -18,6 +18,9 @@ public class SingletonModelSessionManager implements ModelSessionManager {
 
     @Override
     public ModelSession getOrCreate(ApplicationInstance applicationInstance) {
+
+        // todo  do we need this, or could we just throw an UnsupportedOperationEx ?
+
         if (applicationInstance != null) {
             if (this.applicationInstance != null) {
                 if (!this.applicationInstance.equals(applicationInstance)) {

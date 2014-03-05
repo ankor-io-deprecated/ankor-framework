@@ -37,12 +37,14 @@ public class RemoteNotifyChangeEventListener extends ChangeEventListener {
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public void process(ChangeEvent event) {
-        Change change = event.getChange();
-        Ref changedProperty = event.getChangedProperty();
-        Change modifiedChange = preSendModifier.modifyBeforeSend(change, changedProperty);
-        ModelSession modelSession = changedProperty.context().modelSession();
-        Party sender = new LocalModelSessionParty(modelSession.getId());
-        messageBus.broadcast(new ChangeEventMessage(sender, changedProperty.path(), modifiedChange));
+        if (event.isLocalEvent()) {
+            Change change = event.getChange();
+            Ref changedProperty = event.getChangedProperty();
+            Change modifiedChange = preSendModifier.modifyBeforeSend(change, changedProperty);
+            ModelSession modelSession = changedProperty.context().modelSession();
+            Party sender = new LocalModelSessionParty(modelSession.getId(), changedProperty.root().propertyName());
+            messageBus.broadcast(new ChangeEventMessage(sender, event.getSource(), changedProperty.path(), modifiedChange));
+        }
     }
 
 }

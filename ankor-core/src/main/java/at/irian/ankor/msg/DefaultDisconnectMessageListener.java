@@ -11,11 +11,11 @@ import java.util.Collection;
 public class DefaultDisconnectMessageListener implements DisconnectMessage.Listener {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(DefaultDisconnectMessageListener.class);
 
-    private final SwitchingCenter switchingCenter;
+    private final RoutingTable routingTable;
     private final MessageBus messageBus;
 
-    public DefaultDisconnectMessageListener(SwitchingCenter switchingCenter, MessageBus messageBus) {
-        this.switchingCenter = switchingCenter;
+    public DefaultDisconnectMessageListener(RoutingTable routingTable, MessageBus messageBus) {
+        this.routingTable = routingTable;
         this.messageBus = messageBus;
     }
 
@@ -24,12 +24,12 @@ public class DefaultDisconnectMessageListener implements DisconnectMessage.Liste
         Party sender = msg.getSender();
         LOG.info("Disconnect message received from {}", sender);
 
-        Collection<Party> receivers = switchingCenter.getConnectedParties(msg.getSender());
+        Collection<Party> receivers = routingTable.getConnectedParties(msg.getSender());
 
-        switchingCenter.disconnectAll(msg.getSender());
+        routingTable.disconnectAll(msg.getSender());
 
         for (Party receiver : receivers) {
-            if (!switchingCenter.hasConnectedParties(receiver)) {
+            if (!routingTable.hasConnectedParties(receiver)) {
                 messageBus.broadcast(new CloseMessage(SystemParty.getInstance(), receiver));
             }
         }

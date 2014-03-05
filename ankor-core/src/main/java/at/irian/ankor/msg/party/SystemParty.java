@@ -15,7 +15,22 @@ public final class SystemParty implements Party {
     private SystemParty() {}
 
     @Override
+    public String getModelName() {
+        return null;
+    }
+
+    @Override
     public boolean equals(Object obj) {
         return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "SystemParty";
     }
 }

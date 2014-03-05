@@ -3,6 +3,7 @@ package at.irian.ankor.ref.el;
 import at.irian.ankor.el.ELUtils;
 import at.irian.ankor.event.dispatch.DispatchThreadChecker;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.ref.impl.InvalidRefException;
 import at.irian.ankor.ref.impl.RefBase;
 
 import javax.el.PropertyNotFoundException;
@@ -27,14 +28,25 @@ public class ELRef extends RefBase {
         // check if we are correctly running in an event dispatcher thread
         new DispatchThreadChecker(context().modelSession()).check();
 
-        ve.setValue(elRefContext().createELContext(), newValue);
+        try {
+            ve.setValue(elRefContext().createELContext(), newValue);
+        } catch (PropertyNotFoundException e) {
+            if (isRoot()) {
+                LOG.debug("Root property with name '{}' not found - setting model root in application instance", propertyName());
+                context().modelSession().getApplicationInstance().setModelRoot(propertyName(), newValue);
+            } else {
+                throw e;
+            }
+        }
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    protected <T> T internalGetValue() {
+    protected <T> T internalGetValue() throws InvalidRefException {
         try {
             return (T)ve.getValue(elRefContext().createELContext());
+        } catch (PropertyNotFoundException e) {
+            throw new InvalidRefException(this);
         } catch (IllegalStateException e) {
             LOG.warn("unable to get value of " + this, e);
             return null;
@@ -43,7 +55,11 @@ public class ELRef extends RefBase {
 
     @Override
     public Class<?> getType() {
-        return ve.getType(elRefContext().createELContext());
+        try {
+            return ve.getType(elRefContext().createELContext());
+        } catch (PropertyNotFoundException e) {
+            return null;
+        }
     }
 
     @Override

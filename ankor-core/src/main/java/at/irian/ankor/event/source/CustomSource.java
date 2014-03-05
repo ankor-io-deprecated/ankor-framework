@@ -6,13 +6,20 @@ package at.irian.ankor.event.source;
 public class CustomSource implements Source {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(CustomSource.class);
 
-    private final Object customSourceObject;
+    private final Object origination;
 
-    public CustomSource(Object customSourceObject) {
-        this.customSourceObject = customSourceObject;
+    public CustomSource(Object origination) {
+        this.origination = origination;
     }
 
-    public Object getCustomSourceObject() {
-        return customSourceObject;
+    public Object getOrigination() {
+        return origination;
+    }
+
+    @Override
+    public String toString() {
+        return "CustomSource{" +
+               "origination=" + origination +
+               '}';
     }
 }

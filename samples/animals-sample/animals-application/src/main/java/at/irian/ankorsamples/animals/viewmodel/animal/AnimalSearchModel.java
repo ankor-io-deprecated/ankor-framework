@@ -143,9 +143,12 @@ public class AnimalSearchModel {
 
     @ActionListener(name = "delete")
     public void delete(@Param("uuid") String uuid) {
-        animalRepository.deleteAnimal(uuid);
-        reloadAnimalsImmediately();
-        serverStatusRef.setValue("Animal deleted");
+        Animal animal = animalRepository.findAnimal(uuid);
+        if (animal != null) {
+            animalRepository.deleteAnimal(uuid);
+            reloadAnimalsImmediately();
+            serverStatusRef.setValue("Animal " + animal.getName() + " deleted");
+        }
     }
 
     public static class EmptyAnimal extends Animal {

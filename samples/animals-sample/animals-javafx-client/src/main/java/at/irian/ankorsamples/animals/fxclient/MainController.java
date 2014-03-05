@@ -21,8 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import static at.irian.ankorsamples.animals.fxclient.App.refFactory;
-
 /**
  * @author Thomas Spiegl
  */
@@ -39,14 +37,14 @@ public class MainController implements Initializable {
     private HBox localesBox;
 
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        Ref rootRef = refFactory().ref("root");
+        Ref rootRef = FxRefs.refFactory().ref("root");
         FXControllerSupport.init(this, rootRef);
         rootRef.fire(new Action("init"));
     }
 
     @ChangeListener(pattern = "root")
     public void modelRootChanged() {
-        final FxRef rootRef = refFactory().ref("root");
+        final FxRef rootRef = FxRefs.refFactory().ref("root");
 
 //        label_Animal.setProperty(rootRef.appendPath("labels").appendLiteralKey("Animal").fxProperty());
 
@@ -100,10 +98,10 @@ public class MainController implements Initializable {
     }
 
     public void openAnimalSearchTab(@SuppressWarnings("UnusedParameters") ActionEvent actionEvent) {
-        refFactory().ref("root.contentPane").fire(new Action(TabType.animalSearch.getActionName()));
+        FxRefs.refFactory().ref("root.contentPane").fire(new Action(TabType.animalSearch.getActionName()));
     }
 
     public void openAnimalDetailTab(@SuppressWarnings("UnusedParameters") ActionEvent actionEvent) {
-        refFactory().ref("root.contentPane").fire(new Action(TabType.animalDetail.getActionName()));
+        FxRefs.refFactory().ref("root.contentPane").fire(new Action(TabType.animalDetail.getActionName()));
     }
 }

@@ -9,13 +9,18 @@ import java.util.Set;
  */
 public interface ApplicationInstance {
 
+    /**
+     * Initialize this ApplicationInstance.
+     * Called when a new ModelSession was created and bound to this ApplicationInstance.
+     * @param refContext the RefContext that is related to the newly created ModelSession
+     */
     void init(RefContext refContext);
 
     Set<String> getKnownRootNames();
 
-    Object getModelRoot(String rootVarName);
+    Object getModelRoot(String modelName);
 
-    void setModelRoot(String rootVarName, Object bean);
+    void setModelRoot(String modelName, Object bean);
 
     void release();
 

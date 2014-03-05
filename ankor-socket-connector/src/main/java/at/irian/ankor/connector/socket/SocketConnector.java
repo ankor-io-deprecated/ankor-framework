@@ -5,8 +5,10 @@ import at.irian.ankor.messaging.MessageMapper;
 import at.irian.ankor.messaging.MessageMapperFactory;
 import at.irian.ankor.msg.MessageBus;
 import at.irian.ankor.msg.MessageListener;
+import at.irian.ankor.path.el.SimpleELPathSyntax;
 import at.irian.ankor.system.AnkorSystem;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,8 +17,6 @@ import java.util.List;
  */
 public class SocketConnector implements Connector {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SocketConnector.class);
-
-    public static final String MESSAGE_MAPPER_ATTR = SocketConnector.class.getName() + "MESSAGE_MAPPER";
 
     private boolean enabled;
     private SocketListener socketListener;
@@ -31,19 +31,21 @@ public class SocketConnector implements Connector {
             return;
         }
 
-        int localPort = system.getConfig().getInt("at.irian.ankor.connector.socket.SocketConnector.localPort");
+        URI localAddress = URI.create(system.getConfig().getString("at.irian.ankor.connector.socket.SocketConnector.localAddress"));
 
         MessageMapper<String> messageMapper = new MessageMapperFactory<String>(system).createMessageMapper();
 
         this.messageBus = system.getMessageBus();
 
         this.socketListener = new SocketListener(system.getSystemName(),
-                                                 localPort,
+                                                 localAddress,
                                                  messageMapper,
-                                                 system.getMessageBus());
+                                                 system.getMessageBus(),
+                                                 SimpleELPathSyntax.getInstance());
 
         this.messageListeners = new ArrayList<MessageListener>();
-        this.messageListeners.add(new SocketEventMessageListener(system.getSwitchingCenter(), messageMapper));
+        this.messageListeners.add(new SocketEventMessageListener(system.getRoutingTable(), messageMapper, localAddress));
+        this.messageListeners.add(new SocketConnectMessageListener(system.getRoutingTable(), messageMapper, localAddress));
         this.messageListeners.add(new SocketCloseMessageListener(socketListener));
     }
 
@@ -59,7 +61,7 @@ public class SocketConnector implements Connector {
         for (MessageListener listener : messageListeners) {
             messageBus.registerMessageListener(listener);
         }
-        LOG.debug("SocketConnector was started");
+        LOG.debug("SocketConnector successfully started");
     }
 
     @Override

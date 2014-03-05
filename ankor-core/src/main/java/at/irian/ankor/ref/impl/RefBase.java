@@ -9,7 +9,7 @@ import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.change.ChangeType;
 import at.irian.ankor.event.ModelEvent;
 import at.irian.ankor.event.dispatch.BufferingEventDispatcher;
-import at.irian.ankor.event.source.ModelSessionSource;
+import at.irian.ankor.event.source.ModelSource;
 import at.irian.ankor.event.source.Source;
 import at.irian.ankor.path.PathSyntax;
 import at.irian.ankor.ref.*;
@@ -32,28 +32,32 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
 
     @Override
     public void setValue(final Object newValue) {
-        apply(new ModelSessionSource(context().modelSession()), Change.valueChange(newValue));
+        apply(getModelSource(), Change.valueChange(newValue));
+    }
+
+    private ModelSource getModelSource() {
+        return new ModelSource(this, this);
     }
 
     @Override
     public void delete(String key) {
-        apply(new ModelSessionSource(context().modelSession()), Change.deleteChange(key));
+        apply(getModelSource(), Change.deleteChange(key));
     }
 
     @Override
     public void delete(int idx) {
-        apply(new ModelSessionSource(context().modelSession()), Change.deleteChange(idx));
+        apply(getModelSource(), Change.deleteChange(idx));
     }
 
     @Override
     public void delete() {
-        ((RefImplementor)parent()).apply(new ModelSessionSource(context().modelSession()),
+        ((RefImplementor)parent()).apply(getModelSource(),
                                          Change.deleteChange(propertyName()));
     }
 
     @Override
     public void insert(int idx, Object value) {
-        apply(new ModelSessionSource(context().modelSession()), Change.insertChange(idx, value));
+        apply(getModelSource(), Change.insertChange(idx, value));
     }
 
     @Override
@@ -73,12 +77,12 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
             throw new IllegalArgumentException("collection or array of type " + collOrArray.getClass());
         }
 
-        apply(new ModelSessionSource(context().modelSession()), Change.insertChange(size, value));
+        apply(getModelSource(), Change.insertChange(size, value));
     }
 
     @Override
     public void replace(int fromIdx, Collection elements) {
-        apply(new ModelSessionSource(context().modelSession()), Change.replaceChange(fromIdx, elements));
+        apply(getModelSource(), Change.replaceChange(fromIdx, elements));
     }
 
     @Override
@@ -148,7 +152,7 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
     private void handleValueChange(Object newValue) {
         if (isValid()) {
             Class<?> type = getType();
-            if (Wrapper.class.isAssignableFrom(type)) {
+            if (type != null && Wrapper.class.isAssignableFrom(type)) {
                 Object newValueUnwrapped = unwrapIfNecessary(newValue);
                 internalSetWrapperValue(type, newValue, newValueUnwrapped);
             } else {
@@ -360,7 +364,7 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
 
     @Override
     public void signalValueChange() {
-        signal(new ModelSessionSource(context().modelSession()), Change.valueChange(getValue()));
+        signal(getModelSource(), Change.valueChange(getValue()));
     }
 
     @Override
@@ -477,7 +481,7 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
 
     @Override
     public void fire(Action action) {
-        fire(new ModelSessionSource(context().modelSession()), action);
+        fire(getModelSource(), action);
     }
 
     @Override

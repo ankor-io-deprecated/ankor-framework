@@ -36,6 +36,9 @@ public class DefaultModelSessionManager implements ModelSessionManager {
                     modelSession = modelSessionFactory.createModelSession(applicationInstance);
                     appInstanceMap.put(applicationInstance, modelSession);
                     modelSessionIdMap.put(modelSession.getId(), modelSession);
+
+                    // initialize the application instance for the newly created session
+                    applicationInstance.init(modelSession.getRefContext());
                 }
             } finally {
                 lock.unlock();

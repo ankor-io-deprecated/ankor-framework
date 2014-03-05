@@ -4,6 +4,7 @@ import at.irian.ankor.annotation.AnnotationBeanMetadataProvider;
 import at.irian.ankor.application.Application;
 import at.irian.ankor.application.ApplicationInstance;
 import at.irian.ankor.application.SimpleApplicationInstance;
+import at.irian.ankor.application.SingletonInstanceApplication;
 import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.big.modify.ClientSideBigDataModifier;
 import at.irian.ankor.big.modify.ServerSideBigDataModifier;
@@ -56,7 +57,7 @@ public class AnkorSystemBuilder {
     private RefContextFactoryProvider refContextFactoryProvider;
     private BeanMetadataProvider beanMetadataProvider;
     private BeanFactory beanFactory;
-    private boolean socketConnector;
+    private RoutingTable routingTable;
 
     public AnkorSystemBuilder() {
         this.systemName = null;
@@ -68,6 +69,7 @@ public class AnkorSystemBuilder {
         this.beanMetadataProvider = null;
         this.beanFactory = null;
         this.configValues = new HashMap<String, Object>();
+        this.routingTable = null;
     }
 
     public AnkorSystemBuilder withName(String name) {
@@ -116,12 +118,15 @@ public class AnkorSystemBuilder {
         return this;
     }
 
-
     public AnkorSystemBuilder withBeanFactory(BeanFactory beanFactory) {
         this.beanFactory = beanFactory;
         return this;
     }
 
+    public AnkorSystemBuilder withRoutingTable(RoutingTable routingTable) {
+        this.routingTable = routingTable;
+        return this;
+    }
 
     public AnkorSystem createServer() {
 
@@ -152,9 +157,9 @@ public class AnkorSystemBuilder {
 
         ModelSessionManager modelSessionManager = new DefaultModelSessionManager(modelSessionFactory);
 
-        SwitchingCenter switchingCenter = new SwitchingCenter();
+        RoutingTable routingTable = getRoutingTable();
 
-        List<MessageListener> defaultMessageListeners = createDefaultMessageListeners(switchingCenter, messageBus);
+        List<MessageListener> defaultMessageListeners = createDefaultMessageListeners(routingTable, messageBus);
 
         if (!configValues.containsKey(MESSAGE_MAPPER_CONFIG_KEY)) {
             configValues.put(MESSAGE_MAPPER_CONFIG_KEY, ViewModelJsonMessageMapper.class.getName());
@@ -165,7 +170,7 @@ public class AnkorSystemBuilder {
                                messageBus,
                                refContextFactory,
                                modelSessionManager,
-                               switchingCenter,
+                               routingTable,
                                modifier,
                                defaultMessageListeners,
                                beanMetadataProvider);
@@ -180,7 +185,7 @@ public class AnkorSystemBuilder {
         MessageBus messageBus = createMessageBus();
 
         Application application = getClientApplication();
-        ApplicationInstance singletonApplicationInstance = application.getApplicationInstance(null);
+        ApplicationInstance applicationInstance = new SimpleApplicationInstance();
 
         BeanMetadataProvider beanMetadataProvider = getBeanMetadataProvider();
         BeanFactory beanFactory = getBeanFactory();
@@ -200,14 +205,14 @@ public class AnkorSystemBuilder {
         ModelSessionFactory modelSessionFactory = getModelSessionFactory(getEventDispatcherFactory(),
                                                                          defaultEventListeners, refContextFactory);
 
-        ModelSession modelSession = modelSessionFactory.createModelSession(singletonApplicationInstance);
+        ModelSession modelSession = modelSessionFactory.createModelSession(applicationInstance);
 
-        ModelSessionManager modelSessionManager = new SingletonModelSessionManager(singletonApplicationInstance,
+        ModelSessionManager modelSessionManager = new SingletonModelSessionManager(applicationInstance,
                                                                                    modelSession);
 
-        SwitchingCenter switchingCenter = new SwitchingCenter();
+        RoutingTable routingTable = getRoutingTable();
 
-        List<MessageListener> defaultMessageListeners = createDefaultMessageListeners(switchingCenter, messageBus);
+        List<MessageListener> defaultMessageListeners = createDefaultMessageListeners(routingTable, messageBus);
 
         if (!configValues.containsKey(MESSAGE_MAPPER_CONFIG_KEY)) {
             configValues.put(MESSAGE_MAPPER_CONFIG_KEY, SimpleTreeJsonMessageMapper.class.getName());
@@ -218,15 +223,22 @@ public class AnkorSystemBuilder {
                                messageBus,
                                refContextFactory,
                                modelSessionManager,
-                               switchingCenter,
+                               routingTable,
                                modifier,
                                defaultMessageListeners,
                                beanMetadataProvider);
     }
 
-    private List<MessageListener> createDefaultMessageListeners(SwitchingCenter switchingCenter, MessageBus messageBus) {
+    private RoutingTable getRoutingTable() {
+        if (routingTable == null) {
+            routingTable = new DefaultRoutingTable();
+        }
+        return routingTable;
+    }
+
+    private List<MessageListener> createDefaultMessageListeners(RoutingTable routingTable, MessageBus messageBus) {
         List<MessageListener> messageListeners = new ArrayList<MessageListener>();
-        messageListeners.add(new DefaultDisconnectMessageListener(switchingCenter, messageBus));
+        messageListeners.add(new DefaultDisconnectMessageListener(routingTable, messageBus));
         return messageListeners;
     }
 
@@ -296,20 +308,7 @@ public class AnkorSystemBuilder {
 
     private Application getClientApplication() {
         if (application == null) {
-            final ApplicationInstance singleton = new SimpleApplicationInstance();
-            application = new Application() {
-
-                @Override
-                public String getName() {
-                    return getClientSystemName();
-                }
-
-                @Override
-                public ApplicationInstance getApplicationInstance(Map<String, Object> connectParameters) {
-                    return singleton;
-                }
-
-            };
+            application = new SingletonInstanceApplication(getClientSystemName());
         }
         return application;
     }

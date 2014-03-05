@@ -7,6 +7,7 @@ package at.irian.ankor.base;
  *
  * @author Manfred Geiler
  */
+@Deprecated  // todo  still needed?
 public interface Wrapper<T> {
     T getWrappedValue();
     void putWrappedValue(T val);

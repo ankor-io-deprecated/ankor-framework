@@ -2,8 +2,12 @@ package at.irian.ankor.connector.local;
 
 import at.irian.ankor.application.Application;
 import at.irian.ankor.application.ApplicationInstance;
+import at.irian.ankor.change.Change;
+import at.irian.ankor.event.source.ModelSource;
+import at.irian.ankor.msg.ChangeEventMessage;
 import at.irian.ankor.msg.ConnectMessage;
-import at.irian.ankor.msg.SwitchingCenter;
+import at.irian.ankor.msg.MessageBus;
+import at.irian.ankor.msg.RoutingTable;
 import at.irian.ankor.msg.party.Party;
 import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.session.ModelSessionManager;
@@ -17,15 +21,18 @@ class LocalModelSessionConnectMessageListener implements ConnectMessage.Listener
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(LocalModelSessionConnectMessageListener.class);
 
     private final ModelSessionManager modelSessionManager;
-    private final SwitchingCenter switchingCenter;
+    private final RoutingTable routingTable;
     private final Application application;
+    private final MessageBus messageBus;
 
     public LocalModelSessionConnectMessageListener(ModelSessionManager modelSessionManager,
-                                                   SwitchingCenter switchingCenter,
-                                                   Application application) {
+                                                   RoutingTable routingTable,
+                                                   Application application,
+                                                   MessageBus messageBus) {
         this.modelSessionManager = modelSessionManager;
-        this.switchingCenter = switchingCenter;
+        this.routingTable = routingTable;
         this.application = application;
+        this.messageBus = messageBus;
     }
 
     @Override
@@ -38,29 +45,34 @@ class LocalModelSessionConnectMessageListener implements ConnectMessage.Listener
 
         ApplicationInstance applicationInstance = application.getApplicationInstance(connectParameters);
         if (applicationInstance == null) {
-            LOG.warn("Application {} returned a null instance for connect parameters {}", application.getName(),
-                     connectParameters);
+            LOG.info(
+                    "Application '{}' did not accept connect parameters {} and returned a null instance - connection denied",
+                    application.getName(),
+                    connectParameters);
             return;
         }
 
+        String modelName = msg.getModelName();
+
         ModelSession modelSession = modelSessionManager.getOrCreate(applicationInstance);
 
-        Party receiver = new LocalModelSessionParty(modelSession.getId());
+        Party receiver = new LocalModelSessionParty(modelSession.getId(), modelName);
 
         if (receiver.equals(sender)) {
             throw new IllegalArgumentException("ModelSession must not connect to itself: " + modelSession);
         }
 
-        if (switchingCenter.isConnected(sender, receiver)) {
+        if (routingTable.isConnected(sender, receiver)) {
             LOG.warn("Already connected: {} and {}", sender, receiver);
         } else {
             LOG.debug("Connecting {} and {}", sender, receiver);
-            switchingCenter.connect(sender, receiver);
+            routingTable.connect(sender, receiver);
         }
 
-
-        // todo  broadcast  "connected ok" message
-        // todo  initiate "root change event"
-
+        // send an inital change event to the remote party
+        messageBus.broadcast(new ChangeEventMessage(receiver,
+                                                    new ModelSource(modelSession, modelName, this),
+                                                    modelName,
+                                                    Change.valueChange(applicationInstance.getModelRoot(modelName))));
     }
 }

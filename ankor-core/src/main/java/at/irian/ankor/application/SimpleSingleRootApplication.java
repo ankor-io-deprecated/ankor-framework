@@ -15,15 +15,15 @@ public abstract class SimpleSingleRootApplication extends BaseApplication {
 
     private static final String DEFAULT_ROOT_VAR_NAME = "root";
 
-    private final String rootVarName;
+    private final String modelName;
 
     public SimpleSingleRootApplication(String applicationName) {
         this(applicationName, DEFAULT_ROOT_VAR_NAME);
     }
 
-    public SimpleSingleRootApplication(String applicationName, String rootVarName) {
+    public SimpleSingleRootApplication(String applicationName, String modelName) {
         super(applicationName);
-        this.rootVarName = rootVarName;
+        this.modelName = modelName;
     }
 
     public abstract Object createRoot(Ref rootRef);
@@ -32,17 +32,19 @@ public abstract class SimpleSingleRootApplication extends BaseApplication {
     public ApplicationInstance getApplicationInstance(Map<String, Object> connectParameters) {
         return new ApplicationInstance() {
 
+            private RefContext refContext;
             private Object root;
 
             @Override
             public void init(RefContext refContext) {
-                Ref rootRef = refContext.refFactory().ref(rootVarName);
+                this.refContext = refContext;
+                Ref rootRef = refContext.refFactory().ref(modelName);
                 this.root = createRoot(rootRef);
             }
 
             @Override
             public Set<String> getKnownRootNames() {
-                return Collections.singleton(rootVarName);
+                return Collections.singleton(modelName);
             }
 
             @Override
@@ -52,7 +54,7 @@ public abstract class SimpleSingleRootApplication extends BaseApplication {
 
             @Override
             public void setModelRoot(String rootVarName, Object bean) {
-                throw new UnsupportedOperationException("ApplicationInstance does not support custom root beans");
+                throw new UnsupportedOperationException("SimpleSingleRootApplication does not support custom root beans");
             }
 
             @Override

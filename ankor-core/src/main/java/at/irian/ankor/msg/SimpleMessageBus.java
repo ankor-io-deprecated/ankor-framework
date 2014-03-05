@@ -43,6 +43,8 @@ public class SimpleMessageBus implements MessageBus {
             throw new IllegalStateException("MessageBus was stopped or is not yet started");
         }
 
+        LOG.debug("Broadcasting message {}", message);
+
         boolean handled = false;
         for (MessageListener messageListener : messageListeners) {
             if (message.isAppropriateListener(messageListener)) {

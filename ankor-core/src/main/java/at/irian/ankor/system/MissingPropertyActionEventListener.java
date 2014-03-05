@@ -5,8 +5,7 @@ import at.irian.ankor.action.ActionEvent;
 import at.irian.ankor.action.ActionEventListener;
 import at.irian.ankor.big.BigListMetadata;
 import at.irian.ankor.change.Change;
-import at.irian.ankor.event.source.ModelSessionSource;
-import at.irian.ankor.event.source.PartySource;
+import at.irian.ankor.event.source.ModelSource;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.impl.RefImplementor;
 import at.irian.ankor.viewmodel.metadata.MetadataUtils;
@@ -38,7 +37,7 @@ public class MissingPropertyActionEventListener extends ActionEventListener {
     @Override
     public void process(ActionEvent event) {
         Action action = event.getAction();
-        if (event.getSource() instanceof PartySource && MISSING_PROPERTY_ACTION_NAME.equals(action.getName())) {
+        if (!event.isLocalEvent() && MISSING_PROPERTY_ACTION_NAME.equals(action.getName())) {
             Ref missingProperty = event.getActionProperty();
             LOG.debug("handling missing property request for {}", missingProperty);
 
@@ -56,8 +55,7 @@ public class MissingPropertyActionEventListener extends ActionEventListener {
                         if (fromIndex <= toIndex) {
                             List subList = list.subList(fromIndex, toIndex);
                             Change change = Change.replaceChange(fromIndex, subList);
-                            ((RefImplementor)maybeCollRef).signal(new ModelSessionSource(missingProperty.context().modelSession()),
-                                                                  change);
+                            ((RefImplementor)maybeCollRef).signal(new ModelSource(missingProperty, this), change);
                         }
                         return;
                     }

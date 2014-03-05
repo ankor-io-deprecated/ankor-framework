@@ -11,6 +11,7 @@
 
     <logger name="at.irian.ankor.messaging" level="DEBUG" />
     <logger name="at.irian.ankor.servlet" level="DEBUG" />
+    <logger name="at.irian.ankor.connector" level="DEBUG" />
     <!--<logger name="at.irian.ankor.akka" level="DEBUG" />-->
 
     <root level="INFO">

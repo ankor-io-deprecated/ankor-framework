@@ -3,6 +3,7 @@ package at.irian.ankorsamples.animals.fxclient.animal;
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionBuilder;
 import at.irian.ankor.fx.binding.fxref.FxRef;
+import at.irian.ankor.fx.binding.fxref.FxRefs;
 import at.irian.ankor.fx.controller.FXControllerSupport;
 import at.irian.ankor.fx.controller.I18nSupport;
 import at.irian.ankor.pattern.AnkorPatterns;
@@ -18,8 +19,6 @@ import javafx.scene.layout.HBox;
 import javafx.util.Callback;
 
 import java.util.Map;
-
-import static at.irian.ankorsamples.animals.fxclient.App.refFactory;
 
 /**
  * @author Thomas Spiegl
@@ -112,7 +111,7 @@ public class AnimalSearchTabController extends BaseTabController {
 
     private void createCellButtons(TableCell<Map, String> cell, final String uuid) {
 
-        I18nSupport i18nSupport = new I18nSupport(refFactory().ref("root.resources"));
+        I18nSupport i18nSupport = new I18nSupport(FxRefs.refFactory().ref("root.resources"));
 
         Button deleteButton = new Button("%Delete");
         i18nSupport.bindTextProperty(deleteButton);

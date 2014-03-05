@@ -36,6 +36,7 @@ import static java.util.regex.Matcher.quoteReplacement;
 /**
  * @author Thomas Spiegl
  */
+@Deprecated
 public class App extends javafx.application.Application {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(App.class);
 
@@ -262,6 +263,7 @@ public class App extends javafx.application.Application {
 
     }
 
+    @Deprecated
     public static FxRefFactory refFactory() {
         return refFactory;
     }

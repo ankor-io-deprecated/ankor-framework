@@ -6,7 +6,7 @@ import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.change.ChangeEventListener;
 import at.irian.ankor.converter.BidirectionalConverter;
 import at.irian.ankor.converter.Converter;
-import at.irian.ankor.event.source.CustomSource;
+import at.irian.ankor.event.source.ModelSource;
 import at.irian.ankor.fx.binding.convert.ConvertedObservableValue;
 import at.irian.ankor.fx.binding.convert.ConvertedProperty;
 import at.irian.ankor.fx.binding.property.RefProperty;
@@ -28,9 +28,27 @@ import javafx.scene.control.ToggleGroup;
  */
 @SuppressWarnings("UnusedDeclaration")
 public final class FxRefs {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(FxRefs.class);
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(FxRefs.class);
+
+    private static FxRefContext S_refContext = null;
 
     private FxRefs() {}
+
+    public static void setStaticRefContext(FxRefContext refContext) {
+        if (S_refContext != null) {
+            LOG.warn("Static RefContext already set");
+        }
+        S_refContext = refContext;
+    }
+
+
+    public static FxRefContext refContext() {
+        return S_refContext;
+    }
+
+    public static FxRefFactory refFactory() {
+        return S_refContext.refFactory();
+    }
 
     public static <T> ObservableValue<T> observable(Ref ref)  {
         return ObservableRef.createObservableValue(ref);
@@ -89,7 +107,7 @@ public final class FxRefs {
                     AnkorPatterns.runLater(ref, new Runnable() {
                         @Override
                         public void run() {
-                            ((RefImplementor) ref).apply(new CustomSource(circuitBreaker),
+                            ((RefImplementor) ref).apply(new ModelSource(ref, circuitBreaker),
                                                          Change.valueChange(newToggle.getUserData()));
                         }
                     });
@@ -100,8 +118,8 @@ public final class FxRefs {
             @Override
             public void process(ChangeEvent event) {
                 if (event.getChangedProperty().equals(getWatchedProperty())) {
-                    if (event.getSource() instanceof CustomSource
-                        && ((CustomSource)event.getSource()).getCustomSourceObject() == circuitBreaker) {
+                    if (event.getSource() instanceof ModelSource
+                        && ((ModelSource)event.getSource()).getOrigination() == circuitBreaker) {
                         // ignore
                         return;
                     }

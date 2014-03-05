@@ -5,15 +5,13 @@ import at.irian.ankor.connector.ConnectorLoader;
 import at.irian.ankor.messaging.modify.Modifier;
 import at.irian.ankor.msg.MessageBus;
 import at.irian.ankor.msg.MessageListener;
-import at.irian.ankor.msg.SwitchingCenter;
+import at.irian.ankor.msg.RoutingTable;
 import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.session.ModelSessionManager;
 import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
 import com.typesafe.config.Config;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * This is the main system object that sticks all the Ankor parts together.
@@ -32,11 +30,10 @@ public class AnkorSystem {
     private final MessageBus messageBus;
     private final RefContextFactory refContextFactory;
     private final ModelSessionManager modelSessionManager;
-    private final SwitchingCenter switchingCenter;
+    private final RoutingTable routingTable;
     private final Modifier modifier;
     private final List<MessageListener> defaultMessageListeners;
     private final ConnectorLoader connectorLoader;
-    private final Map<String,Object> attributes;
     private final BeanMetadataProvider beanMetadataProvider;
 
     protected AnkorSystem(Application application,
@@ -44,7 +41,7 @@ public class AnkorSystem {
                           MessageBus messageBus,
                           RefContextFactory refContextFactory,
                           ModelSessionManager modelSessionManager,
-                          SwitchingCenter switchingCenter,
+                          RoutingTable routingTable,
                           Modifier modifier,
                           List<MessageListener> defaultMessageListeners,
                           BeanMetadataProvider beanMetadataProvider) {
@@ -53,12 +50,11 @@ public class AnkorSystem {
         this.messageBus = messageBus;
         this.refContextFactory = refContextFactory;
         this.modelSessionManager = modelSessionManager;
-        this.switchingCenter = switchingCenter;
+        this.routingTable = routingTable;
         this.modifier = modifier;
         this.defaultMessageListeners = defaultMessageListeners;
         this.beanMetadataProvider = beanMetadataProvider;
         this.connectorLoader = new ConnectorLoader();
-        this.attributes = new HashMap<String, Object>();
     }
 
     public String getSystemName() {
@@ -73,8 +69,8 @@ public class AnkorSystem {
         return messageBus;
     }
 
-    public SwitchingCenter getSwitchingCenter() {
-        return switchingCenter;
+    public RoutingTable getRoutingTable() {
+        return routingTable;
     }
 
     public RefContextFactory getRefContextFactory() {
@@ -95,15 +91,6 @@ public class AnkorSystem {
 
     public BeanMetadataProvider getBeanMetadataProvider() {
         return beanMetadataProvider;
-    }
-
-    public void setAttribute(String key, Object value) {
-        attributes.put(key, value);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> T getAttribute(String key) {
-        return (T) attributes.get(key);
     }
 
     @Override

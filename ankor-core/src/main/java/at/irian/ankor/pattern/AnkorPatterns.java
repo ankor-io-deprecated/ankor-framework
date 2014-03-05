@@ -4,6 +4,7 @@ import at.irian.ankor.change.Change;
 import at.irian.ankor.delay.TaskRequestEvent;
 import at.irian.ankor.event.dispatch.EventDispatcher;
 import at.irian.ankor.event.source.CustomSource;
+import at.irian.ankor.event.source.ModelSource;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.impl.RefImplementor;
 import at.irian.ankor.session.ModelSession;
@@ -18,8 +19,6 @@ import java.util.Collection;
 @SuppressWarnings("UnusedDeclaration")
 public final class AnkorPatterns {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnkorPatterns.class);
-
-    private static final CustomSource STATIC_SOURCE = new CustomSource(AnkorPatterns.class);
 
     private AnkorPatterns() {}
 
@@ -41,7 +40,7 @@ public final class AnkorPatterns {
     }
 
     public static void runLater(EventDispatcher eventDispatcher, Runnable task) {
-        eventDispatcher.dispatch(new TaskRequestEvent(STATIC_SOURCE, task));
+        eventDispatcher.dispatch(new TaskRequestEvent(new CustomSource(AnkorPatterns.class), task));
     }
 
     private static EventDispatcher getEventDispatcherFor(Ref property) {
@@ -69,7 +68,7 @@ public final class AnkorPatterns {
         runLater(property, new Runnable() {
             @Override
             public void run() {
-                ((RefImplementor) property).apply(STATIC_SOURCE, change);
+                ((RefImplementor) property).apply(new ModelSource(property, AnkorPatterns.class), change);
             }
         });
     }

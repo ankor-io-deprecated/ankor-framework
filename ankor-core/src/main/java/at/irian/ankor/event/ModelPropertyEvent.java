@@ -1,7 +1,9 @@
 package at.irian.ankor.event;
 
+import at.irian.ankor.event.source.ModelSource;
 import at.irian.ankor.event.source.Source;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.session.ModelSession;
 
 /**
  * @author Manfred Geiler
@@ -18,6 +20,17 @@ public abstract class ModelPropertyEvent extends ModelEvent {
 
     public Ref getProperty() {
         return property;
+    }
+
+
+    public boolean isLocalEvent() {
+        if (getSource() instanceof ModelSource) {
+            ModelSession sourceModelSession = ((ModelSource) getSource()).getModelSession();
+            ModelSession currentModelSession = getProperty().context().modelSession();
+            return sourceModelSession.equals(currentModelSession);
+        } else {
+            return false;
+        }
     }
 
 }

@@ -2,19 +2,20 @@ package at.irian.ankor.connector.socket;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.change.Change;
+import at.irian.ankor.event.source.PartySource;
 import at.irian.ankor.messaging.MessageDeserializer;
 import at.irian.ankor.msg.ActionEventMessage;
 import at.irian.ankor.msg.ChangeEventMessage;
 import at.irian.ankor.msg.ConnectMessage;
 import at.irian.ankor.msg.MessageBus;
+import at.irian.ankor.path.PathSyntax;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.net.URI;
 
 /**
 * @author Manfred Geiler
@@ -26,19 +27,20 @@ public class SocketListener {
     private final int listenPort;
     private final MessageDeserializer<String> messageDeserializer;
     private final MessageBus messageBus;
-    private final Map<String, SocketParty> socketParties;
+    private final PathSyntax pathSyntax;
     private volatile boolean started;
     private Thread receiveLoopThread;
 
     public SocketListener(String systemName,
-                          int listenPort,
+                          URI localAddress,
                           MessageDeserializer<String> messageDeserializer,
-                          MessageBus messageBus) {
+                          MessageBus messageBus,
+                          PathSyntax pathSyntax) {
         this.systemName = systemName;
-        this.listenPort = listenPort;
+        this.listenPort = localAddress.getPort();
         this.messageDeserializer = messageDeserializer;
         this.messageBus = messageBus;
-        this.socketParties = new ConcurrentHashMap<String, SocketParty>();
+        this.pathSyntax = pathSyntax;
     }
 
     public int getListenPort() {
@@ -46,6 +48,7 @@ public class SocketListener {
     }
 
     public void start() {
+        LOG.info("Staring {} ...", this);
 
         final ServerSocket serverSocket;
         try {
@@ -64,7 +67,7 @@ public class SocketListener {
 
         this.started = true;
         this.receiveLoopThread.start();
-        LOG.info("{} started", this);
+        LOG.info("{} successfully started", this);
     }
 
     public void stop() {
@@ -74,21 +77,22 @@ public class SocketListener {
 
     private void loop(ServerSocket listenSocket) {
         boolean interrupted = false;
-        LOG.debug("SocketConnector for {} is listening...", systemName);
+        LOG.debug("SocketListener for '{}' is listening...", systemName);
         while (started && !interrupted) {
             try {
                 String serializedMsg = receive(listenSocket);
-                LOG.trace("SocketConnector for {} receives {}", systemName, serializedMsg);
+                LOG.debug("SocketListener for '{}' receives {}", systemName, serializedMsg);
                 try {
                     SocketMessage socketMessage = messageDeserializer.deserialize(serializedMsg, SocketMessage.class);
                     if (socketMessage.getAction() != null) {
-                        handleIncomingActionMessage(socketMessage);
-                    }
-                    if (socketMessage.getChange() != null) {
-                        handleIncomingChangeMessage(socketMessage);
+                        handleIncomingActionEventMessage(socketMessage);
+                    } else if (socketMessage.getChange() != null) {
+                        handleIncomingChangeEventMessage(socketMessage);
+                    } else {
+                        handleIncomingConnectMessage(socketMessage);
                     }
                 } catch (Exception e) {
-                    LOG.error("Exception while handling socket message " + serializedMsg);
+                    LOG.error("Exception while handling socket message " + serializedMsg, e);
                 }
             } catch (InterruptedException e) {
                 interrupted = true;
@@ -115,33 +119,35 @@ public class SocketListener {
         }
     }
 
-    private void handleIncomingActionMessage(SocketMessage socketMessage) {
+    private void handleIncomingActionEventMessage(SocketMessage socketMessage) {
         Action action = socketMessage.getAction();
-        if (SocketConnectAction.ACTION_NAME.equals(action.getName())) {
-            SocketParty socketParty = new SocketParty(socketMessage.getSenderId(),
-                                                      (String) action.getParams().get("hostname"),
-                                                      Integer.parseInt((String) action.getParams().get("port")));
-            socketParties.put(socketParty.getId(), socketParty);
-            messageBus.broadcast(new ConnectMessage(socketParty, null));
-        } else {
-            SocketParty socketParty = socketParties.get(socketMessage.getSenderId());
-            if (socketParty == null) {
-                throw new IllegalStateException("Unknown remote sender id " + socketMessage.getSenderId());
-            }
-            messageBus.broadcast(new ActionEventMessage(socketParty, socketMessage.getProperty(), action));
-        }
+        String modelName = pathSyntax.rootOf(socketMessage.getProperty());
+        URI senderAddress = URI.create(socketMessage.getSenderId());
+        SocketParty sender = new SocketParty(senderAddress, modelName);
+        messageBus.broadcast(new ActionEventMessage(sender, new PartySource(sender, this), socketMessage.getProperty(), action));
     }
 
-    private void handleIncomingChangeMessage(SocketMessage socketMessage) {
+    private void handleIncomingChangeEventMessage(SocketMessage socketMessage) {
         Change change = socketMessage.getChange();
-        SocketParty socketParty = socketParties.get(socketMessage.getSenderId());
-        if (socketParty == null) {
-            throw new IllegalStateException("Unknown remote sender id " + socketMessage.getSenderId());
-        }
-        messageBus.broadcast(new ChangeEventMessage(socketParty, socketMessage.getProperty(), change));
+        String modelName = pathSyntax.rootOf(socketMessage.getProperty());
+        URI senderAddress = URI.create(socketMessage.getSenderId());
+        SocketParty sender = new SocketParty(senderAddress, modelName);
+        messageBus.broadcast(new ChangeEventMessage(sender, new PartySource(sender, this), socketMessage.getProperty(), change));
     }
 
-    public void removeSocketParty(SocketParty party) {
-        socketParties.remove(party.getId());
+    private void handleIncomingConnectMessage(SocketMessage socketMessage) {
+        String modelName = pathSyntax.rootOf(socketMessage.getProperty());
+        URI senderAddress = URI.create(socketMessage.getSenderId());
+        SocketParty sender = new SocketParty(senderAddress, modelName);
+        messageBus.broadcast(new ConnectMessage(sender, modelName, null));
+    }
+
+
+    @Override
+    public String toString() {
+        return "SocketListener{" +
+               "systemName='" + systemName + '\'' +
+               ", listenPort=" + listenPort +
+               '}';
     }
 }

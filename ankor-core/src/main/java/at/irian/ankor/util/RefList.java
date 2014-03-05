@@ -1,7 +1,7 @@
 package at.irian.ankor.util;
 
 import at.irian.ankor.change.Change;
-import at.irian.ankor.event.source.CustomSource;
+import at.irian.ankor.event.source.ModelSource;
 import at.irian.ankor.ref.CollectionRef;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.impl.RefImplementor;
@@ -82,20 +82,20 @@ public class RefList<E> extends AbstractList<E> implements List<E> {
 
     @Override
     public void add(int index, E element) {
-        ((RefImplementor)listRef).apply(new CustomSource(this), Change.insertChange(index, element));
+        ((RefImplementor)listRef).apply(new ModelSource(listRef, this), Change.insertChange(index, element));
     }
 
     @Override
     public E remove(int index) {
         E oldValue = get(index);
-        ((RefImplementor)listRef).apply(new CustomSource(this), Change.deleteChange(index));
+        ((RefImplementor)listRef).apply(new ModelSource(listRef, this), Change.deleteChange(index));
         return oldValue;
     }
 
     @Override
     public E set(int index, E element) {
         E oldVal = listRef.appendIndex(index).getValue();
-        ((RefImplementor)listRef).apply(new CustomSource(this),
+        ((RefImplementor)listRef).apply(new ModelSource(listRef, this),
                                         Change.replaceChange(index, Collections.singleton(element)));
         return oldVal;
     }

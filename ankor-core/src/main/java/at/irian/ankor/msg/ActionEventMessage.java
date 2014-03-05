@@ -1,6 +1,7 @@
 package at.irian.ankor.msg;
 
 import at.irian.ankor.action.Action;
+import at.irian.ankor.event.source.Source;
 import at.irian.ankor.msg.party.Party;
 
 /**
@@ -12,10 +13,15 @@ public class ActionEventMessage extends EventMessage {
     private String property;
     private Action action;
 
-    public ActionEventMessage(Party sender, String property, Action action) {
-        super(sender);
+    public ActionEventMessage(Party sender, Source eventSource, String property, Action action) {
+        super(sender, eventSource);
         this.property = property;
         this.action = action;
+    }
+
+    @Override
+    public EventMessage withSender(Party sender) {
+        return new ActionEventMessage(sender, getEventSource(), getProperty(), getAction());
     }
 
     public String getProperty() {
@@ -54,4 +60,15 @@ public class ActionEventMessage extends EventMessage {
         result = 31 * result + (action != null ? action.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "ActionEventMessage{" +
+               "sender='" + getSender() + '\'' +
+               ", property='" + property + '\'' +
+               ", action=" + action +
+               "}";
+    }
+
+
 }

@@ -1,7 +1,7 @@
 package at.irian.ankor.fx.binding.property;
 
 import at.irian.ankor.change.Change;
-import at.irian.ankor.event.source.CustomSource;
+import at.irian.ankor.event.source.ModelSource;
 import at.irian.ankor.fx.binding.cache.FxCacheSupport;
 import at.irian.ankor.fx.binding.value.ObservableRef;
 import at.irian.ankor.pattern.AnkorPatterns;
@@ -81,8 +81,9 @@ public class RefProperty<T> extends ObservableRef<T> implements Property<T> {
         AnkorPatterns.runLater(this.ref, new Runnable() {
             @Override
             public void run() {
-                ((RefImplementor)RefProperty.this.ref).apply(new CustomSource(RefProperty.this),
-                                                             Change.valueChange(newValue));
+                RefImplementor thisRef = (RefImplementor) RefProperty.this.ref;
+                thisRef.apply(new ModelSource(thisRef, RefProperty.this),
+                              Change.valueChange(newValue));
             }
         });
     }

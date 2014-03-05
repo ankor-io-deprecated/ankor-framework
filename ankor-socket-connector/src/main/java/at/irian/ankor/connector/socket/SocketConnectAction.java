@@ -8,6 +8,7 @@ import java.util.Map;
 /**
  * @author Manfred Geiler
  */
+@Deprecated
 public class SocketConnectAction extends Action {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SocketConnectAction.class);
 

@@ -4,10 +4,7 @@ import at.irian.ankor.action.Action;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.event.source.PartySource;
 import at.irian.ankor.messaging.modify.Modifier;
-import at.irian.ankor.msg.ActionEventMessage;
-import at.irian.ankor.msg.ChangeEventMessage;
-import at.irian.ankor.msg.EventMessage;
-import at.irian.ankor.msg.SwitchingCenter;
+import at.irian.ankor.msg.*;
 import at.irian.ankor.msg.party.Party;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
@@ -25,49 +22,81 @@ class LocalModelSessionEventMessageListener implements EventMessage.Listener {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(LocalModelSessionEventMessageListener.class);
 
     private final ModelSessionManager modelSessionManager;
-    private final SwitchingCenter switchingCenter;
+    private final RoutingTable routingTable;
     private final Modifier modifier;
+    private final MessageBus messageBus;
 
     public LocalModelSessionEventMessageListener(ModelSessionManager modelSessionManager,
-                                                 SwitchingCenter switchingCenter,
-                                                 Modifier modifier) {
+                                                 RoutingTable routingTable,
+                                                 Modifier modifier,
+                                                 MessageBus messageBus) {
         this.modelSessionManager = modelSessionManager;
-        this.switchingCenter = switchingCenter;
+        this.routingTable = routingTable;
         this.modifier = modifier;
+        this.messageBus = messageBus;
     }
 
     @Override
     public void onEventMessage(EventMessage msg) {
 
-        LOG.debug("received {}", msg);
-
         Party sender = msg.getSender();
-        Collection<Party> receivers = switchingCenter.getConnectedParties(sender);
+        Collection<Party> receivers = routingTable.getConnectedParties(sender);
 
-        // todo  handle empty receivers ...
-
+        boolean anyLocalReceiver = false;
         for (Party receiver : receivers) {
 
             if (receiver.equals(sender)) {
-                LOG.error("Self-connected sender: {}", sender);
+                LOG.error("Self-connected sender detected: {}", sender);
                 continue;
             }
 
+            if (msg.getEventSource() instanceof PartySource) {
+                Party eventSourceParty = ((PartySource) msg.getEventSource()).getParty();
+                if (receiver.equals(eventSourceParty)) {
+                    LOG.error("Circular routing detected: {}", receiver);
+                    continue;
+                }
+            }
+
             if (receiver instanceof LocalModelSessionParty) {
+                anyLocalReceiver = true;
+
+                LOG.debug("received {} for {}", msg, receiver);
+
                 String modelSessionId = ((LocalModelSessionParty) receiver).getModelSessionId();
                 ModelSession modelSession = modelSessionManager.getById(modelSessionId);
                 if (modelSession == null) {
                     LOG.warn("Model session with id {} does not (or no longer) exist - propably timed out.");
                 } else {
-                    fireEvent(modelSession, msg);
+                    // handle event locally ...
+                    handleEventMsg(modelSession, msg);
+
+                    // ... and propagate it to other connected parties
+                    forwardToOtherConnectedParties(msg, sender, receiver);
                 }
             }
         }
 
+        if (!(sender instanceof LocalModelSessionParty) && !anyLocalReceiver) {
+            // this was a message from an "external" connector but no local connected session was found...
+            LOG.warn("Unhandled external message {} - no appropriate ModelSession found", msg);
+        }
     }
 
-    private void fireEvent(final ModelSession modelSession, final EventMessage msg) {
+    private void forwardToOtherConnectedParties(EventMessage msg, Party originalSender, Party localModelParty) {
+        Collection<Party> otherParties = routingTable.getConnectedParties(localModelParty);
+        for (Party otherParty : otherParties) {
+            if (otherParty.equals(originalSender)) {
+                // do not relay back to original sender
+            } else {
+                LOG.debug("");
+                messageBus.broadcast(msg.withSender(localModelParty));
+            }
+        }
+    }
 
+
+    private void handleEventMsg(final ModelSession modelSession, final EventMessage msg) {
 
         if (msg instanceof ActionEventMessage) {
             AnkorPatterns.runLater(modelSession, new Runnable() {
@@ -76,7 +105,8 @@ class LocalModelSessionEventMessageListener implements EventMessage.Listener {
                     RefContext refContext = modelSession.getRefContext();
                     Ref actionProperty = refContext.refFactory().ref(((ActionEventMessage) msg).getProperty());
                     Action action = modifier.modifyAfterReceive(((ActionEventMessage) msg).getAction(), actionProperty);
-                    ((RefImplementor)actionProperty).fire(new PartySource(msg.getSender()), action);
+                    PartySource source = new PartySource(msg.getSender(), LocalModelSessionEventMessageListener.this);
+                    ((RefImplementor)actionProperty).fire(source, action);
                 }
             });
 
@@ -87,7 +117,8 @@ class LocalModelSessionEventMessageListener implements EventMessage.Listener {
                     RefContext refContext = modelSession.getRefContext();
                     Ref changedProperty = refContext.refFactory().ref(((ChangeEventMessage) msg).getProperty());
                     Change change = modifier.modifyAfterReceive(((ChangeEventMessage) msg).getChange(), changedProperty);
-                    ((RefImplementor)changedProperty).apply(new PartySource(msg.getSender()), change);
+                    PartySource source = new PartySource(msg.getSender(), LocalModelSessionEventMessageListener.this);
+                    ((RefImplementor)changedProperty).apply(source, change);
                 }
             });
 
