@@ -12,6 +12,7 @@ import at.irian.ankor.msg.party.Party;
 import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.session.ModelSessionManager;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -40,6 +41,9 @@ class LocalConnectRequestMessageListener implements ConnectRequestMessage.Listen
 
         Party sender = msg.getSender();
         Map<String,Object> connectParameters = msg.getConnectParameters();
+        if (connectParameters == null) {
+            connectParameters = Collections.emptyMap();
+        }
 
         LOG.info("Connect message received from {} with parameters {}", sender, connectParameters);
 

@@ -30,4 +30,12 @@ public class TaskRequestEvent extends ModelEvent {
     public void processBy(ModelEventListener listener) {
         ((TaskRequestEventListener)listener).processTaskRequest(this);
     }
+
+    @Override
+    public String toString() {
+        return "TaskRequestEvent{" +
+               "source=" + getSource() +
+               ", task=" + task +
+               "} " + super.toString();
+    }
 }

@@ -24,13 +24,13 @@ public class RatesServerApplication extends SimpleSingleRootApplication<RatesVie
     }
 
     @Override
-    protected void afterInitInstance(RefContext refContext, RatesViewModel root) {
+    protected void afterInitInstance(String instanceId, RefContext refContext, RatesViewModel root) {
         root.startRatesUpdate(2);
         LOG.info("Rates update started");
     }
 
     @Override
-    protected void beforeReleaseInstance(RefContext refContext, RatesViewModel root) {
+    protected void beforeReleaseInstance(String instanceId, RatesViewModel root) {
         root.stopRatesUpdate();
         LOG.info("Rates update stopped");
     }
