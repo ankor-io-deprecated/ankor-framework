@@ -62,7 +62,7 @@ at.irian.ankorsamples.animals.viewmodel.animal
 at.irian.ankorsamples.animals.websocket
 at.irian.ankorsamples.fxrates.client
 at.irian.ankorsamples.fxrates.server
-at.irian.ankorsamples.preformance
+at.irian.ankorsamples.performance
 at.irian.ankorsamples.todo.servlet
 at.irian.ankorsamples.todosample.domain.task
 at.irian.ankorsamples.todosample.fxclient

@@ -1,4 +1,4 @@
-package at.irian.ankorsamples.preformance;
+package at.irian.ankorsamples.performance;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

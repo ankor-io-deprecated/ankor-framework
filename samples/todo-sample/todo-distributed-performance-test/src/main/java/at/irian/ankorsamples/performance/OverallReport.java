@@ -1,4 +1,4 @@
-package at.irian.ankorsamples.preformance;
+package at.irian.ankorsamples.performance;
 
 public class OverallReport {
     private String type = OverallReport.class.getSimpleName();
