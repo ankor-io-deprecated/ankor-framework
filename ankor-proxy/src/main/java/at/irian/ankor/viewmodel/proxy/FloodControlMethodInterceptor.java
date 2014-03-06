@@ -15,12 +15,12 @@ import java.util.Map;
 public class FloodControlMethodInterceptor implements MethodInterceptor {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(FloodControlMethodInterceptor.class);
 
+    private static final String SESSION_ATTR_KEY = FloodControlMethodInterceptor.class.getName() + ".MAP";
+
     private final BeanMetadata metadata;
-    private Map<Method, FloodControl> floodControlMap;
 
     public FloodControlMethodInterceptor(BeanMetadata metadata) {
         this.metadata = metadata;
-        this.floodControlMap = null;
     }
 
     @Override
@@ -31,11 +31,17 @@ public class FloodControlMethodInterceptor implements MethodInterceptor {
     @Override
     public Object invoke(final MethodInvocation invocation) throws Throwable {
 
+        RefContext refContext = invocation.getRef().context();
+        Map<String, Object> sessionAttributes = refContext.modelSession().getAttributes();
+        @SuppressWarnings("unchecked")
+        Map<Method, FloodControl> floodControlMap = (Map) sessionAttributes.get(SESSION_ATTR_KEY);
+
         Method method = invocation.getMethod();
 
-        FloodControl floodControl = null;
-
-        if (floodControlMap != null) {
+        FloodControl floodControl;
+        if (floodControlMap == null) {
+            floodControl = null;
+        } else {
             floodControl = floodControlMap.get(method);
         }
 
@@ -43,10 +49,10 @@ public class FloodControlMethodInterceptor implements MethodInterceptor {
             FloodControlMetadata floodControlMetadata = metadata.getMethodMetadata(method)
                                                                 .getGenericMetadata(FloodControlMetadata.class);
             if (floodControlMetadata != null) {
-                RefContext refContext = invocation.getRef().context();
                 floodControl = new FloodControl(refContext, floodControlMetadata.getDelayMillis());
                 if (floodControlMap == null) {
                     floodControlMap = new HashMap<Method, FloodControl>();
+                    sessionAttributes.put(SESSION_ATTR_KEY, floodControlMap);
                 }
                 floodControlMap.put(method, floodControl);
             }
