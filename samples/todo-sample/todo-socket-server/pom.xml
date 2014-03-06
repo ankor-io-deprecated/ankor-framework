@@ -7,29 +7,25 @@
         <version>0.2-SNAPSHOT</version>
     </parent>
 
-    <artifactId>todo-js-client</artifactId>
-    <packaging>war</packaging>
-
-    <name>Todo Sample - JavaScript Client</name>
+    <artifactId>todo-socket-server</artifactId>
+    <packaging>jar</packaging>
+    <name>Todo Sample - Socket Server</name>
+    <description>
+        Socket-based standalone server for the "Todo" example.
+    </description>
 
     <dependencies>
 
         <dependency>
             <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-servlet</artifactId>
+            <artifactId>ankor-socket-connector</artifactId>
             <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-js</artifactId>
-            <type>war</type>
-            <scope>runtime</scope>
         </dependency>
 
         <dependency>
             <groupId>at.irian.ankorsamples</groupId>
             <artifactId>todo-application</artifactId>
+            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
 
@@ -39,11 +35,6 @@
             <scope>runtime</scope>
         </dependency>
 
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.0.1</version>
-        </dependency>
-
     </dependencies>
+
 </project>

@@ -25,32 +25,28 @@ import java.util.Map;
  * @author Manfred Geiler
  */
 public abstract class SocketFxClientApplication extends javafx.application.Application {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SocketFxClientApplication.class);
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SocketFxClientApplication.class);
 
-    private static final String DEFAULT_MODEL_NAME = "root";
-    private static final String DEFAULT_SERVER_ADDRESS = "//localhost:8080";
+   private static final String DEFAULT_SERVER_ADDRESS = "//localhost:8080";
     private static final String DEFAULT_CLIENT_ADDRESS = "//localhost:9090";
 
-    private String applicationName;
+    private final String applicationName;
+    private final String modelName;
     private String clientAddress;
     private String serverAddress;
-    private String modelName = DEFAULT_MODEL_NAME;
-    private String applicationInstanceId = null;
+    private String appInstanceIdToConnect = null;
 
-    protected SocketFxClientApplication() {
-        this("Unnamed FxClient Application");
-    }
-
-    protected SocketFxClientApplication(String applicationName) {
+    protected SocketFxClientApplication(String applicationName, String modelName) {
         this.applicationName = applicationName;
+        this.modelName = modelName;
     }
 
     protected String getApplicationName() {
         return applicationName;
     }
 
-    protected void setApplicationName(String applicationName) {
-        this.applicationName = applicationName;
+    protected String getModelName() {
+        return modelName;
     }
 
     protected String getClientAddress() {
@@ -58,6 +54,7 @@ public abstract class SocketFxClientApplication extends javafx.application.Appli
     }
 
     protected void setClientAddress(String clientAddress) {
+        LOG.debug("Client address is {}", serverAddress);
         this.clientAddress = clientAddress;
     }
 
@@ -66,30 +63,33 @@ public abstract class SocketFxClientApplication extends javafx.application.Appli
     }
 
     protected void setServerAddress(String serverAddress) {
+        LOG.debug("Server address is {}", serverAddress);
         this.serverAddress = serverAddress;
     }
 
-    protected String getModelName() {
-        return modelName;
+    protected String getAppInstanceIdToConnect() {
+        return appInstanceIdToConnect;
     }
 
-    protected void setModelName(String modelName) {
-        this.modelName = modelName;
+    /**
+     * @param appInstanceIdToConnect  ID of application instance on server to connect to (for collaboration)
+     *                                or null if server shall create a new instance on every connect
+     */
+    @SuppressWarnings("UnusedDeclaration")
+    protected void setAppInstanceIdToConnect(String appInstanceIdToConnect) {
+        this.appInstanceIdToConnect = appInstanceIdToConnect;
     }
 
-    protected String getApplicationInstanceId() {
-        return applicationInstanceId;
-    }
-
-    protected void setApplicationInstanceId(String applicationInstanceId) {
-        this.applicationInstanceId = applicationInstanceId;
-    }
-
+    /**
+     * Method that is called back by FX on startup.
+     * @param stage Stage
+     * @throws Exception
+     */
     @Override
-    public void start(Stage stage) throws Exception {
+    public final void start(Stage stage) throws Exception {
         preCreateAnkorSystem();
         AnkorSystem ankorSystem = createAnkorSystem();
-        startAnkorSystem(ankorSystem);
+        startAnkorSystemAndConnect(ankorSystem);
         startFx(stage);
     }
 
@@ -112,16 +112,22 @@ public abstract class SocketFxClientApplication extends javafx.application.Appli
     }
 
     protected AnkorSystem createAnkorSystem() {
-        return new AnkorSystemBuilder()
+        LOG.debug("Creating FxClient Ankor system '{}' ...", getApplicationName());
+        AnkorSystem ankorSystem = new AnkorSystemBuilder()
                 .withName(applicationName)
+                .withConfigValue("at.irian.ankor.connector.socket.SocketConnector.enabled", true)
                 .withConfigValue("at.irian.ankor.connector.socket.SocketConnector.localAddress", getClientAddress())
                 .withDispatcherFactory(new JavaFxEventDispatcherFactory())
                 .withRefContextFactoryProvider(new FxRefContextFactoryProvider())
                 .withRoutingTable(new FixedPairRoutingTable())
                 .createClient();
+        LOG.debug("FxClient Ankor system '{}' created", getApplicationName());
+        return ankorSystem;
     }
 
-    protected void startAnkorSystem(AnkorSystem ankorSystem) {
+    protected void startAnkorSystemAndConnect(AnkorSystem ankorSystem) {
+
+        LOG.debug("Starting FxClient Ankor system '{}' ...", getApplicationName());
 
         SingletonModelSessionManager modelSessionManager
                 = (SingletonModelSessionManager) ankorSystem.getModelSessionManager();
@@ -139,15 +145,19 @@ public abstract class SocketFxClientApplication extends javafx.application.Appli
         // Gentlemen, start your engines...
         ankorSystem.start();
 
+        LOG.debug("FxClient Ankor system '{}' was started", getApplicationName());
+
+        LOG.debug("Sending connect request to server at {} ...", serverAddress);
         // Send the "connect" message to the server
         Map<String, Object> connectParams;
-        if (getApplicationInstanceId() != null) {
+        if (getAppInstanceIdToConnect() != null) {
             connectParams = new HashMap<>();
-            connectParams.put(Application.APPLICATION_INSTANCE_ID_PARAM, getApplicationInstanceId());
+            connectParams.put(Application.APPLICATION_INSTANCE_ID_PARAM, getAppInstanceIdToConnect());
         } else {
             connectParams = Collections.emptyMap();
         }
         ankorSystem.getMessageBus().broadcast(new ConnectMessage(clientParty, getModelName(), connectParams));
+        LOG.debug("Connect request sent to server at {}", serverAddress);
     }
 
     public abstract void startFx(Stage stage) throws Exception;

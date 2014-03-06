@@ -13,13 +13,7 @@ import java.util.Set;
 public abstract class SimpleSingleRootApplication extends BaseApplication {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SimpleSingleRootApplication.class);
 
-    private static final String DEFAULT_ROOT_VAR_NAME = "root";
-
     private final String modelName;
-
-    public SimpleSingleRootApplication(String applicationName) {
-        this(applicationName, DEFAULT_ROOT_VAR_NAME);
-    }
 
     public SimpleSingleRootApplication(String applicationName, String modelName) {
         super(applicationName);
@@ -32,12 +26,10 @@ public abstract class SimpleSingleRootApplication extends BaseApplication {
     public ApplicationInstance getApplicationInstance(Map<String, Object> connectParameters) {
         return new ApplicationInstance() {
 
-            private RefContext refContext;
             private Object root;
 
             @Override
             public void init(RefContext refContext) {
-                this.refContext = refContext;
                 Ref rootRef = refContext.refFactory().ref(modelName);
                 this.root = createRoot(rootRef);
             }

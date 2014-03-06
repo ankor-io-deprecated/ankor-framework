@@ -30,12 +30,12 @@
             <scope>compile</scope>
         </dependency>
 
-        <dependency>
-            <groupId>at.irian.ankorsamples</groupId>
-            <artifactId>todo-server</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>at.irian.ankorsamples</groupId>-->
+            <!--<artifactId>todo-application</artifactId>-->
+            <!--<version>${project.version}</version>-->
+            <!--<scope>compile</scope>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>

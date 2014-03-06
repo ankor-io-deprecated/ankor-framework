@@ -3,7 +3,6 @@ package at.irian.ankor.fx.websocket;
 import at.irian.ankor.event.dispatch.JavaFxEventDispatcherFactory;
 import at.irian.ankor.fx.binding.fxref.FxRefContextFactoryProvider;
 import at.irian.ankor.fx.binding.fxref.FxRefFactory;
-import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.session.SingletonModelSessionManager;
@@ -37,6 +36,7 @@ public abstract class AnkorApplication extends Application {
         launch(args);
     }
 
+    @Deprecated  // use FxRefs.refFactory()
     public static FxRefFactory refFactory() {
         return refFactory;
     }

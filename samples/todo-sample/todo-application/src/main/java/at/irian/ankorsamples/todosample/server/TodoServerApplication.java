@@ -1,26 +1,26 @@
-package at.irian.ankorsamples.animals.server;
+package at.irian.ankorsamples.todosample.server;
 
 import at.irian.ankor.application.SimpleSingleRootApplication;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankorsamples.animals.domain.AnimalRepository;
-import at.irian.ankorsamples.animals.viewmodel.ModelRoot;
+import at.irian.ankorsamples.todosample.domain.TaskRepository;
+import at.irian.ankorsamples.todosample.viewmodel.ModelRoot;
 
 /**
  * @author Manfred Geiler
  */
-public class AnimalsServerApplication extends SimpleSingleRootApplication {
+public class TodoServerApplication extends SimpleSingleRootApplication {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalsServerApplication.class);
 
-    private static final String APPLICATION_NAME = "Animals Server";
+    private static final String APPLICATION_NAME = "Todo Server";
     private static final String MODEL_NAME = "root";
 
-    public AnimalsServerApplication() {
+    public TodoServerApplication() {
         super(APPLICATION_NAME, MODEL_NAME);
     }
 
     @Override
     public Object createRoot(Ref rootRef) {
-        AnimalRepository animalRepository = new AnimalRepository();
+        TaskRepository animalRepository = new TaskRepository();
         return new ModelRoot(rootRef, animalRepository);
     }
 }

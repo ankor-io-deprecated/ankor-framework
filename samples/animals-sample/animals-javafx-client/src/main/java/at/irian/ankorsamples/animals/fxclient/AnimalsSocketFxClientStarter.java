@@ -13,12 +13,15 @@ import javafx.stage.Stage;
 public class AnimalsSocketFxClientStarter extends SocketFxClientApplication {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalsSocketFxClientStarter.class);
 
+    private static final String APPLICATION_NAME = "Animals FX Client";
+    private static final String MODEL_NAME = "root";
+
     public static void main(String[] args) {
         launch(args);
     }
 
     public AnimalsSocketFxClientStarter() {
-        super("Animals FX Client");
+        super(APPLICATION_NAME, MODEL_NAME);
     }
 
     @Override

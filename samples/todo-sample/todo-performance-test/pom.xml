@@ -21,7 +21,7 @@
 
         <dependency>
             <groupId>at.irian.ankorsamples</groupId>
-            <artifactId>todo-server</artifactId>
+            <artifactId>todo-application</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>

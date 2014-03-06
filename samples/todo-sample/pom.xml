@@ -13,7 +13,8 @@
     <name>Todo Sample - Project</name>
 
     <modules>
-        <module>todo-server</module>
+        <module>todo-application</module>
+        <module>todo-socket-server</module>
         <module>todo-javafx-client</module>
         <module>todo-js-client</module>
         <module>todo-performance-test</module>
@@ -31,6 +32,12 @@
         <dependencies>
 
             <dependency>
+                <groupId>at.irian.ankorsamples</groupId>
+                <artifactId>todo-application</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>at.irian.ankor</groupId>
                 <artifactId>ankor-service</artifactId>
                 <version>${ankor.version}</version>
@@ -39,19 +46,25 @@
             <dependency>
                 <groupId>at.irian.ankor</groupId>
                 <artifactId>ankor-fx</artifactId>
-                <version>${project.version}</version>
+                <version>${ankor.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>at.irian.ankor</groupId>
                 <artifactId>ankor-servlet</artifactId>
-                <version>${project.version}</version>
+                <version>${ankor.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>at.irian.ankor</groupId>
+                <artifactId>ankor-socket-connector</artifactId>
+                <version>${ankor.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>at.irian.ankor</groupId>
                 <artifactId>ankor-js</artifactId>
-                <version>${project.version}</version>
+                <version>${ankor.version}</version>
                 <type>war</type>
             </dependency>
 

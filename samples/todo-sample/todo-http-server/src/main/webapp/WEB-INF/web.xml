@@ -6,7 +6,7 @@
          version="2.5">
 
     <listener>
-        <listener-class>at.irian.ankorsamples.todo.servlet.TodoSampleServletContextListener</listener-class>
+        <listener-class>at.irian.ankorsamples.todosample.servlet.TodoSampleServletContextListener</listener-class>
     </listener>
 
     <servlet>
