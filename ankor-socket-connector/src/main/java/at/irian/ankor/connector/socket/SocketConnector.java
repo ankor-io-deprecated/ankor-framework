@@ -27,7 +27,7 @@ public class SocketConnector implements Connector {
     public void init(final AnkorSystem system) {
         this.enabled = system.getConfig().getBoolean("at.irian.ankor.connector.socket.SocketConnector.enabled");
         if (!enabled) {
-            LOG.info("SocketConnector not initialized because it is disabled");
+            LOG.info("SocketConnector not initialized because it is disabled - see ./ankor-socket-connector/src/main/resources/reference.conf for details on how to enable socket support");
             return;
         }
 
