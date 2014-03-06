@@ -159,7 +159,7 @@ public class AnkorSystemBuilder {
 
         RoutingTable routingTable = getRoutingTable();
 
-        List<MessageListener> defaultMessageListeners = createDefaultMessageListeners(routingTable, messageBus);
+        List<MessageListener> defaultMessageListeners = createDefaultServerMessageListeners(routingTable, messageBus);
 
         if (!configValues.containsKey(MESSAGE_MAPPER_CONFIG_KEY)) {
             configValues.put(MESSAGE_MAPPER_CONFIG_KEY, ViewModelJsonMessageMapper.class.getName());
@@ -212,7 +212,7 @@ public class AnkorSystemBuilder {
 
         RoutingTable routingTable = getRoutingTable();
 
-        List<MessageListener> defaultMessageListeners = createDefaultMessageListeners(routingTable, messageBus);
+        List<MessageListener> defaultMessageListeners = createDefaultClientMessageListeners(routingTable, messageBus);
 
         if (!configValues.containsKey(MESSAGE_MAPPER_CONFIG_KEY)) {
             configValues.put(MESSAGE_MAPPER_CONFIG_KEY, SimpleTreeJsonMessageMapper.class.getName());
@@ -236,7 +236,14 @@ public class AnkorSystemBuilder {
         return routingTable;
     }
 
-    private List<MessageListener> createDefaultMessageListeners(RoutingTable routingTable, MessageBus messageBus) {
+    private List<MessageListener> createDefaultServerMessageListeners(RoutingTable routingTable, MessageBus messageBus) {
+        List<MessageListener> messageListeners = new ArrayList<MessageListener>();
+        messageListeners.add(new DefaultDisconnectMessageListener(routingTable, messageBus));
+        messageListeners.add(new DefaultRelayingEventMessageListener(routingTable, messageBus));
+        return messageListeners;
+    }
+
+    private List<MessageListener> createDefaultClientMessageListeners(RoutingTable routingTable, MessageBus messageBus) {
         List<MessageListener> messageListeners = new ArrayList<MessageListener>();
         messageListeners.add(new DefaultDisconnectMessageListener(routingTable, messageBus));
         return messageListeners;

@@ -4,7 +4,10 @@ import at.irian.ankor.action.Action;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.event.source.PartySource;
 import at.irian.ankor.messaging.modify.Modifier;
-import at.irian.ankor.msg.*;
+import at.irian.ankor.msg.ActionEventMessage;
+import at.irian.ankor.msg.ChangeEventMessage;
+import at.irian.ankor.msg.EventMessage;
+import at.irian.ankor.msg.RoutingTable;
 import at.irian.ankor.msg.party.Party;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
@@ -24,16 +27,13 @@ class LocalModelSessionEventMessageListener implements EventMessage.Listener {
     private final ModelSessionManager modelSessionManager;
     private final RoutingTable routingTable;
     private final Modifier modifier;
-    private final MessageBus messageBus;
 
     public LocalModelSessionEventMessageListener(ModelSessionManager modelSessionManager,
                                                  RoutingTable routingTable,
-                                                 Modifier modifier,
-                                                 MessageBus messageBus) {
+                                                 Modifier modifier) {
         this.modelSessionManager = modelSessionManager;
         this.routingTable = routingTable;
         this.modifier = modifier;
-        this.messageBus = messageBus;
     }
 
     @Override
@@ -46,14 +46,14 @@ class LocalModelSessionEventMessageListener implements EventMessage.Listener {
         for (Party receiver : receivers) {
 
             if (receiver.equals(sender)) {
-                LOG.error("Self-connected sender detected: {}", sender);
+                LOG.error("Self-connected sender detected: {} - ignoring message {}", sender, msg);
                 continue;
             }
 
             if (msg.getEventSource() instanceof PartySource) {
                 Party eventSourceParty = ((PartySource) msg.getEventSource()).getParty();
                 if (receiver.equals(eventSourceParty)) {
-                    LOG.error("Circular routing detected: {}", receiver);
+                    LOG.error("Circular routing detected: {} - ignoring message {}", receiver, msg);
                     continue;
                 }
             }
@@ -68,11 +68,7 @@ class LocalModelSessionEventMessageListener implements EventMessage.Listener {
                 if (modelSession == null) {
                     LOG.warn("Model session with id {} does not (or no longer) exist - propably timed out.");
                 } else {
-                    // handle event locally ...
                     handleEventMsg(modelSession, msg);
-
-                    // ... and propagate it to other connected parties
-                    forwardToOtherConnectedParties(msg, sender, receiver);
                 }
             }
         }
@@ -82,19 +78,6 @@ class LocalModelSessionEventMessageListener implements EventMessage.Listener {
             LOG.warn("Unhandled external message {} - no appropriate ModelSession found", msg);
         }
     }
-
-    private void forwardToOtherConnectedParties(EventMessage msg, Party originalSender, Party localModelParty) {
-        Collection<Party> otherParties = routingTable.getConnectedParties(localModelParty);
-        for (Party otherParty : otherParties) {
-            if (otherParty.equals(originalSender)) {
-                // do not relay back to original sender
-            } else {
-                LOG.debug("");
-                messageBus.broadcast(msg.withSender(localModelParty));
-            }
-        }
-    }
-
 
     private void handleEventMsg(final ModelSession modelSession, final EventMessage msg) {
 

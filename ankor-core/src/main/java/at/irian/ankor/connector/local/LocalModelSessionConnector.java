@@ -26,7 +26,7 @@ public class LocalModelSessionConnector implements Connector {
                                                                   system.getApplication(), messageBus));
         messageListeners.add(new LocalModelSessionEventMessageListener(system.getModelSessionManager(),
                                                                 system.getRoutingTable(),
-                                                                system.getModifier(), messageBus));
+                                                                system.getModifier()));
         messageListeners.add(new LocalModelSessionCloseMessageListener(system.getModelSessionManager()));
     }
 
