@@ -26,10 +26,12 @@ public class DefaultDisconnectMessageListener implements DisconnectMessage.Liste
 
         Collection<Party> receivers = routingTable.getConnectedParties(msg.getSender());
 
+        LOG.debug("Disconnecting {} from all other parties", sender);
         routingTable.disconnectAll(msg.getSender());
 
         for (Party receiver : receivers) {
             if (!routingTable.hasConnectedParties(receiver)) {
+                LOG.debug("Requesting close for orphaned party {}", receiver);
                 messageBus.broadcast(new CloseMessage(SystemParty.getInstance(), receiver));
             }
         }

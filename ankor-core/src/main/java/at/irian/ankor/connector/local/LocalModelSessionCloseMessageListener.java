@@ -1,7 +1,6 @@
 package at.irian.ankor.connector.local;
 
 import at.irian.ankor.msg.CloseMessage;
-import at.irian.ankor.msg.OrphanMessage;
 import at.irian.ankor.msg.party.Party;
 import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.session.ModelSessionManager;
@@ -9,7 +8,7 @@ import at.irian.ankor.session.ModelSessionManager;
 /**
  * @author Manfred Geiler
  */
-class LocalModelSessionCloseMessageListener implements CloseMessage.Listener, OrphanMessage.Listener {
+class LocalModelSessionCloseMessageListener implements CloseMessage.Listener {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(LocalModelSessionCloseMessageListener.class);
 
     private final ModelSessionManager modelSessionManager;
@@ -21,14 +20,6 @@ class LocalModelSessionCloseMessageListener implements CloseMessage.Listener, Or
     @Override
     public void onCloseMessage(CloseMessage msg) {
         Party party = msg.getPartyToClose();
-        if (party instanceof LocalModelSessionParty) {
-            closeSession((LocalModelSessionParty) party);
-        }
-    }
-
-    @Override
-    public void onOrphanMessage(OrphanMessage msg) {
-        Party party = msg.getOrphanedParty();
         if (party instanceof LocalModelSessionParty) {
             closeSession((LocalModelSessionParty) party);
         }

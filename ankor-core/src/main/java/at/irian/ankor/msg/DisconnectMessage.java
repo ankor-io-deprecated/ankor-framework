@@ -5,6 +5,8 @@ import at.irian.ankor.msg.party.Party;
 import java.util.Map;
 
 /**
+ * This message notifies all listeners that the sender is willing to logically disconnect from all other parties.
+ *
  * @author Manfred Geiler
  */
 public class DisconnectMessage extends Message {

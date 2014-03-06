@@ -44,7 +44,7 @@ class SocketConnectMessageListener implements ConnectMessage.Listener {
             String serializedMsg = messageSerializer.serialize(socketMessage);
             new SocketSender(receiver).send(serializedMsg);
         } catch (IOException e) {
-            throw new RuntimeException("Error sending message to " + receiver);
+            throw new RuntimeException("Error sending message to " + receiver, e);
         }
     }
 

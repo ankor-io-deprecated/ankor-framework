@@ -3,7 +3,6 @@ package at.irian.ankor.connector.socket;
 import at.irian.ankor.messaging.MessageSerializer;
 import at.irian.ankor.msg.*;
 import at.irian.ankor.msg.party.Party;
-import at.irian.ankor.msg.party.SystemParty;
 
 import java.io.IOException;
 import java.net.URI;
@@ -40,8 +39,7 @@ class SocketEventMessageListener implements EventMessage.Listener {
                     send((SocketParty) receiver, msg);
                 } catch (IOException e) {
                     LOG.error("Error sending msg {} to {} - closing logical connection to this party", msg, receiver);
-                    routingTable.disconnect(sender, receiver);
-                    messageBus.broadcast(new CloseMessage(SystemParty.getInstance(), receiver));
+                    messageBus.broadcast(new DisconnectMessage(receiver));
                 }
             }
         }
