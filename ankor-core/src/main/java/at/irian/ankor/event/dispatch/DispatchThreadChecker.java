@@ -28,7 +28,7 @@ public class DispatchThreadChecker {
             Thread currentThread = Thread.currentThread();
             if (previousDispatchThread != null) {
                 if (previousDispatchThread != currentThread) {
-                    throw new IllegalStateException("ModelSession already being dispatched by another Thread: " + previousDispatchThread);
+                    throw new IllegalStateException("ModelSession " + modelSession + " already being dispatched by another Thread: " + previousDispatchThread);
                 }
                 return false;
             } else {
@@ -48,7 +48,7 @@ public class DispatchThreadChecker {
     public void check() {
         if (modelSession != null) {
             if (modelSession.getCurrentDispatchThread() != Thread.currentThread()) {
-                throw new IllegalStateException("access to ModelSession from a non-dispatching thread");
+                throw new IllegalStateException("Access to ModelSession " + modelSession + " from a non-dispatching thread " + Thread.currentThread() + " - expected " + modelSession.getCurrentDispatchThread());
                 //LOG.warn("access to ModelSession from a non-dispatching thread");
             }
         }

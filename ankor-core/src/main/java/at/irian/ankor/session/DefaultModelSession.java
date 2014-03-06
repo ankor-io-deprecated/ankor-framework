@@ -15,7 +15,7 @@ import java.util.*;
  * @author Manfred Geiler
  */
 class DefaultModelSession implements ModelSession, DispatchThreadAware {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelSession.class);
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelSession.class);
 
     private final String id;
     private final EventListeners eventListeners;
@@ -92,6 +92,7 @@ class DefaultModelSession implements ModelSession, DispatchThreadAware {
     @Override
     public void setCurrentDispatchThread(Thread dispatchThread) {
         this.dispatchThread = dispatchThread;
+        LOG.trace("Current dispatch thread for {} is now: {}", this, dispatchThread);
     }
 
     @Override

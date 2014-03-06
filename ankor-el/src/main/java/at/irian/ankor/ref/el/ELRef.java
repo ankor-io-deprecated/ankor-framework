@@ -25,7 +25,7 @@ public class ELRef extends RefBase {
     @Override
     public void internalSetValue(Object newValue) {
 
-        // check if we are correctly running in an event dispatcher thread
+        // check if we are correctly running in the correct event dispatcher thread
         new DispatchThreadChecker(context().modelSession()).check();
 
         try {

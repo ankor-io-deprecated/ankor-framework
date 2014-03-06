@@ -13,10 +13,8 @@ import com.typesafe.config.Config;
 public class ControllerActor extends UntypedActor {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ControllerActor.class);
 
-    public static Props props(Config config) {
-//        int nrOfInstances = config.getInt("at.irian.ankor.akka.ControllerActor.poolSize");
-//        return Props.create(ControllerActor.class).withRouter(new RoundRobinRouter(nrOfInstances));
-        // todo   controller must not be pooled, because otherwise the event dispatching order is no longer guaranteed
+    public static Props props(@SuppressWarnings("UnusedParameters") Config config) {
+        // Note: controller must not be pooled, because otherwise the event dispatching order is no longer guaranteed
         return Props.create(ControllerActor.class);
     }
 
