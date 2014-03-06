@@ -46,15 +46,21 @@ public class DefaultRelayingEventMessageListener implements EventMessage.Listene
 
     }
 
-    private void forwardToOtherConnectedParties(EventMessage msg, Party originalSender, Party localModelParty) {
-        Collection<Party> otherParties = routingTable.getConnectedParties(localModelParty);
+    private void forwardToOtherConnectedParties(EventMessage msg, Party originalSender, Party relayingParty) {
+        Collection<Party> otherParties = routingTable.getConnectedParties(relayingParty);
+        boolean partiesToForward = false;
         for (Party otherParty : otherParties) {
             if (otherParty.equals(originalSender)) {
                 // do not relay back to original sender
             } else {
-                LOG.debug("");
-                messageBus.broadcast(msg.withSender(localModelParty));
+                partiesToForward = true;
+                break;
             }
+        }
+
+        if (partiesToForward) {
+            LOG.debug("Forwarding message {} originally sent by {} - forward sender is {}", msg, originalSender, relayingParty);
+            messageBus.broadcast(msg.withSender(relayingParty));
         }
     }
 

@@ -44,9 +44,10 @@ public class SocketConnector implements Connector {
                                                  SimpleELPathSyntax.getInstance());
 
         this.messageListeners = new ArrayList<MessageListener>();
-        this.messageListeners.add(new SocketEventMessageListener(system.getRoutingTable(), messageMapper, localAddress));
+        this.messageListeners.add(new SocketEventMessageListener(system.getRoutingTable(), messageMapper, localAddress,
+                                                                 messageBus));
         this.messageListeners.add(new SocketConnectMessageListener(system.getRoutingTable(), messageMapper, localAddress));
-        this.messageListeners.add(new SocketCloseMessageListener(socketListener));
+        this.messageListeners.add(new SocketCloseMessageListener());
     }
 
     @Override
