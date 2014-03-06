@@ -7,13 +7,13 @@ import java.util.Map;
 /**
  * @author Manfred Geiler
  */
-public class ConnectMessage extends Message {
+public class ConnectRequestMessage extends Message {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ConnectMessage.class);
 
     private final String modelName;
     private final Map<String,Object> connectParameters;
 
-    public ConnectMessage(Party sender, String modelName, Map<String, Object> connectParameters) {
+    public ConnectRequestMessage(Party sender, String modelName, Map<String, Object> connectParameters) {
         super(sender);
         this.modelName = modelName;
         this.connectParameters = connectParameters;
@@ -38,7 +38,7 @@ public class ConnectMessage extends Message {
     }
 
     public interface Listener extends MessageListener {
-        void onConnectMessage(ConnectMessage msg);
+        void onConnectMessage(ConnectRequestMessage msg);
     }
 
 }

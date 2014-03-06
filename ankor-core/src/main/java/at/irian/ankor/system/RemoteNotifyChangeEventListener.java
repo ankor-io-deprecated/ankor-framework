@@ -3,10 +3,10 @@ package at.irian.ankor.system;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.change.ChangeEventListener;
+import at.irian.ankor.connector.local.LocalParty;
 import at.irian.ankor.messaging.modify.Modifier;
 import at.irian.ankor.msg.ChangeEventMessage;
 import at.irian.ankor.msg.MessageBus;
-import at.irian.ankor.connector.local.LocalModelSessionParty;
 import at.irian.ankor.msg.party.Party;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.session.ModelSession;
@@ -42,7 +42,7 @@ public class RemoteNotifyChangeEventListener extends ChangeEventListener {
             Ref changedProperty = event.getChangedProperty();
             Change modifiedChange = preSendModifier.modifyBeforeSend(change, changedProperty);
             ModelSession modelSession = changedProperty.context().modelSession();
-            Party sender = new LocalModelSessionParty(modelSession.getId(), changedProperty.root().propertyName());
+            Party sender = new LocalParty(modelSession.getId(), changedProperty.root().propertyName());
             messageBus.broadcast(new ChangeEventMessage(sender, event.getSource(), changedProperty.path(), modifiedChange));
         }
     }

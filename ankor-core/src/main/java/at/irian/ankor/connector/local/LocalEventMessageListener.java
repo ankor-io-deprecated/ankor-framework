@@ -4,9 +4,9 @@ import at.irian.ankor.action.Action;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.event.source.PartySource;
 import at.irian.ankor.messaging.modify.Modifier;
+import at.irian.ankor.msg.AbstractEventMessage;
 import at.irian.ankor.msg.ActionEventMessage;
 import at.irian.ankor.msg.ChangeEventMessage;
-import at.irian.ankor.msg.EventMessage;
 import at.irian.ankor.msg.RoutingTable;
 import at.irian.ankor.msg.party.Party;
 import at.irian.ankor.pattern.AnkorPatterns;
@@ -21,23 +21,23 @@ import java.util.Collection;
 /**
  * @author Manfred Geiler
  */
-class LocalModelSessionEventMessageListener implements EventMessage.Listener {
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(LocalModelSessionEventMessageListener.class);
+class LocalEventMessageListener implements AbstractEventMessage.Listener {
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(LocalEventMessageListener.class);
 
     private final ModelSessionManager modelSessionManager;
     private final RoutingTable routingTable;
     private final Modifier modifier;
 
-    public LocalModelSessionEventMessageListener(ModelSessionManager modelSessionManager,
-                                                 RoutingTable routingTable,
-                                                 Modifier modifier) {
+    public LocalEventMessageListener(ModelSessionManager modelSessionManager,
+                                     RoutingTable routingTable,
+                                     Modifier modifier) {
         this.modelSessionManager = modelSessionManager;
         this.routingTable = routingTable;
         this.modifier = modifier;
     }
 
     @Override
-    public void onEventMessage(EventMessage msg) {
+    public void onEventMessage(AbstractEventMessage msg) {
 
         Party sender = msg.getSender();
         Collection<Party> receivers = routingTable.getConnectedParties(sender);
@@ -58,12 +58,12 @@ class LocalModelSessionEventMessageListener implements EventMessage.Listener {
                 }
             }
 
-            if (receiver instanceof LocalModelSessionParty) {
+            if (receiver instanceof LocalParty) {
                 anyLocalReceiver = true;
 
                 LOG.debug("received {} for {}", msg, receiver);
 
-                String modelSessionId = ((LocalModelSessionParty) receiver).getModelSessionId();
+                String modelSessionId = ((LocalParty) receiver).getModelSessionId();
                 ModelSession modelSession = modelSessionManager.getById(modelSessionId);
                 if (modelSession == null) {
                     LOG.warn("Model session with id {} does not (or no longer) exist - propably timed out.");
@@ -73,13 +73,13 @@ class LocalModelSessionEventMessageListener implements EventMessage.Listener {
             }
         }
 
-        if (!(sender instanceof LocalModelSessionParty) && !anyLocalReceiver) {
+        if (!(sender instanceof LocalParty) && !anyLocalReceiver) {
             // this was a message from an "external" connector but no local connected session was found...
             LOG.warn("Unhandled external message {} - no appropriate ModelSession found", msg);
         }
     }
 
-    private void handleEventMsg(final ModelSession modelSession, final EventMessage msg) {
+    private void handleEventMsg(final ModelSession modelSession, final AbstractEventMessage msg) {
 
         if (msg instanceof ActionEventMessage) {
             AnkorPatterns.runLater(modelSession, new Runnable() {
@@ -88,7 +88,7 @@ class LocalModelSessionEventMessageListener implements EventMessage.Listener {
                     RefContext refContext = modelSession.getRefContext();
                     Ref actionProperty = refContext.refFactory().ref(((ActionEventMessage) msg).getProperty());
                     Action action = modifier.modifyAfterReceive(((ActionEventMessage) msg).getAction(), actionProperty);
-                    PartySource source = new PartySource(msg.getSender(), LocalModelSessionEventMessageListener.this);
+                    PartySource source = new PartySource(msg.getSender(), LocalEventMessageListener.this);
                     ((RefImplementor)actionProperty).fire(source, action);
                 }
             });
@@ -100,7 +100,7 @@ class LocalModelSessionEventMessageListener implements EventMessage.Listener {
                     RefContext refContext = modelSession.getRefContext();
                     Ref changedProperty = refContext.refFactory().ref(((ChangeEventMessage) msg).getProperty());
                     Change change = modifier.modifyAfterReceive(((ChangeEventMessage) msg).getChange(), changedProperty);
-                    PartySource source = new PartySource(msg.getSender(), LocalModelSessionEventMessageListener.this);
+                    PartySource source = new PartySource(msg.getSender(), LocalEventMessageListener.this);
                     ((RefImplementor)changedProperty).apply(source, change);
                 }
             });

@@ -8,7 +8,7 @@ import java.util.Collection;
 /**
  * @author Manfred Geiler
  */
-public class DefaultRelayingEventMessageListener implements EventMessage.Listener {
+public class DefaultRelayingEventMessageListener implements AbstractEventMessage.Listener {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(DefaultRelayingEventMessageListener.class);
 
     private final RoutingTable routingTable;
@@ -20,7 +20,7 @@ public class DefaultRelayingEventMessageListener implements EventMessage.Listene
     }
 
     @Override
-    public void onEventMessage(EventMessage msg) {
+    public void onEventMessage(AbstractEventMessage msg) {
 
         Party sender = msg.getSender();
         Collection<Party> receivers = routingTable.getConnectedParties(sender);
@@ -46,7 +46,7 @@ public class DefaultRelayingEventMessageListener implements EventMessage.Listene
 
     }
 
-    private void forwardToOtherConnectedParties(EventMessage msg, Party originalSender, Party relayingParty) {
+    private void forwardToOtherConnectedParties(AbstractEventMessage msg, Party originalSender, Party relayingParty) {
         Collection<Party> otherParties = routingTable.getConnectedParties(relayingParty);
         boolean partiesToForward = false;
         for (Party otherParty : otherParties) {

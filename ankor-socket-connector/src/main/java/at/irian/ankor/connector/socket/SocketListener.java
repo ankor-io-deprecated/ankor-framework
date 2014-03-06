@@ -6,7 +6,7 @@ import at.irian.ankor.event.source.PartySource;
 import at.irian.ankor.messaging.MessageDeserializer;
 import at.irian.ankor.msg.ActionEventMessage;
 import at.irian.ankor.msg.ChangeEventMessage;
-import at.irian.ankor.msg.ConnectMessage;
+import at.irian.ankor.msg.ConnectRequestMessage;
 import at.irian.ankor.msg.MessageBus;
 import at.irian.ankor.path.PathSyntax;
 
@@ -139,7 +139,7 @@ public class SocketListener {
         String modelName = pathSyntax.rootOf(socketMessage.getProperty());
         URI senderAddress = URI.create(socketMessage.getSenderId());
         SocketParty sender = new SocketParty(senderAddress, modelName);
-        messageBus.broadcast(new ConnectMessage(sender, modelName, null));
+        messageBus.broadcast(new ConnectRequestMessage(sender, modelName, null));
     }
 
 

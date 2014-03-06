@@ -11,8 +11,8 @@ import java.util.List;
  * @author Manfred Geiler
  */
 @SuppressWarnings("UnusedDeclaration")  // indirectly called by ServiceLoader
-public class LocalModelSessionConnector implements Connector {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(LocalModelSessionConnector.class);
+public class LocalConnector implements Connector {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(LocalConnector.class);
 
     private MessageBus messageBus;
     private List<MessageListener> messageListeners;
@@ -21,13 +21,13 @@ public class LocalModelSessionConnector implements Connector {
     public void init(AnkorSystem system) {
         messageBus = system.getMessageBus();
         messageListeners = new ArrayList<MessageListener>();
-        messageListeners.add(new LocalModelSessionConnectMessageListener(system.getModelSessionManager(),
+        messageListeners.add(new LocalConnectRequestMessageListener(system.getModelSessionManager(),
                                                                   system.getRoutingTable(),
                                                                   system.getApplication(), messageBus));
-        messageListeners.add(new LocalModelSessionEventMessageListener(system.getModelSessionManager(),
+        messageListeners.add(new LocalEventMessageListener(system.getModelSessionManager(),
                                                                 system.getRoutingTable(),
                                                                 system.getModifier()));
-        messageListeners.add(new LocalModelSessionCloseMessageListener(system.getModelSessionManager()));
+        messageListeners.add(new LocalCloseRequestMessageListener(system.getModelSessionManager()));
     }
 
     @Override

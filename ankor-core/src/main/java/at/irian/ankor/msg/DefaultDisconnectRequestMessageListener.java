@@ -8,19 +8,19 @@ import java.util.Collection;
 /**
  * @author Manfred Geiler
  */
-public class DefaultDisconnectMessageListener implements DisconnectMessage.Listener {
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(DefaultDisconnectMessageListener.class);
+public class DefaultDisconnectRequestMessageListener implements DisconnectRequestMessage.Listener {
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(DefaultDisconnectRequestMessageListener.class);
 
     private final RoutingTable routingTable;
     private final MessageBus messageBus;
 
-    public DefaultDisconnectMessageListener(RoutingTable routingTable, MessageBus messageBus) {
+    public DefaultDisconnectRequestMessageListener(RoutingTable routingTable, MessageBus messageBus) {
         this.routingTable = routingTable;
         this.messageBus = messageBus;
     }
 
     @Override
-    public void onDisconnectMessage(DisconnectMessage msg) {
+    public void onDisconnectMessage(DisconnectRequestMessage msg) {
         Party sender = msg.getSender();
         LOG.info("Disconnect message received from {}", sender);
 
@@ -32,7 +32,7 @@ public class DefaultDisconnectMessageListener implements DisconnectMessage.Liste
         for (Party receiver : receivers) {
             if (!routingTable.hasConnectedParties(receiver)) {
                 LOG.debug("Requesting close for orphaned party {}", receiver);
-                messageBus.broadcast(new CloseMessage(SystemParty.getInstance(), receiver));
+                messageBus.broadcast(new CloseRequestMessage(SystemParty.getInstance(), receiver));
             }
         }
 

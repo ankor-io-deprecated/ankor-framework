@@ -9,9 +9,7 @@
         </encoder>
     </appender>
 
-    <logger name="at.irian.ankor.messaging" level="DEBUG" />
-    <!--<logger name="at.irian.ankor.akka" level="DEBUG" />-->
-    <!--<logger name="at.irian.ankor.ref.impl" level="DEBUG" />-->
+    <logger name="at.irian.ankor.connector" level="DEBUG" />
 
     <root level="INFO">
         <appender-ref ref="STDOUT" />

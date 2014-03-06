@@ -5,13 +5,13 @@ import at.irian.ankor.msg.party.Party;
 /**
  * @author Manfred Geiler
  */
-public class LocalModelSessionParty implements Party {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(LocalModelSessionParty.class);
+public class LocalParty implements Party {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(LocalParty.class);
 
     private final String modelSessionId;
     private final String modelName;
 
-    public LocalModelSessionParty(String modelSessionId, String modelName) {
+    public LocalParty(String modelSessionId, String modelName) {
         this.modelSessionId = modelSessionId;
         this.modelName = modelName;
     }
@@ -34,7 +34,7 @@ public class LocalModelSessionParty implements Party {
             return false;
         }
 
-        LocalModelSessionParty that = (LocalModelSessionParty) o;
+        LocalParty that = (LocalParty) o;
 
         return modelName.equals(that.modelName) && modelSessionId.equals(that.modelSessionId);
 
@@ -49,7 +49,7 @@ public class LocalModelSessionParty implements Party {
 
     @Override
     public String toString() {
-        return "LocalModelSessionParty{" +
+        return "LocalParty{" +
                "modelSessionId='" + modelSessionId + '\'' +
                ", modelName='" + modelName + '\'' +
                '}';

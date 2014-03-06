@@ -6,17 +6,17 @@ import at.irian.ankor.msg.party.Party;
 /**
  * @author Manfred Geiler
  */
-public abstract class EventMessage extends Message {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(EventMessage.class);
+public abstract class AbstractEventMessage extends Message {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AbstractEventMessage.class);
 
     private final Source eventSource;
 
-    protected EventMessage(Party sender, Source eventSource) {
+    protected AbstractEventMessage(Party sender, Source eventSource) {
         super(sender);
         this.eventSource = eventSource;
     }
 
-    public abstract EventMessage withSender(Party sender);
+    public abstract AbstractEventMessage withSender(Party sender);
 
     public Source getEventSource() {
         return eventSource;
@@ -33,7 +33,7 @@ public abstract class EventMessage extends Message {
     }
 
     public interface Listener extends MessageListener {
-        void onEventMessage(EventMessage msg);
+        void onEventMessage(AbstractEventMessage msg);
     }
 
 }

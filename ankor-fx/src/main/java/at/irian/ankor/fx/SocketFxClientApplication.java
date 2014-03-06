@@ -1,13 +1,13 @@
 package at.irian.ankor.fx;
 
 import at.irian.ankor.application.Application;
-import at.irian.ankor.connector.local.LocalModelSessionParty;
+import at.irian.ankor.connector.local.LocalParty;
 import at.irian.ankor.connector.socket.SocketParty;
 import at.irian.ankor.event.dispatch.JavaFxEventDispatcherFactory;
 import at.irian.ankor.fx.binding.fxref.FxRefContext;
 import at.irian.ankor.fx.binding.fxref.FxRefContextFactoryProvider;
 import at.irian.ankor.fx.binding.fxref.FxRefs;
-import at.irian.ankor.msg.ConnectMessage;
+import at.irian.ankor.msg.ConnectRequestMessage;
 import at.irian.ankor.msg.FixedPairRoutingTable;
 import at.irian.ankor.msg.party.Party;
 import at.irian.ankor.session.ModelSession;
@@ -135,7 +135,7 @@ public abstract class SocketFxClientApplication extends javafx.application.Appli
         FxRefContext refContext = (FxRefContext) modelSession.getRefContext();
         modelSessionManager.getApplicationInstance().init(refContext);
 
-        Party clientParty = new LocalModelSessionParty(modelSession.getId(), getModelName());
+        Party clientParty = new LocalParty(modelSession.getId(), getModelName());
         Party serverParty = new SocketParty(URI.create(getServerAddress()), getModelName());
         ankorSystem.getRoutingTable().connect(clientParty, serverParty);
 
@@ -156,7 +156,7 @@ public abstract class SocketFxClientApplication extends javafx.application.Appli
         } else {
             connectParams = Collections.emptyMap();
         }
-        ankorSystem.getMessageBus().broadcast(new ConnectMessage(clientParty, getModelName(), connectParams));
+        ankorSystem.getMessageBus().broadcast(new ConnectRequestMessage(clientParty, getModelName(), connectParams));
         LOG.debug("Connect request sent to server at {}", serverAddress);
     }
 

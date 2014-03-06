@@ -11,7 +11,7 @@ import java.util.Collection;
 /**
 * @author Manfred Geiler
 */
-class SocketEventMessageListener implements EventMessage.Listener {
+class SocketEventMessageListener implements AbstractEventMessage.Listener {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SocketEventMessageListener.class);
 
     private final RoutingTable routingTable;
@@ -30,7 +30,7 @@ class SocketEventMessageListener implements EventMessage.Listener {
     }
 
     @Override
-    public void onEventMessage(EventMessage msg) {
+    public void onEventMessage(AbstractEventMessage msg) {
         Party sender = msg.getSender();
         Collection<Party> receivers = routingTable.getConnectedParties(sender);
         for (Party receiver : receivers) {
@@ -39,14 +39,14 @@ class SocketEventMessageListener implements EventMessage.Listener {
                     send((SocketParty) receiver, msg);
                 } catch (IOException e) {
                     LOG.error("Error sending msg {} to {} - closing logical connection to this party", msg, receiver);
-                    messageBus.broadcast(new DisconnectMessage(receiver));
+                    messageBus.broadcast(new DisconnectRequestMessage(receiver));
                 }
             }
         }
     }
 
 
-    private void send(SocketParty receiver, EventMessage eventMessage) throws IOException {
+    private void send(SocketParty receiver, AbstractEventMessage eventMessage) throws IOException {
         SocketMessage socketMessage;
         if (eventMessage instanceof ActionEventMessage) {
             socketMessage = SocketMessage.createActionMsg(localAddress.toString(),

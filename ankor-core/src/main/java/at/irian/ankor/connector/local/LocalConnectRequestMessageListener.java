@@ -5,7 +5,7 @@ import at.irian.ankor.application.ApplicationInstance;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.event.source.ModelSource;
 import at.irian.ankor.msg.ChangeEventMessage;
-import at.irian.ankor.msg.ConnectMessage;
+import at.irian.ankor.msg.ConnectRequestMessage;
 import at.irian.ankor.msg.MessageBus;
 import at.irian.ankor.msg.RoutingTable;
 import at.irian.ankor.msg.party.Party;
@@ -17,18 +17,18 @@ import java.util.Map;
 /**
  * @author Manfred Geiler
  */
-class LocalModelSessionConnectMessageListener implements ConnectMessage.Listener {
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(LocalModelSessionConnectMessageListener.class);
+class LocalConnectRequestMessageListener implements ConnectRequestMessage.Listener {
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(LocalConnectRequestMessageListener.class);
 
     private final ModelSessionManager modelSessionManager;
     private final RoutingTable routingTable;
     private final Application application;
     private final MessageBus messageBus;
 
-    public LocalModelSessionConnectMessageListener(ModelSessionManager modelSessionManager,
-                                                   RoutingTable routingTable,
-                                                   Application application,
-                                                   MessageBus messageBus) {
+    public LocalConnectRequestMessageListener(ModelSessionManager modelSessionManager,
+                                              RoutingTable routingTable,
+                                              Application application,
+                                              MessageBus messageBus) {
         this.modelSessionManager = modelSessionManager;
         this.routingTable = routingTable;
         this.application = application;
@@ -36,7 +36,7 @@ class LocalModelSessionConnectMessageListener implements ConnectMessage.Listener
     }
 
     @Override
-    public void onConnectMessage(ConnectMessage msg) {
+    public void onConnectMessage(ConnectRequestMessage msg) {
 
         Party sender = msg.getSender();
         Map<String,Object> connectParameters = msg.getConnectParameters();
@@ -56,7 +56,7 @@ class LocalModelSessionConnectMessageListener implements ConnectMessage.Listener
 
         ModelSession modelSession = modelSessionManager.getOrCreate(applicationInstance);
 
-        Party receiver = new LocalModelSessionParty(modelSession.getId(), modelName);
+        Party receiver = new LocalParty(modelSession.getId(), modelName);
 
         if (receiver.equals(sender)) {
             throw new IllegalArgumentException("ModelSession must not connect to itself: " + modelSession);

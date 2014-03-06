@@ -3,7 +3,7 @@ package at.irian.ankor.system;
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionEvent;
 import at.irian.ankor.action.ActionEventListener;
-import at.irian.ankor.connector.local.LocalModelSessionParty;
+import at.irian.ankor.connector.local.LocalParty;
 import at.irian.ankor.messaging.modify.Modifier;
 import at.irian.ankor.msg.ActionEventMessage;
 import at.irian.ankor.msg.MessageBus;
@@ -42,7 +42,7 @@ public class RemoteNotifyActionEventListener extends ActionEventListener {
             Ref actionProperty = event.getActionProperty();
             Action modifiedAction = preSendModifier.modifyBeforeSend(action, actionProperty);
             ModelSession modelSession = actionProperty.context().modelSession();
-            Party sender = new LocalModelSessionParty(modelSession.getId(), actionProperty.root().propertyName());
+            Party sender = new LocalParty(modelSession.getId(), actionProperty.root().propertyName());
             messageBus.broadcast(new ActionEventMessage(sender, event.getSource(), actionProperty.path(), modifiedAction));
         }
     }

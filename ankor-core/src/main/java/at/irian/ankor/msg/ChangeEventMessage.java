@@ -7,7 +7,7 @@ import at.irian.ankor.msg.party.Party;
 /**
  * @author Manfred Geiler
  */
-public class ChangeEventMessage extends EventMessage {
+public class ChangeEventMessage extends AbstractEventMessage {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ChangeMessage.class);
 
     private String property;
@@ -20,7 +20,7 @@ public class ChangeEventMessage extends EventMessage {
     }
 
     @Override
-    public EventMessage withSender(Party sender) {
+    public AbstractEventMessage withSender(Party sender) {
         return new ChangeEventMessage(sender, getEventSource(), getProperty(), getChange());
     }
 

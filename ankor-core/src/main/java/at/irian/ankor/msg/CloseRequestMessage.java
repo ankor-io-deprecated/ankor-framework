@@ -5,12 +5,12 @@ import at.irian.ankor.msg.party.Party;
 /**
  * @author Manfred Geiler
  */
-public class CloseMessage extends Message {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ConnectMessage.class);
+public class CloseRequestMessage extends Message {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(CloseRequestMessage.class);
 
     private final Party partyToClose;
 
-    public CloseMessage(Party sender, Party partyToClose) {
+    public CloseRequestMessage(Party sender, Party partyToClose) {
         super(sender);
         this.partyToClose = partyToClose;
     }
@@ -30,7 +30,7 @@ public class CloseMessage extends Message {
     }
 
     public interface Listener extends MessageListener {
-        void onCloseMessage(CloseMessage msg);
+        void onCloseMessage(CloseRequestMessage msg);
     }
 
 }

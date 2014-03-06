@@ -46,8 +46,8 @@ public class SocketConnector implements Connector {
         this.messageListeners = new ArrayList<MessageListener>();
         this.messageListeners.add(new SocketEventMessageListener(system.getRoutingTable(), messageMapper, localAddress,
                                                                  messageBus));
-        this.messageListeners.add(new SocketConnectMessageListener(system.getRoutingTable(), messageMapper, localAddress));
-        this.messageListeners.add(new SocketCloseMessageListener());
+        this.messageListeners.add(new SocketConnectRequestMessageListener(system.getRoutingTable(), messageMapper, localAddress));
+        this.messageListeners.add(new SocketCloseRequestMessageListener());
     }
 
     @Override

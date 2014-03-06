@@ -2,17 +2,15 @@ package at.irian.ankor.msg;
 
 import at.irian.ankor.msg.party.Party;
 
-import java.util.Map;
-
 /**
  * This message notifies all listeners that the sender is willing to logically disconnect from all other parties.
  *
  * @author Manfred Geiler
  */
-public class DisconnectMessage extends Message {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ConnectMessage.class);
+public class DisconnectRequestMessage extends Message {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(DisconnectRequestMessage.class);
 
-    public DisconnectMessage(Party sender) {
+    public DisconnectRequestMessage(Party sender) {
         super(sender);
     }
 
@@ -27,7 +25,7 @@ public class DisconnectMessage extends Message {
     }
 
     public interface Listener extends MessageListener {
-        void onDisconnectMessage(DisconnectMessage msg);
+        void onDisconnectMessage(DisconnectRequestMessage msg);
     }
 
 }
