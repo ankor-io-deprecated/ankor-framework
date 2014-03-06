@@ -84,7 +84,7 @@ public class ObservableRef<T> implements ObservableValue<T> {
     public T getValue() {
         try {
             return ref.getValue();
-        } catch (IllegalStateException e) {
+        } catch (Exception e) {
             return defaultValue;
         }
     }

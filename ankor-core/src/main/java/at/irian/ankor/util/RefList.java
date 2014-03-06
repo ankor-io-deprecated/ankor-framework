@@ -14,7 +14,7 @@ import java.util.*;
  * @author Manfred Geiler
  */
 public class RefList<E> extends AbstractList<E> implements List<E> {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RefList.class);
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RefList.class);
 
     protected final CollectionRef listRef;
 
@@ -23,7 +23,12 @@ public class RefList<E> extends AbstractList<E> implements List<E> {
     }
 
     private List<E> getReferencedList() {
-        List<E> list = listRef.getValue();
+        List<E> list = null;
+        try {
+            list = listRef.getValue();
+        } catch (Exception e) {
+            LOG.debug("Cannot resolve valua of {}", listRef);
+        }
         return list != null ? list : Collections.<E>emptyList();
     }
 
