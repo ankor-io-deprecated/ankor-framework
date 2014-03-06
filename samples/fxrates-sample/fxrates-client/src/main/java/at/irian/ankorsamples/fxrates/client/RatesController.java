@@ -1,5 +1,7 @@
 package at.irian.ankorsamples.fxrates.client;
 
+import at.irian.ankor.fx.binding.fxref.FxRef;
+import at.irian.ankor.fx.binding.fxref.FxRefs;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -7,8 +9,6 @@ import javafx.scene.control.cell.MapValueFactory;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-
-import static at.irian.ankorsamples.fxrates.client.RatesClient.rootRef;
 
 /**
  * @author Thomas Spiegl
@@ -30,7 +30,8 @@ public class RatesController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
-        ratesTable.itemsProperty().bind(rootRef().appendPath("rates").fxObservableList());
+        FxRef rootRef = FxRefs.refFactory().ref("root");
+        ratesTable.itemsProperty().bind(rootRef.appendPath("rates").fxObservableList());
 
         symbol.setCellValueFactory(new MapValueFactory<String>("symbol"));
         ask.setCellValueFactory(new MapValueFactory<String>("ask"));
