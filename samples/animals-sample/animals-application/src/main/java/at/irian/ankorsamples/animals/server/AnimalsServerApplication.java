@@ -8,7 +8,7 @@ import at.irian.ankorsamples.animals.viewmodel.ModelRoot;
 /**
  * @author Manfred Geiler
  */
-public class AnimalsServerApplication extends SimpleSingleRootApplication {
+public class AnimalsServerApplication extends SimpleSingleRootApplication<ModelRoot> {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalsServerApplication.class);
 
     private static final String APPLICATION_NAME = "Animals Server";
@@ -19,7 +19,7 @@ public class AnimalsServerApplication extends SimpleSingleRootApplication {
     }
 
     @Override
-    public Object createRoot(Ref rootRef) {
+    protected ModelRoot createRoot(Ref rootRef) {
         AnimalRepository animalRepository = new AnimalRepository();
         return new ModelRoot(rootRef, animalRepository);
     }

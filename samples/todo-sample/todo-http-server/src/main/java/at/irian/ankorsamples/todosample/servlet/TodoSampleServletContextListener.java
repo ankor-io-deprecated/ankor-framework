@@ -42,7 +42,7 @@ public class TodoSampleServletContextListener extends AnkorServletContextListene
     protected Application getApplication() {
         return new SimpleSingleRootApplication("Todo", "root") {
             @Override
-            public Object createRoot(Ref rootRef) {
+            protected Object createRoot(Ref rootRef) {
                 TaskRepository taskRepository = new TaskRepository();
                 taskRepository.saveTask(new Task("Test task 1"));
                 taskRepository.saveTask(new Task("Test task 2"));

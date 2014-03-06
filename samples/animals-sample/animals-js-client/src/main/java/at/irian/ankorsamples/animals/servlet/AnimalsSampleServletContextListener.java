@@ -41,7 +41,7 @@ public class AnimalsSampleServletContextListener extends AnkorServletContextList
     protected Application getApplication() {
         return new SimpleSingleRootApplication("Animals", "root") {
             @Override
-            public Object createRoot(Ref rootRef) {
+            protected Object createRoot(Ref rootRef) {
                 return new ModelRoot(rootRef, new AnimalRepository());
             }
         };

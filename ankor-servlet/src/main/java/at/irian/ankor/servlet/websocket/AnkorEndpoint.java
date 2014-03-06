@@ -226,7 +226,7 @@ public abstract class AnkorEndpoint extends Endpoint implements ServerApplicatio
     protected Application getApplication() {
         return new SimpleSingleRootApplication(getName(), "root") {
             @Override
-            public Object createRoot(Ref rootRef) {
+            protected Object createRoot(Ref rootRef) {
                 return getModelRoot(rootRef);
             }
         };

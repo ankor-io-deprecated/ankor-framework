@@ -10,7 +10,7 @@ import java.util.Set;
 /**
  * @author Manfred Geiler
  */
-public abstract class SimpleSingleRootApplication extends BaseApplication {
+public abstract class SimpleSingleRootApplication<M> extends BaseApplication {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SimpleSingleRootApplication.class);
 
     private final String modelName;
@@ -20,18 +20,30 @@ public abstract class SimpleSingleRootApplication extends BaseApplication {
         this.modelName = modelName;
     }
 
-    public abstract Object createRoot(Ref rootRef);
+    protected abstract M createRoot(Ref rootRef);
+
+    protected void beforeInitInstance(RefContext refContext) {}
+
+    protected void afterInitInstance(RefContext refContext, M root) {}
+
+    protected void beforeReleaseInstance(RefContext refContext, M root) {}
+
+    protected void afterReleaseInstance(RefContext refContext) {}
 
     @Override
     public ApplicationInstance getApplicationInstance(Map<String, Object> connectParameters) {
         return new ApplicationInstance() {
 
-            private Object root;
+            private RefContext refContext;
+            private M root;
 
             @Override
             public void init(RefContext refContext) {
+                beforeInitInstance(refContext);
+                this.refContext = refContext;
                 Ref rootRef = refContext.refFactory().ref(modelName);
                 this.root = createRoot(rootRef);
+                afterInitInstance(refContext, root);
             }
 
             @Override
@@ -51,7 +63,9 @@ public abstract class SimpleSingleRootApplication extends BaseApplication {
 
             @Override
             public void release() {
+                beforeReleaseInstance(refContext, root);
                 this.root = null;
+                afterReleaseInstance(refContext);
             }
         };
     }

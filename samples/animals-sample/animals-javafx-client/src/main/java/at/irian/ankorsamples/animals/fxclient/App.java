@@ -274,7 +274,7 @@ public class App extends javafx.application.Application {
         }
 
         @Override
-        public Object createRoot(Ref rootRef) {
+        protected Object createRoot(Ref rootRef) {
             try {
                 Class<?> modelRootType = Class.forName("at.irian.ankorsamples.animals.viewmodel.ModelRoot");
                 Class<?> repoType = Class.forName("at.irian.ankorsamples.animals.domain.AnimalRepository");

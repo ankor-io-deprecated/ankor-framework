@@ -25,6 +25,9 @@ public class RatesViewModel extends ViewModelBase {
     @AnkorIgnore
     private final RatesRepository repository;
 
+    @AnkorIgnore
+    private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+
     @AnkorWatched(diffThreshold = 30)
     private ExtendedList<Rate> rates;
 
@@ -33,11 +36,9 @@ public class RatesViewModel extends ViewModelBase {
         this.repository = repository;
         this.rates = new ExtendedListWrapper<>(new ArrayList<Rate>());
         AnkorPatterns.initViewModel(this);
-        schedulePeriodicRatesUpdate(2);
     }
 
-    private void schedulePeriodicRatesUpdate(long seconds) {
-        ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+    public void startRatesUpdate(long updateRateSeconds) {
         executorService.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
@@ -56,7 +57,11 @@ public class RatesViewModel extends ViewModelBase {
                     e.printStackTrace();
                 }
             }
-        }, 0, seconds, TimeUnit.SECONDS);
+        }, 0, updateRateSeconds, TimeUnit.SECONDS);
+    }
+
+    public void stopRatesUpdate() {
+        executorService.shutdown();
     }
 
     public ExtendedList<Rate> getRates() {

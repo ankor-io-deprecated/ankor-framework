@@ -19,7 +19,7 @@ public class TodoServerApplication extends SimpleSingleRootApplication {
     }
 
     @Override
-    public Object createRoot(Ref rootRef) {
+    protected Object createRoot(Ref rootRef) {
         TaskRepository animalRepository = new TaskRepository();
         return new ModelRoot(rootRef, animalRepository);
     }
