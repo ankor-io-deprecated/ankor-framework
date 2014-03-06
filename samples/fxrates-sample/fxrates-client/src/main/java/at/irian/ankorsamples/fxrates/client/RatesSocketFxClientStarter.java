@@ -1,7 +1,7 @@
 package at.irian.ankorsamples.fxrates.client;
 
 import at.irian.ankor.action.Action;
-import at.irian.ankor.fx.SocketFxClientApplication;
+import at.irian.ankor.system.SocketFxClientApplication;
 import at.irian.ankor.fx.binding.fxref.FxRefs;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;

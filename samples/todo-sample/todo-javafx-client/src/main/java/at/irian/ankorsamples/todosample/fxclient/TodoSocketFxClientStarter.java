@@ -1,6 +1,6 @@
 package at.irian.ankorsamples.todosample.fxclient;
 
-import at.irian.ankor.fx.SocketFxClientApplication;
+import at.irian.ankor.system.SocketFxClientApplication;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;

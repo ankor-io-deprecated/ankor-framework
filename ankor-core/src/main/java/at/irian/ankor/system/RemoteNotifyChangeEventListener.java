@@ -3,11 +3,11 @@ package at.irian.ankor.system;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.change.ChangeEventListener;
-import at.irian.ankor.connector.local.LocalParty;
+import at.irian.ankor.gateway.party.LocalParty;
 import at.irian.ankor.messaging.modify.Modifier;
-import at.irian.ankor.msg.ChangeEventMessage;
-import at.irian.ankor.msg.MessageBus;
-import at.irian.ankor.msg.party.Party;
+import at.irian.ankor.gateway.msg.ChangeEventGatewayMsg;
+import at.irian.ankor.gateway.Gateway;
+import at.irian.ankor.gateway.party.Party;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.session.ModelSession;
 
@@ -20,12 +20,12 @@ import at.irian.ankor.session.ModelSession;
 public class RemoteNotifyChangeEventListener extends ChangeEventListener {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RemoteNotifyChangeEventListener.class);
 
-    private final MessageBus messageBus;
+    private final Gateway gateway;
     private final Modifier preSendModifier;
 
-    public RemoteNotifyChangeEventListener(MessageBus messageBus, Modifier preSendModifier) {
+    public RemoteNotifyChangeEventListener(Gateway gateway, Modifier preSendModifier) {
         super(null); //global listener
-        this.messageBus = messageBus;
+        this.gateway = gateway;
         this.preSendModifier = preSendModifier;
     }
 
@@ -43,7 +43,8 @@ public class RemoteNotifyChangeEventListener extends ChangeEventListener {
             Change modifiedChange = preSendModifier.modifyBeforeSend(change, changedProperty);
             ModelSession modelSession = changedProperty.context().modelSession();
             Party sender = new LocalParty(modelSession.getId(), changedProperty.root().propertyName());
-            messageBus.broadcast(new ChangeEventMessage(sender, event.getSource(), changedProperty.path(), modifiedChange));
+            gateway.routeMessage(sender,
+                                 new ChangeEventGatewayMsg(changedProperty.path(), modifiedChange));
         }
     }
 

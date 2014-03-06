@@ -15,12 +15,14 @@ import at.irian.ankor.event.ArrayListEventListeners;
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.event.dispatch.EventDispatcherFactory;
 import at.irian.ankor.event.dispatch.SynchronisedEventDispatcherFactory;
+import at.irian.ankor.gateway.*;
+import at.irian.ankor.gateway.routing.DefaultRoutingTable;
+import at.irian.ankor.gateway.routing.RoutingTable;
 import at.irian.ankor.messaging.json.simpletree.SimpleTreeJsonMessageMapper;
 import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
 import at.irian.ankor.messaging.modify.CoerceTypeModifier;
 import at.irian.ankor.messaging.modify.Modifier;
 import at.irian.ankor.messaging.modify.PassThroughModifier;
-import at.irian.ankor.msg.*;
 import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.ref.RefContextFactoryProvider;
 import at.irian.ankor.ref.el.ELRefContextFactoryProvider;
@@ -53,7 +55,7 @@ public class AnkorSystemBuilder {
     private ModelSessionFactory modelSessionFactory;
     private Application application;
     private BeanResolver beanResolver;
-    private MessageBusFactory messageBusFactory;
+    private GatewayFactory gatewayFactory;
     private RefContextFactoryProvider refContextFactoryProvider;
     private BeanMetadataProvider beanMetadataProvider;
     private BeanFactory beanFactory;
@@ -88,8 +90,8 @@ public class AnkorSystemBuilder {
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public AnkorSystemBuilder withMessageBusFactory(MessageBusFactory messageBusFactory) {
-        this.messageBusFactory = messageBusFactory;
+    public AnkorSystemBuilder withMessageBusFactory(GatewayFactory gatewayFactory) {
+        this.gatewayFactory = gatewayFactory;
         return this;
     }
 
@@ -130,7 +132,7 @@ public class AnkorSystemBuilder {
 
     public AnkorSystem createServer() {
 
-        MessageBus messageBus = createMessageBus();
+        Gateway gateway = createMessageBus();
         EventDispatcherFactory eventDispatcherFactory = getEventDispatcherFactory();
 
         Application application = getServerApplication();
@@ -149,7 +151,7 @@ public class AnkorSystemBuilder {
         Modifier bigDataModifier = new ServerSideBigDataModifier(defaultModifier);
         Modifier modifier = new CoerceTypeModifier(bigDataModifier);
 
-        EventListeners defaultEventListeners = createDefaultEventListeners(messageBus, modifier);
+        EventListeners defaultEventListeners = createDefaultEventListeners(gateway, modifier);
 
         ModelSessionFactory modelSessionFactory = getModelSessionFactory(eventDispatcherFactory,
                                                                          defaultEventListeners,
@@ -159,20 +161,17 @@ public class AnkorSystemBuilder {
 
         RoutingTable routingTable = getRoutingTable();
 
-        List<MessageListener> defaultMessageListeners = createDefaultServerMessageListeners(routingTable, messageBus);
-
         if (!configValues.containsKey(MESSAGE_MAPPER_CONFIG_KEY)) {
             configValues.put(MESSAGE_MAPPER_CONFIG_KEY, ViewModelJsonMessageMapper.class.getName());
         }
 
         return new AnkorSystem(application,
                                getConfig(),
-                               messageBus,
+                               gateway,
                                refContextFactory,
                                modelSessionManager,
                                routingTable,
                                modifier,
-                               defaultMessageListeners,
                                beanMetadataProvider);
     }
 
@@ -182,7 +181,7 @@ public class AnkorSystemBuilder {
             throw new IllegalStateException("viewModelPostProcessors not supported for client system");
         }
 
-        MessageBus messageBus = createMessageBus();
+        Gateway gateway = createMessageBus();
 
         Application application = getClientApplication();
         ApplicationInstance applicationInstance = new SimpleApplicationInstance();
@@ -200,7 +199,7 @@ public class AnkorSystemBuilder {
         Modifier defaultModifier = getDefaultModifier();
         Modifier modifier = new ClientSideBigDataModifier(defaultModifier);
 
-        EventListeners defaultEventListeners = createDefaultEventListeners(messageBus, modifier);
+        EventListeners defaultEventListeners = createDefaultEventListeners(gateway, modifier);
 
         ModelSessionFactory modelSessionFactory = getModelSessionFactory(getEventDispatcherFactory(),
                                                                          defaultEventListeners, refContextFactory);
@@ -212,20 +211,17 @@ public class AnkorSystemBuilder {
 
         RoutingTable routingTable = getRoutingTable();
 
-        List<MessageListener> defaultMessageListeners = createDefaultClientMessageListeners(routingTable, messageBus);
-
         if (!configValues.containsKey(MESSAGE_MAPPER_CONFIG_KEY)) {
             configValues.put(MESSAGE_MAPPER_CONFIG_KEY, SimpleTreeJsonMessageMapper.class.getName());
         }
 
         return new AnkorSystem(application,
                                getConfig(),
-                               messageBus,
+                               gateway,
                                refContextFactory,
                                modelSessionManager,
                                routingTable,
                                modifier,
-                               defaultMessageListeners,
                                beanMetadataProvider);
     }
 
@@ -234,19 +230,6 @@ public class AnkorSystemBuilder {
             routingTable = new DefaultRoutingTable();
         }
         return routingTable;
-    }
-
-    private List<MessageListener> createDefaultServerMessageListeners(RoutingTable routingTable, MessageBus messageBus) {
-        List<MessageListener> messageListeners = new ArrayList<MessageListener>();
-        messageListeners.add(new DefaultDisconnectRequestMessageListener(routingTable, messageBus));
-        messageListeners.add(new DefaultRelayingEventMessageListener(routingTable, messageBus));
-        return messageListeners;
-    }
-
-    private List<MessageListener> createDefaultClientMessageListeners(RoutingTable routingTable, MessageBus messageBus) {
-        List<MessageListener> messageListeners = new ArrayList<MessageListener>();
-        messageListeners.add(new DefaultDisconnectRequestMessageListener(routingTable, messageBus));
-        return messageListeners;
     }
 
     private BeanFactory getBeanFactory() {
@@ -267,15 +250,15 @@ public class AnkorSystemBuilder {
         return new PassThroughModifier();
     }
 
-    private EventListeners createDefaultEventListeners(MessageBus messageBus, Modifier modifier) {
+    private EventListeners createDefaultEventListeners(Gateway gateway, Modifier modifier) {
 
         EventListeners eventListeners = new ArrayListEventListeners();
 
         // action event listener for sending action events to remote partner
-        eventListeners.add(new RemoteNotifyActionEventListener(messageBus, modifier));
+        eventListeners.add(new RemoteNotifyActionEventListener(gateway, modifier));
 
         // global change event listener for sending change events to remote partner
-        eventListeners.add(new RemoteNotifyChangeEventListener(messageBus, modifier));
+        eventListeners.add(new RemoteNotifyChangeEventListener(gateway, modifier));
 
         // global change event listener for cleaning up obsolete model session listeners
         eventListeners.add(new ListenerCleanupChangeEventListener());
@@ -320,11 +303,11 @@ public class AnkorSystemBuilder {
         return application;
     }
 
-    private MessageBus createMessageBus() {
-        if (messageBusFactory == null) {
-            messageBusFactory = new SimpleMessageBusFactory();
+    private Gateway createMessageBus() {
+        if (gatewayFactory == null) {
+            gatewayFactory = new SimpleGatewayFactory();
         }
-        return messageBusFactory.createMessageBus();
+        return gatewayFactory.createGateway();
     }
 
     private List<ViewModelPostProcessor> getServerViewModelPostProcessors() {

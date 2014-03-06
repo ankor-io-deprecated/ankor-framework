@@ -3,11 +3,11 @@ package at.irian.ankor.system;
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionEvent;
 import at.irian.ankor.action.ActionEventListener;
-import at.irian.ankor.connector.local.LocalParty;
+import at.irian.ankor.gateway.party.LocalParty;
 import at.irian.ankor.messaging.modify.Modifier;
-import at.irian.ankor.msg.ActionEventMessage;
-import at.irian.ankor.msg.MessageBus;
-import at.irian.ankor.msg.party.Party;
+import at.irian.ankor.gateway.msg.ActionEventGatewayMsg;
+import at.irian.ankor.gateway.Gateway;
+import at.irian.ankor.gateway.party.Party;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.session.ModelSession;
 
@@ -20,12 +20,12 @@ import at.irian.ankor.session.ModelSession;
 public class RemoteNotifyActionEventListener extends ActionEventListener {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RemoteNotifyActionEventListener.class);
 
-    private final MessageBus messageBus;
+    private final Gateway gateway;
     private final Modifier preSendModifier;
 
-    public RemoteNotifyActionEventListener(MessageBus messageBus, Modifier preSendModifier) {
+    public RemoteNotifyActionEventListener(Gateway gateway, Modifier preSendModifier) {
         super(null); //global listener
-        this.messageBus = messageBus;
+        this.gateway = gateway;
         this.preSendModifier = preSendModifier;
     }
 
@@ -43,7 +43,8 @@ public class RemoteNotifyActionEventListener extends ActionEventListener {
             Action modifiedAction = preSendModifier.modifyBeforeSend(action, actionProperty);
             ModelSession modelSession = actionProperty.context().modelSession();
             Party sender = new LocalParty(modelSession.getId(), actionProperty.root().propertyName());
-            messageBus.broadcast(new ActionEventMessage(sender, event.getSource(), actionProperty.path(), modifiedAction));
+            gateway.routeMessage(sender,
+                                 new ActionEventGatewayMsg(actionProperty.path(), modifiedAction));
         }
     }
 

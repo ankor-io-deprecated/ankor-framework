@@ -1,17 +1,14 @@
 package at.irian.ankor.system;
 
 import at.irian.ankor.application.Application;
-import at.irian.ankor.connector.ConnectorLoader;
+import at.irian.ankor.gateway.connector.ConnectorLoader;
 import at.irian.ankor.messaging.modify.Modifier;
-import at.irian.ankor.msg.MessageBus;
-import at.irian.ankor.msg.MessageListener;
-import at.irian.ankor.msg.RoutingTable;
+import at.irian.ankor.gateway.Gateway;
+import at.irian.ankor.gateway.routing.RoutingTable;
 import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.session.ModelSessionManager;
 import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
 import com.typesafe.config.Config;
-
-import java.util.List;
 
 /**
  * This is the main system object that sticks all the Ankor parts together.
@@ -27,32 +24,29 @@ public class AnkorSystem {
 
     private final Application application;
     private final Config config;
-    private final MessageBus messageBus;
+    private final Gateway gateway;
     private final RefContextFactory refContextFactory;
     private final ModelSessionManager modelSessionManager;
     private final RoutingTable routingTable;
     private final Modifier modifier;
-    private final List<MessageListener> defaultMessageListeners;
     private final ConnectorLoader connectorLoader;
     private final BeanMetadataProvider beanMetadataProvider;
 
     protected AnkorSystem(Application application,
                           Config config,
-                          MessageBus messageBus,
+                          Gateway gateway,
                           RefContextFactory refContextFactory,
                           ModelSessionManager modelSessionManager,
                           RoutingTable routingTable,
                           Modifier modifier,
-                          List<MessageListener> defaultMessageListeners,
                           BeanMetadataProvider beanMetadataProvider) {
         this.application = application;
         this.config = config;
-        this.messageBus = messageBus;
+        this.gateway = gateway;
         this.refContextFactory = refContextFactory;
         this.modelSessionManager = modelSessionManager;
         this.routingTable = routingTable;
         this.modifier = modifier;
-        this.defaultMessageListeners = defaultMessageListeners;
         this.beanMetadataProvider = beanMetadataProvider;
         this.connectorLoader = new ConnectorLoader();
     }
@@ -65,8 +59,8 @@ public class AnkorSystem {
         return config;
     }
 
-    public MessageBus getMessageBus() {
-        return messageBus;
+    public Gateway getGateway() {
+        return gateway;
     }
 
     public RoutingTable getRoutingTable() {
@@ -100,12 +94,9 @@ public class AnkorSystem {
 
     public AnkorSystem start() {
         LOG.info("Starting {}", this);
-        for (MessageListener messageListener : defaultMessageListeners) {
-            messageBus.registerMessageListener(messageListener);
-        }
         connectorLoader.loadAndInitConnectors(this);
         connectorLoader.startAllConnectors();
-        messageBus.start();
+        gateway.start();
         return this;
     }
 
@@ -113,11 +104,13 @@ public class AnkorSystem {
     @SuppressWarnings("UnusedDeclaration")
     public void stop() {
         LOG.info("Stopping {}", this);
-        messageBus.stop();
+        gateway.stop();
         connectorLoader.stopAllConnectors();
-        for (MessageListener messageListener : defaultMessageListeners) {
-            messageBus.unregisterMessageListener(messageListener);
-        }
     }
 
+    @Override
+    protected void finalize() throws Throwable {
+        connectorLoader.unloadConnectors();
+        super.finalize();
+    }
 }

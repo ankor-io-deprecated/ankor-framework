@@ -1,6 +1,6 @@
 package at.irian.ankorsamples.fxrates.server;
 
-import at.irian.ankor.connector.socket.SocketServerStarter;
+import at.irian.ankor.system.SocketServerStarter;
 
 /**
  * @author Manfred Geiler
