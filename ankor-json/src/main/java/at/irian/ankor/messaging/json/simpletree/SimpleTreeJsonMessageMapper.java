@@ -57,7 +57,7 @@ public class SimpleTreeJsonMessageMapper implements MessageMapper<String>,
         mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
         mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
 
-        mapper.configure(JsonGenerator.Feature.QUOTE_FIELD_NAMES, false);
+        mapper.configure(JsonGenerator.Feature.QUOTE_FIELD_NAMES, true); // importand for serializing maps that have keys like "com.foo.bar.Feature"
 
         mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);

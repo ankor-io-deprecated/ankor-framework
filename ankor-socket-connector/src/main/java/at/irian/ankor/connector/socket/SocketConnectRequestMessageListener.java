@@ -28,7 +28,7 @@ class SocketConnectRequestMessageListener implements ConnectRequestMessage.Liste
     }
 
     @Override
-    public void onConnectMessage(ConnectRequestMessage msg) {
+    public void onConnectRequest(ConnectRequestMessage msg) {
         Party sender = msg.getSender();
         Collection<Party> receivers = routingTable.getConnectedParties(sender);
         for (Party receiver : receivers) {
@@ -40,7 +40,8 @@ class SocketConnectRequestMessageListener implements ConnectRequestMessage.Liste
 
     private void send(SocketParty receiver, ConnectRequestMessage msg) {
         try {
-            SocketMessage socketMessage = SocketMessage.createConnectMsg(localAddress.toString(), msg.getModelName());
+            SocketMessage socketMessage = SocketMessage.createConnectMsg(localAddress.toString(), msg.getModelName(),
+                                                                         msg.getConnectParameters());
             String serializedMsg = messageSerializer.serialize(socketMessage);
             new SocketSender(receiver).send(serializedMsg);
         } catch (IOException e) {

@@ -109,6 +109,11 @@ public abstract class SocketFxClientApplication extends javafx.application.Appli
         } else {
             setClientAddress(DEFAULT_CLIENT_ADDRESS);
         }
+
+        String appInstanceId = params.get("appInstanceId");
+        if (appInstanceId != null) {
+            setAppInstanceIdToConnect(appInstanceId);
+        }
     }
 
     protected AnkorSystem createAnkorSystem() {

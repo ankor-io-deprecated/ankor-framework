@@ -18,6 +18,7 @@ import java.util.Map;
 /**
 * @author Manfred Geiler
 */
+@Deprecated
 public class MessageDeserializer extends StdDeserializer<Message> {
 
     public MessageDeserializer() {

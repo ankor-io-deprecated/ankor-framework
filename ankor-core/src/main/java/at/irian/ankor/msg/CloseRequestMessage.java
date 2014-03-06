@@ -26,11 +26,11 @@ public class CloseRequestMessage extends Message {
 
     @Override
     public void processBy(MessageListener listener) {
-        ((Listener)listener).onCloseMessage(this);
+        ((Listener)listener).onCloseRequest(this);
     }
 
     public interface Listener extends MessageListener {
-        void onCloseMessage(CloseRequestMessage msg);
+        void onCloseRequest(CloseRequestMessage msg);
     }
 
 }

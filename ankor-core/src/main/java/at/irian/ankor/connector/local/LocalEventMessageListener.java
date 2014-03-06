@@ -91,6 +91,11 @@ class LocalEventMessageListener implements AbstractEventMessage.Listener {
                     PartySource source = new PartySource(msg.getSender(), LocalEventMessageListener.this);
                     ((RefImplementor)actionProperty).fire(source, action);
                 }
+
+                @Override
+                public String toString() {
+                    return "AsyncTask{msg=" + msg + ", modelSession=" + modelSession + "}";
+                }
             });
 
         } else if (msg instanceof ChangeEventMessage) {
@@ -102,6 +107,11 @@ class LocalEventMessageListener implements AbstractEventMessage.Listener {
                     Change change = modifier.modifyAfterReceive(((ChangeEventMessage) msg).getChange(), changedProperty);
                     PartySource source = new PartySource(msg.getSender(), LocalEventMessageListener.this);
                     ((RefImplementor)changedProperty).apply(source, change);
+                }
+
+                @Override
+                public String toString() {
+                    return "AsyncTask{msg=" + msg + ", modelSession=" + modelSession + "}";
                 }
             });
 

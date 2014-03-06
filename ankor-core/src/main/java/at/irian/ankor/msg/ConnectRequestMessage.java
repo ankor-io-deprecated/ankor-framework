@@ -34,11 +34,11 @@ public class ConnectRequestMessage extends Message {
 
     @Override
     public void processBy(MessageListener listener) {
-        ((Listener)listener).onConnectMessage(this);
+        ((Listener)listener).onConnectRequest(this);
     }
 
     public interface Listener extends MessageListener {
-        void onConnectMessage(ConnectRequestMessage msg);
+        void onConnectRequest(ConnectRequestMessage msg);
     }
 
 }

@@ -21,11 +21,11 @@ public class DisconnectRequestMessage extends Message {
 
     @Override
     public void processBy(MessageListener listener) {
-        ((Listener)listener).onDisconnectMessage(this);
+        ((Listener)listener).onDisconnectRequest(this);
     }
 
     public interface Listener extends MessageListener {
-        void onDisconnectMessage(DisconnectRequestMessage msg);
+        void onDisconnectRequest(DisconnectRequestMessage msg);
     }
 
 }

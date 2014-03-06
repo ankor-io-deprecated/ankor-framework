@@ -10,7 +10,7 @@ public class SocketCloseRequestMessageListener implements CloseRequestMessage.Li
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SocketCloseRequestMessageListener.class);
 
     @Override
-    public void onCloseMessage(CloseRequestMessage msg) {
+    public void onCloseRequest(CloseRequestMessage msg) {
         Party party = msg.getPartyToClose();
         if (party instanceof SocketParty) {
             LOG.info("Closing {} as requested by {}", party, msg.getSender());

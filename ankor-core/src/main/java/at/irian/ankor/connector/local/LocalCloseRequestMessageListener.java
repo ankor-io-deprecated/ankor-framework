@@ -18,7 +18,7 @@ class LocalCloseRequestMessageListener implements CloseRequestMessage.Listener {
     }
 
     @Override
-    public void onCloseMessage(CloseRequestMessage msg) {
+    public void onCloseRequest(CloseRequestMessage msg) {
         Party party = msg.getPartyToClose();
         if (party instanceof LocalParty) {
             closeSession((LocalParty) party, msg.getSender());

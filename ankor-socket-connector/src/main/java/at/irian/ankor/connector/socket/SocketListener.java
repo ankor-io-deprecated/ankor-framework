@@ -139,7 +139,7 @@ public class SocketListener {
         String modelName = pathSyntax.rootOf(socketMessage.getProperty());
         URI senderAddress = URI.create(socketMessage.getSenderId());
         SocketParty sender = new SocketParty(senderAddress, modelName);
-        messageBus.broadcast(new ConnectRequestMessage(sender, modelName, null));
+        messageBus.broadcast(new ConnectRequestMessage(sender, modelName, socketMessage.getConnectParams()));
     }
 
 

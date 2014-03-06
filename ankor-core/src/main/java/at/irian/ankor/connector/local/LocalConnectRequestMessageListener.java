@@ -37,7 +37,7 @@ class LocalConnectRequestMessageListener implements ConnectRequestMessage.Listen
     }
 
     @Override
-    public void onConnectMessage(ConnectRequestMessage msg) {
+    public void onConnectRequest(ConnectRequestMessage msg) {
 
         Party sender = msg.getSender();
         Map<String,Object> connectParameters = msg.getConnectParameters();

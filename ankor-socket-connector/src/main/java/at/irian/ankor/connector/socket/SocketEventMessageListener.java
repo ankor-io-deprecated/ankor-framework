@@ -1,5 +1,6 @@
 package at.irian.ankor.connector.socket;
 
+import at.irian.ankor.event.source.PartySource;
 import at.irian.ankor.messaging.MessageSerializer;
 import at.irian.ankor.msg.*;
 import at.irian.ankor.msg.party.Party;
@@ -35,6 +36,15 @@ class SocketEventMessageListener implements AbstractEventMessage.Listener {
         Collection<Party> receivers = routingTable.getConnectedParties(sender);
         for (Party receiver : receivers) {
             if (receiver instanceof SocketParty) {
+
+                if (msg.getEventSource() instanceof PartySource) {
+                    if (receiver.equals(((PartySource) msg.getEventSource()).getParty())) {
+                        LOG.info("Not sending back {} to {} because it originally came from there", msg, receiver);
+                        // todo  make circuit breaking unnecessary ...
+                        continue;
+                    }
+                }
+
                 try {
                     send((SocketParty) receiver, msg);
                 } catch (IOException e) {

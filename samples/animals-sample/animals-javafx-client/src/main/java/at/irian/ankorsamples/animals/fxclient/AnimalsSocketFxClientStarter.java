@@ -8,6 +8,16 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 /**
+ * Starts the Animals JavaFX Sample with socket connection support.
+ * <p>
+ * Examples vor starting:
+ * <ul>
+ *     <li><pre>java at.irian.ankorsamples.animals.fxclient.AnimalsSocketFxClientStarter</pre></li>
+ *     <li><pre>java at.irian.ankorsamples.animals.fxclient.AnimalsSocketFxClientStarter --client=//localhost:9091</pre></li>
+ *     <li><pre>java at.irian.ankorsamples.animals.fxclient.AnimalsSocketFxClientStarter --client=//localhost:9092 --appInstanceId=collaborationTest</pre></li>
+ * </ul>
+ * </p>
+ *
  * @author Manfred Geiler
  */
 public class AnimalsSocketFxClientStarter extends SocketFxClientApplication {

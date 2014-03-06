@@ -20,7 +20,7 @@ public class DefaultDisconnectRequestMessageListener implements DisconnectReques
     }
 
     @Override
-    public void onDisconnectMessage(DisconnectRequestMessage msg) {
+    public void onDisconnectRequest(DisconnectRequestMessage msg) {
         Party sender = msg.getSender();
         LOG.info("Disconnect message received from {}", sender);
 
