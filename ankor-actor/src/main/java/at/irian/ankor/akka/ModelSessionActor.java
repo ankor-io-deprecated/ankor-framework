@@ -19,7 +19,7 @@ public class ModelSessionActor extends UntypedActor {
     }
 
     public static String name(ModelSession modelSession) {
-        return "ankor_" + modelSession.getApplicationInstance();
+        return "ankor_" + modelSession.getId();
     }
 
     private final EventDispatcher eventDispatcher;
