@@ -6,7 +6,7 @@ import at.irian.ankor.servlet.websocket.AnkorEndpoint;
 import at.irian.ankor.system.AnkorSystemBuilder;
 import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
 import at.irian.ankor.viewmodel.proxy.CglibProxyBeanFactory;
-import at.irian.ankorsamples.animals.domain.animal.AnimalRepository;
+import at.irian.ankorsamples.animals.domain.AnimalRepository;
 import at.irian.ankorsamples.animals.viewmodel.ModelRoot;
 
 @SuppressWarnings("UnusedDeclaration")

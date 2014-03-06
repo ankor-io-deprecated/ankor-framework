@@ -1,11 +1,10 @@
-package at.irian.ankorsamples.animals.fxclient.animal;
+package at.irian.ankorsamples.animals.fxclient;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.fx.binding.convert.ReverseBooleanConverter;
 import at.irian.ankor.fx.binding.fxref.FxRef;
 import at.irian.ankor.fx.controller.FXControllerSupport;
-import at.irian.ankorsamples.animals.fxclient.BaseTabController;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

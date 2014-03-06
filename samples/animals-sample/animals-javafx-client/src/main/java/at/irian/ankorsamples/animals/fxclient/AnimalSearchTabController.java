@@ -1,4 +1,4 @@
-package at.irian.ankorsamples.animals.fxclient.animal;
+package at.irian.ankorsamples.animals.fxclient;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionBuilder;
@@ -8,7 +8,6 @@ import at.irian.ankor.fx.controller.FXControllerSupport;
 import at.irian.ankor.fx.controller.I18nSupport;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankorsamples.animals.fxclient.BaseTabController;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;

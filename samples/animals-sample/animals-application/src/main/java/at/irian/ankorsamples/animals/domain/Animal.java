@@ -1,4 +1,4 @@
-package at.irian.ankorsamples.animals.domain.animal;
+package at.irian.ankorsamples.animals.domain;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -71,12 +71,11 @@ public class Animal {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Animal{");
-        sb.append("name='").append(name).append('\'');
-        sb.append(", type=").append(type);
-        sb.append(", family=").append(family);
-        sb.append('}');
-        return sb.toString();
+        return "Animal{"
+               + "name='" + name + '\''
+               + ", type=" + type
+               + ", family=" + family
+               + '}';
     }
 
     @SuppressWarnings("RedundantIfStatement")

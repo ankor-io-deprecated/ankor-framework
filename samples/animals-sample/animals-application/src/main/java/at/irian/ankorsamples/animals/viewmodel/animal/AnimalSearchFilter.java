@@ -1,7 +1,7 @@
 package at.irian.ankorsamples.animals.viewmodel.animal;
 
-import at.irian.ankorsamples.animals.domain.animal.AnimalFamily;
-import at.irian.ankorsamples.animals.domain.animal.AnimalType;
+import at.irian.ankorsamples.animals.domain.AnimalFamily;
+import at.irian.ankorsamples.animals.domain.AnimalType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**

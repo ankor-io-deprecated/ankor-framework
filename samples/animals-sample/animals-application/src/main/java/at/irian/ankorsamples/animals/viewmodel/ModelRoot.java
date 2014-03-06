@@ -6,7 +6,7 @@ import at.irian.ankor.annotation.AnkorBigMap;
 import at.irian.ankor.i18n.ResourceBundleMap;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankorsamples.animals.domain.animal.AnimalRepository;
+import at.irian.ankorsamples.animals.domain.AnimalRepository;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.Collections;

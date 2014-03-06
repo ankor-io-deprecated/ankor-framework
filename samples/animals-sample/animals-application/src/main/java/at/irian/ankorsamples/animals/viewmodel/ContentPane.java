@@ -6,8 +6,8 @@ import at.irian.ankor.messaging.AnkorIgnore;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.TypedRef;
-import at.irian.ankorsamples.animals.domain.animal.Animal;
-import at.irian.ankorsamples.animals.domain.animal.AnimalRepository;
+import at.irian.ankorsamples.animals.domain.Animal;
+import at.irian.ankorsamples.animals.domain.AnimalRepository;
 import at.irian.ankorsamples.animals.viewmodel.animal.AnimalDetailModel;
 import at.irian.ankorsamples.animals.viewmodel.animal.AnimalSearchModel;
 

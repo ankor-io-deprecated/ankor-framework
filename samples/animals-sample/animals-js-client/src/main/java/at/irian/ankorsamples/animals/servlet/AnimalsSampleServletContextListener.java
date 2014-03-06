@@ -5,7 +5,7 @@ import at.irian.ankor.application.SimpleSingleRootApplication;
 import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.servlet.polling.AnkorServletContextListener;
-import at.irian.ankorsamples.animals.domain.animal.AnimalRepository;
+import at.irian.ankorsamples.animals.domain.AnimalRepository;
 import at.irian.ankorsamples.animals.viewmodel.ModelRoot;
 
 import java.util.Collection;

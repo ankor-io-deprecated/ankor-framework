@@ -277,7 +277,7 @@ public class App extends javafx.application.Application {
         public Object createRoot(Ref rootRef) {
             try {
                 Class<?> modelRootType = Class.forName("at.irian.ankorsamples.animals.viewmodel.ModelRoot");
-                Class<?> repoType = Class.forName("at.irian.ankorsamples.animals.domain.animal.AnimalRepository");
+                Class<?> repoType = Class.forName("at.irian.ankorsamples.animals.domain.AnimalRepository");
                 Object repo = repoType.newInstance();
                 return modelRootType.getConstructor(Ref.class, repoType).newInstance(rootRef, repo);
             } catch (Exception e) {

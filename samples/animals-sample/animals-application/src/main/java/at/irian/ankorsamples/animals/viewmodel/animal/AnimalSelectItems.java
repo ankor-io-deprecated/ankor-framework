@@ -2,8 +2,8 @@ package at.irian.ankorsamples.animals.viewmodel.animal;
 
 import at.irian.ankor.annotation.AnkorInit;
 import at.irian.ankor.annotation.AutoSignal;
-import at.irian.ankorsamples.animals.domain.animal.AnimalFamily;
-import at.irian.ankorsamples.animals.domain.animal.AnimalType;
+import at.irian.ankorsamples.animals.domain.AnimalFamily;
+import at.irian.ankorsamples.animals.domain.AnimalType;
 
 import java.util.ArrayList;
 import java.util.Collections;

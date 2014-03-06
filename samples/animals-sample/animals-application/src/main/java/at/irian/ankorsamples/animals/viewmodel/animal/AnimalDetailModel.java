@@ -6,10 +6,10 @@ import at.irian.ankor.annotation.AutoSignal;
 import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.TypedRef;
-import at.irian.ankorsamples.animals.domain.animal.Animal;
-import at.irian.ankorsamples.animals.domain.animal.AnimalFamily;
-import at.irian.ankorsamples.animals.domain.animal.AnimalRepository;
-import at.irian.ankorsamples.animals.domain.animal.AnimalType;
+import at.irian.ankorsamples.animals.domain.Animal;
+import at.irian.ankorsamples.animals.domain.AnimalFamily;
+import at.irian.ankorsamples.animals.domain.AnimalRepository;
+import at.irian.ankorsamples.animals.domain.AnimalType;
 import at.irian.ankorsamples.animals.viewmodel.PanelNameCreator;
 
 import java.util.Collections;

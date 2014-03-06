@@ -1,4 +1,4 @@
-package at.irian.ankorsamples.animals.domain.animal;
+package at.irian.ankorsamples.animals.domain;
 
 import at.irian.ankor.base.ObjectUtils;
 import at.irian.ankorsamples.animals.viewmodel.animal.AnimalSearchFilter;
