@@ -4,6 +4,7 @@ import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.delay.Scheduler;
 import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.ref.RefContextFactoryProvider;
+import at.irian.ankor.switching.Switchboard;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
 import at.irian.ankor.viewmodel.factory.BeanFactory;
 import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
@@ -18,8 +19,10 @@ public class FxRefContextFactoryProvider extends RefContextFactoryProvider {
     public RefContextFactory createRefContextFactory(BeanResolver beanResolver,
                                                      List<ViewModelPostProcessor> viewModelPostProcessors,
                                                      Scheduler scheduler,
-                                                     BeanMetadataProvider metadataProvider, BeanFactory beanFactory) {
+                                                     BeanMetadataProvider metadataProvider,
+                                                     BeanFactory beanFactory,
+                                                     Switchboard switchboard) {
         return new FxRefContextFactory(beanResolver, viewModelPostProcessors, scheduler,
-                                       metadataProvider, beanFactory);
+                                       metadataProvider, beanFactory, switchboard);
     }
 }

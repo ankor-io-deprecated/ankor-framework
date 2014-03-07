@@ -1,10 +1,10 @@
 package at.irian.ankor.system;
 
 import at.irian.ankor.application.Application;
-import at.irian.ankor.gateway.connector.ConnectorLoader;
+import at.irian.ankor.switching.Switchboard;
+import at.irian.ankor.switching.connector.ConnectorLoader;
 import at.irian.ankor.messaging.modify.Modifier;
-import at.irian.ankor.gateway.Gateway;
-import at.irian.ankor.gateway.routing.RoutingTable;
+import at.irian.ankor.switching.routing.RoutingTable;
 import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.session.ModelSessionManager;
 import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
@@ -24,7 +24,7 @@ public class AnkorSystem {
 
     private final Application application;
     private final Config config;
-    private final Gateway gateway;
+    private final Switchboard switchboard;
     private final RefContextFactory refContextFactory;
     private final ModelSessionManager modelSessionManager;
     private final RoutingTable routingTable;
@@ -34,7 +34,7 @@ public class AnkorSystem {
 
     protected AnkorSystem(Application application,
                           Config config,
-                          Gateway gateway,
+                          Switchboard switchboard,
                           RefContextFactory refContextFactory,
                           ModelSessionManager modelSessionManager,
                           RoutingTable routingTable,
@@ -42,7 +42,7 @@ public class AnkorSystem {
                           BeanMetadataProvider beanMetadataProvider) {
         this.application = application;
         this.config = config;
-        this.gateway = gateway;
+        this.switchboard = switchboard;
         this.refContextFactory = refContextFactory;
         this.modelSessionManager = modelSessionManager;
         this.routingTable = routingTable;
@@ -59,8 +59,8 @@ public class AnkorSystem {
         return config;
     }
 
-    public Gateway getGateway() {
-        return gateway;
+    public Switchboard getSwitchboard() {
+        return switchboard;
     }
 
     public RoutingTable getRoutingTable() {
@@ -96,7 +96,7 @@ public class AnkorSystem {
         LOG.info("Starting {}", this);
         connectorLoader.loadAndInitConnectors(this);
         connectorLoader.startAllConnectors();
-        gateway.start();
+        switchboard.start();
         return this;
     }
 
@@ -104,7 +104,7 @@ public class AnkorSystem {
     @SuppressWarnings("UnusedDeclaration")
     public void stop() {
         LOG.info("Stopping {}", this);
-        gateway.stop();
+        switchboard.stop();
         connectorLoader.stopAllConnectors();
     }
 

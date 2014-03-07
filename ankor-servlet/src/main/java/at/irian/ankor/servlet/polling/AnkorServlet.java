@@ -36,7 +36,7 @@ public class AnkorServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        ServletMessageBus messageBus = (ServletMessageBus)ankorSystem.getGateway();
+        ServletMessageBus messageBus = (ServletMessageBus)ankorSystem.getSwitchboard();
         ViewModelJsonMessageMapper messageMapper = messageBus.getMessageMapper();
 
         // receive messages

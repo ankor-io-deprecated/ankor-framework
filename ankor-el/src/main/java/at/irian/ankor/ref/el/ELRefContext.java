@@ -9,6 +9,8 @@ import at.irian.ankor.path.el.SimpleELPathSyntax;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.ref.impl.RefContextImplementor;
+import at.irian.ankor.switching.Switchboard;
+import at.irian.ankor.switching.party.LocalParty;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
 import at.irian.ankor.viewmodel.factory.BeanFactory;
 import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
@@ -16,6 +18,7 @@ import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Manfred Geiler
@@ -30,12 +33,16 @@ public class ELRefContext implements RefContext, RefContextImplementor {
     private final RefFactory refFactory;
     private final BeanMetadataProvider metadataProvider;
     private final BeanFactory beanFactory;
+    private final Switchboard switchboard;
 
     protected ELRefContext(ELSupport elSupport,
                            ModelSession modelSession,
                            List<ViewModelPostProcessor> viewModelPostProcessors,
                            Scheduler scheduler,
-                           RefFactory refFactory, BeanMetadataProvider metadataProvider, BeanFactory beanFactory) {
+                           RefFactory refFactory,
+                           BeanMetadataProvider metadataProvider,
+                           BeanFactory beanFactory,
+                           Switchboard switchboard) {
         this.elSupport = elSupport;
         this.modelSession = modelSession;
         this.viewModelPostProcessors = viewModelPostProcessors;
@@ -43,20 +50,25 @@ public class ELRefContext implements RefContext, RefContextImplementor {
         this.refFactory = refFactory;
         this.metadataProvider = metadataProvider;
         this.beanFactory = beanFactory;
+        this.switchboard = switchboard;
     }
 
     protected static ELRefContext create(ELSupport elSupport,
                                          ModelSession modelSession,
                                          List<ViewModelPostProcessor> viewModelPostProcessors,
                                          Scheduler scheduler,
-                                         BeanMetadataProvider metadataProvider, BeanFactory beanFactory) {
+                                         BeanMetadataProvider metadataProvider,
+                                         BeanFactory beanFactory,
+                                         Switchboard switchboard) {
         ELRefFactory refFactory = new ELRefFactory();
         ELRefContext refContext = new ELRefContext(elSupport,
                                                    modelSession,
                                                    viewModelPostProcessors,
                                                    scheduler,
                                                    refFactory,
-                                                   metadataProvider, beanFactory);
+                                                   metadataProvider,
+                                                   beanFactory,
+                                                   switchboard);
         refFactory.setRefContext(refContext); // bi-directional relation - not nice but no idea by now how to make it nice...  ;-)
         return refContext;
     }
@@ -107,5 +119,10 @@ public class ELRefContext implements RefContext, RefContextImplementor {
     @Override
     public BeanFactory beanFactory() {
         return beanFactory;
+    }
+
+    @Override
+    public void connectModel(String modelName, Map<String, Object> connectParameters) {
+        switchboard.open(new LocalParty(modelSession, modelName), connectParameters);
     }
 }

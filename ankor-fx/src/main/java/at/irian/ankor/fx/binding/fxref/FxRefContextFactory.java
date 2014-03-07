@@ -7,6 +7,7 @@ import at.irian.ankor.el.ELSupport;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.session.ModelSession;
+import at.irian.ankor.switching.Switchboard;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
 import at.irian.ankor.viewmodel.factory.BeanFactory;
 import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
@@ -22,19 +23,21 @@ class FxRefContextFactory implements RefContextFactory {
     private final BeanResolver beanResolver;
     private final List<ViewModelPostProcessor> viewModelPostProcessors;
     private final Scheduler scheduler;
-    private BeanMetadataProvider metadataProvider;
-    private BeanFactory beanFactory;
+    private final BeanMetadataProvider metadataProvider;
+    private final BeanFactory beanFactory;
+    private final Switchboard switchboard;
 
     public FxRefContextFactory(BeanResolver beanResolver,
                                List<ViewModelPostProcessor> viewModelPostProcessors,
                                Scheduler scheduler,
                                BeanMetadataProvider metadataProvider,
-                               BeanFactory beanFactory) {
+                               BeanFactory beanFactory, Switchboard switchboard) {
         this.beanResolver = beanResolver;
         this.viewModelPostProcessors = viewModelPostProcessors;
         this.scheduler = scheduler;
         this.metadataProvider = metadataProvider;
         this.beanFactory = beanFactory;
+        this.switchboard = switchboard;
     }
 
     @Override
@@ -45,7 +48,8 @@ class FxRefContextFactory implements RefContextFactory {
                                           viewModelPostProcessors,
                                           scheduler,
                                           metadataProvider,
-                                          beanFactory);
+                                          beanFactory,
+                                          switchboard);
     }
 
 }

@@ -3,11 +3,11 @@ package at.irian.ankor.system;
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionEvent;
 import at.irian.ankor.action.ActionEventListener;
-import at.irian.ankor.gateway.party.LocalParty;
+import at.irian.ankor.switching.Switchboard;
+import at.irian.ankor.switching.msg.ActionEventMessage;
+import at.irian.ankor.switching.party.LocalParty;
 import at.irian.ankor.messaging.modify.Modifier;
-import at.irian.ankor.gateway.msg.ActionEventGatewayMsg;
-import at.irian.ankor.gateway.Gateway;
-import at.irian.ankor.gateway.party.Party;
+import at.irian.ankor.switching.party.Party;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.session.ModelSession;
 
@@ -20,12 +20,12 @@ import at.irian.ankor.session.ModelSession;
 public class RemoteNotifyActionEventListener extends ActionEventListener {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RemoteNotifyActionEventListener.class);
 
-    private final Gateway gateway;
+    private final Switchboard switchboard;
     private final Modifier preSendModifier;
 
-    public RemoteNotifyActionEventListener(Gateway gateway, Modifier preSendModifier) {
+    public RemoteNotifyActionEventListener(Switchboard switchboard, Modifier preSendModifier) {
         super(null); //global listener
-        this.gateway = gateway;
+        this.switchboard = switchboard;
         this.preSendModifier = preSendModifier;
     }
 
@@ -43,8 +43,8 @@ public class RemoteNotifyActionEventListener extends ActionEventListener {
             Action modifiedAction = preSendModifier.modifyBeforeSend(action, actionProperty);
             ModelSession modelSession = actionProperty.context().modelSession();
             Party sender = new LocalParty(modelSession.getId(), actionProperty.root().propertyName());
-            gateway.routeMessage(sender,
-                                 new ActionEventGatewayMsg(actionProperty.path(), modifiedAction));
+            switchboard.send(sender,
+                             new ActionEventMessage(actionProperty.path(), modifiedAction));
         }
     }
 

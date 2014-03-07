@@ -47,7 +47,7 @@ public class SocketServerStarter {
                 .withScheduler(new AkkaScheduler(ankorActorSystem))
                 .withBeanMetadataProvider(beanMetadataProvider)
                 .withBeanFactory(new CglibProxyBeanFactory(beanMetadataProvider))
-                .withConfigValue("at.irian.ankor.gateway.connector.socket.SocketConnector.enabled", true)
+                .withConfigValue("at.irian.ankor.switching.connector.socket.SocketConnector.enabled", true)
                 .createServer();
     }
 

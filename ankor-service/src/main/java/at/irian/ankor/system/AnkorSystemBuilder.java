@@ -15,9 +15,6 @@ import at.irian.ankor.event.ArrayListEventListeners;
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.event.dispatch.EventDispatcherFactory;
 import at.irian.ankor.event.dispatch.SynchronisedEventDispatcherFactory;
-import at.irian.ankor.gateway.*;
-import at.irian.ankor.gateway.routing.DefaultRoutingTable;
-import at.irian.ankor.gateway.routing.RoutingTable;
 import at.irian.ankor.messaging.json.simpletree.SimpleTreeJsonMessageMapper;
 import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
 import at.irian.ankor.messaging.modify.CoerceTypeModifier;
@@ -27,6 +24,13 @@ import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.ref.RefContextFactoryProvider;
 import at.irian.ankor.ref.el.ELRefContextFactoryProvider;
 import at.irian.ankor.session.*;
+import at.irian.ankor.switching.SimpleSwitchboardFactory;
+import at.irian.ankor.switching.Switchboard;
+import at.irian.ankor.switching.SwitchboardFactory;
+import at.irian.ankor.switching.connector.local.ModelSessionOpenHandler;
+import at.irian.ankor.switching.handler.OpenHandler;
+import at.irian.ankor.switching.routing.DefaultRoutingTable;
+import at.irian.ankor.switching.routing.RoutingTable;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
 import at.irian.ankor.viewmodel.factory.BeanFactory;
 import at.irian.ankor.viewmodel.factory.ReflectionBeanFactory;
@@ -55,11 +59,12 @@ public class AnkorSystemBuilder {
     private ModelSessionFactory modelSessionFactory;
     private Application application;
     private BeanResolver beanResolver;
-    private GatewayFactory gatewayFactory;
+    private SwitchboardFactory switchboardFactory;
     private RefContextFactoryProvider refContextFactoryProvider;
     private BeanMetadataProvider beanMetadataProvider;
     private BeanFactory beanFactory;
     private RoutingTable routingTable;
+    private OpenHandler openHandler;
 
     public AnkorSystemBuilder() {
         this.systemName = null;
@@ -72,6 +77,7 @@ public class AnkorSystemBuilder {
         this.beanFactory = null;
         this.configValues = new HashMap<String, Object>();
         this.routingTable = null;
+        this.openHandler = null;
     }
 
     public AnkorSystemBuilder withName(String name) {
@@ -90,8 +96,8 @@ public class AnkorSystemBuilder {
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public AnkorSystemBuilder withMessageBusFactory(GatewayFactory gatewayFactory) {
-        this.gatewayFactory = gatewayFactory;
+    public AnkorSystemBuilder withMessageBusFactory(SwitchboardFactory switchboardFactory) {
+        this.switchboardFactory = switchboardFactory;
         return this;
     }
 
@@ -130,9 +136,16 @@ public class AnkorSystemBuilder {
         return this;
     }
 
+    public AnkorSystemBuilder withOpenHandler(OpenHandler openHandler) {
+        this.openHandler = openHandler;
+        return this;
+    }
+
+
     public AnkorSystem createServer() {
 
-        Gateway gateway = createMessageBus();
+        Switchboard switchboard = createSwitchboard();
+
         EventDispatcherFactory eventDispatcherFactory = getEventDispatcherFactory();
 
         Application application = getServerApplication();
@@ -145,13 +158,14 @@ public class AnkorSystemBuilder {
                                                                   getServerViewModelPostProcessors(),
                                                                   getScheduler(),
                                                                   beanMetadataProvider,
-                                                                  beanFactory);
+                                                                  beanFactory,
+                                                                  switchboard);
 
         Modifier defaultModifier = getDefaultModifier();
         Modifier bigDataModifier = new ServerSideBigDataModifier(defaultModifier);
         Modifier modifier = new CoerceTypeModifier(bigDataModifier);
 
-        EventListeners defaultEventListeners = createDefaultEventListeners(gateway, modifier);
+        EventListeners defaultEventListeners = createDefaultEventListeners(switchboard, modifier);
 
         ModelSessionFactory modelSessionFactory = getModelSessionFactory(eventDispatcherFactory,
                                                                          defaultEventListeners,
@@ -165,9 +179,11 @@ public class AnkorSystemBuilder {
             configValues.put(MESSAGE_MAPPER_CONFIG_KEY, ViewModelJsonMessageMapper.class.getName());
         }
 
+        switchboard.registerOpenHandler(getServerOpenHandler(modelSessionManager, application));
+
         return new AnkorSystem(application,
                                getConfig(),
-                               gateway,
+                               switchboard,
                                refContextFactory,
                                modelSessionManager,
                                routingTable,
@@ -181,7 +197,7 @@ public class AnkorSystemBuilder {
             throw new IllegalStateException("viewModelPostProcessors not supported for client system");
         }
 
-        Gateway gateway = createMessageBus();
+        Switchboard switchboard = createSwitchboard();
 
         Application application = getClientApplication();
         ApplicationInstance applicationInstance = new SimpleApplicationInstance();
@@ -194,12 +210,13 @@ public class AnkorSystemBuilder {
                                                                   null,
                                                                   getScheduler(),
                                                                   beanMetadataProvider,
-                                                                  beanFactory);
+                                                                  beanFactory,
+                                                                  switchboard);
 
         Modifier defaultModifier = getDefaultModifier();
         Modifier modifier = new ClientSideBigDataModifier(defaultModifier);
 
-        EventListeners defaultEventListeners = createDefaultEventListeners(gateway, modifier);
+        EventListeners defaultEventListeners = createDefaultEventListeners(switchboard, modifier);
 
         ModelSessionFactory modelSessionFactory = getModelSessionFactory(getEventDispatcherFactory(),
                                                                          defaultEventListeners, refContextFactory);
@@ -215,9 +232,11 @@ public class AnkorSystemBuilder {
             configValues.put(MESSAGE_MAPPER_CONFIG_KEY, SimpleTreeJsonMessageMapper.class.getName());
         }
 
+        switchboard.registerOpenHandler(getClientOpenHandler());
+
         return new AnkorSystem(application,
                                getConfig(),
-                               gateway,
+                               switchboard,
                                refContextFactory,
                                modelSessionManager,
                                routingTable,
@@ -250,15 +269,15 @@ public class AnkorSystemBuilder {
         return new PassThroughModifier();
     }
 
-    private EventListeners createDefaultEventListeners(Gateway gateway, Modifier modifier) {
+    private EventListeners createDefaultEventListeners(Switchboard switchboard, Modifier modifier) {
 
         EventListeners eventListeners = new ArrayListEventListeners();
 
         // action event listener for sending action events to remote partner
-        eventListeners.add(new RemoteNotifyActionEventListener(gateway, modifier));
+        eventListeners.add(new RemoteNotifyActionEventListener(switchboard, modifier));
 
         // global change event listener for sending change events to remote partner
-        eventListeners.add(new RemoteNotifyChangeEventListener(gateway, modifier));
+        eventListeners.add(new RemoteNotifyChangeEventListener(switchboard, modifier));
 
         // global change event listener for cleaning up obsolete model session listeners
         eventListeners.add(new ListenerCleanupChangeEventListener());
@@ -303,11 +322,11 @@ public class AnkorSystemBuilder {
         return application;
     }
 
-    private Gateway createMessageBus() {
-        if (gatewayFactory == null) {
-            gatewayFactory = new SimpleGatewayFactory();
+    private Switchboard createSwitchboard() {
+        if (switchboardFactory == null) {
+            switchboardFactory = new SimpleSwitchboardFactory();
         }
-        return gatewayFactory.createGateway();
+        return switchboardFactory.createSwitchboard();
     }
 
     private List<ViewModelPostProcessor> getServerViewModelPostProcessors() {
@@ -374,4 +393,17 @@ public class AnkorSystemBuilder {
         }
     }
 
+    private OpenHandler getServerOpenHandler(ModelSessionManager modelSessionManager, Application application) {
+        if (openHandler == null) {
+            openHandler = new ModelSessionOpenHandler(modelSessionManager, application);
+        }
+        return openHandler;
+    }
+
+    private OpenHandler getClientOpenHandler() {
+        if (openHandler == null) {
+            throw new IllegalStateException("No OpenHandler declared - typical open handlers for clients are called 'Fixed...OpenHandler'");
+        }
+        return openHandler;
+    }
 }

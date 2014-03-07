@@ -1,6 +1,6 @@
 package at.irian.ankor.event.source;
 
-import at.irian.ankor.gateway.party.LocalParty;
+import at.irian.ankor.switching.party.LocalParty;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.session.ModelSession;
 

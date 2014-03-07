@@ -26,4 +26,7 @@ public interface Application {
      */
     ApplicationInstance getApplicationInstance(Map<String,Object> connectParameters);
 
+
+    //ConnectAcceptance onConnect(Map<String,Object> connectParameters);
+
 }

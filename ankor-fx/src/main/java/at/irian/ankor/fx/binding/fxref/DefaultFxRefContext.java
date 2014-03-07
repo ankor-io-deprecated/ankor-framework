@@ -5,6 +5,7 @@ import at.irian.ankor.delay.Scheduler;
 import at.irian.ankor.el.ELSupport;
 import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.ref.el.ELRefContext;
+import at.irian.ankor.switching.Switchboard;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
 import at.irian.ankor.viewmodel.factory.BeanFactory;
 import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
@@ -23,8 +24,10 @@ class DefaultFxRefContext extends ELRefContext implements FxRefContext {
                                   Scheduler scheduler,
                                   RefFactory refFactory,
                                   BeanMetadataProvider metadataProvider,
-                                  BeanFactory beanFactory) {
-        super(elSupport, modelSession, viewModelPostProcessors, scheduler, refFactory, metadataProvider, beanFactory);
+                                  BeanFactory beanFactory,
+                                  Switchboard switchboard) {
+        super(elSupport, modelSession, viewModelPostProcessors, scheduler, refFactory, metadataProvider,
+              beanFactory, switchboard);
     }
 
     protected static DefaultFxRefContext create(ELSupport elSupport,
@@ -32,13 +35,14 @@ class DefaultFxRefContext extends ELRefContext implements FxRefContext {
                                                 List<ViewModelPostProcessor> viewModelPostProcessors,
                                                 Scheduler scheduler,
                                                 BeanMetadataProvider metadataProvider,
-                                                BeanFactory beanFactory) {
+                                                BeanFactory beanFactory,
+                                                Switchboard switchboard) {
         DefaultFxRefFactory refFactory = new DefaultFxRefFactory();
         DefaultFxRefContext refContext = new DefaultFxRefContext(elSupport,
                                                                  modelSession,
                                                    viewModelPostProcessors,
                                                    scheduler,
-                                                   refFactory, metadataProvider, beanFactory);
+                                                   refFactory, metadataProvider, beanFactory, switchboard);
         refFactory.setRefContext(refContext); // bi-directional relation - not nice but no idea by now how to make it nice...  ;-)
         return refContext;
     }

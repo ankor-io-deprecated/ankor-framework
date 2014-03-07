@@ -1,13 +1,14 @@
 package at.irian.ankor.ref;
 
-import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.delay.Scheduler;
 import at.irian.ankor.path.PathSyntax;
+import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
 import at.irian.ankor.viewmodel.factory.BeanFactory;
 import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Manfred Geiler
@@ -28,4 +29,5 @@ public interface RefContext {
 
     BeanFactory beanFactory();
 
+    void connectModel(String modelName, Map<String, Object> connectParameters);
 }

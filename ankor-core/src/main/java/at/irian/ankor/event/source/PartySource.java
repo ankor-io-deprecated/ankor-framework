@@ -1,6 +1,6 @@
 package at.irian.ankor.event.source;
 
-import at.irian.ankor.gateway.party.Party;
+import at.irian.ankor.switching.party.Party;
 
 /**
  * Event source for an event that is derived from an incoming message from a remote party.

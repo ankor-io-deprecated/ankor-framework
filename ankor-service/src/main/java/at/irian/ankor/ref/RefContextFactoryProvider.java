@@ -2,6 +2,7 @@ package at.irian.ankor.ref;
 
 import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.delay.Scheduler;
+import at.irian.ankor.switching.Switchboard;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
 import at.irian.ankor.viewmodel.factory.BeanFactory;
 import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
@@ -18,6 +19,6 @@ public abstract class RefContextFactoryProvider {
                                                               List<ViewModelPostProcessor> viewModelPostProcessors,
                                                               Scheduler scheduler,
                                                               BeanMetadataProvider metadataProvider,
-                                                              BeanFactory beanFactory);
+                                                              BeanFactory beanFactory, Switchboard switchboard);
 
 }

@@ -12,7 +12,7 @@
     <!--<logger name="at.irian.ankor.ref" level="DEBUG" />-->
     <!--<logger name="at.irian.ankor.big" level="DEBUG" />-->
     <!--<logger name="at.irian.ankor.fx" level="DEBUG" />-->
-    <!--<logger name="at.irian.ankor.gateway" level="DEBUG" />-->
+    <!--<logger name="at.irian.ankor.switchingng" level="DEBUG" />-->
     <!--<logger name="at.irian.ankorsamples" level="DEBUG" />-->
     <!--<logger name="at.irian.ankor.akka" level="DEBUG" />-->
 

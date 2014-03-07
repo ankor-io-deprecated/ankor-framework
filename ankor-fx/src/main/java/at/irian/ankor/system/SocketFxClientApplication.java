@@ -1,16 +1,14 @@
 package at.irian.ankor.system;
 
 import at.irian.ankor.application.Application;
-import at.irian.ankor.gateway.party.LocalParty;
-import at.irian.ankor.gateway.party.SocketParty;
 import at.irian.ankor.event.dispatch.JavaFxEventDispatcherFactory;
 import at.irian.ankor.fx.binding.fxref.FxRefContext;
 import at.irian.ankor.fx.binding.fxref.FxRefContextFactoryProvider;
 import at.irian.ankor.fx.binding.fxref.FxRefs;
-import at.irian.ankor.gateway.msg.FixedPairRoutingTable;
-import at.irian.ankor.gateway.party.Party;
 import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.session.SingletonModelSessionManager;
+import at.irian.ankor.switching.connector.socket.FixedSocketOpenHandler;
+import at.irian.ankor.switching.routing.FixedPairRoutingTable;
 import javafx.stage.Stage;
 
 import java.net.URI;
@@ -117,11 +115,12 @@ public abstract class SocketFxClientApplication extends javafx.application.Appli
         LOG.debug("Creating FxClient Ankor system '{}' ...", getApplicationName());
         AnkorSystem ankorSystem = new AnkorSystemBuilder()
                 .withName(applicationName)
-                .withConfigValue("at.irian.ankor.gateway.connector.socket.SocketConnector.enabled", true)
-                .withConfigValue("at.irian.ankor.gateway.connector.socket.SocketConnector.localAddress", getClientAddress())
+                .withConfigValue("at.irian.ankor.switching.connector.socket.SocketConnector.enabled", true)
+                .withConfigValue("at.irian.ankor.switching.connector.socket.SocketConnector.localAddress", getClientAddress())
                 .withDispatcherFactory(new JavaFxEventDispatcherFactory())
                 .withRefContextFactoryProvider(new FxRefContextFactoryProvider())
                 .withRoutingTable(new FixedPairRoutingTable())
+                .withOpenHandler(new FixedSocketOpenHandler(URI.create(getServerAddress())))
                 .createClient();
         LOG.debug("FxClient Ankor system '{}' created", getApplicationName());
         return ankorSystem;
@@ -137,9 +136,6 @@ public abstract class SocketFxClientApplication extends javafx.application.Appli
         FxRefContext refContext = (FxRefContext) modelSession.getRefContext();
         modelSessionManager.getApplicationInstance().init(refContext);
 
-        Party clientParty = new LocalParty(modelSession.getId(), getModelName());
-        Party serverParty = new SocketParty(URI.create(getServerAddress()), getModelName());
-
         // store the singleton RefContext in a static place - for access from FX controllers and FX event handlers
         FxRefs.setStaticRefContext(refContext);
 
@@ -148,7 +144,7 @@ public abstract class SocketFxClientApplication extends javafx.application.Appli
 
         LOG.debug("FxClient Ankor system '{}' was started", getApplicationName());
 
-        LOG.info("Sending connect request to server {} ...", serverAddress);
+        LOG.info("Opening connection to server {} ...", serverAddress);
         // Send the "connect" message to the server
         Map<String, Object> connectParams;
         if (getAppInstanceIdToConnect() != null) {
@@ -157,8 +153,8 @@ public abstract class SocketFxClientApplication extends javafx.application.Appli
         } else {
             connectParams = Collections.emptyMap();
         }
-        ankorSystem.getGateway().connect(clientParty, serverParty, connectParams);
-        LOG.debug("Connect request sent to server at {}", serverAddress);
+
+        refContext.connectModel(getModelName(), connectParams);
     }
 
     public abstract void startFx(Stage stage) throws Exception;
