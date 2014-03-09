@@ -1,6 +1,6 @@
 package at.irian.ankor.session;
 
-import at.irian.ankor.application.ApplicationInstance;
+import at.irian.ankor.application.Application;
 import at.irian.ankor.event.ArrayListEventListeners;
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.event.dispatch.DispatchThreadAware;
@@ -20,18 +20,20 @@ class DefaultModelSession implements ModelSession, DispatchThreadAware {
     private final String id;
     private final EventListeners eventListeners;
     private final Deque<EventDispatcher> eventDispatcherStack;
-    private final ApplicationInstance applicationInstance;
+    private final Application application;
+    private final Map<String, Object> modelRootMap;
     private Map<String, Object> attributes;
     private RefContext refContext;
 
     private volatile Thread dispatchThread;
 
     DefaultModelSession(String modelSessionId,
-                        ApplicationInstance applicationInstance,
-                        EventListeners eventListeners) {
+                        EventListeners eventListeners,
+                        Application application) {
         this.id = modelSessionId;
         this.eventListeners = eventListeners;
-        this.applicationInstance = applicationInstance;
+        this.application = application;
+        this.modelRootMap = new HashMap<String, Object>();
         this.eventDispatcherStack = new ArrayDeque<EventDispatcher>();
         this.attributes = null;
         this.refContext = null;
@@ -39,15 +41,19 @@ class DefaultModelSession implements ModelSession, DispatchThreadAware {
 
     public static ModelSession create(EventDispatcherFactory eventDispatcherFactory,
                                       EventListeners defaultEventListeners,
-                                      ApplicationInstance applicationInstance,
-                                      RefContextFactory refContextFactory) {
+                                      RefContextFactory refContextFactory,
+                                      Application application) {
         EventListeners eventListeners = new ArrayListEventListeners(defaultEventListeners);
-        DefaultModelSession modelSession = new DefaultModelSession(UUID.randomUUID().toString(),
-                                                                   applicationInstance,
-                                                                   eventListeners);
+        DefaultModelSession modelSession = new DefaultModelSession(createModelSessionId(),
+                                                                   eventListeners,
+                                                                   application);
         modelSession.refContext = refContextFactory.createRefContextFor(modelSession);
         modelSession.pushEventDispatcher(eventDispatcherFactory.createFor(modelSession));
         return modelSession;
+    }
+
+    protected static String createModelSessionId() {
+        return UUID.randomUUID().toString();
     }
 
     public String getId() {
@@ -79,7 +85,10 @@ class DefaultModelSession implements ModelSession, DispatchThreadAware {
         for (EventDispatcher eventDispatcher : eventDispatcherStack) {
             eventDispatcher.close();
         }
-        applicationInstance.release();
+
+        for (Map.Entry<String, Object> entry : modelRootMap.entrySet()) {
+            application.releaseModel(entry.getKey(), entry.getValue());
+        }
     }
 
     @Override
@@ -109,12 +118,27 @@ class DefaultModelSession implements ModelSession, DispatchThreadAware {
     }
 
     @Override
-    public ApplicationInstance getApplicationInstance() {
-        return applicationInstance;
+    public RefContext getRefContext() {
+        return refContext;
     }
 
     @Override
-    public RefContext getRefContext() {
-        return refContext;
+    public void addModelRoot(String modelName, Object modelRoot) {
+        modelRootMap.put(modelName, modelRoot);
+    }
+
+    @Override
+    public Object getModelRoot(String modelName) {
+        Object modelRoot = modelRootMap.get(modelName);
+        if (modelRoot == null) {
+            throw new IllegalArgumentException("No model with name " + modelName);
+        }
+        return modelRoot;
+    }
+
+    @Override
+    public Collection<String> getModelNames() {
+        // todo  concurrency issue?
+        return modelRootMap.keySet();
     }
 }

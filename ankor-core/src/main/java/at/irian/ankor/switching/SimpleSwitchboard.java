@@ -88,7 +88,7 @@ public class SimpleSwitchboard implements Switchboard {
             throw new IllegalStateException("Already connected: " + sender + " and " + receiver);
         }
         //noinspection unchecked
-        getDeliverHandler(receiver).deliverConnectRequest(sender, receiver, connectParameters);
+        getSendHandler(receiver).sendConnectRequest(sender, receiver, connectParameters);
     }
 
     @Override
@@ -96,30 +96,30 @@ public class SimpleSwitchboard implements Switchboard {
         checkStarted();
         Set<Party> alreadyDelivered = new HashSet<Party>(); // todo  optimze for 99% one-to-one routings (with Guava?)
         alreadyDelivered.add(sender);
-        deliverRecursive(sender, sender, message, alreadyDelivered);
+        sendRecursive(sender, sender, message, alreadyDelivered);
     }
 
-    protected void deliverRecursive(Party originalSender,
-                                    Party sender,
-                                    EventMessage message,
-                                    Set<Party> alreadyDelivered) {
+    protected void sendRecursive(Party originalSender,
+                                 Party sender,
+                                 EventMessage message,
+                                 Set<Party> alreadyDelivered) {
         Collection<Party> receivers = routingTable.getConnectedParties(sender);
         for (Party receiver : receivers) {
             if (!alreadyDelivered.contains(receiver)) {
-                deliver(originalSender, receiver, message);
+                send(originalSender, receiver, message);
                 alreadyDelivered.add(receiver);
-                deliverRecursive(originalSender, receiver, message, alreadyDelivered);
+                sendRecursive(originalSender, receiver, message, alreadyDelivered);
             }
         }
     }
 
-    protected void deliver(Party sender, Party receiver, EventMessage message) {
+    public void send(Party sender, Party receiver, EventMessage message) {
         checkStarted();
         //noinspection unchecked
-        getDeliverHandler(receiver).deliverEventMessage(sender, receiver, message);
+        getSendHandler(receiver).sendEventMessage(sender, receiver, message);
     }
 
-    protected SendHandler getDeliverHandler(Party receiver) {
+    protected SendHandler getSendHandler(Party receiver) {
         Class<? extends Party> partyType = receiver.getClass();
         SendHandler sendHandler = deliverHandlers.get(partyType);
         if (sendHandler == null) {
@@ -152,7 +152,7 @@ public class SimpleSwitchboard implements Switchboard {
 
         LOG.debug("Send close request from {} to {}", sender, receiver);
         //noinspection unchecked
-        getDeliverHandler(receiver).deliverCloseRequest(sender, receiver);
+        getSendHandler(receiver).sendCloseRequest(sender, receiver);
 
         LOG.debug("Remove routing between {} and {}", sender, receiver);
         routingTable.disconnect(sender, receiver);

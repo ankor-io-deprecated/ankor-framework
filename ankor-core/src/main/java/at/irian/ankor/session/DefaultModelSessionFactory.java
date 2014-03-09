@@ -1,6 +1,6 @@
 package at.irian.ankor.session;
 
-import at.irian.ankor.application.ApplicationInstance;
+import at.irian.ankor.application.Application;
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.event.dispatch.EventDispatcherFactory;
 import at.irian.ankor.ref.RefContextFactory;
@@ -14,21 +14,24 @@ public class DefaultModelSessionFactory implements ModelSessionFactory {
     private final EventDispatcherFactory eventDispatcherFactory;
     private final EventListeners defaultEventListeners;
     private final RefContextFactory refContextFactory;
+    private final Application application;
 
     public DefaultModelSessionFactory(EventDispatcherFactory eventDispatcherFactory,
                                       EventListeners defaultEventListeners,
-                                      RefContextFactory refContextFactory) {
+                                      RefContextFactory refContextFactory,
+                                      Application application) {
         this.eventDispatcherFactory = eventDispatcherFactory;
         this.defaultEventListeners = defaultEventListeners;
         this.refContextFactory = refContextFactory;
+        this.application = application;
     }
 
     @Override
-    public ModelSession createModelSession(ApplicationInstance applicationInstance) {
+    public ModelSession createModelSession() {
         return DefaultModelSession.create(eventDispatcherFactory,
                                           defaultEventListeners,
-                                          applicationInstance,
-                                          refContextFactory);
+                                          refContextFactory,
+                                          application);
     }
 
 }

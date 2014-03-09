@@ -274,7 +274,7 @@ public class App extends javafx.application.Application {
         }
 
         @Override
-        protected Object createRoot(Ref rootRef) {
+        public Object createModel(Ref rootRef) {
             try {
                 Class<?> modelRootType = Class.forName("at.irian.ankorsamples.animals.viewmodel.ModelRoot");
                 Class<?> repoType = Class.forName("at.irian.ankorsamples.animals.domain.AnimalRepository");
@@ -284,6 +284,7 @@ public class App extends javafx.application.Application {
                 throw new RuntimeException("Unable to create model root", e);
             }
         }
+
     }
 
 

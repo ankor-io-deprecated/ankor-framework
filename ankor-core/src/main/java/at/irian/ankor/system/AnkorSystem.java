@@ -1,6 +1,7 @@
 package at.irian.ankor.system;
 
 import at.irian.ankor.application.Application;
+import at.irian.ankor.session.ModelSessionFactory;
 import at.irian.ankor.switching.Switchboard;
 import at.irian.ankor.switching.connector.ConnectorLoader;
 import at.irian.ankor.messaging.modify.Modifier;
@@ -27,6 +28,7 @@ public class AnkorSystem {
     private final Switchboard switchboard;
     private final RefContextFactory refContextFactory;
     private final ModelSessionManager modelSessionManager;
+    private final ModelSessionFactory modelSessionFactory;
     private final RoutingTable routingTable;
     private final Modifier modifier;
     private final ConnectorLoader connectorLoader;
@@ -37,6 +39,7 @@ public class AnkorSystem {
                           Switchboard switchboard,
                           RefContextFactory refContextFactory,
                           ModelSessionManager modelSessionManager,
+                          ModelSessionFactory modelSessionFactory,
                           RoutingTable routingTable,
                           Modifier modifier,
                           BeanMetadataProvider beanMetadataProvider) {
@@ -45,6 +48,7 @@ public class AnkorSystem {
         this.switchboard = switchboard;
         this.refContextFactory = refContextFactory;
         this.modelSessionManager = modelSessionManager;
+        this.modelSessionFactory = modelSessionFactory;
         this.routingTable = routingTable;
         this.modifier = modifier;
         this.beanMetadataProvider = beanMetadataProvider;
@@ -73,6 +77,10 @@ public class AnkorSystem {
 
     public ModelSessionManager getModelSessionManager() {
         return modelSessionManager;
+    }
+
+    public ModelSessionFactory getModelSessionFactory() {
+        return modelSessionFactory;
     }
 
     public Application getApplication() {

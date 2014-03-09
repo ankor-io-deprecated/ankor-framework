@@ -1,7 +1,6 @@
 package at.irian.ankor.switching.connector.local;
 
 import at.irian.ankor.action.Action;
-import at.irian.ankor.application.ApplicationInstance;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.event.source.PartySource;
 import at.irian.ankor.switching.Switchboard;
@@ -38,21 +37,20 @@ public class LocalSendHandler implements SendHandler<LocalParty> {
     }
 
     @Override
-    public void deliverConnectRequest(Party sender, LocalParty receiver, Map<String, Object> connectParameters) {
+    public void sendConnectRequest(Party sender, LocalParty receiver, Map<String, Object> connectParameters) {
         LOG.debug("open connection from {} to {}", sender, receiver);
 
         String modelName = receiver.getModelName();
         ModelSession modelSession = modelSessionManager.getById(receiver.getModelSessionId());
-        ApplicationInstance applicationInstance = modelSession.getApplicationInstance();
 
         // send an inital change event back to the sender
-        Object modelRoot = applicationInstance.getModelRoot(modelName);
-        switchboard.deliver(receiver, sender,
-                            new ChangeEventMessage(modelName, Change.valueChange(modelRoot)));
+        Object modelRoot = modelSession.getModelRoot(modelName);
+        switchboard.send(receiver, sender,
+                         new ChangeEventMessage(modelName, Change.valueChange(modelRoot)));
     }
 
     @Override
-    public void deliverEventMessage(Party sender, LocalParty receiver, EventMessage message) {
+    public void sendEventMessage(Party sender, LocalParty receiver, EventMessage message) {
         LOG.debug("delivering {} from {} to {}", message, sender, receiver);
 
         String modelSessionId = receiver.getModelSessionId();
@@ -65,7 +63,7 @@ public class LocalSendHandler implements SendHandler<LocalParty> {
     }
 
     @Override
-    public void deliverCloseRequest(Party sender, LocalParty receiver) {
+    public void sendCloseRequest(Party sender, LocalParty receiver) {
         LOG.debug("close connection from {} to {}", sender, receiver);
 
     }

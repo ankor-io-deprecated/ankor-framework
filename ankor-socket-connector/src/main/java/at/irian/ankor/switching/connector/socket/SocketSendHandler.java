@@ -32,7 +32,7 @@ public class SocketSendHandler implements SendHandler<SocketParty> {
     }
 
     @Override
-    public void deliverConnectRequest(Party sender, SocketParty receiver, Map<String, Object> connectParameters) {
+    public void sendConnectRequest(Party sender, SocketParty receiver, Map<String, Object> connectParameters) {
         try {
             SocketMessage socketMessage = SocketMessage.createConnectMsg(localAddress.toString(),
                                                                          sender.getModelName(),
@@ -44,7 +44,7 @@ public class SocketSendHandler implements SendHandler<SocketParty> {
     }
 
     @Override
-    public void deliverEventMessage(Party sender, SocketParty receiver, EventMessage message) {
+    public void sendEventMessage(Party sender, SocketParty receiver, EventMessage message) {
         try {
             send(receiver, message);
         } catch (IOException e) {
@@ -54,7 +54,7 @@ public class SocketSendHandler implements SendHandler<SocketParty> {
     }
 
     @Override
-    public void deliverCloseRequest(Party sender, SocketParty receiver) {
+    public void sendCloseRequest(Party sender, SocketParty receiver) {
         try {
             SocketMessage socketMessage = SocketMessage.createCloseMsg(localAddress.toString(),
                                                                        sender.getModelName());

@@ -1,6 +1,6 @@
 package at.irian.ankor.system;
 
-import at.irian.ankor.application.Application;
+import at.irian.ankor.application.CollaborationSingleRootApplication;
 import at.irian.ankor.event.dispatch.JavaFxEventDispatcherFactory;
 import at.irian.ankor.fx.binding.fxref.FxRefContext;
 import at.irian.ankor.fx.binding.fxref.FxRefContextFactoryProvider;
@@ -62,7 +62,7 @@ public abstract class SocketFxClientApplication extends javafx.application.Appli
         this.serverAddress = serverAddress;
     }
 
-    protected String getAppInstanceIdToConnect() {
+    protected String getModelInstanceIdToConnect() {
         return appInstanceIdToConnect;
     }
 
@@ -134,7 +134,7 @@ public abstract class SocketFxClientApplication extends javafx.application.Appli
                 = (SingletonModelSessionManager) ankorSystem.getModelSessionManager();
         ModelSession modelSession = modelSessionManager.getModelSession();
         FxRefContext refContext = (FxRefContext) modelSession.getRefContext();
-        modelSessionManager.getApplicationInstance().init(refContext);
+        //modelSessionManager.getApplicationInstance().init(refContext);
 
         // store the singleton RefContext in a static place - for access from FX controllers and FX event handlers
         FxRefs.setStaticRefContext(refContext);
@@ -147,14 +147,15 @@ public abstract class SocketFxClientApplication extends javafx.application.Appli
         LOG.info("Opening connection to server {} ...", serverAddress);
         // Send the "connect" message to the server
         Map<String, Object> connectParams;
-        if (getAppInstanceIdToConnect() != null) {
+        if (getModelInstanceIdToConnect() != null) {
             connectParams = new HashMap<>();
-            connectParams.put(Application.APPLICATION_INSTANCE_ID_PARAM, getAppInstanceIdToConnect());
+            connectParams.put(CollaborationSingleRootApplication.MODEL_INSTANCE_ID_PARAM,
+                              getModelInstanceIdToConnect());
         } else {
             connectParams = Collections.emptyMap();
         }
 
-        refContext.connectModel(getModelName(), connectParams);
+        refContext.openModel(getModelName(), connectParams);
     }
 
     public abstract void startFx(Stage stage) throws Exception;

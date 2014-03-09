@@ -79,7 +79,22 @@ public class Rate implements Comparable<Rate> {
     }
 
     @Override
+    public String toString() {
+        return "Rate{" +
+               "symbol='" + symbol + '\'' +
+               ", bid=" + bid +
+               ", ask=" + ask +
+               ", high=" + high +
+               ", low=" + low +
+               ", direction=" + direction +
+               ", last='" + last + '\'' +
+               '}';
+    }
+
+    @Override
     public int compareTo(Rate o) {
         return symbol.compareTo(o.symbol);
     }
+
+
 }

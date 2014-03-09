@@ -226,7 +226,7 @@ public abstract class AnkorEndpoint extends Endpoint implements ServerApplicatio
     protected Application getApplication() {
         return new SimpleSingleRootApplication(getName(), "root") {
             @Override
-            protected Object createRoot(Ref rootRef) {
+            public Object createModel(Ref rootRef) {
                 return getModelRoot(rootRef);
             }
         };
@@ -258,7 +258,7 @@ public abstract class AnkorEndpoint extends Endpoint implements ServerApplicatio
         RemoteSystem remoteSystem = webSocketMessageBus.removeRemoteSystem(clientId);
 //        Collection<ModelConnection> modelConnections = ankorSystem.getModelConnectionManager().getAllFor(remoteSystem);
 //        for (ModelConnection modelConnection : modelConnections) {
-//            ankorSystem.getModelConnectionManager().invalidate(modelConnection);
+//            ankorSystem.getModelConnectionManager().remove(modelConnection);
 //        }
     }
 }

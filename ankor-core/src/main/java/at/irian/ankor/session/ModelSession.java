@@ -1,10 +1,10 @@
 package at.irian.ankor.session;
 
-import at.irian.ankor.application.ApplicationInstance;
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.event.dispatch.EventDispatcher;
 import at.irian.ankor.ref.RefContext;
 
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -53,7 +53,7 @@ public interface ModelSession {
      * put on a stack and may later be restored by a call to {@link #popEventDispatcher()}.
      * @param eventDispatcher the new EventDispatcher
      */
-    void pushEventDispatcher(EventDispatcher eventDispatcher);
+    void pushEventDispatcher(EventDispatcher eventDispatcher);  // todo  move this to special StackEventDispatcher impl
 
     /**
      * Omit the current EventDispatcher and restore the previously used EventDispatcher for this model.
@@ -63,12 +63,15 @@ public interface ModelSession {
     EventDispatcher popEventDispatcher();
 
     /**
-     * @return the associated ApplicationInstance
-     */
-    ApplicationInstance getApplicationInstance();
-
-    /**
      * @return the RefContext for this ModelSession
      */
     RefContext getRefContext();
+
+
+    void addModelRoot(String modelName, Object modelRoot);
+
+    Object getModelRoot(String modelName);
+
+    Collection<String> getModelNames();
+
 }

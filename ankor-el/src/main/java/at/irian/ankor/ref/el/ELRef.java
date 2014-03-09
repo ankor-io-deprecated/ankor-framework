@@ -32,8 +32,8 @@ public class ELRef extends RefBase {
             ve.setValue(elRefContext().createELContext(), newValue);
         } catch (PropertyNotFoundException e) {
             if (isRoot()) {
-                LOG.debug("Root property with name '{}' not found - setting model root in application instance", propertyName());
-                context().modelSession().getApplicationInstance().setModelRoot(propertyName(), newValue);
+                LOG.debug("Root property with name '{}' not found - setting model root in session", propertyName());
+                context().modelSession().addModelRoot(propertyName(), newValue);
             } else {
                 throw e;
             }

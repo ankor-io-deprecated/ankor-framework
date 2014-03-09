@@ -10,10 +10,10 @@ import java.util.Map;
  */
 public interface SendHandler<P extends Party> {
 
-    void deliverConnectRequest(Party sender, P receiver, Map<String, Object> connectParameters);
+    void sendConnectRequest(Party sender, P receiver, Map<String, Object> connectParameters);
 
-    void deliverEventMessage(Party sender, P receiver, EventMessage message);
+    void sendEventMessage(Party sender, P receiver, EventMessage message);
 
-    void deliverCloseRequest(Party sender, P receiver);
+    void sendCloseRequest(Party sender, P receiver);
 
 }

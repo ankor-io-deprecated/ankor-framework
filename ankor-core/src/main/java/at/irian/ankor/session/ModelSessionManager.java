@@ -1,7 +1,5 @@
 package at.irian.ankor.session;
 
-import at.irian.ankor.application.ApplicationInstance;
-
 /**
  * The ModelSessionManager handles all ModelSessions that are currently active.
  * "Active" means that an application instance is currently associated with this model session.
@@ -10,26 +8,27 @@ import at.irian.ankor.application.ApplicationInstance;
  */
 public interface ModelSessionManager {
 
+    void add(ModelSession modelSession);
+
     /**
-     * Get the ModelSession for the given application instance.
-     * Create a new ModelSession (by means of a {@link ModelSessionFactory})
-     * if there is none associated with this application instance yet.
-     * @param applicationInstance  application instance
-     * @return the existing (or a newly created) ModelSession associated with the given application instance
+     *
+     * @param modelRoot
+     * @return
      */
-    ModelSession getOrCreate(ApplicationInstance applicationInstance);
+    ModelSession findByModelRoot(Object modelRoot);
 
     /**
      * @param modelSessionId  unique id of session to find
      * @return ModelSession with the given id or null if not found (or no longer exists)
      */
-    ModelSession getById(String modelSessionId);
+    ModelSession getById(String modelSessionId);  //todo  throw Exception if not found?
 
      /**
      * Invalidate (i.e. close) the given ModelSession.
      * ModelSessionManager implementations must call the {@link ModelSession#close()} method
      * on the given instance and remove any reference to the ModelSession.
-     * @param modelSession  ModelSession to invalidate
+     * @param modelSession  ModelSession to remove
      */
-    void invalidate(ModelSession modelSession);
+    void remove(ModelSession modelSession);
+
 }

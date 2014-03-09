@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * todo document
+ * todo rename to ModelContext
+ *
  * @author Manfred Geiler
  */
 public interface RefContext {
@@ -29,5 +32,7 @@ public interface RefContext {
 
     BeanFactory beanFactory();
 
-    void connectModel(String modelName, Map<String, Object> connectParameters);
+    void openModel(String modelName, Map<String, Object> connectParameters);
+
+    void closeModel(String modelName);
 }

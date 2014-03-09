@@ -33,7 +33,7 @@ public interface Switchboard {
 
     void send(Party sender, EventMessage message);
 
-    //void deliver(Party sender, Party receiver, EventMessage message);
+    void send(Party sender, Party receiver, EventMessage message);
 
 
     void close(Party sender);

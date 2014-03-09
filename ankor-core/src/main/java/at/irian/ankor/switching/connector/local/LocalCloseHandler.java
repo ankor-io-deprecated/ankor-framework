@@ -23,7 +23,10 @@ public class LocalCloseHandler implements CloseHandler<LocalParty> {
         ModelSession modelSession = modelSessionManager.getById(modelSessionId);
         if (modelSession != null) {
             LOG.info("Closing model session with id {}", modelSessionId);
-            modelSessionManager.invalidate(modelSession);
+
+            modelSession.close();
+            modelSessionManager.remove(modelSession);
+
         } else {
             LOG.info("Model session with id {} does not exist - propably timed out", modelSessionId);
         }

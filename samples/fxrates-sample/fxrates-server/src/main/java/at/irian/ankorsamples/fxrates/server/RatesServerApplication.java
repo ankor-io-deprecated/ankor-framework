@@ -2,12 +2,11 @@ package at.irian.ankorsamples.fxrates.server;
 
 import at.irian.ankor.application.SimpleSingleRootApplication;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.ref.RefContext;
 
 /**
  * @author Manfred Geiler
  */
-public class RatesServerApplication extends SimpleSingleRootApplication<RatesViewModel> {
+public class RatesServerApplication extends SimpleSingleRootApplication {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RatesServerApplication.class);
 
     private static final String APPLICATION_NAME = "Rates Server";
@@ -18,20 +17,19 @@ public class RatesServerApplication extends SimpleSingleRootApplication<RatesVie
     }
 
     @Override
-    protected RatesViewModel createRoot(Ref rootRef) {
+    public Object createModel(Ref rootRef) {
         RatesRepository animalRepository = new RatesRepository();
-        return new RatesViewModel(rootRef, animalRepository);
-    }
-
-    @Override
-    protected void afterInitInstance(String instanceId, RefContext refContext, RatesViewModel root) {
+        RatesViewModel root = new RatesViewModel(rootRef, animalRepository);
         root.startRatesUpdate(2);
         LOG.info("Rates update started");
+        return root;
     }
 
     @Override
-    protected void beforeReleaseInstance(String instanceId, RatesViewModel root) {
+    public void releaseModel(Object model) {
+        RatesViewModel root = (RatesViewModel) model;
         root.stopRatesUpdate();
         LOG.info("Rates update stopped");
     }
+
 }

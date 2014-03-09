@@ -19,8 +19,7 @@ import java.util.concurrent.TimeUnit;
  */
 @SuppressWarnings("UnusedDeclaration")
 public class RatesViewModel extends ViewModelBase {
-
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RatesViewModel.class);
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RatesViewModel.class);
 
     @AnkorIgnore
     private final RatesRepository repository;
@@ -45,6 +44,7 @@ public class RatesViewModel extends ViewModelBase {
                 try {
                     // update rates
                     final List<Rate> newRates = repository.getRates();
+                    LOG.info("setting new rates");
                     // Run later is necessary because we are outside of Ankor dispatching:
                     AnkorPatterns.runLater(getRef(), new Runnable() {
                         @Override

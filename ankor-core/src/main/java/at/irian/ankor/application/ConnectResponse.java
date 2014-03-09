@@ -3,9 +3,9 @@ package at.irian.ankor.application;
 /**
  * @author Manfred Geiler
  */
-public interface ConnectAcceptance {
+public interface ConnectResponse {
 
-    Object getContext();
+    Object getUserSessionId();
 
     Object getModel();
 

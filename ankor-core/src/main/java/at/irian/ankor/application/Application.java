@@ -1,5 +1,7 @@
 package at.irian.ankor.application;
 
+import at.irian.ankor.ref.RefContext;
+
 import java.util.Map;
 
 /**
@@ -7,26 +9,37 @@ import java.util.Map;
  */
 public interface Application {
 
-    static final String APPLICATION_INSTANCE_ID_PARAM = Application.class.getName() + ".INSTANCE_ID";
-
     /**
      * @return the name of this application
      */
     String getName();
 
     /**
-     * Create a new ApplicationInstance or return an existing instance, depending on the given connect parameters.
-     * It is allowed to return a null instance. This will be interpreted as if the application does not want
-     * to connect to a remote partner.
+     * Lookup a model by one or more (application specific) criteria.
+     * Typical criteria are:
+     * <ul>
+     *     <li>username</li>
+     *     <li>browser cookie</li>
+     *     <li>device id</li>
+     *     <li>...</li>
+     * </ul>
      *
-     * Note: Must be thread-safe!
+     * Applications are free to just return null on every call to this method.
+     * Returning null is the expected behaviour for applications that do not
+     * support restoring (user) sessions.
      *
-     * @param connectParameters  application specific parameters or null if no parameters are needed (or supported)
-     * @return an ApplicationInstance that is somehow associated to the given parameters
+     * @param modelName       name of model
+     * @param connectCriteria lookup criterions
+     * @return existing Model instance or null if there is no matching model yet
      */
-    ApplicationInstance getApplicationInstance(Map<String,Object> connectParameters);
+    Object lookupModel(String modelName, Map<String, Object> connectCriteria);
 
+    /**
+     * @param modelName
+     * @return
+     */
+    Object createModel(String modelName, RefContext refContext);
 
-    //ConnectAcceptance onConnect(Map<String,Object> connectParameters);
+    void releaseModel(String modelName, Object model);
 
 }

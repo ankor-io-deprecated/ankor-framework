@@ -1,10 +1,7 @@
 package at.irian.ankor.system;
 
 import at.irian.ankor.annotation.AnnotationBeanMetadataProvider;
-import at.irian.ankor.application.Application;
-import at.irian.ankor.application.ApplicationInstance;
-import at.irian.ankor.application.SimpleApplicationInstance;
-import at.irian.ankor.application.SingletonInstanceApplication;
+import at.irian.ankor.application.*;
 import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.big.modify.ClientSideBigDataModifier;
 import at.irian.ankor.big.modify.ServerSideBigDataModifier;
@@ -171,7 +168,7 @@ public class AnkorSystemBuilder {
                                                                          defaultEventListeners,
                                                                          refContextFactory);
 
-        ModelSessionManager modelSessionManager = new DefaultModelSessionManager(modelSessionFactory);
+        ModelSessionManager modelSessionManager = new DefaultModelSessionManager();
 
         RoutingTable routingTable = getRoutingTable();
 
@@ -186,7 +183,7 @@ public class AnkorSystemBuilder {
                                switchboard,
                                refContextFactory,
                                modelSessionManager,
-                               routingTable,
+                               modelSessionFactory, routingTable,
                                modifier,
                                beanMetadataProvider);
     }
@@ -200,7 +197,6 @@ public class AnkorSystemBuilder {
         Switchboard switchboard = createSwitchboard();
 
         Application application = getClientApplication();
-        ApplicationInstance applicationInstance = new SimpleApplicationInstance();
 
         BeanMetadataProvider beanMetadataProvider = getBeanMetadataProvider();
         BeanFactory beanFactory = getBeanFactory();
@@ -221,10 +217,10 @@ public class AnkorSystemBuilder {
         ModelSessionFactory modelSessionFactory = getModelSessionFactory(getEventDispatcherFactory(),
                                                                          defaultEventListeners, refContextFactory);
 
-        ModelSession modelSession = modelSessionFactory.createModelSession(applicationInstance);
+        ModelSession modelSession = modelSessionFactory.createModelSession();
 
-        ModelSessionManager modelSessionManager = new SingletonModelSessionManager(applicationInstance,
-                                                                                   modelSession);
+        ModelSessionManager modelSessionManager = new SingletonModelSessionManager();
+        modelSessionManager.add(modelSession);
 
         RoutingTable routingTable = getRoutingTable();
 
@@ -239,7 +235,7 @@ public class AnkorSystemBuilder {
                                switchboard,
                                refContextFactory,
                                modelSessionManager,
-                               routingTable,
+                               modelSessionFactory, routingTable,
                                modifier,
                                beanMetadataProvider);
     }
@@ -317,7 +313,7 @@ public class AnkorSystemBuilder {
 
     private Application getClientApplication() {
         if (application == null) {
-            application = new SingletonInstanceApplication(getClientSystemName());
+            application = new SimpleClientApplication(getClientSystemName());
         }
         return application;
     }
@@ -375,7 +371,7 @@ public class AnkorSystemBuilder {
         if (modelSessionFactory == null) {
             modelSessionFactory = new DefaultModelSessionFactory(eventDispatcherFactory,
                                                                  defaultEventListeners,
-                                                                 refContextFactory);
+                                                                 refContextFactory, application);
         }
         return modelSessionFactory;
     }
@@ -395,7 +391,7 @@ public class AnkorSystemBuilder {
 
     private OpenHandler getServerOpenHandler(ModelSessionManager modelSessionManager, Application application) {
         if (openHandler == null) {
-            openHandler = new ModelSessionOpenHandler(modelSessionManager, application);
+            openHandler = new ModelSessionOpenHandler(modelSessionFactory, modelSessionManager, application);
         }
         return openHandler;
     }

@@ -1,11 +1,9 @@
 package at.irian.ankor.session;
 
-import at.irian.ankor.application.ApplicationInstance;
-
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * @author Manfred Geiler
@@ -13,38 +11,37 @@ import java.util.concurrent.locks.ReentrantLock;
 public class DefaultModelSessionManager implements ModelSessionManager {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(DefaultModelSessionManager.class);
 
-    private final ModelSessionFactory modelSessionFactory;
-    private final Map<ApplicationInstance, ModelSession> appInstanceMap = new ConcurrentHashMap<ApplicationInstance, ModelSession>();
-    private final Map<String, ModelSession> modelSessionIdMap = new ConcurrentHashMap<String, ModelSession>();
-    private final Lock lock = new ReentrantLock();
+    private final Map<String, ModelSession> modelSessionIdMap = new HashMap<String, ModelSession>();
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
-    public DefaultModelSessionManager(ModelSessionFactory modelSessionFactory) {
-        this.modelSessionFactory = modelSessionFactory;
+    @Override
+    public void add(ModelSession modelSession) {
+        lock.writeLock().lock();
+        try {
+            modelSessionIdMap.put(modelSession.getId(), modelSession);
+            LOG.debug("New ModelSession {} added", modelSession);
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     @Override
-    public ModelSession getOrCreate(ApplicationInstance applicationInstance) {
-        if (applicationInstance == null) {
-            throw new NullPointerException("applicationInstance may not be null");
-        }
-        ModelSession modelSession = appInstanceMap.get(applicationInstance);
-        if (modelSession == null) {
-            lock.lock();
-            try {
-                modelSession = appInstanceMap.get(applicationInstance);
-                if (modelSession == null) {
-                    modelSession = modelSessionFactory.createModelSession(applicationInstance);
-                    appInstanceMap.put(applicationInstance, modelSession);
-                    modelSessionIdMap.put(modelSession.getId(), modelSession);
-
-                    // initialize the application instance for the newly created session
-                    applicationInstance.init(modelSession.getRefContext());
+    public ModelSession findByModelRoot(Object modelRoot) {
+        lock.readLock().lock();
+        try {
+            //todo  we should cache modelRoot --> modelSession by means of an IdentityHashMap
+            for (ModelSession modelSession : modelSessionIdMap.values()) {
+                for (String modelName : modelSession.getModelNames()) {
+                    Object mr = modelSession.getModelRoot(modelName);
+                    if (mr == modelRoot) {
+                        return modelSession;
+                    }
                 }
-            } finally {
-                lock.unlock();
             }
+            return null;
+        } finally {
+            lock.readLock().unlock();
         }
-        return modelSession;
     }
 
     @Override
@@ -52,23 +49,22 @@ public class DefaultModelSessionManager implements ModelSessionManager {
         if (modelSessionId == null) {
             throw new NullPointerException("modelSessionId may not be null");
         }
-        return modelSessionIdMap.get(modelSessionId);
+        lock.readLock().lock();
+        try {
+            return modelSessionIdMap.get(modelSessionId);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     @Override
-    public void invalidate(ModelSession modelSession) {
-        lock.lock();
+    public void remove(ModelSession modelSession) {
+        lock.writeLock().lock();
         try {
             modelSessionIdMap.remove(modelSession.getId());
-            appInstanceMap.remove(modelSession.getApplicationInstance());
+            LOG.debug("ModelSession {} removed", modelSession);
         } finally {
-            lock.unlock();
-        }
-
-        try {
-            modelSession.close();
-        } catch (Exception e) {
-            LOG.error("An exception was thrown while closing ModelSession " + modelSession, e);
+            lock.writeLock().unlock();
         }
     }
 }

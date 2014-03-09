@@ -1,7 +1,7 @@
 package at.irian.ankor.switching.connector.local;
 
 import at.irian.ankor.application.Application;
-import at.irian.ankor.application.ApplicationInstance;
+import at.irian.ankor.session.ModelSessionFactory;
 import at.irian.ankor.switching.handler.OpenHandler;
 import at.irian.ankor.switching.party.LocalParty;
 import at.irian.ankor.switching.party.Party;
@@ -17,11 +17,14 @@ import java.util.Map;
 public class ModelSessionOpenHandler implements OpenHandler {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelSessionOpenHandler.class);
 
+    private final ModelSessionFactory modelSessionFactory;
     private final ModelSessionManager modelSessionManager;
     private final Application application;
 
-    public ModelSessionOpenHandler(ModelSessionManager modelSessionManager,
+    public ModelSessionOpenHandler(ModelSessionFactory modelSessionFactory,
+                                   ModelSessionManager modelSessionManager,
                                    Application application) {
+        this.modelSessionFactory = modelSessionFactory;
         this.modelSessionManager = modelSessionManager;
         this.application = application;
     }
@@ -34,16 +37,26 @@ public class ModelSessionOpenHandler implements OpenHandler {
         }
         LOG.info("Connect request received from {} with parameters {}", sender, connectParameters);
 
-        ApplicationInstance applicationInstance = application.getApplicationInstance(connectParameters);
-        if (applicationInstance == null) {
-            LOG.info("Application '{}' did not accept connect parameters {} and returned a null instance - connection denied",
-                     application.getName(), connectParameters);
-            return null;
-        }
-
         String modelName = sender.getModelName();
 
-        ModelSession modelSession = modelSessionManager.getOrCreate(applicationInstance);
+        Object modelRoot = application.lookupModel(modelName, connectParameters);
+        ModelSession modelSession;
+        //todo  check if we have a concurrency issue here
+        if (modelRoot == null) {
+            modelSession = modelSessionFactory.createModelSession();
+            modelRoot = application.createModel(modelName, modelSession.getRefContext());
+            modelSession.addModelRoot(modelName, modelRoot);
+            modelSessionManager.add(modelSession);
+        } else {
+            modelSession = modelSessionManager.findByModelRoot(modelRoot);
+            if (modelSession == null) {
+                LOG.warn("Could not find ModelSession for model root {} - most likely a timeout had happened, creating a new session...",
+                         modelRoot);
+                modelSession = modelSessionFactory.createModelSession();
+                modelSession.addModelRoot(modelName, modelRoot);
+                modelSessionManager.add(modelSession);
+            }
+        }
 
         Party receiver = new LocalParty(modelSession.getId(), modelName);
 

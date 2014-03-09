@@ -1,40 +1,36 @@
 package at.irian.ankor.session;
 
-import at.irian.ankor.application.ApplicationInstance;
-
 /**
  * @author Manfred Geiler
  */
 public class SingletonModelSessionManager implements ModelSessionManager {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SingletonModelSessionManager.class);
 
-    private final ModelSession modelSession;
-    private ApplicationInstance applicationInstance;
+    private ModelSession modelSession;
 
-    public SingletonModelSessionManager(ApplicationInstance applicationInstance, ModelSession modelSession) {
+    @Override
+    public void add(ModelSession modelSession) {
+        if (this.modelSession != null) {
+            throw new IllegalStateException("ModelSession already set");
+        }
         this.modelSession = modelSession;
-        this.applicationInstance = applicationInstance;
     }
 
     @Override
-    public ModelSession getOrCreate(ApplicationInstance applicationInstance) {
-
-        // todo  do we need this, or could we just throw an UnsupportedOperationEx ?
-
-        if (applicationInstance != null) {
-            if (this.applicationInstance != null) {
-                if (!this.applicationInstance.equals(applicationInstance)) {
-                    throw new IllegalStateException("wrong applicationInstance id " + applicationInstance + " - expected " + this.applicationInstance);
-                }
-            } else {
-                this.applicationInstance = applicationInstance;
+    public ModelSession findByModelRoot(Object modelRoot) {
+        checkModelSession();
+        for (String modelName : modelSession.getModelNames()) {
+            Object mr = modelSession.getModelRoot(modelName);
+            if (mr == modelRoot) {
+                return modelSession;
             }
         }
-        return modelSession;
+        return null;
     }
 
     @Override
     public ModelSession getById(String modelSessionId) {
+        checkModelSession();
         if (modelSession.getId().equals(modelSessionId)) {
             return modelSession;
         } else {
@@ -43,16 +39,21 @@ public class SingletonModelSessionManager implements ModelSessionManager {
     }
 
     @Override
-    public void invalidate(ModelSession modelSession) {
-        modelSession.close();
-        applicationInstance.release();
+    public void remove(ModelSession modelSession) {
+        checkModelSession();
+        if (modelSession == this.modelSession) {
+            this.modelSession = null;
+        }
+    }
+
+    private void checkModelSession() {
+        if (modelSession == null) {
+            throw new IllegalStateException("No ModelSession");
+        }
     }
 
     public ModelSession getModelSession() {
         return modelSession;
     }
 
-    public ApplicationInstance getApplicationInstance() {
-        return applicationInstance;
-    }
 }
