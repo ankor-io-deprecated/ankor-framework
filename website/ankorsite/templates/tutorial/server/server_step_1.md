@@ -1,14 +1,15 @@
 ### Testing the Setup
 
-In order to see the results of our work in this tutorial we'll connect a client to our Ankor server.
-The clients connect to the server via WebSocket. So we need a web server that supports them.
-[GlassFish 4][1] comes with WebSocket support out of the box, so we'll be using that one.
+In order to see the results of our work we need to connect a client to our Ankor server.
+The clients will connect to the server via [WebSocket][2]. 
+So we need a web server that supports them.
+We will be using [GlassFish 4][1], because it comes with WebSocket support out of the box.
 
-To start the web server `cd` into the `todo-servlet` directory and execute this Maven goal:
+To start the web server `cd` into the root directory and execute this Maven goal:
 
-    mvn embedded-glassfish:run
+    mvn install
 
-This can take a while. GlassFish will be downloaded.
+This can take a while, since GlassFish will be downloaded.
 After the process completes point your browser to [`http://localhost:8080/test.html`](http://localhost:8080/test.html).
 The page should look something like this:
 
@@ -28,3 +29,4 @@ As of now you will only see a blank page and the servlet will throw an `NotImple
 Will will fix this in the next step.
 
 [1]: https://glassfish.java.net/
+[2]: http://www.websocket.org/

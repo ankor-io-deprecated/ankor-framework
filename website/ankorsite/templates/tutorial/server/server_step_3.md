@@ -23,15 +23,15 @@ We do so by calling `initViewModel` inside the constructor.
         }
     }
 
-The first thing you will notice are the `@AnkorIgnore` annotations.
-These tell Ankor that the annotated properties should not be sent to the clients.
-
-We can't send the entire task repository (our service layer) to the client.
-As goes for the `modelRef` that we will use internally.
+The first thing you will notice are the [`@AnkorIgnore`][1] annotations.
+These annotations tell Ankor that the annotated properties should not be included in the view model.
+This means that they will not be sent to the client.
+Obviously we can't send the entire task repository (our service layer) to the client.
+As goes for the `modelRef` which we only use internally.
 
 #### Adding view model properties
 
-Let's add some actual view model properties that Ankor should share with clients:
+Let's add some view model properties that Ankor should not ignore:
 
     :::java
     private Boolean footerVisibility = false;
@@ -63,29 +63,28 @@ Let's add some actual view model properties that Ankor should share with clients
     }
 
 Again we need getters and setters for all of these.
-By now it has become bothersome writing them by hand, so make sure your IDE can generate them for you.
 
-For testing purposes we can set some dummy values in the constructor:
+For testing purposes we should set some dummy values in the constructor:
 
     :::java
     footerVisibility = true;
     itemsLeft = 10;
     itemsLeftText = "imaginary items left";
 
-With this in place we are almost ready to connect a client.
-However we still need to link our view models with the servlet.
+With this we are almost ready to test our server implementation.
+But we still need to link our view models with the servlet.
 
 #### Configuring the WebSocket endpoint
 
 We still haven't created a WebSocket endpoint yet.
-The [`AnkorEndpoint`][1] extends the WebSocket API's `Endpoint` class and handles all the Ankor related stuff for us.
-It starts an Ankor system, accepts new WebSocket connections, assigns Ankor sessions to them and so on.
+The [`AnkorEndpoint`][2] extends the WebSocket API's [`Endpoint`][3] class and handles the Ankor related things for us:
+It starts an Ankor system, accepts new WebSocket connections and assigns Ankor sessions to them.
 
 The only thing that is required of the developer is to overwrite the `getModelRoot` method.
-When called, it should return a new instance of our own `ModelRoot` implementation.
+When called it should return a new instance of our `ModelRoot` implementation.
 
 The class already exists in the `todo-servlet` module.
-Open `TodoEndpoint.java` and implement the `getModelRoot` method.
+Open `TodoEndpoint.java` and implement the `getModelRoot` method:
 
     :::java
     public class TodoEndpoint extends AnkorEndpoint {
@@ -97,8 +96,10 @@ Open `TodoEndpoint.java` and implement the `getModelRoot` method.
 
 #### Check if the bindings work
 
-Start the servlet by typing `mvn install` in the `ankor-todo` directory.
+Start the servlet again by typing `mvn install` in the root directory. 
 When the process has finished point your browser to [`http://localhost:8080`](http://localhost:8080).
 Your dummy text should appear in the footer.
 
-[1]: http://ankor.io/static/javadoc/apidocs/at/irian/ankor/servlet/websocket/AnkorEndpoint.html
+[1]: http://ankor.io/static/javadoc/apidocs/at/irian/ankor/messaging/AnkorIgnore.html
+[2]: http://ankor.io/static/javadoc/apidocs/at/irian/ankor/servlet/websocket/AnkorEndpoint.html
+[3]: http://docs.oracle.com/javaee/7/api/javax/websocket/Endpoint.html
