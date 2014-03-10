@@ -5,7 +5,6 @@ import at.irian.ankor.change.Change;
 import at.irian.ankor.switching.Switchboard;
 import at.irian.ankor.switching.msg.ActionEventMessage;
 import at.irian.ankor.switching.msg.ChangeEventMessage;
-import at.irian.ankor.switching.party.SocketParty;
 import at.irian.ankor.messaging.MessageDeserializer;
 import at.irian.ankor.path.PathSyntax;
 
@@ -121,31 +120,31 @@ public class SocketListener {
     }
 
     private void handleIncomingConnectMessage(SocketMessage socketMessage) {
-        SocketParty sender = getSenderFrom(socketMessage);
+        SocketModelAddress sender = getSenderFrom(socketMessage);
         switchboard.openConnection(sender, socketMessage.getConnectParams());
     }
 
     private void handleIncomingActionEventMessage(SocketMessage socketMessage) {
         Action action = socketMessage.getAction();
-        SocketParty sender = getSenderFrom(socketMessage);
+        SocketModelAddress sender = getSenderFrom(socketMessage);
         switchboard.send(sender, new ActionEventMessage(socketMessage.getProperty(), action));
     }
 
     private void handleIncomingChangeEventMessage(SocketMessage socketMessage) {
         Change change = socketMessage.getChange();
-        SocketParty sender = getSenderFrom(socketMessage);
+        SocketModelAddress sender = getSenderFrom(socketMessage);
         switchboard.send(sender, new ChangeEventMessage(socketMessage.getProperty(), change));
     }
 
     private void handleIncomingCloseMessage(SocketMessage socketMessage) {
-        SocketParty sender = getSenderFrom(socketMessage);
+        SocketModelAddress sender = getSenderFrom(socketMessage);
         switchboard.closeAllConnections(sender);
     }
 
-    private SocketParty getSenderFrom(SocketMessage socketMessage) {
+    private SocketModelAddress getSenderFrom(SocketMessage socketMessage) {
         String modelName = pathSyntax.rootOf(socketMessage.getProperty());
         URI senderAddress = URI.create(socketMessage.getSenderId());
-        return new SocketParty(senderAddress, modelName);
+        return new SocketModelAddress(senderAddress, modelName);
     }
 
     @Override

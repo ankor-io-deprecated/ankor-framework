@@ -2,8 +2,7 @@ package at.irian.ankor.switching.routing;
 
 import at.irian.ankor.application.Application;
 import at.irian.ankor.session.ModelSessionFactory;
-import at.irian.ankor.switching.party.LocalParty;
-import at.irian.ankor.switching.party.Party;
+import at.irian.ankor.switching.connector.local.LocalModelAddress;
 import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.session.ModelSessionManager;
 
@@ -29,7 +28,7 @@ public class ModelSessionRoutingLogic implements RoutingLogic {
     }
 
     @Override
-    public Party findRoutee(Party sender, Map<String, Object> connectParameters) {
+    public ModelAddress findRoutee(ModelAddress sender, Map<String, Object> connectParameters) {
 
         if (connectParameters == null) {
             connectParameters = Collections.emptyMap();
@@ -57,7 +56,7 @@ public class ModelSessionRoutingLogic implements RoutingLogic {
             }
         }
 
-        Party receiver = new LocalParty(modelSession.getId(), modelName);
+        ModelAddress receiver = new LocalModelAddress(modelSession.getId(), modelName);
 
         if (receiver.equals(sender)) {
             throw new IllegalArgumentException("ModelSession must not connect to itself: " + modelSession);

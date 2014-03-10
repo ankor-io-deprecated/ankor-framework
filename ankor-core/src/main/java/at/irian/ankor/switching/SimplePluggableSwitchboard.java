@@ -2,7 +2,7 @@ package at.irian.ankor.switching;
 
 import at.irian.ankor.switching.connector.*;
 import at.irian.ankor.switching.msg.EventMessage;
-import at.irian.ankor.switching.party.Party;
+import at.irian.ankor.switching.routing.ModelAddress;
 import at.irian.ankor.switching.routing.ConcurrentRoutingTable;
 import at.irian.ankor.switching.routing.RoutingLogic;
 import at.irian.ankor.switching.routing.RoutingTable;
@@ -28,8 +28,8 @@ public class SimplePluggableSwitchboard implements Switchboard, PluggableSwitchb
     }
 
     private RoutingLogic routingLogic;
-    private final Map<Class<? extends Party>, ConnectionHandler<? extends Party>> connectionHandlers = new ConcurrentHashMap<Class<? extends Party>, ConnectionHandler<? extends Party>>();
-    private final Map<Class<? extends Party>, TransmissionHandler<? extends Party>> transmissionHandlers = new ConcurrentHashMap<Class<? extends Party>, TransmissionHandler<? extends Party>>();
+    private final Map<Class<? extends ModelAddress>, ConnectionHandler<? extends ModelAddress>> connectionHandlers = new ConcurrentHashMap<Class<? extends ModelAddress>, ConnectionHandler<? extends ModelAddress>>();
+    private final Map<Class<? extends ModelAddress>, TransmissionHandler<? extends ModelAddress>> transmissionHandlers = new ConcurrentHashMap<Class<? extends ModelAddress>, TransmissionHandler<? extends ModelAddress>>();
     private final RoutingTable routingTable = new ConcurrentRoutingTable();
     private volatile Status status = Status.INITIALIZED;
 
@@ -48,46 +48,46 @@ public class SimplePluggableSwitchboard implements Switchboard, PluggableSwitchb
     }
 
     @Override
-    public void registerConnectionHandler(Class<? extends Party> receiverPartyType,
-                                          ConnectionHandler<? extends Party> connectionHandler) {
+    public void registerConnectionHandler(Class<? extends ModelAddress> receiverAddressType,
+                                          ConnectionHandler<? extends ModelAddress> connectionHandler) {
         checkNotRunning();
-        if (connectionHandlers.put(receiverPartyType, connectionHandler) != null) {
-            throw new IllegalStateException("ConnectionHandler for party type " + receiverPartyType.getName() + " already registered");
+        if (connectionHandlers.put(receiverAddressType, connectionHandler) != null) {
+            throw new IllegalStateException("ConnectionHandler for address type " + receiverAddressType.getName() + " already registered");
         }
     }
 
     @Override
-    public void registerTransmissionHandler(Class<? extends Party> receiverPartyType,
-                                            TransmissionHandler<? extends Party> transmissionHandler) {
+    public void registerTransmissionHandler(Class<? extends ModelAddress> receiverAddressType,
+                                            TransmissionHandler<? extends ModelAddress> transmissionHandler) {
         checkNotRunning();
-        if (transmissionHandlers.put(receiverPartyType, transmissionHandler) != null) {
-            throw new IllegalStateException("TransmissionHandler for party type " + receiverPartyType.getName() + " already registered");
+        if (transmissionHandlers.put(receiverAddressType, transmissionHandler) != null) {
+            throw new IllegalStateException("TransmissionHandler for address type " + receiverAddressType.getName() + " already registered");
         }
     }
 
     @Override
-    public void unregisterConnectionHandler(Class<? extends Party> receiverPartyType) {
+    public void unregisterConnectionHandler(Class<? extends ModelAddress> receiverAddressType) {
         checkNotRunning();
-        if (connectionHandlers.remove(receiverPartyType) == null) {
-            LOG.warn("ConnectionHandler for party type " + receiverPartyType.getName() + " was not registered");
+        if (connectionHandlers.remove(receiverAddressType) == null) {
+            LOG.warn("ConnectionHandler for address type " + receiverAddressType.getName() + " was not registered");
         }
     }
 
     @Override
-    public void unregisterTransmissionHandler(Class<? extends Party> receiverPartyType) {
+    public void unregisterTransmissionHandler(Class<? extends ModelAddress> receiverAddressType) {
         checkNotRunning();
-        if (transmissionHandlers.remove(receiverPartyType) == null) {
-            LOG.warn("TransmissionHandler for party type " + receiverPartyType.getName() + " was not registered");
+        if (transmissionHandlers.remove(receiverAddressType) == null) {
+            LOG.warn("TransmissionHandler for address type " + receiverAddressType.getName() + " was not registered");
         }
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public void openConnection(Party sender, Map<String, Object> connectParameters) {
+    public void openConnection(ModelAddress sender, Map<String, Object> connectParameters) {
         checkRunning();
 
         // find route
-        Party receiver = routingLogic.findRoutee(sender, connectParameters);
+        ModelAddress receiver = routingLogic.findRoutee(sender, connectParameters);
         if (receiver == null) {
             LOG.info("Connect request from {} with params {} was not accepted", sender, connectParameters);
             return;
@@ -105,19 +105,19 @@ public class SimplePluggableSwitchboard implements Switchboard, PluggableSwitchb
 
 
     @Override
-    public void send(Party sender, EventMessage message) {
+    public void send(ModelAddress sender, EventMessage message) {
         checkRunning();
-        Set<Party> alreadyDelivered = new HashSet<Party>(); // todo  optimze for 99% one-to-one routings (with Guava?)
+        Set<ModelAddress> alreadyDelivered = new HashSet<ModelAddress>(); // todo  optimze for 99% one-to-one routings (with Guava?)
         alreadyDelivered.add(sender);
         sendRecursive(sender, sender, message, alreadyDelivered);
     }
 
-    protected void sendRecursive(Party originalSender,
-                                 Party sender,
+    protected void sendRecursive(ModelAddress originalSender,
+                                 ModelAddress sender,
                                  EventMessage message,
-                                 Set<Party> alreadyDelivered) {
-        Collection<Party> receivers = routingTable.getConnectedParties(sender);
-        for (Party receiver : receivers) {
+                                 Set<ModelAddress> alreadyDelivered) {
+        Collection<ModelAddress> receivers = routingTable.getConnectedAddresses(sender);
+        for (ModelAddress receiver : receivers) {
             if (!alreadyDelivered.contains(receiver)) {
                 send(originalSender, receiver, message);
                 alreadyDelivered.add(receiver);
@@ -127,7 +127,7 @@ public class SimplePluggableSwitchboard implements Switchboard, PluggableSwitchb
     }
 
     @SuppressWarnings("unchecked")
-    public void send(Party sender, Party receiver, EventMessage message) {
+    public void send(ModelAddress sender, ModelAddress receiver, EventMessage message) {
         checkRunningOrStopping();
         getTransmissionHandler(receiver).transmitEventMessage(sender, receiver, message);
     }
@@ -135,17 +135,17 @@ public class SimplePluggableSwitchboard implements Switchboard, PluggableSwitchb
 
     @SuppressWarnings("unchecked")
     @Override
-    public void closeAllConnections(Party sender) {
+    public void closeAllConnections(ModelAddress sender) {
         checkRunningOrStopping();
 
-        Collection<Party> receivers = routingTable.getConnectedParties(sender);
-        for (Party receiver : receivers) {
+        Collection<ModelAddress> receivers = routingTable.getConnectedAddresses(sender);
+        for (ModelAddress receiver : receivers) {
             closeConnection(sender, receiver);
         }
     }
 
     @Override
-    public void closeConnection(Party sender, Party receiver) {
+    public void closeConnection(ModelAddress sender, ModelAddress receiver) {
         checkRunningOrStopping();
 
         LOG.debug("Remove route between {} and {}", sender, receiver);
@@ -157,8 +157,8 @@ public class SimplePluggableSwitchboard implements Switchboard, PluggableSwitchb
 
 
     @SuppressWarnings("unchecked")
-    protected void closeDirectedConnection(Party sender, Party receiver) {
-        boolean noMoreRouteToReceiver = !routingTable.hasConnectedParties(receiver);
+    protected void closeDirectedConnection(ModelAddress sender, ModelAddress receiver) {
+        boolean noMoreRouteToReceiver = !routingTable.hasConnectedAddresses(receiver);
         getConnectionHandler(receiver).closeConnection(sender, receiver, noMoreRouteToReceiver);
     }
 
@@ -171,7 +171,7 @@ public class SimplePluggableSwitchboard implements Switchboard, PluggableSwitchb
     @Override
     public void stop() {
         this.status = Status.STOPPING;
-        for (Party p : routingTable.getAllConnectedParties()) {
+        for (ModelAddress p : routingTable.getAllConnectedAddresses()) {
             closeAllConnections(p);
         }
         routingTable.clear();
@@ -196,20 +196,20 @@ public class SimplePluggableSwitchboard implements Switchboard, PluggableSwitchb
         }
     }
 
-    private ConnectionHandler getConnectionHandler(Party receiver) {
-        Class<? extends Party> partyType = receiver.getClass();
-        ConnectionHandler connectionHandler = connectionHandlers.get(partyType);
+    private ConnectionHandler getConnectionHandler(ModelAddress receiver) {
+        Class<? extends ModelAddress> addressType = receiver.getClass();
+        ConnectionHandler connectionHandler = connectionHandlers.get(addressType);
         if (connectionHandler == null) {
-            throw new IllegalStateException("No ConnectionHandler found for party type " + partyType);
+            throw new IllegalStateException("No ConnectionHandler found for address type " + addressType);
         }
         return connectionHandler;
     }
 
-    private TransmissionHandler getTransmissionHandler(Party receiver) {
-        Class<? extends Party> partyType = receiver.getClass();
-        TransmissionHandler transmissionHandler = transmissionHandlers.get(partyType);
+    private TransmissionHandler getTransmissionHandler(ModelAddress receiver) {
+        Class<? extends ModelAddress> addressType = receiver.getClass();
+        TransmissionHandler transmissionHandler = transmissionHandlers.get(addressType);
         if (transmissionHandler == null) {
-            throw new IllegalStateException("No TransmissionHandler found for party type " + partyType);
+            throw new IllegalStateException("No TransmissionHandler found for address type " + addressType);
         }
         return transmissionHandler;
     }

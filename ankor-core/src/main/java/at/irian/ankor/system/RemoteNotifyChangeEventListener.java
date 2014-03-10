@@ -4,10 +4,10 @@ import at.irian.ankor.change.Change;
 import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.change.ChangeEventListener;
 import at.irian.ankor.switching.msg.ChangeEventMessage;
-import at.irian.ankor.switching.party.LocalParty;
+import at.irian.ankor.switching.connector.local.LocalModelAddress;
 import at.irian.ankor.messaging.modify.Modifier;
 import at.irian.ankor.switching.Switchboard;
-import at.irian.ankor.switching.party.Party;
+import at.irian.ankor.switching.routing.ModelAddress;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.session.ModelSession;
 
@@ -42,7 +42,7 @@ public class RemoteNotifyChangeEventListener extends ChangeEventListener {
             Ref changedProperty = event.getChangedProperty();
             Change modifiedChange = preSendModifier.modifyBeforeSend(change, changedProperty);
             ModelSession modelSession = changedProperty.context().modelSession();
-            Party sender = new LocalParty(modelSession.getId(), changedProperty.root().propertyName());
+            ModelAddress sender = new LocalModelAddress(modelSession.getId(), changedProperty.root().propertyName());
             switchboard.send(sender,
                              new ChangeEventMessage(changedProperty.path(), modifiedChange));
         }

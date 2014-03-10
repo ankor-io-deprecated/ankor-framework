@@ -6,15 +6,14 @@ import at.irian.ankor.session.ModelSessionManager;
 import at.irian.ankor.switching.Switchboard;
 import at.irian.ankor.switching.connector.ConnectionHandler;
 import at.irian.ankor.switching.msg.ChangeEventMessage;
-import at.irian.ankor.switching.party.LocalParty;
-import at.irian.ankor.switching.party.Party;
+import at.irian.ankor.switching.routing.ModelAddress;
 
 import java.util.Map;
 
 /**
  * @author Manfred Geiler
  */
-public class LocalConnectionHandler implements ConnectionHandler<LocalParty> {
+public class LocalConnectionHandler implements ConnectionHandler<LocalModelAddress> {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(LocalConnectionHandler.class);
 
     private final ModelSessionManager modelSessionManager;
@@ -27,7 +26,7 @@ public class LocalConnectionHandler implements ConnectionHandler<LocalParty> {
     }
 
     @Override
-    public void openConnection(Party sender, LocalParty receiver, Map<String, Object> connectParameters) {
+    public void openConnection(ModelAddress sender, LocalModelAddress receiver, Map<String, Object> connectParameters) {
         LOG.debug("open connection from {} to {}", sender, receiver);
 
         String modelName = receiver.getModelName();
@@ -40,7 +39,7 @@ public class LocalConnectionHandler implements ConnectionHandler<LocalParty> {
     }
 
     @Override
-    public void closeConnection(Party sender, LocalParty receiver, boolean lastRoute) {
+    public void closeConnection(ModelAddress sender, LocalModelAddress receiver, boolean lastRoute) {
         if (lastRoute) {
             String modelSessionId = receiver.getModelSessionId();
             ModelSession modelSession = modelSessionManager.getById(modelSessionId);

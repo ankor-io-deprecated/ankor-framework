@@ -79,4 +79,16 @@ public class SocketMessage {
     public static SocketMessage createCloseMsg(String senderAddress, String modelName) {
         return new SocketMessage(senderAddress, modelName, null, null, null, true);
     }
+
+    @Override
+    public String toString() {
+        return "SocketMessage{" +
+               "senderId='" + senderId + '\'' +
+               ", property='" + property + '\'' +
+               ", action=" + action +
+               ", change=" + change +
+               ", connectParams=" + connectParams +
+               ", close=" + close +
+               '}';
+    }
 }

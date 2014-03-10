@@ -5,7 +5,6 @@ import at.irian.ankor.session.ModelSessionManager;
 import at.irian.ankor.switching.Switchboard;
 import at.irian.ankor.switching.connector.Connector;
 import at.irian.ankor.switching.connector.ConnectorPlug;
-import at.irian.ankor.switching.party.LocalParty;
 import at.irian.ankor.system.AnkorSystem;
 
 /**
@@ -30,14 +29,14 @@ public class LocalConnector implements Connector {
 
     @Override
     public void start() {
-        plug.registerTransmissionHandler(LocalParty.class, new LocalTransmissionHandler(modelSessionManager, modifer));
-        plug.registerConnectionHandler(LocalParty.class, new LocalConnectionHandler(modelSessionManager, switchboard));
+        plug.registerTransmissionHandler(LocalModelAddress.class, new LocalTransmissionHandler(modelSessionManager, modifer));
+        plug.registerConnectionHandler(LocalModelAddress.class, new LocalConnectionHandler(modelSessionManager, switchboard));
     }
 
     @Override
     public void stop() {
-        plug.unregisterTransmissionHandler(LocalParty.class);
-        plug.unregisterConnectionHandler(LocalParty.class);
+        plug.unregisterTransmissionHandler(LocalModelAddress.class);
+        plug.unregisterConnectionHandler(LocalModelAddress.class);
     }
 
 }

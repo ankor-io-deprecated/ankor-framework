@@ -3,7 +3,7 @@ package at.irian.ankor.connection;
 /**
  * @author Manfred Geiler
  */
-@Deprecated   // use Party instead
+@Deprecated   // use ModelAddress instead
 public interface RemoteSystem {
 
     String getId();

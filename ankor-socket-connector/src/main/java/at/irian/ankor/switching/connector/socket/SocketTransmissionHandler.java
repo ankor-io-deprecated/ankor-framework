@@ -6,8 +6,7 @@ import at.irian.ankor.switching.connector.TransmissionHandler;
 import at.irian.ankor.switching.msg.ActionEventMessage;
 import at.irian.ankor.switching.msg.ChangeEventMessage;
 import at.irian.ankor.switching.msg.EventMessage;
-import at.irian.ankor.switching.party.Party;
-import at.irian.ankor.switching.party.SocketParty;
+import at.irian.ankor.switching.routing.ModelAddress;
 
 import java.io.IOException;
 import java.net.URI;
@@ -15,7 +14,7 @@ import java.net.URI;
 /**
  * @author Manfred Geiler
  */
-public class SocketTransmissionHandler implements TransmissionHandler<SocketParty> {
+public class SocketTransmissionHandler implements TransmissionHandler<SocketModelAddress> {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SocketTransmissionHandler.class);
 
     private final URI localAddress;
@@ -31,16 +30,20 @@ public class SocketTransmissionHandler implements TransmissionHandler<SocketPart
     }
 
     @Override
-    public void transmitEventMessage(Party sender, SocketParty receiver, EventMessage message) {
+    public void transmitEventMessage(ModelAddress sender, SocketModelAddress receiver, EventMessage message) {
         try {
             send(receiver, message);
         } catch (IOException e) {
-            LOG.error("Error sending {} from {} to {} - automatically disconnecting {} ...", message, sender, receiver, receiver);
+            LOG.error("Error sending {} from {} to {} - automatically disconnecting {} ...",
+                      message,
+                      sender,
+                      receiver,
+                      receiver);
             switchboard.closeConnection(sender, receiver);
         }
     }
 
-    private void send(SocketParty receiver, EventMessage message) throws IOException {
+    private void send(SocketModelAddress receiver, EventMessage message) throws IOException {
         SocketMessage socketMessage;
 
         if (message instanceof ActionEventMessage) {
@@ -58,7 +61,7 @@ public class SocketTransmissionHandler implements TransmissionHandler<SocketPart
         sendSocketMessage(receiver, socketMessage);
     }
 
-    private void sendSocketMessage(SocketParty receiver, SocketMessage socketMessage) throws IOException {
+    private void sendSocketMessage(SocketModelAddress receiver, SocketMessage socketMessage) throws IOException {
         new SocketSender(messageSerializer).send(receiver, socketMessage);
     }
 

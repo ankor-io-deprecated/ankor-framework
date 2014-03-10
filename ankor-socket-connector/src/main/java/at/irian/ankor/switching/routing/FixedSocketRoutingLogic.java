@@ -1,7 +1,6 @@
 package at.irian.ankor.switching.routing;
 
-import at.irian.ankor.switching.party.Party;
-import at.irian.ankor.switching.party.SocketParty;
+import at.irian.ankor.switching.connector.socket.SocketModelAddress;
 
 import java.net.URI;
 import java.util.Map;
@@ -19,7 +18,7 @@ public class FixedSocketRoutingLogic implements RoutingLogic {
     }
 
     @Override
-    public Party findRoutee(Party sender, Map<String, Object> connectParameters) {
-        return new SocketParty(fixedReceiverAddress, sender.getModelName());
+    public ModelAddress findRoutee(ModelAddress sender, Map<String, Object> connectParameters) {
+        return new SocketModelAddress(fixedReceiverAddress, sender.getModelName());
     }
 }

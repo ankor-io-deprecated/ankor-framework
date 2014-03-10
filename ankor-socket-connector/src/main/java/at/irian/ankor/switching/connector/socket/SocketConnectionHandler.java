@@ -2,8 +2,7 @@ package at.irian.ankor.switching.connector.socket;
 
 import at.irian.ankor.messaging.MessageSerializer;
 import at.irian.ankor.switching.connector.ConnectionHandler;
-import at.irian.ankor.switching.party.Party;
-import at.irian.ankor.switching.party.SocketParty;
+import at.irian.ankor.switching.routing.ModelAddress;
 
 import java.io.IOException;
 import java.net.URI;
@@ -12,7 +11,7 @@ import java.util.Map;
 /**
  * @author Manfred Geiler
  */
-public class SocketConnectionHandler implements ConnectionHandler<SocketParty> {
+public class SocketConnectionHandler implements ConnectionHandler<SocketModelAddress> {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SocketConnectionHandler.class);
 
     private final URI localAddress;
@@ -25,7 +24,7 @@ public class SocketConnectionHandler implements ConnectionHandler<SocketParty> {
     }
 
     @Override
-    public void openConnection(Party sender, SocketParty receiver, Map<String, Object> connectParameters) {
+    public void openConnection(ModelAddress sender, SocketModelAddress receiver, Map<String, Object> connectParameters) {
         SocketMessage connectMsg = SocketMessage.createConnectMsg(localAddress.toString(),
                                                                      sender.getModelName(),
                                                                      connectParameters);
@@ -33,14 +32,14 @@ public class SocketConnectionHandler implements ConnectionHandler<SocketParty> {
     }
 
     @Override
-    public void closeConnection(Party sender, SocketParty receiver, boolean lastRoute) {
+    public void closeConnection(ModelAddress sender, SocketModelAddress receiver, boolean lastRoute) {
         SocketMessage closeMsg = SocketMessage.createCloseMsg(localAddress.toString(),
                                                               sender.getModelName());
         send(sender, receiver, closeMsg);
     }
 
 
-    private void send(Party sender, SocketParty receiver, SocketMessage socketMessage) {
+    private void send(ModelAddress sender, SocketModelAddress receiver, SocketMessage socketMessage) {
         try {
             new SocketSender(messageSerializer).send(receiver, socketMessage);
         } catch (IOException e) {

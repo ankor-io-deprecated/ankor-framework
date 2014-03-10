@@ -3,7 +3,6 @@ package at.irian.ankor.switching.connector.socket;
 import at.irian.ankor.switching.Switchboard;
 import at.irian.ankor.switching.connector.Connector;
 import at.irian.ankor.switching.connector.ConnectorPlug;
-import at.irian.ankor.switching.party.SocketParty;
 import at.irian.ankor.messaging.MessageMapper;
 import at.irian.ankor.messaging.MessageMapperFactory;
 import at.irian.ankor.path.el.SimpleELPathSyntax;
@@ -55,9 +54,9 @@ public class SocketConnector implements Connector {
         LOG.info("Starting SocketConnector (listening on port " + socketListener.getListenPort() + ")");
         socketListener.start();
 
-        plug.registerTransmissionHandler(SocketParty.class,
+        plug.registerTransmissionHandler(SocketModelAddress.class,
                                          new SocketTransmissionHandler(localAddress, messageMapper, switchboard));
-        plug.registerConnectionHandler(SocketParty.class, new SocketConnectionHandler(localAddress, messageMapper));
+        plug.registerConnectionHandler(SocketModelAddress.class, new SocketConnectionHandler(localAddress, messageMapper));
 
         LOG.debug("SocketConnector successfully started");
     }
@@ -71,8 +70,8 @@ public class SocketConnector implements Connector {
         LOG.info("Stopping SocketConnector (listening on port " + socketListener.getListenPort() + ")");
         socketListener.stop();
 
-        plug.unregisterTransmissionHandler(SocketParty.class);
-        plug.unregisterConnectionHandler(SocketParty.class);
+        plug.unregisterTransmissionHandler(SocketModelAddress.class);
+        plug.unregisterConnectionHandler(SocketModelAddress.class);
 
         LOG.debug("SocketConnector was stopped");
     }

@@ -2,7 +2,7 @@ package at.irian.ankor.switching.connector.local;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.change.Change;
-import at.irian.ankor.event.source.PartySource;
+import at.irian.ankor.event.source.ModelAddressSource;
 import at.irian.ankor.messaging.modify.Modifier;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
@@ -14,13 +14,12 @@ import at.irian.ankor.switching.connector.TransmissionHandler;
 import at.irian.ankor.switching.msg.ActionEventMessage;
 import at.irian.ankor.switching.msg.ChangeEventMessage;
 import at.irian.ankor.switching.msg.EventMessage;
-import at.irian.ankor.switching.party.LocalParty;
-import at.irian.ankor.switching.party.Party;
+import at.irian.ankor.switching.routing.ModelAddress;
 
 /**
  * @author Manfred Geiler
  */
-public class LocalTransmissionHandler implements TransmissionHandler<LocalParty> {
+public class LocalTransmissionHandler implements TransmissionHandler<LocalModelAddress> {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(LocalTransmissionHandler.class);
 
     private final ModelSessionManager modelSessionManager;
@@ -32,7 +31,7 @@ public class LocalTransmissionHandler implements TransmissionHandler<LocalParty>
     }
 
     @Override
-    public void transmitEventMessage(Party sender, LocalParty receiver, EventMessage message) {
+    public void transmitEventMessage(ModelAddress sender, LocalModelAddress receiver, EventMessage message) {
         LOG.debug("delivering {} from {} to {}", message, sender, receiver);
 
         String modelSessionId = receiver.getModelSessionId();
@@ -44,7 +43,7 @@ public class LocalTransmissionHandler implements TransmissionHandler<LocalParty>
         }
     }
 
-    private void deliver(final Party sender, final ModelSession modelSession, final EventMessage msg) {
+    private void deliver(final ModelAddress sender, final ModelSession modelSession, final EventMessage msg) {
 
         if (msg instanceof ActionEventMessage) {
             AnkorPatterns.runLater(modelSession, new Runnable() {
@@ -53,7 +52,7 @@ public class LocalTransmissionHandler implements TransmissionHandler<LocalParty>
                     RefContext refContext = modelSession.getRefContext();
                     Ref actionProperty = refContext.refFactory().ref(((ActionEventMessage) msg).getProperty());
                     Action action = modifier.modifyAfterReceive(((ActionEventMessage) msg).getAction(), actionProperty);
-                    PartySource source = new PartySource(sender, LocalTransmissionHandler.this);
+                    ModelAddressSource source = new ModelAddressSource(sender, LocalTransmissionHandler.this);
                     ((RefImplementor) actionProperty).fire(source, action);
                 }
 
@@ -70,7 +69,7 @@ public class LocalTransmissionHandler implements TransmissionHandler<LocalParty>
                     RefContext refContext = modelSession.getRefContext();
                     Ref changedProperty = refContext.refFactory().ref(((ChangeEventMessage) msg).getProperty());
                     Change change = modifier.modifyAfterReceive(((ChangeEventMessage) msg).getChange(), changedProperty);
-                    PartySource source = new PartySource(sender, LocalTransmissionHandler.this);
+                    ModelAddressSource source = new ModelAddressSource(sender, LocalTransmissionHandler.this);
                     ((RefImplementor)changedProperty).apply(source, change);
                 }
 

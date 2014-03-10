@@ -1,7 +1,5 @@
 package at.irian.ankor.switching.routing;
 
-import at.irian.ankor.switching.party.Party;
-
 import java.util.Map;
 
 /**
@@ -10,10 +8,10 @@ import java.util.Map;
 public interface RoutingLogic {
 
     /**
-     * @param sender Party, that requests the new connection
+     * @param sender ModelAddress, that requests the new connection
      * @param connectParameters  custom (application specific) parameters
-     * @return Party that accepted the connection request, or null if connection was not accepted
+     * @return ModelAddress that accepted the connection request, or null if connection was not accepted
      */
-    Party findRoutee(Party sender, Map<String, Object> connectParameters);
+    ModelAddress findRoutee(ModelAddress sender, Map<String, Object> connectParameters);
 
 }

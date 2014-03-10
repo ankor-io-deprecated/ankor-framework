@@ -5,9 +5,9 @@ import at.irian.ankor.action.ActionEvent;
 import at.irian.ankor.action.ActionEventListener;
 import at.irian.ankor.switching.Switchboard;
 import at.irian.ankor.switching.msg.ActionEventMessage;
-import at.irian.ankor.switching.party.LocalParty;
+import at.irian.ankor.switching.connector.local.LocalModelAddress;
 import at.irian.ankor.messaging.modify.Modifier;
-import at.irian.ankor.switching.party.Party;
+import at.irian.ankor.switching.routing.ModelAddress;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.session.ModelSession;
 
@@ -42,7 +42,7 @@ public class RemoteNotifyActionEventListener extends ActionEventListener {
             Ref actionProperty = event.getActionProperty();
             Action modifiedAction = preSendModifier.modifyBeforeSend(action, actionProperty);
             ModelSession modelSession = actionProperty.context().modelSession();
-            Party sender = new LocalParty(modelSession.getId(), actionProperty.root().propertyName());
+            ModelAddress sender = new LocalModelAddress(modelSession.getId(), actionProperty.root().propertyName());
             switchboard.send(sender,
                              new ActionEventMessage(actionProperty.path(), modifiedAction));
         }

@@ -1,32 +1,30 @@
 package at.irian.ankor.switching.routing;
 
-import at.irian.ankor.switching.party.Party;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 
 /**
- * A RoutingTable that statically connects two parties.
+ * A RoutingTable that statically connects two addresses.
  *
  * @author Manfred Geiler
  */
 public class FixedPairRoutingTable implements RoutingTable {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(FixedPairRoutingTable.class);
 
-    private Party a = null;
-    private Party b = null;
+    private ModelAddress a = null;
+    private ModelAddress b = null;
 
     @Override
-    public boolean connect(Party a, Party b) {
+    public boolean connect(ModelAddress a, ModelAddress b) {
         this.a = a;
         this.b = b;
         return true;
     }
 
     @Override
-    public boolean disconnect(Party a, Party b) {
+    public boolean disconnect(ModelAddress a, ModelAddress b) {
         if (a.equals(this.a) && b.equals(this.b)) {
             this.a = null;
             this.b = null;
@@ -37,13 +35,13 @@ public class FixedPairRoutingTable implements RoutingTable {
     }
 
     @Override
-    public boolean isConnected(Party a, Party b) {
+    public boolean isConnected(ModelAddress a, ModelAddress b) {
         return a.equals(this.a) && b.equals(this.b) || a.equals(this.b) && b.equals(this.a);
     }
 
     @SuppressWarnings("SimplifiableIfStatement")
     @Override
-    public boolean disconnectAll(Party p) {
+    public boolean disconnectAll(ModelAddress p) {
         if (p.equals(this.a)) {
             return disconnect(p, this.b);
         } else if (p.equals(this.b)) {
@@ -54,7 +52,7 @@ public class FixedPairRoutingTable implements RoutingTable {
     }
 
     @Override
-    public Collection<Party> getConnectedParties(Party p) {
+    public Collection<ModelAddress> getConnectedAddresses(ModelAddress p) {
         if (p.equals(this.a)) {
             return Collections.singleton(this.b);
         } else if (p.equals(this.b)) {
@@ -65,15 +63,15 @@ public class FixedPairRoutingTable implements RoutingTable {
     }
 
     @Override
-    public boolean hasConnectedParties(Party p) {
+    public boolean hasConnectedAddresses(ModelAddress p) {
         return p.equals(this.a) || p.equals(this.b);
     }
 
     @Override
-    public Collection<Party> getAllConnectedParties() {
+    public Collection<ModelAddress> getAllConnectedAddresses() {
         return this.a != null && this.b != null
-               ? new HashSet<Party>(Arrays.asList(a, b))
-               : Collections.<Party>emptySet();
+               ? new HashSet<ModelAddress>(Arrays.asList(a, b))
+               : Collections.<ModelAddress>emptySet();
     }
 
     @Override

@@ -1,9 +1,11 @@
-package at.irian.ankor.switching.party;
+package at.irian.ankor.switching.routing;
 
 /**
+ * todo  better rename this to "ModelAddress" ?
+ *
  * @author Manfred Geiler
  */
-public interface Party {
+public interface ModelAddress {
 
     String getModelName();
 

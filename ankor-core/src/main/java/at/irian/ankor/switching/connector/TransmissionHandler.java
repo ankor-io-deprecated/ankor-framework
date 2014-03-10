@@ -1,13 +1,13 @@
 package at.irian.ankor.switching.connector;
 
 import at.irian.ankor.switching.msg.EventMessage;
-import at.irian.ankor.switching.party.Party;
+import at.irian.ankor.switching.routing.ModelAddress;
 
 /**
  * @author Manfred Geiler
  */
-public interface TransmissionHandler<P extends Party> {
+public interface TransmissionHandler<P extends ModelAddress> {
 
-    void transmitEventMessage(Party sender, P receiver, EventMessage message);
+    void transmitEventMessage(ModelAddress sender, P receiver, EventMessage message);
 
 }

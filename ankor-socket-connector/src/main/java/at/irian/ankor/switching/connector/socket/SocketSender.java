@@ -1,7 +1,6 @@
 package at.irian.ankor.switching.connector.socket;
 
 import at.irian.ankor.messaging.MessageSerializer;
-import at.irian.ankor.switching.party.SocketParty;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -20,11 +19,11 @@ public class SocketSender {
         this.messageSerializer = messageSerializer;
     }
 
-    public void send(SocketParty receiver, SocketMessage socketMessage) throws IOException {
+    public void send(SocketModelAddress receiver, SocketMessage socketMessage) throws IOException {
         sendString(receiver, messageSerializer.serialize(socketMessage));
     }
 
-    private void sendString(SocketParty receiver, String serializedMsg) throws IOException {
+    private void sendString(SocketModelAddress receiver, String serializedMsg) throws IOException {
         Socket socket = new Socket(receiver.getHost(), receiver.getPort());
         try {
 

@@ -1,21 +1,22 @@
-package at.irian.ankor.switching.party;
+package at.irian.ankor.switching.connector.local;
 
 import at.irian.ankor.session.ModelSession;
+import at.irian.ankor.switching.routing.ModelAddress;
 
 /**
  * @author Manfred Geiler
  */
-public class LocalParty implements Party {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(LocalParty.class);
+public class LocalModelAddress implements ModelAddress {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(LocalModelAddress.class);
 
     private final String modelSessionId;
     private final String modelName;
 
-    public LocalParty(ModelSession modelSession, String modelName) {
+    public LocalModelAddress(ModelSession modelSession, String modelName) {
         this(modelSession.getId(), modelName);
     }
 
-    public LocalParty(String modelSessionId, String modelName) {
+    public LocalModelAddress(String modelSessionId, String modelName) {
         this.modelSessionId = modelSessionId;
         this.modelName = modelName;
     }
@@ -38,7 +39,7 @@ public class LocalParty implements Party {
             return false;
         }
 
-        LocalParty that = (LocalParty) o;
+        LocalModelAddress that = (LocalModelAddress) o;
 
         return modelName.equals(that.modelName) && modelSessionId.equals(that.modelSessionId);
 
@@ -53,7 +54,7 @@ public class LocalParty implements Party {
 
     @Override
     public String toString() {
-        return "LocalParty{" +
+        return "LocalModelAddress{" +
                "modelSessionId='" + modelSessionId + '\'' +
                ", modelName='" + modelName + '\'' +
                '}';

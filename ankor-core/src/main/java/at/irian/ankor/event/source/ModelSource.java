@@ -1,6 +1,6 @@
 package at.irian.ankor.event.source;
 
-import at.irian.ankor.switching.party.LocalParty;
+import at.irian.ankor.switching.connector.local.LocalModelAddress;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.session.ModelSession;
 
@@ -9,12 +9,12 @@ import at.irian.ankor.session.ModelSession;
  *
  * @author Manfred Geiler
  */
-public class ModelSource extends PartySource {
+public class ModelSource extends ModelAddressSource {
 
     private final ModelSession modelSession;
 
     public ModelSource(ModelSession modelSession, String modelName, Object origination) {
-        super(new LocalParty(modelSession.getId(), modelName), origination);
+        super(new LocalModelAddress(modelSession.getId(), modelName), origination);
         this.modelSession = modelSession;
     }
 
@@ -29,7 +29,7 @@ public class ModelSource extends PartySource {
     @Override
     public String toString() {
         return "ModelSource{" +
-               "party=" + getParty() +
+               "address=" + getModelAddress() +
                ", origination=" + getOrigination() +
                ", modelSession=" + modelSession +
                "}";

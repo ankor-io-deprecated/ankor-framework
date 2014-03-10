@@ -1,7 +1,5 @@
 package at.irian.ankor.switching.routing;
 
-import at.irian.ankor.switching.party.Party;
-
 import java.util.Collection;
 
 /**
@@ -10,50 +8,50 @@ import java.util.Collection;
 public interface RoutingTable {
 
     /**
-     * @param a  Party 1
-     * @param b  Party 2
-     * @return true, if parties where not connected yet and got successfully connected
+     * @param a  ModelAddress 1
+     * @param b  ModelAddress 2
+     * @return true, if addresses where not connected yet and got successfully connected
      */
-    boolean connect(Party a, Party b);
+    boolean connect(ModelAddress a, ModelAddress b);
 
     /**
-     * @param a  Party 1
-     * @param b  Party 2
-     * @return true, if parties where connected and got successfully disconnected
+     * @param a  ModelAddress 1
+     * @param b  ModelAddress 2
+     * @return true, if addresses where connected and got successfully disconnected
      */
-    boolean disconnect(Party a, Party b);
+    boolean disconnect(ModelAddress a, ModelAddress b);
 
     /**
-     * @param a  Party 1
-     * @param b  Party 2
-     * @return true, if parties are currently connected
+     * @param a  ModelAddress 1
+     * @param b  ModelAddress 2
+     * @return true, if addresses are currently connected
      */
-    boolean isConnected(Party a, Party b);
+    boolean isConnected(ModelAddress a, ModelAddress b);
 
     /**
-     * @param party  Party
-     * @return true, if given party was connected to any other party and got successfully disconnected
+     * @param modelAddress  ModelAddress
+     * @return true, if given modelAddress was connected to any other modelAddress and got successfully disconnected
      */
     @SuppressWarnings("UnusedDeclaration")
-    boolean disconnectAll(Party party);
+    boolean disconnectAll(ModelAddress modelAddress);
 
     /**
-     * @param party  Party
-     * @return collection of all other parties the given party is currently connected to,
-     *         or empty collection if there are no connected parties
+     * @param modelAddress  ModelAddress
+     * @return collection of all other addresses the given modelAddress is currently connected to,
+     *         or empty collection if there are no connected addresses
      */
-    Collection<Party> getConnectedParties(Party party);
+    Collection<ModelAddress> getConnectedAddresses(ModelAddress modelAddress);
 
     /**
-     * @param party  Party
-     * @return true, if given party is currently connected to any other party
+     * @param modelAddress  ModelAddress
+     * @return true, if given modelAddress is currently connected to any other modelAddress
      */
-    boolean hasConnectedParties(Party party);
+    boolean hasConnectedAddresses(ModelAddress modelAddress);
 
     /**
-     * @return all parties that are currently connected
+     * @return all addresses that are currently connected
      */
-    Collection<Party> getAllConnectedParties();
+    Collection<ModelAddress> getAllConnectedAddresses();
 
     /**
      * Completely clear the routing table.

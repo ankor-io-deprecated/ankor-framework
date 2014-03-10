@@ -1,25 +1,27 @@
-package at.irian.ankor.switching.party;
+package at.irian.ankor.switching.connector.socket;
+
+import at.irian.ankor.switching.routing.ModelAddress;
 
 import java.net.URI;
 
 /**
  * @author Manfred Geiler
  */
-public class SocketParty implements Party {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SocketParty.class);
+public class SocketModelAddress implements ModelAddress {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SocketModelAddress.class);
 
     private final String host;
     private final int port;
     private final String modelName;
 
     @SuppressWarnings("UnusedDeclaration")
-    public SocketParty(String host, int port, String modelName) {
+    public SocketModelAddress(String host, int port, String modelName) {
         this.host = host;
         this.port = port;
         this.modelName = modelName;
     }
 
-    public SocketParty(URI address, String modelName) {
+    public SocketModelAddress(URI address, String modelName) {
         this.host = address.getHost();
         this.port = address.getPort();
         this.modelName = modelName;
@@ -47,7 +49,7 @@ public class SocketParty implements Party {
             return false;
         }
 
-        SocketParty that = (SocketParty) o;
+        SocketModelAddress that = (SocketModelAddress) o;
 
         return port == that.port && host.equals(that.host) && modelName.equals(that.modelName);
     }
@@ -62,7 +64,7 @@ public class SocketParty implements Party {
 
     @Override
     public String toString() {
-        return "SocketParty{" +
+        return "SocketModelAddress{" +
                "host='" + host + '\'' +
                ", port=" + port +
                ", modelName='" + modelName + '\'' +

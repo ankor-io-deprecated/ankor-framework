@@ -1,20 +1,20 @@
 package at.irian.ankor.switching.connector;
 
-import at.irian.ankor.switching.party.Party;
+import at.irian.ankor.switching.routing.ModelAddress;
 
 /**
  * @author Manfred Geiler
  */
 public interface ConnectorPlug {
 
-    void registerConnectionHandler(Class<? extends Party> receiverPartyType,
-                                   ConnectionHandler<? extends Party> connectionHandler);
+    void registerConnectionHandler(Class<? extends ModelAddress> receiverAddressType,
+                                   ConnectionHandler<? extends ModelAddress> connectionHandler);
 
-    void unregisterConnectionHandler(Class<? extends Party> receiverPartyType);
+    void unregisterConnectionHandler(Class<? extends ModelAddress> receiverAddressType);
 
-    void registerTransmissionHandler(Class<? extends Party> receiverPartyType,
-                                     TransmissionHandler<? extends Party> transmissionHandler);
+    void registerTransmissionHandler(Class<? extends ModelAddress> receiverAddressType,
+                                     TransmissionHandler<? extends ModelAddress> transmissionHandler);
 
-    void unregisterTransmissionHandler(Class<? extends Party> receiverPartyType);
+    void unregisterTransmissionHandler(Class<? extends ModelAddress> receiverAddressType);
 
 }

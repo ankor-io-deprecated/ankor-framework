@@ -1,7 +1,5 @@
 package at.irian.ankor.switching.routing;
 
-import at.irian.ankor.switching.party.Party;
-
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -11,16 +9,16 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class ConcurrentRoutingTable implements RoutingTable {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RoutingTable.class);
 
-    private final Map<Party, Collection<Party>> connections = new HashMap<Party, Collection<Party>>();
+    private final Map<ModelAddress, Collection<ModelAddress>> connections = new HashMap<ModelAddress, Collection<ModelAddress>>();
     private final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
 
     @Override
-    public boolean connect(Party a, Party b) {
+    public boolean connect(ModelAddress a, ModelAddress b) {
         if (a == null) {
-            throw new NullPointerException("Party a");
+            throw new NullPointerException("ModelAddress a");
         }
         if (b == null) {
-            throw new NullPointerException("Party b");
+            throw new NullPointerException("ModelAddress b");
         }
 
         if (!isConnected(a, b)) {
@@ -37,27 +35,27 @@ public class ConcurrentRoutingTable implements RoutingTable {
         }
     }
 
-    private void _connectOneWay(Party a, Party b) {
-        Collection<Party> parties = connections.get(a);
-        if (parties == null) {
-            parties = new HashSet<Party>();
-            parties.add(b);
-            connections.put(a, parties);
-        } else if (!parties.contains(b)) {
-            parties = new HashSet<Party>(parties);
-            parties.add(b);
-            connections.put(a, parties);
+    private void _connectOneWay(ModelAddress a, ModelAddress b) {
+        Collection<ModelAddress> addresses = connections.get(a);
+        if (addresses == null) {
+            addresses = new HashSet<ModelAddress>();
+            addresses.add(b);
+            connections.put(a, addresses);
+        } else if (!addresses.contains(b)) {
+            addresses = new HashSet<ModelAddress>(addresses);
+            addresses.add(b);
+            connections.put(a, addresses);
         }
     }
 
 
     @Override
-    public boolean disconnect(Party a, Party b) {
+    public boolean disconnect(ModelAddress a, ModelAddress b) {
         if (a == null) {
-            throw new NullPointerException("Party a");
+            throw new NullPointerException("ModelAddress a");
         }
         if (b == null) {
-            throw new NullPointerException("Party b");
+            throw new NullPointerException("ModelAddress b");
         }
 
         if (isConnected(a, b)) {
@@ -74,26 +72,26 @@ public class ConcurrentRoutingTable implements RoutingTable {
         }
     }
 
-    private void _disconnectOneWay(Party a, Party b) {
-        Collection<Party> parties = connections.get(a);
-        if (parties != null && parties.contains(b)) {
-            if (parties.size() == 1) {
+    private void _disconnectOneWay(ModelAddress a, ModelAddress b) {
+        Collection<ModelAddress> addresses = connections.get(a);
+        if (addresses != null && addresses.contains(b)) {
+            if (addresses.size() == 1) {
                 connections.remove(a);
             } else {
-                parties = new HashSet<Party>(parties);
-                parties.remove(b);
-                connections.put(a, parties);
+                addresses = new HashSet<ModelAddress>(addresses);
+                addresses.remove(b);
+                connections.put(a, addresses);
             }
         }
     }
 
     @Override
-    public boolean isConnected(Party a, Party b) {
+    public boolean isConnected(ModelAddress a, ModelAddress b) {
         if (a == null) {
-            throw new NullPointerException("Party a");
+            throw new NullPointerException("ModelAddress a");
         }
         if (b == null) {
-            throw new NullPointerException("Party b");
+            throw new NullPointerException("ModelAddress b");
         }
 
         rwl.readLock().lock();
@@ -104,22 +102,22 @@ public class ConcurrentRoutingTable implements RoutingTable {
         }
     }
 
-    private boolean _isConnectedOneWay(Party a, Party b) {
-        Collection<Party> parties = connections.get(a);
-        return parties != null && parties.contains(b);
+    private boolean _isConnectedOneWay(ModelAddress a, ModelAddress b) {
+        Collection<ModelAddress> addresses = connections.get(a);
+        return addresses != null && addresses.contains(b);
     }
 
     @Override
-    public boolean disconnectAll(Party a) {
+    public boolean disconnectAll(ModelAddress a) {
         if (a == null) {
-            throw new NullPointerException("Party a");
+            throw new NullPointerException("ModelAddress a");
         }
 
         rwl.writeLock().lock();
         try {
-            Collection<Party> parties = connections.get(a);
-            if (parties != null) {
-                for (Party b : parties) {
+            Collection<ModelAddress> addresses = connections.get(a);
+            if (addresses != null) {
+                for (ModelAddress b : addresses) {
                     _disconnectOneWay(b, a);
                 }
                 connections.remove(a);
@@ -134,41 +132,41 @@ public class ConcurrentRoutingTable implements RoutingTable {
 
 
     @Override
-    public Collection<Party> getConnectedParties(Party party) {
-        if (party == null) {
-            throw new NullPointerException("party");
+    public Collection<ModelAddress> getConnectedAddresses(ModelAddress modelAddress) {
+        if (modelAddress == null) {
+            throw new NullPointerException("modelAddress");
         }
 
         rwl.readLock().lock();
         try {
-            Collection<Party> parties = connections.get(party);
-            return parties != null ? Collections.unmodifiableCollection(parties) : Collections.<Party>emptySet();
+            Collection<ModelAddress> addresses = connections.get(modelAddress);
+            return addresses != null ? Collections.unmodifiableCollection(addresses) : Collections.<ModelAddress>emptySet();
         } finally {
             rwl.readLock().unlock();
         }
     }
 
     @Override
-    public boolean hasConnectedParties(Party party) {
-        if (party == null) {
-            throw new NullPointerException("party");
+    public boolean hasConnectedAddresses(ModelAddress modelAddress) {
+        if (modelAddress == null) {
+            throw new NullPointerException("modelAddress");
         }
 
         rwl.readLock().lock();
         try {
-            Collection<Party> parties = connections.get(party);
-            return parties != null && parties.size() > 0;
+            Collection<ModelAddress> addresses = connections.get(modelAddress);
+            return addresses != null && addresses.size() > 0;
         } finally {
             rwl.readLock().unlock();
         }
     }
 
     @Override
-    public Collection<Party> getAllConnectedParties() {
+    public Collection<ModelAddress> getAllConnectedAddresses() {
         rwl.readLock().lock();
         try {
-            Collection<Party> parties = connections.keySet();
-            return Collections.unmodifiableCollection(parties);
+            Collection<ModelAddress> addresses = connections.keySet();
+            return Collections.unmodifiableCollection(addresses);
         } finally {
             rwl.readLock().unlock();
         }
