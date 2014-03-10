@@ -1,0 +1,44 @@
+This is a PlantUML sequence diagram.
+To see a graphical presentation of this diagram use PlantUML - see http://plantuml.sourceforge.net
+
+@startuml
+title: Server - Incoming Socket Connection
+
+activate SocketConnector
+SocketConnector -> SocketConnector: receive (senderURI, modelName, connectMsg)
+
+SocketConnector -> Switchboard: openConnection (sender, connParams)
+deactivate SocketConnector
+activate Switchboard
+
+Switchboard -> RoutingLogic: findRoutee (sender, connParams)
+activate RoutingLogic
+
+RoutingLogic -> Application: lookupModel (modelName, connParams);
+activate Application
+
+Application -> RoutingLogic: modelRoot:Object
+deactivate Application
+
+RoutingLogic -> ModelSessionManager: getByModelRoot (modelRoot)
+activate ModelSessionManager
+
+ModelSessionManager -> RoutingLogic: modelSession
+deactivate ModelSessionManager
+
+RoutingLogic -> Switchboard: receiver:ModelAddress
+deactivate RoutingLogic
+
+Switchboard -> RoutingTable: connect (sender, receiver)
+
+Switchboard -> LocalConnector: openConnection (sender, receiver, connParams)
+deactivate Switchboard
+activate LocalConnector
+
+LocalConnector -> ModelSessionManager: getById (receiver.modelSessionId)
+activate ModelSessionManager
+
+ModelSessionManager -> LocalConnector: :ModelSession
+deactivate ModelSessionManager
+
+@enduml

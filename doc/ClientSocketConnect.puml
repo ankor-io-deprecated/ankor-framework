@@ -1,0 +1,35 @@
+This is a PlantUML sequence diagram.
+To see a graphical presentation of this diagram use PlantUML - see http://plantuml.sourceforge.net
+
+@startuml
+title: Client - Outgoing Socket Connection
+
+activate clientApplication
+
+clientApplication -> refContext: openModel (modelName, connParams)
+activate refContext
+
+refContext -> Switchboard:openConnection (sender:ModelAddress, connParams)
+activate Switchboard
+
+
+Switchboard -> RoutingLogic: findRoutee (sender, connParams)
+activate RoutingLogic
+RoutingLogic -> Switchboard: receiver:ModelAddress
+deactivate RoutingLogic
+
+Switchboard -> RoutingTable: addRoute (sender, receiver)
+
+Switchboard -> refContext
+
+refContext -> clientApplication:
+deactivate clientApplication
+deactivate refContext
+
+Switchboard --/ socketConnector: openConnection (sender, receiver, connParams)
+deactivate Switchboard
+activate socketConnector
+
+socketConnector -> socketConnector: send (receiverSocket, connectMsg)
+
+@enduml
