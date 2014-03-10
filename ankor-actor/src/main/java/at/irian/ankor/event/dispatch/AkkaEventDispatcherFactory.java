@@ -23,8 +23,6 @@ public class AkkaEventDispatcherFactory implements EventDispatcherFactory {
     @Override
     public EventDispatcher createFor(final ModelSession modelSession) {
 
-        ankorActorSystem.register(modelSession);
-
         return new EventDispatcher() {
             @Override
             public void dispatch(ModelEvent event) {
@@ -33,7 +31,6 @@ public class AkkaEventDispatcherFactory implements EventDispatcherFactory {
 
             @Override
             public void close() {
-                ankorActorSystem.unregister(modelSession);
             }
         };
     }

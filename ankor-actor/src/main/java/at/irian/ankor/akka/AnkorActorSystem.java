@@ -12,11 +12,11 @@ public class AnkorActorSystem {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnkorActorSystem.class);
 
     private final ActorSystem actorSystem;
-    private final ActorRef controllerActor;
+    private final ActorRef eventDispatcherActor;
 
-    private AnkorActorSystem(ActorSystem actorSystem, ActorRef controllerActor) {
+    private AnkorActorSystem(ActorSystem actorSystem, ActorRef eventDispatcherActor) {
         this.actorSystem = actorSystem;
-        this.controllerActor = controllerActor;
+        this.eventDispatcherActor = eventDispatcherActor;
     }
 
     public static AnkorActorSystem create() {
@@ -26,21 +26,13 @@ public class AnkorActorSystem {
     }
 
     public static AnkorActorSystem createFor(ActorSystem actorSystem) {
-        ActorRef controllerActor = actorSystem.actorOf(ControllerActor.props(actorSystem.settings().config()),
-                                                       ControllerActor.name());
-        return new AnkorActorSystem(actorSystem, controllerActor);
-    }
-
-    public void register(ModelSession modelSession) {
-        controllerActor.tell(new RegisterMsg(modelSession), ActorRef.noSender());
-    }
-
-    public void unregister(ModelSession modelSession) {
-        controllerActor.tell(new UnregisterMsg(modelSession), ActorRef.noSender());
+        ActorRef eventDispatcherActor = actorSystem.actorOf(EventDispatcherActor.props(actorSystem.settings().config()),
+                                                            EventDispatcherActor.name());
+        return new AnkorActorSystem(actorSystem, eventDispatcherActor);
     }
 
     public void send(ModelSession context, final ModelEvent event) {
-        controllerActor.tell(new ModelEventMsg(context, event), ActorRef.noSender());
+        eventDispatcherActor.tell(new ModelEventMsg(context, event), ActorRef.noSender());
     }
 
     public void close() {

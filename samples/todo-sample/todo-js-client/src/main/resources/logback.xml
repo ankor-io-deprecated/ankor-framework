@@ -13,8 +13,6 @@
     <logger name="at.irian.ankor.servlet" level="INFO" />
     <!--<logger name="at.irian.ankor.akka" level="DEBUG" />-->
 
-    <logger name="at.irian.ankor.akka.ModelSessionActor" level="DEBUG" />
-
     <root level="INFO">
         <appender-ref ref="STDOUT" />
     </root>

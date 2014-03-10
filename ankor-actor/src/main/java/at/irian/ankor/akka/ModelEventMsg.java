@@ -1,12 +1,13 @@
 package at.irian.ankor.akka;
 
+import akka.routing.ConsistentHashingRouter;
 import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.event.ModelEvent;
 
 /**
  * @author Manfred Geiler
  */
-public class ModelEventMsg {
+public class ModelEventMsg implements ConsistentHashingRouter.ConsistentHashable {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelEventMsg.class);
 
     private final ModelSession modelSession;
@@ -23,5 +24,10 @@ public class ModelEventMsg {
 
     public ModelEvent getModelEvent() {
         return modelEvent;
+    }
+
+    @Override
+    public Object consistentHashKey() {
+        return modelSession.getId();
     }
 }
