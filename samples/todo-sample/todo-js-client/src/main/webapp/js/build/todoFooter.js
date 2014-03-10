@@ -8,9 +8,8 @@
 
 define([
   "react",
-  "utils",
-  "filter"
-], function (React, Utils, Filter) {
+  "build/filter"
+], function (React, Filter) {
   'use strict';
 
   return React.createClass({
@@ -20,11 +19,11 @@ define([
       if (this.props.clearButtonVisibility) {
         clearButton = (
           React.DOM.button(
-            {id:"clear-completed",
-            onClick:this.props.onClearCompleted}, 
+          {id:"clear-completed",
+          onClick:this.props.onClearCompleted}, 
             this.props.itemsCompleteText
           )
-        );
+          );
       }
 
       // React idiom for shortcutting to `classSet` since it'll be used often
@@ -53,7 +52,7 @@ define([
           ),
 					clearButton
         )
-      );
+        );
     }
   });
 });

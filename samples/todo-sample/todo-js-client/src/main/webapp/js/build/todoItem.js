@@ -37,41 +37,44 @@ define([
       this.props.modelRef.appendPath("title").setValue(event.target.value);
     },
 
-    onToggle: function() {
+    onToggle: function () {
       var ref = this.props.modelRef.appendPath("completed");
       ref.setValue(!this.props.todo.completed);
     },
-    
+
     render: function () {
       var classes = React.addons.classSet({
         completed: this.props.todo.completed,
         editing: this.props.todo.editing
       });
-      
+
       return (
         React.DOM.li( {className:classes}, 
           React.DOM.div( {className:"view"}, 
             React.DOM.input(
-              {className:"toggle",
-              type:"checkbox",
-              checked:this.props.todo.completed,
-              onChange:this.onToggle}
+            {className:  "toggle",
+            type:  "checkbox",
+            checked:  this.props.todo.completed,
+            onChange:  this.onToggle}
             ),
             React.DOM.label( {onDoubleClick:this.handleEdit}, 
               this.props.todo.title
             ),
-            React.DOM.button( {className:"destroy", onClick:this.props.onDestroy} )
+            React.DOM.button(
+            {className:  "destroy",
+            onClick:  this.props.onDestroy}
+            )
           ),
           React.DOM.input(
-            {ref:  "editField",
-            className:  "edit",
-            value:  this.props.todo.title,
-            onBlur:  this.handleSubmit,
-            onChange:  this.handleChange,
-            onKeyDown:  this.handleKeyDown}
+          {ref:  "editField",
+          className:  "edit",
+          value:  this.props.todo.title,
+          onBlur:  this.handleSubmit,
+          onChange:  this.handleChange,
+          onKeyDown:  this.handleKeyDown}
           )
         )
-      );
+        );
     }
   });
 });
