@@ -77,6 +77,7 @@ Simply setting the property will not trigger any changes in the UI though.
 
     // Ankor will not notice this
     this.itemsLeft = itemsLeft;
+    this.itemsLeftText = itemsLeftText(itemsLeft);
 
 ##### Using Refs to set properties
 
@@ -91,6 +92,7 @@ Since we already have a `Ref` for to `"root.model"` we can simply "append" `"ite
     :::java
     int itemsLeft = taskRepository.fetchActiveTasks().size();
     modelRef.appendPath("itemsLeft").setValue(itemsLeft);
+    modelRef.appendPath("itemsLeftText").setValue(itemsLeftText(itemsLeft));
 
 This will send a change event to the client and trigger any events there.
 It will also update the local variable, so that `(this.itemsLeft == itemsLeft)` evaluates to `true`.

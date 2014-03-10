@@ -1,40 +1,40 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-framework="react">
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Ankor Javascript Todo Sample</title>
-    <link rel="stylesheet" href="css/base.css">
-    <!-- CSS overrides - remove if you don't need it -->
-    <link rel="stylesheet" href="css/app.css">
+    <title>Ankor • React • TodoMVC</title>
+    <link rel="stylesheet" href="bower_components/todomvc-common/base.css">
 </head>
 <body>
-<div id="app"></div>
-<script src="js/require/require.js"></script>
+<section id="todoapp"></section>
+<footer id="info">
+    <p>Double-click to edit a todo</p>
+
+    <p>Created by <a href="http://www.irian.at">IRIAN Solutions</a></p>
+
+    <p>Part of<a href="http://todomvc.com">TodoMVC</a></p>
+</footer>
+
+<script src="bower_components/requirejs/require.js"></script>
 <script>
     require.config({
         baseUrl: "js",
         paths: {
-            "text": "require/text",
-            "jquery": "//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min",
-            "gracefulWebSocket": "//jquery-graceful-websocket.googlecode.com/files/jquery.gracefulWebSocket",
-            "ejs": "ejs/ejs_production",
-            "socketIO": "socket.io/socket.io",
-            "atmosphere": "../javascript/atmosphere"
+            "base": "../bower_components/todomvc-common/base",
+            "underscore": "../bower_components/underscore/underscore",
+            "react": "../bower_components/react/react-with-addons",
+            "director": "../bower_components/director/build/director"
         },
         shim: {
-            ejs: {
-                exports: "EJS"
+            react: {
+                exports: "React"
             },
-            socketIO: {
-                exports: "io"
-            },
-            atmosphere: {
-                exports: "atmosphere"
+            director: {
+                exports: "Router"
             }
         }
     });
-    require(["sample-todo/main"]);
+    require(["build/main"]);
 </script>
 </body>
 </html>
