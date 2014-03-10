@@ -123,11 +123,11 @@ public class ELRefContext implements RefContext, RefContextImplementor {
 
     @Override
     public void openModel(String modelName, Map<String, Object> connectParameters) {
-        switchboard.open(new LocalParty(modelSession, modelName), connectParameters);
+        switchboard.openConnection(new LocalParty(modelSession, modelName), connectParameters);
     }
 
     @Override
     public void closeModel(String modelName) {
-        switchboard.close(new LocalParty(modelSession, modelName));
+        switchboard.closeAllConnections(new LocalParty(modelSession, modelName));
     }
 }

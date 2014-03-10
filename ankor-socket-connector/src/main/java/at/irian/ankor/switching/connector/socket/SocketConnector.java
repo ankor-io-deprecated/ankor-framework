@@ -2,6 +2,7 @@ package at.irian.ankor.switching.connector.socket;
 
 import at.irian.ankor.switching.Switchboard;
 import at.irian.ankor.switching.connector.Connector;
+import at.irian.ankor.switching.connector.ConnectorPlug;
 import at.irian.ankor.switching.party.SocketParty;
 import at.irian.ankor.messaging.MessageMapper;
 import at.irian.ankor.messaging.MessageMapperFactory;
@@ -19,6 +20,7 @@ public class SocketConnector implements Connector {
     private boolean enabled;
     private SocketListener socketListener;
     private Switchboard switchboard;
+    private ConnectorPlug plug;
     private URI localAddress;
     private MessageMapper<String> messageMapper;
 
@@ -34,6 +36,7 @@ public class SocketConnector implements Connector {
         this.messageMapper = new MessageMapperFactory<String>(system).createMessageMapper();
 
         this.switchboard = system.getSwitchboard();
+        this.plug = system.getSwitchboard().getConnectorPlug();
 
         this.socketListener = new SocketListener(system.getSystemName(),
                                                  this.localAddress,
@@ -52,9 +55,9 @@ public class SocketConnector implements Connector {
         LOG.info("Starting SocketConnector (listening on port " + socketListener.getListenPort() + ")");
         socketListener.start();
 
-        switchboard.registerSendHandler(SocketParty.class, new SocketSendHandler(localAddress, messageMapper,
-                                                                                 switchboard));
-        switchboard.registerCloseHandler(SocketParty.class, new SocketCloseHandler());
+        plug.registerTransmissionHandler(SocketParty.class,
+                                         new SocketTransmissionHandler(localAddress, messageMapper, switchboard));
+        plug.registerConnectionHandler(SocketParty.class, new SocketConnectionHandler(localAddress, messageMapper));
 
         LOG.debug("SocketConnector successfully started");
     }
@@ -68,8 +71,8 @@ public class SocketConnector implements Connector {
         LOG.info("Stopping SocketConnector (listening on port " + socketListener.getListenPort() + ")");
         socketListener.stop();
 
-        switchboard.unregisterSendHandler(SocketParty.class);
-        switchboard.unregisterCloseHandler(SocketParty.class);
+        plug.unregisterTransmissionHandler(SocketParty.class);
+        plug.unregisterConnectionHandler(SocketParty.class);
 
         LOG.debug("SocketConnector was stopped");
     }

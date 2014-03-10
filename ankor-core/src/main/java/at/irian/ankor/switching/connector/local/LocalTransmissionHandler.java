@@ -3,54 +3,36 @@ package at.irian.ankor.switching.connector.local;
 import at.irian.ankor.action.Action;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.event.source.PartySource;
-import at.irian.ankor.switching.Switchboard;
-import at.irian.ankor.switching.handler.SendHandler;
-import at.irian.ankor.switching.msg.ActionEventMessage;
-import at.irian.ankor.switching.msg.ChangeEventMessage;
-import at.irian.ankor.switching.msg.EventMessage;
-import at.irian.ankor.switching.party.LocalParty;
 import at.irian.ankor.messaging.modify.Modifier;
-import at.irian.ankor.switching.party.Party;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.impl.RefImplementor;
 import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.session.ModelSessionManager;
-
-import java.util.Map;
+import at.irian.ankor.switching.connector.TransmissionHandler;
+import at.irian.ankor.switching.msg.ActionEventMessage;
+import at.irian.ankor.switching.msg.ChangeEventMessage;
+import at.irian.ankor.switching.msg.EventMessage;
+import at.irian.ankor.switching.party.LocalParty;
+import at.irian.ankor.switching.party.Party;
 
 /**
  * @author Manfred Geiler
  */
-public class LocalSendHandler implements SendHandler<LocalParty> {
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(LocalSendHandler.class);
+public class LocalTransmissionHandler implements TransmissionHandler<LocalParty> {
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(LocalTransmissionHandler.class);
 
     private final ModelSessionManager modelSessionManager;
     private final Modifier modifier;
-    private final Switchboard switchboard;
 
-    public LocalSendHandler(ModelSessionManager modelSessionManager, Modifier modifier, Switchboard switchboard) {
+    public LocalTransmissionHandler(ModelSessionManager modelSessionManager, Modifier modifier) {
         this.modelSessionManager = modelSessionManager;
         this.modifier = modifier;
-        this.switchboard = switchboard;
     }
 
     @Override
-    public void sendConnectRequest(Party sender, LocalParty receiver, Map<String, Object> connectParameters) {
-        LOG.debug("open connection from {} to {}", sender, receiver);
-
-        String modelName = receiver.getModelName();
-        ModelSession modelSession = modelSessionManager.getById(receiver.getModelSessionId());
-
-        // send an inital change event back to the sender
-        Object modelRoot = modelSession.getModelRoot(modelName);
-        switchboard.send(receiver, sender,
-                         new ChangeEventMessage(modelName, Change.valueChange(modelRoot)));
-    }
-
-    @Override
-    public void sendEventMessage(Party sender, LocalParty receiver, EventMessage message) {
+    public void transmitEventMessage(Party sender, LocalParty receiver, EventMessage message) {
         LOG.debug("delivering {} from {} to {}", message, sender, receiver);
 
         String modelSessionId = receiver.getModelSessionId();
@@ -62,12 +44,6 @@ public class LocalSendHandler implements SendHandler<LocalParty> {
         }
     }
 
-    @Override
-    public void sendCloseRequest(Party sender, LocalParty receiver) {
-        LOG.debug("close connection from {} to {}", sender, receiver);
-
-    }
-
     private void deliver(final Party sender, final ModelSession modelSession, final EventMessage msg) {
 
         if (msg instanceof ActionEventMessage) {
@@ -77,7 +53,7 @@ public class LocalSendHandler implements SendHandler<LocalParty> {
                     RefContext refContext = modelSession.getRefContext();
                     Ref actionProperty = refContext.refFactory().ref(((ActionEventMessage) msg).getProperty());
                     Action action = modifier.modifyAfterReceive(((ActionEventMessage) msg).getAction(), actionProperty);
-                    PartySource source = new PartySource(sender, LocalSendHandler.this);
+                    PartySource source = new PartySource(sender, LocalTransmissionHandler.this);
                     ((RefImplementor) actionProperty).fire(source, action);
                 }
 
@@ -94,7 +70,7 @@ public class LocalSendHandler implements SendHandler<LocalParty> {
                     RefContext refContext = modelSession.getRefContext();
                     Ref changedProperty = refContext.refFactory().ref(((ChangeEventMessage) msg).getProperty());
                     Change change = modifier.modifyAfterReceive(((ChangeEventMessage) msg).getChange(), changedProperty);
-                    PartySource source = new PartySource(sender, LocalSendHandler.this);
+                    PartySource source = new PartySource(sender, LocalTransmissionHandler.this);
                     ((RefImplementor)changedProperty).apply(source, change);
                 }
 

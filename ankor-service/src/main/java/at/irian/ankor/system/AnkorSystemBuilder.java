@@ -1,7 +1,8 @@
 package at.irian.ankor.system;
 
 import at.irian.ankor.annotation.AnnotationBeanMetadataProvider;
-import at.irian.ankor.application.*;
+import at.irian.ankor.application.Application;
+import at.irian.ankor.application.SimpleClientApplication;
 import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.big.modify.ClientSideBigDataModifier;
 import at.irian.ankor.big.modify.ServerSideBigDataModifier;
@@ -21,12 +22,13 @@ import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.ref.RefContextFactoryProvider;
 import at.irian.ankor.ref.el.ELRefContextFactoryProvider;
 import at.irian.ankor.session.*;
-import at.irian.ankor.switching.SimpleSwitchboardFactory;
+import at.irian.ankor.switching.SimplePluggableSwitchboard;
+import at.irian.ankor.switching.PluggableSwitchboardFactory;
 import at.irian.ankor.switching.Switchboard;
-import at.irian.ankor.switching.SwitchboardFactory;
-import at.irian.ankor.switching.connector.local.ModelSessionOpenHandler;
-import at.irian.ankor.switching.handler.OpenHandler;
+import at.irian.ankor.switching.PluggableSwitchboard;
+import at.irian.ankor.switching.routing.ModelSessionRoutingLogic;
 import at.irian.ankor.switching.routing.DefaultRoutingTable;
+import at.irian.ankor.switching.routing.RoutingLogic;
 import at.irian.ankor.switching.routing.RoutingTable;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
 import at.irian.ankor.viewmodel.factory.BeanFactory;
@@ -56,12 +58,12 @@ public class AnkorSystemBuilder {
     private ModelSessionFactory modelSessionFactory;
     private Application application;
     private BeanResolver beanResolver;
-    private SwitchboardFactory switchboardFactory;
+    private PluggableSwitchboardFactory switchboardFactory;
     private RefContextFactoryProvider refContextFactoryProvider;
     private BeanMetadataProvider beanMetadataProvider;
     private BeanFactory beanFactory;
     private RoutingTable routingTable;
-    private OpenHandler openHandler;
+    private RoutingLogic routingLogic;
 
     public AnkorSystemBuilder() {
         this.systemName = null;
@@ -74,7 +76,7 @@ public class AnkorSystemBuilder {
         this.beanFactory = null;
         this.configValues = new HashMap<String, Object>();
         this.routingTable = null;
-        this.openHandler = null;
+        this.routingLogic = null;
     }
 
     public AnkorSystemBuilder withName(String name) {
@@ -93,7 +95,7 @@ public class AnkorSystemBuilder {
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public AnkorSystemBuilder withMessageBusFactory(SwitchboardFactory switchboardFactory) {
+    public AnkorSystemBuilder withMessageBusFactory(PluggableSwitchboardFactory switchboardFactory) {
         this.switchboardFactory = switchboardFactory;
         return this;
     }
@@ -133,15 +135,15 @@ public class AnkorSystemBuilder {
         return this;
     }
 
-    public AnkorSystemBuilder withOpenHandler(OpenHandler openHandler) {
-        this.openHandler = openHandler;
+    public AnkorSystemBuilder withOpenHandler(RoutingLogic routingLogic) {
+        this.routingLogic = routingLogic;
         return this;
     }
 
 
     public AnkorSystem createServer() {
 
-        Switchboard switchboard = createSwitchboard();
+        PluggableSwitchboard switchboard = createServerSwitchboard();
 
         EventDispatcherFactory eventDispatcherFactory = getEventDispatcherFactory();
 
@@ -176,7 +178,9 @@ public class AnkorSystemBuilder {
             configValues.put(MESSAGE_MAPPER_CONFIG_KEY, ViewModelJsonMessageMapper.class.getName());
         }
 
-        switchboard.registerOpenHandler(getServerOpenHandler(modelSessionManager, application));
+        switchboard.setRoutingLogic(getServerRoutingLogicHandler(modelSessionFactory,
+                                                                 modelSessionManager,
+                                                                 application));
 
         return new AnkorSystem(application,
                                getConfig(),
@@ -194,7 +198,7 @@ public class AnkorSystemBuilder {
             throw new IllegalStateException("viewModelPostProcessors not supported for client system");
         }
 
-        Switchboard switchboard = createSwitchboard();
+        PluggableSwitchboard switchboard = createClientSwitchboard();
 
         Application application = getClientApplication();
 
@@ -228,7 +232,7 @@ public class AnkorSystemBuilder {
             configValues.put(MESSAGE_MAPPER_CONFIG_KEY, SimpleTreeJsonMessageMapper.class.getName());
         }
 
-        switchboard.registerOpenHandler(getClientOpenHandler());
+        switchboard.setRoutingLogic(getClientRoutingLogicHandler());
 
         return new AnkorSystem(application,
                                getConfig(),
@@ -318,9 +322,16 @@ public class AnkorSystemBuilder {
         return application;
     }
 
-    private Switchboard createSwitchboard() {
+    private PluggableSwitchboard createServerSwitchboard() {
         if (switchboardFactory == null) {
-            switchboardFactory = new SimpleSwitchboardFactory();
+            switchboardFactory = new SimplePluggableSwitchboard.Factory();
+        }
+        return switchboardFactory.createSwitchboard();
+    }
+
+    private PluggableSwitchboard createClientSwitchboard() {
+        if (switchboardFactory == null) {
+            switchboardFactory = new SimplePluggableSwitchboard.Factory();
         }
         return switchboardFactory.createSwitchboard();
     }
@@ -389,17 +400,19 @@ public class AnkorSystemBuilder {
         }
     }
 
-    private OpenHandler getServerOpenHandler(ModelSessionManager modelSessionManager, Application application) {
-        if (openHandler == null) {
-            openHandler = new ModelSessionOpenHandler(modelSessionFactory, modelSessionManager, application);
+    private RoutingLogic getServerRoutingLogicHandler(ModelSessionFactory modelSessionFactory,
+                                                      ModelSessionManager modelSessionManager,
+                                                      Application application) {
+        if (routingLogic == null) {
+            routingLogic = new ModelSessionRoutingLogic(modelSessionFactory, modelSessionManager, application);
         }
-        return openHandler;
+        return routingLogic;
     }
 
-    private OpenHandler getClientOpenHandler() {
-        if (openHandler == null) {
-            throw new IllegalStateException("No OpenHandler declared - typical open handlers for clients are called 'Fixed...OpenHandler'");
+    private RoutingLogic getClientRoutingLogicHandler() {
+        if (routingLogic == null) {
+            throw new IllegalStateException("No RoutingLogic declared - typical open handlers for clients are called 'Fixed...RoutingLogic'");
         }
-        return openHandler;
+        return routingLogic;
     }
 }

@@ -1,8 +1,7 @@
-package at.irian.ankor.switching.connector.local;
+package at.irian.ankor.switching.routing;
 
 import at.irian.ankor.application.Application;
 import at.irian.ankor.session.ModelSessionFactory;
-import at.irian.ankor.switching.handler.OpenHandler;
 import at.irian.ankor.switching.party.LocalParty;
 import at.irian.ankor.switching.party.Party;
 import at.irian.ankor.session.ModelSession;
@@ -14,23 +13,23 @@ import java.util.Map;
 /**
  * @author Manfred Geiler
  */
-public class ModelSessionOpenHandler implements OpenHandler {
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelSessionOpenHandler.class);
+public class ModelSessionRoutingLogic implements RoutingLogic {
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelSessionRoutingLogic.class);
 
     private final ModelSessionFactory modelSessionFactory;
     private final ModelSessionManager modelSessionManager;
     private final Application application;
 
-    public ModelSessionOpenHandler(ModelSessionFactory modelSessionFactory,
-                                   ModelSessionManager modelSessionManager,
-                                   Application application) {
+    public ModelSessionRoutingLogic(ModelSessionFactory modelSessionFactory,
+                                    ModelSessionManager modelSessionManager,
+                                    Application application) {
         this.modelSessionFactory = modelSessionFactory;
         this.modelSessionManager = modelSessionManager;
         this.application = application;
     }
 
     @Override
-    public Party lookup(Party sender, Map<String, Object> connectParameters) {
+    public Party findRoutee(Party sender, Map<String, Object> connectParameters) {
 
         if (connectParameters == null) {
             connectParameters = Collections.emptyMap();

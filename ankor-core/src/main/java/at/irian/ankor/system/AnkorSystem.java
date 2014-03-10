@@ -1,13 +1,13 @@
 package at.irian.ankor.system;
 
 import at.irian.ankor.application.Application;
-import at.irian.ankor.session.ModelSessionFactory;
-import at.irian.ankor.switching.Switchboard;
-import at.irian.ankor.switching.connector.ConnectorLoader;
 import at.irian.ankor.messaging.modify.Modifier;
-import at.irian.ankor.switching.routing.RoutingTable;
 import at.irian.ankor.ref.RefContextFactory;
+import at.irian.ankor.session.ModelSessionFactory;
 import at.irian.ankor.session.ModelSessionManager;
+import at.irian.ankor.switching.connector.ConnectorLoader;
+import at.irian.ankor.switching.PluggableSwitchboard;
+import at.irian.ankor.switching.routing.RoutingTable;
 import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
 import com.typesafe.config.Config;
 
@@ -25,7 +25,7 @@ public class AnkorSystem {
 
     private final Application application;
     private final Config config;
-    private final Switchboard switchboard;
+    private final PluggableSwitchboard switchboard;
     private final RefContextFactory refContextFactory;
     private final ModelSessionManager modelSessionManager;
     private final ModelSessionFactory modelSessionFactory;
@@ -36,7 +36,7 @@ public class AnkorSystem {
 
     protected AnkorSystem(Application application,
                           Config config,
-                          Switchboard switchboard,
+                          PluggableSwitchboard switchboard,
                           RefContextFactory refContextFactory,
                           ModelSessionManager modelSessionManager,
                           ModelSessionFactory modelSessionFactory,
@@ -63,7 +63,7 @@ public class AnkorSystem {
         return config;
     }
 
-    public Switchboard getSwitchboard() {
+    public PluggableSwitchboard getSwitchboard() {
         return switchboard;
     }
 
@@ -121,4 +121,5 @@ public class AnkorSystem {
         connectorLoader.unloadConnectors();
         super.finalize();
     }
+
 }

@@ -1,5 +1,6 @@
 package at.irian.ankor.switching.connector.socket;
 
+import at.irian.ankor.messaging.MessageSerializer;
 import at.irian.ankor.switching.party.SocketParty;
 
 import java.io.IOException;
@@ -13,13 +14,17 @@ import java.net.Socket;
 public class SocketSender {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SocketSender.class);
 
-    private final SocketParty receiver;
+    private final MessageSerializer<String> messageSerializer;
 
-    public SocketSender(SocketParty receiver) {
-        this.receiver = receiver;
+    public SocketSender(MessageSerializer<String> messageSerializer) {
+        this.messageSerializer = messageSerializer;
     }
 
-    public void send(String serializedMsg) throws IOException {
+    public void send(SocketParty receiver, SocketMessage socketMessage) throws IOException {
+        sendString(receiver, messageSerializer.serialize(socketMessage));
+    }
+
+    private void sendString(SocketParty receiver, String serializedMsg) throws IOException {
         Socket socket = new Socket(receiver.getHost(), receiver.getPort());
         try {
 

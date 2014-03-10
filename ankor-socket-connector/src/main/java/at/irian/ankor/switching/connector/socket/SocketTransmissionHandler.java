@@ -1,0 +1,65 @@
+package at.irian.ankor.switching.connector.socket;
+
+import at.irian.ankor.messaging.MessageSerializer;
+import at.irian.ankor.switching.Switchboard;
+import at.irian.ankor.switching.connector.TransmissionHandler;
+import at.irian.ankor.switching.msg.ActionEventMessage;
+import at.irian.ankor.switching.msg.ChangeEventMessage;
+import at.irian.ankor.switching.msg.EventMessage;
+import at.irian.ankor.switching.party.Party;
+import at.irian.ankor.switching.party.SocketParty;
+
+import java.io.IOException;
+import java.net.URI;
+
+/**
+ * @author Manfred Geiler
+ */
+public class SocketTransmissionHandler implements TransmissionHandler<SocketParty> {
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SocketTransmissionHandler.class);
+
+    private final URI localAddress;
+    private final MessageSerializer<String> messageSerializer;
+    private final Switchboard switchboard;
+
+    public SocketTransmissionHandler(URI localAddress,
+                                     MessageSerializer<String> messageSerializer,
+                                     Switchboard switchboard) {
+        this.localAddress = localAddress;
+        this.messageSerializer = messageSerializer;
+        this.switchboard = switchboard;
+    }
+
+    @Override
+    public void transmitEventMessage(Party sender, SocketParty receiver, EventMessage message) {
+        try {
+            send(receiver, message);
+        } catch (IOException e) {
+            LOG.error("Error sending {} from {} to {} - automatically disconnecting {} ...", message, sender, receiver, receiver);
+            switchboard.closeConnection(sender, receiver);
+        }
+    }
+
+    private void send(SocketParty receiver, EventMessage message) throws IOException {
+        SocketMessage socketMessage;
+
+        if (message instanceof ActionEventMessage) {
+            socketMessage = SocketMessage.createActionMsg(localAddress.toString(),
+                                                          ((ActionEventMessage) message).getProperty(),
+                                                          ((ActionEventMessage) message).getAction());
+        } else if (message instanceof ChangeEventMessage) {
+            socketMessage = SocketMessage.createChangeMsg(localAddress.toString(),
+                                                          ((ChangeEventMessage) message).getProperty(),
+                                                          ((ChangeEventMessage) message).getChange());
+        } else {
+            throw new IllegalArgumentException("Unsupported message type " + message.getClass().getName());
+        }
+
+        sendSocketMessage(receiver, socketMessage);
+    }
+
+    private void sendSocketMessage(SocketParty receiver, SocketMessage socketMessage) throws IOException {
+        new SocketSender(messageSerializer).send(receiver, socketMessage);
+    }
+
+}

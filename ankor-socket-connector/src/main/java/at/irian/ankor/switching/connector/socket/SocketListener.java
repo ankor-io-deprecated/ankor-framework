@@ -122,7 +122,7 @@ public class SocketListener {
 
     private void handleIncomingConnectMessage(SocketMessage socketMessage) {
         SocketParty sender = getSenderFrom(socketMessage);
-        switchboard.open(sender, socketMessage.getConnectParams());
+        switchboard.openConnection(sender, socketMessage.getConnectParams());
     }
 
     private void handleIncomingActionEventMessage(SocketMessage socketMessage) {
@@ -139,7 +139,7 @@ public class SocketListener {
 
     private void handleIncomingCloseMessage(SocketMessage socketMessage) {
         SocketParty sender = getSenderFrom(socketMessage);
-        switchboard.close(sender);
+        switchboard.closeAllConnections(sender);
     }
 
     private SocketParty getSenderFrom(SocketMessage socketMessage) {
