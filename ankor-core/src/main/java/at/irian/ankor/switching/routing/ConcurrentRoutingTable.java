@@ -8,7 +8,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * @author Manfred Geiler
  */
-public class DefaultRoutingTable implements RoutingTable {
+public class ConcurrentRoutingTable implements RoutingTable {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RoutingTable.class);
 
     private final Map<Party, Collection<Party>> connections = new HashMap<Party, Collection<Party>>();
@@ -142,7 +142,7 @@ public class DefaultRoutingTable implements RoutingTable {
         rwl.readLock().lock();
         try {
             Collection<Party> parties = connections.get(party);
-            return parties != null ? parties : Collections.<Party>emptySet();
+            return parties != null ? Collections.unmodifiableCollection(parties) : Collections.<Party>emptySet();
         } finally {
             rwl.readLock().unlock();
         }
@@ -163,4 +163,24 @@ public class DefaultRoutingTable implements RoutingTable {
         }
     }
 
+    @Override
+    public Collection<Party> getAllConnectedParties() {
+        rwl.readLock().lock();
+        try {
+            Collection<Party> parties = connections.keySet();
+            return Collections.unmodifiableCollection(parties);
+        } finally {
+            rwl.readLock().unlock();
+        }
+    }
+
+    @Override
+    public void clear() {
+        rwl.writeLock().lock();
+        try {
+            connections.clear();
+        } finally {
+            rwl.writeLock().unlock();
+        }
+    }
 }

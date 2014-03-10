@@ -26,8 +26,8 @@ import at.irian.ankor.switching.SimplePluggableSwitchboard;
 import at.irian.ankor.switching.PluggableSwitchboardFactory;
 import at.irian.ankor.switching.Switchboard;
 import at.irian.ankor.switching.PluggableSwitchboard;
+import at.irian.ankor.switching.routing.ConcurrentRoutingTable;
 import at.irian.ankor.switching.routing.ModelSessionRoutingLogic;
-import at.irian.ankor.switching.routing.DefaultRoutingTable;
 import at.irian.ankor.switching.routing.RoutingLogic;
 import at.irian.ankor.switching.routing.RoutingTable;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
@@ -246,7 +246,7 @@ public class AnkorSystemBuilder {
 
     private RoutingTable getRoutingTable() {
         if (routingTable == null) {
-            routingTable = new DefaultRoutingTable();
+            routingTable = new ConcurrentRoutingTable();
         }
         return routingTable;
     }

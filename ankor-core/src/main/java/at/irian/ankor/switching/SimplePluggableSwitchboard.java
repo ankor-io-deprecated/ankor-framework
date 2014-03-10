@@ -3,7 +3,7 @@ package at.irian.ankor.switching;
 import at.irian.ankor.switching.connector.*;
 import at.irian.ankor.switching.msg.EventMessage;
 import at.irian.ankor.switching.party.Party;
-import at.irian.ankor.switching.routing.DefaultRoutingTable;
+import at.irian.ankor.switching.routing.ConcurrentRoutingTable;
 import at.irian.ankor.switching.routing.RoutingLogic;
 import at.irian.ankor.switching.routing.RoutingTable;
 
@@ -19,11 +19,19 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SimplePluggableSwitchboard implements Switchboard, PluggableSwitchboard, ConnectorPlug {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SimplePluggableSwitchboard.class);
 
+    private enum Status {
+        INITIALIZED,
+        STARTING,
+        RUNNING,
+        STOPPING,
+        STOPPED
+    }
+
     private RoutingLogic routingLogic;
     private final Map<Class<? extends Party>, ConnectionHandler<? extends Party>> connectionHandlers = new ConcurrentHashMap<Class<? extends Party>, ConnectionHandler<? extends Party>>();
     private final Map<Class<? extends Party>, TransmissionHandler<? extends Party>> transmissionHandlers = new ConcurrentHashMap<Class<? extends Party>, TransmissionHandler<? extends Party>>();
-    private final RoutingTable routingTable = new DefaultRoutingTable();
-    private volatile boolean started = false;
+    private final RoutingTable routingTable = new ConcurrentRoutingTable();
+    private volatile Status status = Status.INITIALIZED;
 
     @Override
     public ConnectorPlug getConnectorPlug() {
@@ -32,6 +40,7 @@ public class SimplePluggableSwitchboard implements Switchboard, PluggableSwitchb
 
     @Override
     public void setRoutingLogic(RoutingLogic routingLogic) {
+        checkNotRunning();
         if (this.routingLogic != null) {
             throw new IllegalStateException("RoutingLogic already set");
         }
@@ -41,6 +50,7 @@ public class SimplePluggableSwitchboard implements Switchboard, PluggableSwitchb
     @Override
     public void registerConnectionHandler(Class<? extends Party> receiverPartyType,
                                           ConnectionHandler<? extends Party> connectionHandler) {
+        checkNotRunning();
         if (connectionHandlers.put(receiverPartyType, connectionHandler) != null) {
             throw new IllegalStateException("ConnectionHandler for party type " + receiverPartyType.getName() + " already registered");
         }
@@ -49,6 +59,7 @@ public class SimplePluggableSwitchboard implements Switchboard, PluggableSwitchb
     @Override
     public void registerTransmissionHandler(Class<? extends Party> receiverPartyType,
                                             TransmissionHandler<? extends Party> transmissionHandler) {
+        checkNotRunning();
         if (transmissionHandlers.put(receiverPartyType, transmissionHandler) != null) {
             throw new IllegalStateException("TransmissionHandler for party type " + receiverPartyType.getName() + " already registered");
         }
@@ -56,6 +67,7 @@ public class SimplePluggableSwitchboard implements Switchboard, PluggableSwitchb
 
     @Override
     public void unregisterConnectionHandler(Class<? extends Party> receiverPartyType) {
+        checkNotRunning();
         if (connectionHandlers.remove(receiverPartyType) == null) {
             LOG.warn("ConnectionHandler for party type " + receiverPartyType.getName() + " was not registered");
         }
@@ -63,6 +75,7 @@ public class SimplePluggableSwitchboard implements Switchboard, PluggableSwitchb
 
     @Override
     public void unregisterTransmissionHandler(Class<? extends Party> receiverPartyType) {
+        checkNotRunning();
         if (transmissionHandlers.remove(receiverPartyType) == null) {
             LOG.warn("TransmissionHandler for party type " + receiverPartyType.getName() + " was not registered");
         }
@@ -71,7 +84,7 @@ public class SimplePluggableSwitchboard implements Switchboard, PluggableSwitchb
     @SuppressWarnings("unchecked")
     @Override
     public void openConnection(Party sender, Map<String, Object> connectParameters) {
-        checkStarted();
+        checkRunning();
 
         // find route
         Party receiver = routingLogic.findRoutee(sender, connectParameters);
@@ -93,7 +106,7 @@ public class SimplePluggableSwitchboard implements Switchboard, PluggableSwitchb
 
     @Override
     public void send(Party sender, EventMessage message) {
-        checkStarted();
+        checkRunning();
         Set<Party> alreadyDelivered = new HashSet<Party>(); // todo  optimze for 99% one-to-one routings (with Guava?)
         alreadyDelivered.add(sender);
         sendRecursive(sender, sender, message, alreadyDelivered);
@@ -115,7 +128,7 @@ public class SimplePluggableSwitchboard implements Switchboard, PluggableSwitchb
 
     @SuppressWarnings("unchecked")
     public void send(Party sender, Party receiver, EventMessage message) {
-        checkStarted();
+        checkRunningOrStopping();
         getTransmissionHandler(receiver).transmitEventMessage(sender, receiver, message);
     }
 
@@ -123,7 +136,7 @@ public class SimplePluggableSwitchboard implements Switchboard, PluggableSwitchb
     @SuppressWarnings("unchecked")
     @Override
     public void closeAllConnections(Party sender) {
-        checkStarted();
+        checkRunningOrStopping();
 
         Collection<Party> receivers = routingTable.getConnectedParties(sender);
         for (Party receiver : receivers) {
@@ -133,7 +146,7 @@ public class SimplePluggableSwitchboard implements Switchboard, PluggableSwitchb
 
     @Override
     public void closeConnection(Party sender, Party receiver) {
-        checkStarted();
+        checkRunningOrStopping();
 
         LOG.debug("Remove route between {} and {}", sender, receiver);
         routingTable.disconnect(sender, receiver);
@@ -152,17 +165,34 @@ public class SimplePluggableSwitchboard implements Switchboard, PluggableSwitchb
 
     @Override
     public void start() {
-        this.started = true;
+        this.status = Status.RUNNING;
     }
 
     @Override
     public void stop() {
-        this.started = false;
+        this.status = Status.STOPPING;
+        for (Party p : routingTable.getAllConnectedParties()) {
+            closeAllConnections(p);
+        }
+        routingTable.clear();
+        this.status = Status.STOPPED;
     }
 
-    private void checkStarted() {
-        if (!started) {
-            throw new IllegalStateException("Switchboard not started");
+    private void checkRunning() {
+        if (status != Status.RUNNING) {
+            throw new IllegalStateException("Switchboard is " + status);
+        }
+    }
+
+    private void checkRunningOrStopping() {
+        if (status != Status.RUNNING && status != Status.STOPPING) {
+            throw new IllegalStateException("Switchboard is " + status);
+        }
+    }
+
+    private void checkNotRunning() {
+        if (status == Status.RUNNING || status == Status.STOPPING) {
+            throw new IllegalStateException("Switchboard is " + status);
         }
     }
 

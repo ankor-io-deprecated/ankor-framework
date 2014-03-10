@@ -49,4 +49,14 @@ public interface RoutingTable {
      * @return true, if given party is currently connected to any other party
      */
     boolean hasConnectedParties(Party party);
+
+    /**
+     * @return all parties that are currently connected
+     */
+    Collection<Party> getAllConnectedParties();
+
+    /**
+     * Completely clear the routing table.
+     */
+    void clear();
 }
