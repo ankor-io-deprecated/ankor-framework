@@ -171,7 +171,7 @@ public class AnkorSystemBuilder {
                                                                          refContextFactory,
                                                                          application);
 
-        ModelSessionManager modelSessionManager = new DefaultModelSessionManager();
+        ModelSessionManager modelSessionManager = new LockingModelSessionManager();
 
         if (!configValues.containsKey(MESSAGE_MAPPER_CONFIG_KEY)) {
             configValues.put(MESSAGE_MAPPER_CONFIG_KEY, ViewModelJsonMessageMapper.class.getName());

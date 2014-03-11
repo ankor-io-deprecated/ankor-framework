@@ -29,6 +29,7 @@ public abstract class SocketFxClientApplication extends javafx.application.Appli
     private String clientAddress;
     private String serverAddress;
     private String appInstanceIdToConnect = null;
+    private AnkorSystem ankorSystem;
 
     protected SocketFxClientApplication(String applicationName, String modelName) {
         this.applicationName = applicationName;
@@ -82,8 +83,8 @@ public abstract class SocketFxClientApplication extends javafx.application.Appli
     @Override
     public final void start(Stage stage) throws Exception {
         preCreateAnkorSystem();
-        AnkorSystem ankorSystem = createAnkorSystem();
-        startAnkorSystemAndConnect(ankorSystem);
+        createAnkorSystem();
+        startAnkorSystemAndConnect();
         startFx(stage);
     }
 
@@ -112,7 +113,7 @@ public abstract class SocketFxClientApplication extends javafx.application.Appli
 
     protected AnkorSystem createAnkorSystem() {
         LOG.debug("Creating FxClient Ankor system '{}' ...", getApplicationName());
-        AnkorSystem ankorSystem = new AnkorSystemBuilder()
+        ankorSystem = new AnkorSystemBuilder()
                 .withName(applicationName)
                 .withConfigValue("at.irian.ankor.switching.connector.socket.SocketConnector.enabled", true)
                 .withConfigValue("at.irian.ankor.switching.connector.socket.SocketConnector.localAddress",
@@ -125,7 +126,7 @@ public abstract class SocketFxClientApplication extends javafx.application.Appli
         return ankorSystem;
     }
 
-    protected void startAnkorSystemAndConnect(AnkorSystem ankorSystem) {
+    protected void startAnkorSystemAndConnect() {
 
         LOG.debug("Starting FxClient Ankor system '{}' ...", getApplicationName());
 
@@ -154,7 +155,13 @@ public abstract class SocketFxClientApplication extends javafx.application.Appli
             connectParams = Collections.emptyMap();
         }
 
-        refContext.openModel(getModelName(), connectParams);
+        refContext.openModelConnection(getModelName(), connectParams);
+    }
+
+    @Override
+    public void stop() throws Exception {
+        super.stop();
+        ankorSystem.stop();
     }
 
     public abstract void startFx(Stage stage) throws Exception;

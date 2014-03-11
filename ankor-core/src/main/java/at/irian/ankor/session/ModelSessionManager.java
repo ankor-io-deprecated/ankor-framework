@@ -11,9 +11,10 @@ public interface ModelSessionManager {
     void add(ModelSession modelSession);
 
     /**
-     *
-     * @param modelRoot
-     * @return
+     * Find the ModelSession that currently "holds" the given model root.
+     * @param modelRoot  model root to search for
+     * @return a ModelSession that the given model root is currently associated with,
+     *         or null if there is no such ModelSession
      */
     ModelSession findByModelRoot(Object modelRoot);
 
@@ -23,12 +24,15 @@ public interface ModelSessionManager {
      */
     ModelSession getById(String modelSessionId);  //todo  throw Exception if not found?
 
-     /**
-     * Invalidate (i.e. close) the given ModelSession.
-     * ModelSessionManager implementations must call the {@link ModelSession#close()} method
-     * on the given instance and remove any reference to the ModelSession.
+    /**
+     * Remove the given ModelSession from this ModelSessionManager.
+     * Note: this method does NOT close the given ModelSession, this must be done by the caller.
      * @param modelSession  ModelSession to remove
      */
     void remove(ModelSession modelSession);
 
+    /**
+     * Close all ModelSessions and free all resources.
+     */
+    void close();
 }

@@ -1,97 +1,117 @@
 package at.irian.ankor.switching.routing;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableSetMultimap;
+import com.google.common.collect.Multimap;
+
 import java.util.Collection;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * A thread-safe RoutingTable.
- *
+ * A thread-safe AND concurrent-modification-safe RoutingTable.
  * @author Manfred Geiler
  */
 public class ConcurrentRoutingTable implements RoutingTable {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RoutingTable.class);
 
-    private final SimpleRoutingTable simpleRoutingTable = new SimpleRoutingTable();
-    private final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
+    private volatile ImmutableSetMultimap<ModelAddress, ModelAddress> connections = ImmutableSetMultimap.of();
 
     @Override
     public boolean connect(ModelAddress a, ModelAddress b) {
-        rwl.writeLock().lock();
-        try {
-            return simpleRoutingTable.connect(a, b);
-        } finally {
-            rwl.writeLock().unlock();
+        if (a == null) {
+            throw new NullPointerException("ModelAddress a");
+        }
+        if (b == null) {
+            throw new NullPointerException("ModelAddress b");
+        }
+
+        if (!isConnected(a, b)) {
+            connections = ImmutableSetMultimap.<ModelAddress, ModelAddress>builder()
+                                              .putAll(connections)
+                                              .put(a, b)
+                                              .put(b, a)
+                                              .build();
+            return true;
+        } else {
+            return false;
         }
     }
 
     @Override
     public boolean disconnect(ModelAddress a, ModelAddress b) {
-        rwl.writeLock().lock();
-        try {
-            return simpleRoutingTable.disconnect(a, b);
-        } finally {
-            rwl.writeLock().unlock();
+        if (a == null) {
+            throw new NullPointerException("ModelAddress a");
+        }
+        if (b == null) {
+            throw new NullPointerException("ModelAddress b");
+        }
+
+        if (isConnected(a, b)) {
+            Multimap<ModelAddress, ModelAddress> mutable = HashMultimap.create(connections);
+            mutable.remove(a, b);
+            mutable.remove(b, a);
+            connections = ImmutableSetMultimap.copyOf(mutable);
+            return true;
+        } else {
+            return false;
         }
     }
 
     @Override
     public boolean isConnected(ModelAddress a, ModelAddress b) {
-        rwl.readLock().lock();
-        try {
-            return simpleRoutingTable.isConnected(a, b);
-        } finally {
-            rwl.readLock().unlock();
+        if (a == null) {
+            throw new NullPointerException("ModelAddress a");
         }
+        if (b == null) {
+            throw new NullPointerException("ModelAddress b");
+        }
+
+        return connections.containsEntry(a, b);
     }
 
     @Override
     public boolean disconnectAll(ModelAddress a) {
-        rwl.writeLock().lock();
-        try {
-            return simpleRoutingTable.disconnectAll(a);
-        } finally {
-            rwl.writeLock().unlock();
+        if (a == null) {
+            throw new NullPointerException("ModelAddress a");
+        }
+
+        Collection<ModelAddress> addresses = connections.get(a);
+        if (!addresses.isEmpty()) {
+            for (ModelAddress b : addresses) {
+                disconnect(a, b);
+            }
+            return true;
+        } else {
+            return false;
         }
     }
 
 
     @Override
     public Collection<ModelAddress> getConnectedAddresses(ModelAddress modelAddress) {
-        rwl.readLock().lock();
-        try {
-            return simpleRoutingTable.getConnectedAddresses(modelAddress);
-        } finally {
-            rwl.readLock().unlock();
+        if (modelAddress == null) {
+            throw new NullPointerException("modelAddress");
         }
+
+        return connections.get(modelAddress);
     }
 
     @Override
     public boolean hasConnectedAddresses(ModelAddress modelAddress) {
-        rwl.readLock().lock();
-        try {
-            return simpleRoutingTable.hasConnectedAddresses(modelAddress);
-        } finally {
-            rwl.readLock().unlock();
+        if (modelAddress == null) {
+            throw new NullPointerException("modelAddress");
         }
+
+        Collection<ModelAddress> addresses = connections.get(modelAddress);
+        return !addresses.isEmpty();
     }
 
     @Override
     public Collection<ModelAddress> getAllConnectedAddresses() {
-        rwl.readLock().lock();
-        try {
-            return simpleRoutingTable.getAllConnectedAddresses();
-        } finally {
-            rwl.readLock().unlock();
-        }
+        return connections.keySet();
     }
 
     @Override
     public void clear() {
-        rwl.writeLock().lock();
-        try {
-            simpleRoutingTable.clear();
-        } finally {
-            rwl.writeLock().unlock();
-        }
+        connections = ImmutableSetMultimap.of();
     }
 }

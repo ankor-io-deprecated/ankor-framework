@@ -8,6 +8,7 @@ import at.irian.ankor.event.dispatch.EventDispatcher;
 import at.irian.ankor.event.dispatch.EventDispatcherFactory;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefContextFactory;
+import com.google.common.collect.ImmutableMap;
 
 import java.util.*;
 
@@ -21,9 +22,9 @@ class DefaultModelSession implements ModelSession, DispatchThreadAware {
     private final EventListeners eventListeners;
     private final Deque<EventDispatcher> eventDispatcherStack;
     private final Application application;
-    private final Map<String, Object> modelRootMap;
-    private Map<String, Object> attributes;
     private RefContext refContext;
+    private volatile Map<String, Object> modelRootMap;
+    private volatile Map<String, Object> attributes;
 
     private volatile Thread dispatchThread;
 
@@ -33,9 +34,9 @@ class DefaultModelSession implements ModelSession, DispatchThreadAware {
         this.id = modelSessionId;
         this.eventListeners = eventListeners;
         this.application = application;
-        this.modelRootMap = new HashMap<String, Object>();
+        this.modelRootMap = Collections.emptyMap();
         this.eventDispatcherStack = new ArrayDeque<EventDispatcher>();
-        this.attributes = null;
+        this.attributes = Collections.emptyMap();
         this.refContext = null;
     }
 
@@ -47,7 +48,7 @@ class DefaultModelSession implements ModelSession, DispatchThreadAware {
         DefaultModelSession modelSession = new DefaultModelSession(createModelSessionId(),
                                                                    eventListeners,
                                                                    application);
-        modelSession.refContext = refContextFactory.createRefContextFor(modelSession);
+        modelSession.refContext = refContextFactory.createRefContextFor(modelSession); // ugly, but we have to init it this way, because we have a bi-directional relation here
         modelSession.pushEventDispatcher(eventDispatcherFactory.createFor(modelSession));
         return modelSession;
     }
@@ -89,6 +90,9 @@ class DefaultModelSession implements ModelSession, DispatchThreadAware {
         for (Map.Entry<String, Object> entry : modelRootMap.entrySet()) {
             application.releaseModel(entry.getKey(), entry.getValue());
         }
+
+        modelRootMap = Collections.emptyMap();
+        attributes = Collections.emptyMap();
     }
 
     @Override
@@ -109,12 +113,23 @@ class DefaultModelSession implements ModelSession, DispatchThreadAware {
         return dispatchThread;
     }
 
-    public Map<String, Object> getAttributes() {
-        if (attributes == null) {
-            //todo  do we have a concurrency issue here?
-            attributes = new HashMap<String, Object>();
-        }
-        return attributes;
+    @Override
+    public Set<String> getAttributeNames() {
+        return attributes.keySet();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T getAttribute(String key) {
+        return (T)attributes.get(key);
+    }
+
+    @Override
+    public void setAttribute(String key, Object value) {
+        attributes = ImmutableMap.<String, Object>builder()
+                                 .putAll(attributes)
+                                 .put(key, value)
+                                 .build();
     }
 
     @Override
@@ -124,7 +139,10 @@ class DefaultModelSession implements ModelSession, DispatchThreadAware {
 
     @Override
     public void addModelRoot(String modelName, Object modelRoot) {
-        modelRootMap.put(modelName, modelRoot);
+        modelRootMap = ImmutableMap.<String,Object>builder()
+                                   .putAll(modelRootMap)
+                                   .put(modelName, modelRoot)
+                                   .build();
     }
 
     @Override
@@ -138,7 +156,6 @@ class DefaultModelSession implements ModelSession, DispatchThreadAware {
 
     @Override
     public Collection<String> getModelNames() {
-        // todo  concurrency issue?
         return modelRootMap.keySet();
     }
 }

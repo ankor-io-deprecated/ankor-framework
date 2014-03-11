@@ -30,18 +30,22 @@ public class SwitchboardActor extends UntypedActor {
     @Override
     public void onReceive(Object msg) throws Exception {
         LOG.debug("{} received {}", self(), msg);
-        if (msg instanceof StartMsg) {
-            handleStart(((StartMsg) msg).getDelegateSwitchboard());
-        } else if (msg instanceof StopMsg) {
-            handleStop();
-        } else if (msg instanceof OpenMsg) {
-            handleOpen(((OpenMsg) msg).getSender(), ((OpenMsg) msg).getConnectParameters());
-        } else if (msg instanceof SendMsg) {
-            handleSend(((SendMsg) msg).getSender(), ((SendMsg) msg).getReceiver(), ((SendMsg) msg).getMessage());
-        } else if (msg instanceof CloseMsg) {
-            handleClose(((CloseMsg) msg).getSender(), ((CloseMsg) msg).getReceiver());
-        } else {
-            unhandled(msg);
+        try {
+            if (msg instanceof StartMsg) {
+                handleStart(((StartMsg) msg).getDelegateSwitchboard());
+            } else if (msg instanceof StopMsg) {
+                handleStop();
+            } else if (msg instanceof OpenMsg) {
+                handleOpen(((OpenMsg) msg).getSender(), ((OpenMsg) msg).getConnectParameters());
+            } else if (msg instanceof SendMsg) {
+                handleSend(((SendMsg) msg).getSender(), ((SendMsg) msg).getReceiver(), ((SendMsg) msg).getMessage());
+            } else if (msg instanceof CloseMsg) {
+                handleClose(((CloseMsg) msg).getSender(), ((CloseMsg) msg).getReceiver());
+            } else {
+                unhandled(msg);
+            }
+        } catch (Exception e) {
+            LOG.error("Exception while handling " + msg, e);
         }
     }
 
@@ -100,10 +104,18 @@ public class SwitchboardActor extends UntypedActor {
         public Switchboard getDelegateSwitchboard() {
             return delegateSwitchboard;
         }
+
+        @Override
+        public String toString() {
+            return "StartMsg";
+        }
     }
 
     public static class StopMsg {
-
+        @Override
+        public String toString() {
+            return "StopMsg";
+        }
     }
 
     public static class OpenMsg implements ConsistentHashingRouter.ConsistentHashable {
@@ -126,6 +138,14 @@ public class SwitchboardActor extends UntypedActor {
         @Override
         public Object consistentHashKey() {
             return getConsistentHashKeyFor(sender, null);
+        }
+
+        @Override
+        public String toString() {
+            return "OpenMsg{" +
+                   "sender=" + sender +
+                   ", connectParameters=" + connectParameters +
+                   '}';
         }
     }
 
@@ -160,6 +180,15 @@ public class SwitchboardActor extends UntypedActor {
         public Object consistentHashKey() {
             return getConsistentHashKeyFor(sender, receiver);
         }
+
+        @Override
+        public String toString() {
+            return "SendMsg{" +
+                   "sender=" + sender +
+                   ", receiver=" + receiver +
+                   ", message=" + message +
+                   '}';
+        }
     }
 
     public static class CloseMsg implements ConsistentHashingRouter.ConsistentHashable {
@@ -186,6 +215,14 @@ public class SwitchboardActor extends UntypedActor {
         @Override
         public Object consistentHashKey() {
             return getConsistentHashKeyFor(sender, receiver);
+        }
+
+        @Override
+        public String toString() {
+            return "CloseMsg{" +
+                   "sender=" + sender +
+                   ", receiver=" + receiver +
+                   '}';
         }
     }
 

@@ -1,15 +1,19 @@
 package at.irian.ankor.session;
 
+import com.google.common.collect.ImmutableSet;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
+ * todo  is a ModelSessionManager with an ImmutableMap faster (at least there would be no need for locking)
+ *
  * @author Manfred Geiler
  */
-public class DefaultModelSessionManager implements ModelSessionManager {
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(DefaultModelSessionManager.class);
+public class LockingModelSessionManager implements ModelSessionManager {
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(LockingModelSessionManager.class);
 
     private final Map<String, ModelSession> modelSessionIdMap = new HashMap<String, ModelSession>();
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
@@ -66,5 +70,28 @@ public class DefaultModelSessionManager implements ModelSessionManager {
         } finally {
             lock.writeLock().unlock();
         }
+    }
+
+    @Override
+    public void close() {
+        lock.writeLock().lock();
+        try {
+            ImmutableSet<ModelSession> modelSessions = ImmutableSet.copyOf(modelSessionIdMap.values());
+            modelSessionIdMap.clear();
+            for (ModelSession modelSession : modelSessions) {
+                for (String modelName : modelSession.getModelNames()) {
+                    modelSession.getRefContext().closeModelConnection(modelName);
+                }
+                modelSession.close();
+            }
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        modelSessionIdMap.clear();
+        super.finalize();
     }
 }

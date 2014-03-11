@@ -20,6 +20,10 @@ public abstract class CollaborationSingleRootApplication extends SimpleSingleRoo
         super(applicationName, modelName);
     }
 
+    protected Map<String, Object> getModelInstanceMap() {
+        return instanceMap;
+    }
+
     @Override
     public Object lookupModel(Map<String, Object> connectParameters) {
         String instanceId = (String) connectParameters.get(MODEL_INSTANCE_ID_PARAM);
@@ -38,8 +42,6 @@ public abstract class CollaborationSingleRootApplication extends SimpleSingleRoo
         return modelRoot;
     }
 
-    public abstract Object doCreateModel(Ref rootRef, Map<String, Object> connectParameters);
-
     @Override
     public void releaseModel(Object model) {
         Iterator<Object> iterator = instanceMap.values().iterator();
@@ -50,4 +52,7 @@ public abstract class CollaborationSingleRootApplication extends SimpleSingleRoo
             }
         }
     }
+
+    public abstract Object doCreateModel(Ref rootRef, Map<String, Object> connectParameters);
+
 }

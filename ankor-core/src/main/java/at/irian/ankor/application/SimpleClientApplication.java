@@ -33,6 +33,9 @@ public class SimpleClientApplication implements Application {
 
     @Override
     public void releaseModel(String modelName, Object model) {
-        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void shutdown() {
     }
 }

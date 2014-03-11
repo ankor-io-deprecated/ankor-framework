@@ -4,10 +4,7 @@ import at.irian.ankor.switching.connector.ConcurrentConnectorRegistry;
 import at.irian.ankor.switching.connector.ConnectorMapping;
 import at.irian.ankor.switching.connector.ConnectorRegistry;
 import at.irian.ankor.switching.msg.EventMessage;
-import at.irian.ankor.switching.routing.ConcurrentRoutingTable;
-import at.irian.ankor.switching.routing.ModelAddress;
-import at.irian.ankor.switching.routing.RoutingLogic;
-import at.irian.ankor.switching.routing.RoutingTable;
+import at.irian.ankor.switching.routing.*;
 
 /**
  * @author Manfred Geiler

@@ -32,7 +32,7 @@ public interface RefContext {
 
     BeanFactory beanFactory();
 
-    void openModel(String modelName, Map<String, Object> connectParameters);
+    void openModelConnection(String modelName, Map<String, Object> connectParameters);
 
-    void closeModel(String modelName);
+    void closeModelConnection(String modelName);
 }

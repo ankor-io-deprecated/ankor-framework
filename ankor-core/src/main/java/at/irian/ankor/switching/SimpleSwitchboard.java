@@ -4,10 +4,7 @@ import at.irian.ankor.switching.connector.ConnectorMapping;
 import at.irian.ankor.switching.connector.ConnectorRegistry;
 import at.irian.ankor.switching.connector.SimpleConnectorRegistry;
 import at.irian.ankor.switching.msg.EventMessage;
-import at.irian.ankor.switching.routing.ModelAddress;
-import at.irian.ankor.switching.routing.RoutingLogic;
-import at.irian.ankor.switching.routing.RoutingTable;
-import at.irian.ankor.switching.routing.SimpleRoutingTable;
+import at.irian.ankor.switching.routing.*;
 
 /**
  * @author Manfred Geiler
@@ -26,7 +23,7 @@ public class SimpleSwitchboard extends AbstractSwitchboard implements Switchboar
 
     public static SwitchboardImplementor create() {
         SimpleConnectorRegistry connectorRegistry = new SimpleConnectorRegistry();
-        return new SimpleSwitchboard(new SimpleRoutingTable(), connectorRegistry, connectorRegistry);
+        return new SimpleSwitchboard(new ConcurrentRoutingTable(), connectorRegistry, connectorRegistry);
     }
 
     @Override

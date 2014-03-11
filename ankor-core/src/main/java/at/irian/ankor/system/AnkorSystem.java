@@ -33,6 +33,7 @@ public class AnkorSystem {
     private final Modifier modifier;
     private final ConnectorLoader connectorLoader;
     private final BeanMetadataProvider beanMetadataProvider;
+    private boolean running;
 
     protected AnkorSystem(Application application,
                           Config config,
@@ -51,6 +52,7 @@ public class AnkorSystem {
         this.modifier = modifier;
         this.beanMetadataProvider = beanMetadataProvider;
         this.connectorLoader = new ConnectorLoader();
+        this.running = false;
     }
 
     public String getSystemName() {
@@ -103,6 +105,7 @@ public class AnkorSystem {
         connectorLoader.loadAndInitConnectors(this);
         connectorLoader.startAllConnectors();
         switchboard.start();
+        running = true;
         return this;
     }
 
@@ -112,6 +115,15 @@ public class AnkorSystem {
         LOG.info("Stopping {}", this);
         switchboard.stop();
         connectorLoader.stopAllConnectors();
+        running = false;
+    }
+
+    public void shutdown() {
+        if (running) {
+            stop();
+        }
+        modelSessionManager.close();
+        application.shutdown();
     }
 
     @Override

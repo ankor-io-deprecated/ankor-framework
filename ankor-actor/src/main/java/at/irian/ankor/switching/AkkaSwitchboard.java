@@ -7,10 +7,7 @@ import at.irian.ankor.switching.connector.ConcurrentConnectorRegistry;
 import at.irian.ankor.switching.connector.ConnectorMapping;
 import at.irian.ankor.switching.connector.ConnectorRegistry;
 import at.irian.ankor.switching.msg.EventMessage;
-import at.irian.ankor.switching.routing.ConcurrentRoutingTable;
-import at.irian.ankor.switching.routing.ModelAddress;
-import at.irian.ankor.switching.routing.RoutingLogic;
-import at.irian.ankor.switching.routing.RoutingTable;
+import at.irian.ankor.switching.routing.*;
 
 import java.util.Map;
 
@@ -38,7 +35,7 @@ public class AkkaSwitchboard implements SwitchboardImplementor {
         ActorRef switchboardActor = actorSystem.actorOf(SwitchboardActor.props(actorSystem.settings().config()),
                                                         SwitchboardActor.name());
         ConcurrentConnectorRegistry connectorRegistry = new ConcurrentConnectorRegistry();
-        ConcurrentRoutingTable routingTable = new ConcurrentRoutingTable();
+        RoutingTable routingTable = new ConcurrentRoutingTable();
 
         return new AkkaSwitchboard(switchboardActor, connectorRegistry, routingTable);
     }

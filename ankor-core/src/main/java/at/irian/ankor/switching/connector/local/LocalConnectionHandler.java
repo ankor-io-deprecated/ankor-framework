@@ -30,7 +30,11 @@ public class LocalConnectionHandler implements ConnectionHandler<LocalModelAddre
         LOG.debug("open connection from {} to {}", sender, receiver);
 
         String modelName = receiver.getModelName();
-        ModelSession modelSession = modelSessionManager.getById(receiver.getModelSessionId());
+        String modelSessionId = receiver.getModelSessionId();
+        ModelSession modelSession = modelSessionManager.getById(modelSessionId);
+        if (modelSession == null) {
+            throw new IllegalStateException("ModelSession with id " + modelSessionId + " not found - propably timed out");
+        }
 
         // send an inital change event for the model root back to the sender
         Object modelRoot = modelSession.getModelRoot(modelName);

@@ -32,9 +32,8 @@ public class FloodControlMethodInterceptor implements MethodInterceptor {
     public Object invoke(final MethodInvocation invocation) throws Throwable {
 
         RefContext refContext = invocation.getRef().context();
-        Map<String, Object> sessionAttributes = refContext.modelSession().getAttributes();
         @SuppressWarnings("unchecked")
-        Map<Method, FloodControl> floodControlMap = (Map) sessionAttributes.get(SESSION_ATTR_KEY);
+        Map<Method, FloodControl> floodControlMap = refContext.modelSession().getAttribute(SESSION_ATTR_KEY);
 
         Method method = invocation.getMethod();
 
@@ -52,7 +51,7 @@ public class FloodControlMethodInterceptor implements MethodInterceptor {
                 floodControl = new FloodControl(refContext, floodControlMetadata.getDelayMillis());
                 if (floodControlMap == null) {
                     floodControlMap = new HashMap<Method, FloodControl>();
-                    sessionAttributes.put(SESSION_ATTR_KEY, floodControlMap);
+                    refContext.modelSession().setAttribute(SESSION_ATTR_KEY, floodControlMap);
                 }
                 floodControlMap.put(method, floodControl);
             }

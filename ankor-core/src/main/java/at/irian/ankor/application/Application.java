@@ -52,4 +52,9 @@ public interface Application {
      */
     void releaseModel(String modelName, Object modelRoot);
 
+    /**
+     * Free all resources associated by this Application.
+     */
+    void shutdown();
+
 }

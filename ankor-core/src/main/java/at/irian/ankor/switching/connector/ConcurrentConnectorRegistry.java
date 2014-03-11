@@ -12,8 +12,8 @@ import java.util.Map;
 public class ConcurrentConnectorRegistry implements ConnectorRegistry, ConnectorMapping {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ConcurrentConnectorRegistry.class);
 
-    private ImmutableMap<Class, ConnectionHandler> connectionHandlers = ImmutableMap.of();
-    private ImmutableMap<Class, TransmissionHandler> transmissionHandlers = ImmutableMap.of();
+    private volatile ImmutableMap<Class, ConnectionHandler> connectionHandlers = ImmutableMap.of();
+    private volatile ImmutableMap<Class, TransmissionHandler> transmissionHandlers = ImmutableMap.of();
 
     @Override
     public void registerConnectionHandler(Class<? extends ModelAddress> receiverAddressType,
@@ -21,7 +21,7 @@ public class ConcurrentConnectorRegistry implements ConnectorRegistry, Connector
         if (connectionHandlers.containsKey(receiverAddressType)) {
             throw new IllegalStateException("ConnectionHandler for address type " + receiverAddressType.getName() + " already registered");
         }
-        connectionHandlers = new ImmutableMap.Builder<Class, ConnectionHandler>()
+        connectionHandlers = ImmutableMap.<Class, ConnectionHandler>builder()
                 .putAll(connectionHandlers)
                 .put(receiverAddressType, connectionHandler)
                 .build();
@@ -33,7 +33,7 @@ public class ConcurrentConnectorRegistry implements ConnectorRegistry, Connector
         if (transmissionHandlers.containsKey(receiverAddressType)) {
             throw new IllegalStateException("TransmissionHandler for address type " + receiverAddressType.getName() + " already registered");
         }
-        transmissionHandlers = new ImmutableMap.Builder<Class, TransmissionHandler>()
+        transmissionHandlers = ImmutableMap.<Class, TransmissionHandler>builder()
                 .putAll(transmissionHandlers)
                 .put(receiverAddressType, transmissionHandler)
                 .build();
