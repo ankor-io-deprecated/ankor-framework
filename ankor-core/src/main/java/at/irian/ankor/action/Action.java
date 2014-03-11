@@ -2,6 +2,7 @@ package at.irian.ankor.action;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.google.common.collect.ImmutableMap;
 
 import java.util.Collections;
 import java.util.Map;
@@ -28,7 +29,7 @@ public class Action {
     public Action(String name, Map<String, Object> params) {
         this.name = name;
         if (params != null && !params.isEmpty()) {
-            this.params = Collections.unmodifiableMap(params);
+            this.params = ImmutableMap.copyOf(params);
         } else {
             this.params = Collections.emptyMap();
         }
