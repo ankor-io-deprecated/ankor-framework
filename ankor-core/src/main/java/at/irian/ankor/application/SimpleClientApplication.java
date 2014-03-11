@@ -27,7 +27,7 @@ public class SimpleClientApplication implements Application {
     }
 
     @Override
-    public Object createModel(String modelName, RefContext refContext) {
+    public Object createModel(String modelName, Map<String, Object> connectParameters, RefContext refContext) {
         throw new UnsupportedOperationException();
     }
 

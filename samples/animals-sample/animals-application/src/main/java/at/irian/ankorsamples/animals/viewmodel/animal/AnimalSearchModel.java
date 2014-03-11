@@ -73,7 +73,7 @@ public class AnimalSearchModel {
     @AnkorFloodControl(delayMillis = 100L)
     public void reloadAnimals() {
 
-        serverStatusRef.setValue("loading...");
+        //serverStatusRef.setValue("loading...");
 
         AnkorPatterns.runLater(this, new Runnable() {
             @Override
@@ -81,7 +81,7 @@ public class AnimalSearchModel {
                 reloadAnimalsImmediately();
 
                 // reset server status display
-                serverStatusRef.setValue("");
+                //serverStatusRef.setValue("");
             }
         });
     }

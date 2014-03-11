@@ -5,6 +5,8 @@ import at.irian.ankor.ref.Ref;
 import at.irian.ankorsamples.todosample.domain.TaskRepository;
 import at.irian.ankorsamples.todosample.viewmodel.ModelRoot;
 
+import java.util.Map;
+
 /**
  * @author Manfred Geiler
  */
@@ -19,7 +21,7 @@ public class TodoServerApplication extends SimpleSingleRootApplication {
     }
 
     @Override
-    public Object createModel(Ref rootRef) {
+    public Object createModel(Ref rootRef, Map<String, Object> connectParameters) {
         TaskRepository animalRepository = new TaskRepository();
         return new ModelRoot(rootRef, animalRepository);
     }

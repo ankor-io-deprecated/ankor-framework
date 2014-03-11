@@ -10,6 +10,7 @@
     </appender>
 
     <logger name="at.irian.ankor.switching" level="DEBUG" />
+    <logger name="at.irian.ankor.switching.connector.socket.SocketSender" level="DEBUG" />
 
     <root level="INFO">
         <appender-ref ref="STDOUT" />

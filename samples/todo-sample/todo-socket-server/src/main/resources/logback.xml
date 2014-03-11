@@ -13,6 +13,7 @@
     <logger name="at.irian.ankor.servlet" level="DEBUG" />
     <logger name="at.irian.ankor.connector" level="DEBUG" />
     <!--<logger name="at.irian.ankor.akka" level="DEBUG" />-->
+    <logger name="at.irian.ankor.switching.connector.socket.SocketSender" level="DEBUG" />
 
     <root level="INFO">
         <appender-ref ref="STDOUT" />

@@ -25,9 +25,9 @@ public abstract class SimpleSingleRootApplication extends BaseApplication {
     }
 
     @Override
-    public final Object createModel(String modelName, RefContext refContext) {
+    public final Object createModel(String modelName, Map<String, Object> connectParameters, RefContext refContext) {
         checkModelName(modelName);
-        return createModel(refContext.refFactory().ref(modelName));
+        return createModel(refContext.refFactory().ref(modelName), connectParameters);
     }
 
     @Override
@@ -46,7 +46,7 @@ public abstract class SimpleSingleRootApplication extends BaseApplication {
         return null;
     }
 
-    public abstract Object createModel(Ref rootRef);
+    public abstract Object createModel(Ref rootRef, Map<String, Object> connectParameters);
 
     public void releaseModel(Object model) {
 

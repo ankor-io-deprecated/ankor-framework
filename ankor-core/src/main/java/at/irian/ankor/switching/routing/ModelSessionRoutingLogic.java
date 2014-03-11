@@ -42,7 +42,7 @@ public class ModelSessionRoutingLogic implements RoutingLogic {
         //todo  check if we have a concurrency issue here
         if (modelRoot == null) {
             modelSession = modelSessionFactory.createModelSession();
-            modelRoot = application.createModel(modelName, modelSession.getRefContext());
+            modelRoot = application.createModel(modelName, connectParameters, modelSession.getRefContext());
             modelSession.addModelRoot(modelName, modelRoot);
             modelSessionManager.add(modelSession);
         } else {

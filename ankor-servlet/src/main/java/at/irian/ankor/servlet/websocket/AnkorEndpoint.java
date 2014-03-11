@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Executors;
@@ -221,7 +222,7 @@ public abstract class AnkorEndpoint extends Endpoint implements ServerApplicatio
     protected Application getApplication() {
         return new SimpleSingleRootApplication(getName(), "root") {
             @Override
-            public Object createModel(Ref rootRef) {
+            public Object createModel(Ref rootRef, Map<String, Object> connectParameters) {
                 return getModelRoot(rootRef);
             }
         };

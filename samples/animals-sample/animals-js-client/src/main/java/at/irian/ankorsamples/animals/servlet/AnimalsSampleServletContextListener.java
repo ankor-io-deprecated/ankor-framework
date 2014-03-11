@@ -10,6 +10,7 @@ import at.irian.ankorsamples.animals.viewmodel.ModelRoot;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 
 /**
  * @author Manfred Geiler
@@ -41,7 +42,7 @@ public class AnimalsSampleServletContextListener extends AnkorServletContextList
     protected Application getApplication() {
         return new SimpleSingleRootApplication("Animals", "root") {
             @Override
-            public Object createModel(Ref rootRef) {
+            public Object createModel(Ref rootRef, Map<String, Object> connectParameters) {
                 return new ModelRoot(rootRef, new AnimalRepository());
             }
 

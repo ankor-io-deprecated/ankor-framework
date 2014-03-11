@@ -2,6 +2,7 @@ package at.irian.ankor.application;
 
 import at.irian.ankor.ref.Ref;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -11,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class CollaborationSingleRootApplication extends SimpleSingleRootApplication {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(CollaborationSingleRootApplication.class);
 
-    public static final String MODEL_INSTANCE_ID_PARAM = CollaborationSingleRootApplication.class.getName() + ".MODEL_INSTANCE_ID";
+    public static final String MODEL_INSTANCE_ID_PARAM = "at.irian.ankor.MODEL_INSTANCE_ID";
 
     private final Map<String, Object> instanceMap = new ConcurrentHashMap<String, Object>();
 
@@ -20,8 +21,8 @@ public abstract class CollaborationSingleRootApplication extends SimpleSingleRoo
     }
 
     @Override
-    public Object lookupModel(Map<String, Object> connectCriteria) {
-        String instanceId = (String) connectCriteria.get(MODEL_INSTANCE_ID_PARAM);
+    public Object lookupModel(Map<String, Object> connectParameters) {
+        String instanceId = (String) connectParameters.get(MODEL_INSTANCE_ID_PARAM);
         if (instanceId == null) {
             return null;
         } else {
@@ -30,12 +31,23 @@ public abstract class CollaborationSingleRootApplication extends SimpleSingleRoo
     }
 
     @Override
-    public Object createModel(Ref rootRef) {
-        return null;
+    public Object createModel(Ref rootRef, Map<String, Object> connectParameters) {
+        Object modelRoot = doCreateModel(rootRef, connectParameters);
+        String instanceId = (String) connectParameters.get(MODEL_INSTANCE_ID_PARAM);
+        instanceMap.put(instanceId, modelRoot);
+        return modelRoot;
     }
+
+    public abstract Object doCreateModel(Ref rootRef, Map<String, Object> connectParameters);
 
     @Override
     public void releaseModel(Object model) {
-
+        Iterator<Object> iterator = instanceMap.values().iterator();
+        while (iterator.hasNext()) {
+            Object next = iterator.next();
+            if (next == model) {
+                iterator.remove();
+            }
+        }
     }
 }

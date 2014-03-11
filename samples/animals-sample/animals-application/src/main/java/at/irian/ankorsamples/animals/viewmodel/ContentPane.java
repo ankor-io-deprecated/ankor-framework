@@ -55,13 +55,11 @@ public class ContentPane {
         AnimalSearchModel model = newInstance(AnimalSearchModel.class, animalSearchModelRef);
         model.init(panelNameRef.<String>toTypedRef(),
                    serverStatusRef, resourcesRef, animalRepository);
-        model.reloadAnimalsImmediately();
-
         Panel<AnimalSearchModel> panel = new Panel<>(panelId, panelRef, model.getPanelName(), "animalSearch",
                                                      model);
-
         panelRef.setValue(panel);
 
+        model.reloadAnimalsImmediately();
     }
 
     private String createNextPanelId() {

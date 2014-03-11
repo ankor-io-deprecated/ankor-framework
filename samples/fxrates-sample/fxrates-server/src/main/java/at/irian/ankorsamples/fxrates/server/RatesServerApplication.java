@@ -3,6 +3,8 @@ package at.irian.ankorsamples.fxrates.server;
 import at.irian.ankor.application.SimpleSingleRootApplication;
 import at.irian.ankor.ref.Ref;
 
+import java.util.Map;
+
 /**
  * @author Manfred Geiler
  */
@@ -17,7 +19,7 @@ public class RatesServerApplication extends SimpleSingleRootApplication {
     }
 
     @Override
-    public Object createModel(Ref rootRef) {
+    public Object createModel(Ref rootRef, Map<String, Object> connectParameters) {
         RatesRepository animalRepository = new RatesRepository();
         RatesViewModel root = new RatesViewModel(rootRef, animalRepository);
         root.startRatesUpdate(2);

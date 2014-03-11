@@ -2,6 +2,7 @@ package at.irian.ankor.switching.connector.socket;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.change.Change;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.Map;
 
@@ -11,11 +12,22 @@ import java.util.Map;
 public class SocketMessage {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SocketMessage.class);
 
+    @JsonInclude(JsonInclude.Include.ALWAYS)
     private String senderId;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String property;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Action action;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Change change;
+
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Map<String,Object> connectParams;
+
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private boolean close;
 
     /**

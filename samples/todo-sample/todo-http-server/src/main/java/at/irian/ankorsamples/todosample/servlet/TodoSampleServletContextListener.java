@@ -11,6 +11,7 @@ import at.irian.ankorsamples.todosample.viewmodel.ModelRoot;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 
 /**
  * @author Thomas Spiegl
@@ -42,7 +43,7 @@ public class TodoSampleServletContextListener extends AnkorServletContextListene
     protected Application getApplication() {
         return new SimpleSingleRootApplication("Todo", "root") {
             @Override
-            public Object createModel(Ref rootRef) {
+            public Object createModel(Ref rootRef, Map<String, Object> connectParameters) {
                 TaskRepository taskRepository = new TaskRepository();
                 taskRepository.saveTask(new Task("Test task 1"));
                 taskRepository.saveTask(new Task("Test task 2"));

@@ -15,8 +15,8 @@ public interface Application {
     String getName();
 
     /**
-     * Lookup a model by one or more (application specific) criteria.
-     * Typical criteria are:
+     * Lookup a model by one or more (application specific) connect parameters.
+     * Typical parameters are:
      * <ul>
      *     <li>username</li>
      *     <li>browser cookie</li>
@@ -28,18 +28,28 @@ public interface Application {
      * Returning null is the expected behaviour for applications that do not
      * support restoring (user) sessions.
      *
-     * @param modelName       name of model
-     * @param connectCriteria lookup criterions
+     * @param modelName         name of model
+     * @param connectParameters lookup criteria
      * @return existing Model instance or null if there is no matching model yet
      */
-    Object lookupModel(String modelName, Map<String, Object> connectCriteria);
+    Object lookupModel(String modelName, Map<String, Object> connectParameters);
 
     /**
-     * @param modelName
-     * @return
+     * Create a new instance of a model root that matches the given model name and the (application specific) connect
+     * parameters.
+     *
+     * @param modelName         name of model
+     * @param connectParameters (optional) connect parameters
+     * @param refContext        RefContext for the corresponding ModelSession
+     * @return newly created model root
      */
-    Object createModel(String modelName, RefContext refContext);
+    Object createModel(String modelName, Map<String, Object> connectParameters, RefContext refContext);
 
-    void releaseModel(String modelName, Object model);
+    /**
+     * Free all resources that might have been allocated for the given model.
+     * @param modelName    name of model
+     * @param modelRoot    root of model instance to free
+     */
+    void releaseModel(String modelName, Object modelRoot);
 
 }
