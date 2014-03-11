@@ -1,8 +1,6 @@
 package at.irian.ankor.switching.routing;
 
 /**
- * todo  better rename this to "ModelAddress" ?
- *
  * @author Manfred Geiler
  */
 public interface ModelAddress {
@@ -11,6 +9,10 @@ public interface ModelAddress {
 
     boolean equals(Object obj);
 
+    /**
+     * Since a ModelAddress is normally immutable, this Object's hashCode should be precalculated or cached for
+     * optimized performance.
+     */
     int hashCode();
 
     String toString();

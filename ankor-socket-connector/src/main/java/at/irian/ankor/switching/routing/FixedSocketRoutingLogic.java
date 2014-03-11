@@ -11,7 +11,7 @@ import java.util.Map;
 public class FixedSocketRoutingLogic implements RoutingLogic {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(FixedSocketRoutingLogic.class);
 
-    private URI fixedReceiverAddress;
+    private final URI fixedReceiverAddress;
 
     public FixedSocketRoutingLogic(URI fixedReceiverAddress) {
         this.fixedReceiverAddress = fixedReceiverAddress;

@@ -9,5 +9,4 @@ public interface EventDispatcherFactory {
 
     EventDispatcher createFor(ModelSession modelSession);
 
-    void close();
 }

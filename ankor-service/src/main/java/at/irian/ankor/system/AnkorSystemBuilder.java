@@ -1,16 +1,19 @@
 package at.irian.ankor.system;
 
+import akka.actor.ActorSystem;
 import at.irian.ankor.annotation.AnnotationBeanMetadataProvider;
 import at.irian.ankor.application.Application;
 import at.irian.ankor.application.SimpleClientApplication;
 import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.big.modify.ClientSideBigDataModifier;
 import at.irian.ankor.big.modify.ServerSideBigDataModifier;
+import at.irian.ankor.delay.AkkaScheduler;
 import at.irian.ankor.delay.Scheduler;
 import at.irian.ankor.delay.SimpleScheduler;
 import at.irian.ankor.delay.TaskRequestEventListener;
 import at.irian.ankor.event.ArrayListEventListeners;
 import at.irian.ankor.event.EventListeners;
+import at.irian.ankor.event.dispatch.AkkaEventDispatcherFactory;
 import at.irian.ankor.event.dispatch.EventDispatcherFactory;
 import at.irian.ankor.event.dispatch.SynchronisedEventDispatcherFactory;
 import at.irian.ankor.messaging.json.simpletree.SimpleTreeJsonMessageMapper;
@@ -22,14 +25,9 @@ import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.ref.RefContextFactoryProvider;
 import at.irian.ankor.ref.el.ELRefContextFactoryProvider;
 import at.irian.ankor.session.*;
-import at.irian.ankor.switching.SimplePluggableSwitchboard;
-import at.irian.ankor.switching.PluggableSwitchboardFactory;
-import at.irian.ankor.switching.Switchboard;
-import at.irian.ankor.switching.PluggableSwitchboard;
-import at.irian.ankor.switching.routing.ConcurrentRoutingTable;
+import at.irian.ankor.switching.*;
 import at.irian.ankor.switching.routing.ModelSessionRoutingLogic;
 import at.irian.ankor.switching.routing.RoutingLogic;
-import at.irian.ankor.switching.routing.RoutingTable;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
 import at.irian.ankor.viewmodel.factory.BeanFactory;
 import at.irian.ankor.viewmodel.factory.ReflectionBeanFactory;
@@ -58,12 +56,13 @@ public class AnkorSystemBuilder {
     private ModelSessionFactory modelSessionFactory;
     private Application application;
     private BeanResolver beanResolver;
-    private PluggableSwitchboardFactory switchboardFactory;
+    private SwitchboardImplementor switchboard;
     private RefContextFactoryProvider refContextFactoryProvider;
     private BeanMetadataProvider beanMetadataProvider;
     private BeanFactory beanFactory;
-    private RoutingTable routingTable;
     private RoutingLogic routingLogic;
+    private boolean actorSystemEnabled;
+    private ActorSystem actorSystem;
 
     public AnkorSystemBuilder() {
         this.systemName = null;
@@ -75,8 +74,9 @@ public class AnkorSystemBuilder {
         this.beanMetadataProvider = null;
         this.beanFactory = null;
         this.configValues = new HashMap<String, Object>();
-        this.routingTable = null;
         this.routingLogic = null;
+        this.actorSystemEnabled = false;
+        this.actorSystem = null;
     }
 
     public AnkorSystemBuilder withName(String name) {
@@ -95,8 +95,8 @@ public class AnkorSystemBuilder {
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public AnkorSystemBuilder withMessageBusFactory(PluggableSwitchboardFactory switchboardFactory) {
-        this.switchboardFactory = switchboardFactory;
+    public AnkorSystemBuilder withSwitchboard(SwitchboardImplementor switchboard) {
+        this.switchboard = switchboard;
         return this;
     }
 
@@ -110,6 +110,7 @@ public class AnkorSystemBuilder {
         return this;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public AnkorSystemBuilder withScheduler(Scheduler scheduler) {
         this.scheduler = scheduler;
         return this;
@@ -130,20 +131,19 @@ public class AnkorSystemBuilder {
         return this;
     }
 
-    public AnkorSystemBuilder withRoutingTable(RoutingTable routingTable) {
-        this.routingTable = routingTable;
-        return this;
-    }
-
     public AnkorSystemBuilder withOpenHandler(RoutingLogic routingLogic) {
         this.routingLogic = routingLogic;
         return this;
     }
 
+    public AnkorSystemBuilder withActorSystemEnabled() {
+        this.actorSystemEnabled = true;
+        return this;
+    }
 
     public AnkorSystem createServer() {
 
-        PluggableSwitchboard switchboard = createServerSwitchboard();
+        SwitchboardImplementor switchboard = getServerSwitchboard();
 
         EventDispatcherFactory eventDispatcherFactory = getEventDispatcherFactory();
 
@@ -168,26 +168,25 @@ public class AnkorSystemBuilder {
 
         ModelSessionFactory modelSessionFactory = getModelSessionFactory(eventDispatcherFactory,
                                                                          defaultEventListeners,
-                                                                         refContextFactory);
+                                                                         refContextFactory,
+                                                                         application);
 
         ModelSessionManager modelSessionManager = new DefaultModelSessionManager();
-
-        RoutingTable routingTable = getRoutingTable();
 
         if (!configValues.containsKey(MESSAGE_MAPPER_CONFIG_KEY)) {
             configValues.put(MESSAGE_MAPPER_CONFIG_KEY, ViewModelJsonMessageMapper.class.getName());
         }
 
-        switchboard.setRoutingLogic(getServerRoutingLogicHandler(modelSessionFactory,
-                                                                 modelSessionManager,
-                                                                 application));
+        switchboard.setRoutingLogic(getServerRoutingLogic(modelSessionFactory,
+                                                          modelSessionManager,
+                                                          application));
 
         return new AnkorSystem(application,
                                getConfig(),
                                switchboard,
                                refContextFactory,
                                modelSessionManager,
-                               modelSessionFactory, routingTable,
+                               modelSessionFactory,
                                modifier,
                                beanMetadataProvider);
     }
@@ -198,7 +197,7 @@ public class AnkorSystemBuilder {
             throw new IllegalStateException("viewModelPostProcessors not supported for client system");
         }
 
-        PluggableSwitchboard switchboard = createClientSwitchboard();
+        SwitchboardImplementor switchboard = getClientSwitchboard();
 
         Application application = getClientApplication();
 
@@ -219,36 +218,29 @@ public class AnkorSystemBuilder {
         EventListeners defaultEventListeners = createDefaultEventListeners(switchboard, modifier);
 
         ModelSessionFactory modelSessionFactory = getModelSessionFactory(getEventDispatcherFactory(),
-                                                                         defaultEventListeners, refContextFactory);
+                                                                         defaultEventListeners,
+                                                                         refContextFactory,
+                                                                         application);
 
         ModelSession modelSession = modelSessionFactory.createModelSession();
 
         ModelSessionManager modelSessionManager = new SingletonModelSessionManager();
         modelSessionManager.add(modelSession);
 
-        RoutingTable routingTable = getRoutingTable();
-
         if (!configValues.containsKey(MESSAGE_MAPPER_CONFIG_KEY)) {
             configValues.put(MESSAGE_MAPPER_CONFIG_KEY, SimpleTreeJsonMessageMapper.class.getName());
         }
 
-        switchboard.setRoutingLogic(getClientRoutingLogicHandler());
+        switchboard.setRoutingLogic(getClientRoutingLogic());
 
         return new AnkorSystem(application,
                                getConfig(),
                                switchboard,
                                refContextFactory,
                                modelSessionManager,
-                               modelSessionFactory, routingTable,
+                               modelSessionFactory,
                                modifier,
                                beanMetadataProvider);
-    }
-
-    private RoutingTable getRoutingTable() {
-        if (routingTable == null) {
-            routingTable = new ConcurrentRoutingTable();
-        }
-        return routingTable;
     }
 
     private BeanFactory getBeanFactory() {
@@ -322,18 +314,23 @@ public class AnkorSystemBuilder {
         return application;
     }
 
-    private PluggableSwitchboard createServerSwitchboard() {
-        if (switchboardFactory == null) {
-            switchboardFactory = new SimplePluggableSwitchboard.Factory();
+    private SwitchboardImplementor getServerSwitchboard() {
+        if (switchboard == null) {
+            ActorSystem actorSystem = getActorSystem();
+            if (actorSystem == null) {
+                switchboard = ConcurrentSwitchboard.create();
+            } else {
+                switchboard = AkkaSwitchboard.create(actorSystem);
+            }
         }
-        return switchboardFactory.createSwitchboard();
+        return switchboard;
     }
 
-    private PluggableSwitchboard createClientSwitchboard() {
-        if (switchboardFactory == null) {
-            switchboardFactory = new SimplePluggableSwitchboard.Factory();
+    private SwitchboardImplementor getClientSwitchboard() {
+        if (switchboard == null) {
+            switchboard = SimpleSwitchboard.create();
         }
-        return switchboardFactory.createSwitchboard();
+        return switchboard;
     }
 
     private List<ViewModelPostProcessor> getServerViewModelPostProcessors() {
@@ -359,7 +356,12 @@ public class AnkorSystemBuilder {
 
     private Scheduler getScheduler() {
         if (scheduler == null) {
-            scheduler = new SimpleScheduler();
+            ActorSystem actorSystem = getActorSystem();
+            if (actorSystem == null) {
+                scheduler = new SimpleScheduler();
+            } else {
+                scheduler = new AkkaScheduler(actorSystem);
+            }
         }
         return scheduler;
     }
@@ -371,18 +373,25 @@ public class AnkorSystemBuilder {
 
     private EventDispatcherFactory getEventDispatcherFactory() {
         if (eventDispatcherFactory == null) {
-            eventDispatcherFactory = new SynchronisedEventDispatcherFactory();
+            ActorSystem actorSystem = getActorSystem();
+            if (actorSystem == null) {
+                eventDispatcherFactory = new SynchronisedEventDispatcherFactory();
+            } else {
+                eventDispatcherFactory = new AkkaEventDispatcherFactory(actorSystem);
+            }
         }
         return eventDispatcherFactory;
     }
 
     private ModelSessionFactory getModelSessionFactory(EventDispatcherFactory eventDispatcherFactory,
                                                        EventListeners defaultEventListeners,
-                                                       RefContextFactory refContextFactory) {
+                                                       RefContextFactory refContextFactory,
+                                                       Application application) {
         if (modelSessionFactory == null) {
             modelSessionFactory = new DefaultModelSessionFactory(eventDispatcherFactory,
                                                                  defaultEventListeners,
-                                                                 refContextFactory, application);
+                                                                 refContextFactory,
+                                                                 application);
         }
         return modelSessionFactory;
     }
@@ -400,19 +409,31 @@ public class AnkorSystemBuilder {
         }
     }
 
-    private RoutingLogic getServerRoutingLogicHandler(ModelSessionFactory modelSessionFactory,
-                                                      ModelSessionManager modelSessionManager,
-                                                      Application application) {
+    private RoutingLogic getServerRoutingLogic(ModelSessionFactory modelSessionFactory,
+                                               ModelSessionManager modelSessionManager,
+                                               Application application) {
         if (routingLogic == null) {
             routingLogic = new ModelSessionRoutingLogic(modelSessionFactory, modelSessionManager, application);
         }
         return routingLogic;
     }
 
-    private RoutingLogic getClientRoutingLogicHandler() {
+    private RoutingLogic getClientRoutingLogic() {
         if (routingLogic == null) {
-            throw new IllegalStateException("No RoutingLogic declared - typical open handlers for clients are called 'Fixed...RoutingLogic'");
+            throw new IllegalStateException("No RoutingLogic declared - typical RoutingLogic for clients is called 'Fixed<connector-type>RoutingLogic'");
         }
         return routingLogic;
+    }
+
+    private ActorSystem getActorSystem() {
+        if (actorSystemEnabled) {
+            if (actorSystem == null) {
+                LOG.info("Creating Akka Actor System...");
+                actorSystem = ActorSystem.create("Ankor");
+            }
+            return actorSystem;
+        } else {
+            return null;
+        }
     }
 }

@@ -11,6 +11,7 @@ public class LocalModelAddress implements ModelAddress {
 
     private final String modelSessionId;
     private final String modelName;
+    private final int hashCode;
 
     public LocalModelAddress(ModelSession modelSession, String modelName) {
         this(modelSession.getId(), modelName);
@@ -19,6 +20,7 @@ public class LocalModelAddress implements ModelAddress {
     public LocalModelAddress(String modelSessionId, String modelName) {
         this.modelSessionId = modelSessionId;
         this.modelName = modelName;
+        this.hashCode = 31 * modelSessionId.hashCode() + modelName.hashCode();
     }
 
     public String getModelSessionId() {
@@ -47,9 +49,7 @@ public class LocalModelAddress implements ModelAddress {
 
     @Override
     public int hashCode() {
-        int result = modelSessionId.hashCode();
-        result = 31 * result + modelName.hashCode();
-        return result;
+        return hashCode;
     }
 
     @Override

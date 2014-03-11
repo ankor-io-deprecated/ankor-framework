@@ -1,11 +1,8 @@
 package at.irian.ankor.socket;
 
-import at.irian.ankor.akka.AnkorActorSystem;
 import at.irian.ankor.annotation.AnnotationBeanMetadataProvider;
 import at.irian.ankor.application.Application;
 import at.irian.ankor.base.BeanResolver;
-import at.irian.ankor.delay.AkkaScheduler;
-import at.irian.ankor.event.dispatch.AkkaEventDispatcherFactory;
 import at.irian.ankor.event.dispatch.JavaFxEventDispatcherFactory;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefContextFactoryProvider;
@@ -104,13 +101,11 @@ public class SocketAnkorSystemStarter {
 
         SocketMessageLoop.Host server = getServerLocalHost();
 
-        AnkorActorSystem ankorActorSystem = AnkorActorSystem.create();
         AnkorSystem serverSystem = new AnkorSystemBuilder()
                 .withName(server.getId())
                 .withBeanResolver(beanResolver)
                 .withApplication(application)
-                .withDispatcherFactory(new AkkaEventDispatcherFactory(ankorActorSystem))
-                .withScheduler(new AkkaScheduler(ankorActorSystem))
+                .withActorSystemEnabled()
                 .withRefContextFactoryProvider(refContextFactoryProvider)
                 .withBeanMetadataProvider(beanMetadataProvider)
                 .withBeanFactory(new CglibProxyBeanFactory(beanMetadataProvider))

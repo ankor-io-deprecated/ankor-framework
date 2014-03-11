@@ -13,7 +13,4 @@ public class SynchronisedEventDispatcherFactory implements EventDispatcherFactor
         return new SynchronisedEventDispatcher(modelSession);
     }
 
-    @Override
-    public void close() {
-    }
 }

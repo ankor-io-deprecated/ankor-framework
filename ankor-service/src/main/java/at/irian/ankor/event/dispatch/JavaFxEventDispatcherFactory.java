@@ -13,7 +13,4 @@ public class JavaFxEventDispatcherFactory implements EventDispatcherFactory {
         return new JavaFxEventDispatcher(modelSession);
     }
 
-    @Override
-    public void close() {
-    }
 }

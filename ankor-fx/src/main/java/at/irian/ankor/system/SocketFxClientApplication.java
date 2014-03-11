@@ -8,7 +8,6 @@ import at.irian.ankor.fx.binding.fxref.FxRefs;
 import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.session.SingletonModelSessionManager;
 import at.irian.ankor.switching.routing.FixedSocketRoutingLogic;
-import at.irian.ankor.switching.routing.FixedPairRoutingTable;
 import javafx.stage.Stage;
 
 import java.net.URI;
@@ -116,10 +115,10 @@ public abstract class SocketFxClientApplication extends javafx.application.Appli
         AnkorSystem ankorSystem = new AnkorSystemBuilder()
                 .withName(applicationName)
                 .withConfigValue("at.irian.ankor.switching.connector.socket.SocketConnector.enabled", true)
-                .withConfigValue("at.irian.ankor.switching.connector.socket.SocketConnector.localAddress", getClientAddress())
+                .withConfigValue("at.irian.ankor.switching.connector.socket.SocketConnector.localAddress",
+                                 getClientAddress())
                 .withDispatcherFactory(new JavaFxEventDispatcherFactory())
                 .withRefContextFactoryProvider(new FxRefContextFactoryProvider())
-                .withRoutingTable(new FixedPairRoutingTable())
                 .withOpenHandler(new FixedSocketRoutingLogic(URI.create(getServerAddress())))
                 .createClient();
         LOG.debug("FxClient Ankor system '{}' created", getApplicationName());

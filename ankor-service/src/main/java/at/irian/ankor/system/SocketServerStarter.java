@@ -1,10 +1,7 @@
 package at.irian.ankor.system;
 
-import at.irian.ankor.akka.AnkorActorSystem;
 import at.irian.ankor.annotation.AnnotationBeanMetadataProvider;
 import at.irian.ankor.application.Application;
-import at.irian.ankor.delay.AkkaScheduler;
-import at.irian.ankor.event.dispatch.AkkaEventDispatcherFactory;
 import at.irian.ankor.viewmodel.proxy.CglibProxyBeanFactory;
 
 /**
@@ -39,12 +36,10 @@ public class SocketServerStarter {
     }
 
     protected AnkorSystem createAnkorSystem() {
-        AnkorActorSystem ankorActorSystem = AnkorActorSystem.create();
         AnnotationBeanMetadataProvider beanMetadataProvider = new AnnotationBeanMetadataProvider();
         return new AnkorSystemBuilder()
                 .withApplication(application)
-                .withDispatcherFactory(new AkkaEventDispatcherFactory(ankorActorSystem))
-                .withScheduler(new AkkaScheduler(ankorActorSystem))
+                .withActorSystemEnabled()
                 .withBeanMetadataProvider(beanMetadataProvider)
                 .withBeanFactory(new CglibProxyBeanFactory(beanMetadataProvider))
                 .withConfigValue("at.irian.ankor.switching.connector.socket.SocketConnector.enabled", true)

@@ -2,7 +2,7 @@ package at.irian.ankor.switching.connector.socket;
 
 import at.irian.ankor.switching.Switchboard;
 import at.irian.ankor.switching.connector.Connector;
-import at.irian.ankor.switching.connector.ConnectorPlug;
+import at.irian.ankor.switching.connector.ConnectorRegistry;
 import at.irian.ankor.messaging.MessageMapper;
 import at.irian.ankor.messaging.MessageMapperFactory;
 import at.irian.ankor.path.el.SimpleELPathSyntax;
@@ -19,7 +19,7 @@ public class SocketConnector implements Connector {
     private boolean enabled;
     private SocketListener socketListener;
     private Switchboard switchboard;
-    private ConnectorPlug plug;
+    private ConnectorRegistry plug;
     private URI localAddress;
     private MessageMapper<String> messageMapper;
 
@@ -35,7 +35,7 @@ public class SocketConnector implements Connector {
         this.messageMapper = new MessageMapperFactory<String>(system).createMessageMapper();
 
         this.switchboard = system.getSwitchboard();
-        this.plug = system.getSwitchboard().getConnectorPlug();
+        this.plug = system.getConnectorPlug();
 
         this.socketListener = new SocketListener(system.getSystemName(),
                                                  this.localAddress,

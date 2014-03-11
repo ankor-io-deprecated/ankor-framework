@@ -5,9 +5,10 @@ import at.irian.ankor.messaging.modify.Modifier;
 import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.session.ModelSessionFactory;
 import at.irian.ankor.session.ModelSessionManager;
+import at.irian.ankor.switching.SwitchboardImplementor;
+import at.irian.ankor.switching.Switchboard;
 import at.irian.ankor.switching.connector.ConnectorLoader;
-import at.irian.ankor.switching.PluggableSwitchboard;
-import at.irian.ankor.switching.routing.RoutingTable;
+import at.irian.ankor.switching.connector.ConnectorRegistry;
 import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
 import com.typesafe.config.Config;
 
@@ -25,22 +26,20 @@ public class AnkorSystem {
 
     private final Application application;
     private final Config config;
-    private final PluggableSwitchboard switchboard;
+    private final SwitchboardImplementor switchboard;
     private final RefContextFactory refContextFactory;
     private final ModelSessionManager modelSessionManager;
     private final ModelSessionFactory modelSessionFactory;
-    private final RoutingTable routingTable;
     private final Modifier modifier;
     private final ConnectorLoader connectorLoader;
     private final BeanMetadataProvider beanMetadataProvider;
 
     protected AnkorSystem(Application application,
                           Config config,
-                          PluggableSwitchboard switchboard,
+                          SwitchboardImplementor switchboard,
                           RefContextFactory refContextFactory,
                           ModelSessionManager modelSessionManager,
                           ModelSessionFactory modelSessionFactory,
-                          RoutingTable routingTable,
                           Modifier modifier,
                           BeanMetadataProvider beanMetadataProvider) {
         this.application = application;
@@ -49,7 +48,6 @@ public class AnkorSystem {
         this.refContextFactory = refContextFactory;
         this.modelSessionManager = modelSessionManager;
         this.modelSessionFactory = modelSessionFactory;
-        this.routingTable = routingTable;
         this.modifier = modifier;
         this.beanMetadataProvider = beanMetadataProvider;
         this.connectorLoader = new ConnectorLoader();
@@ -63,12 +61,12 @@ public class AnkorSystem {
         return config;
     }
 
-    public PluggableSwitchboard getSwitchboard() {
+    public Switchboard getSwitchboard() {
         return switchboard;
     }
 
-    public RoutingTable getRoutingTable() {
-        return routingTable;
+    public ConnectorRegistry getConnectorPlug() {
+        return switchboard.getConnectorRegistry();
     }
 
     public RefContextFactory getRefContextFactory() {

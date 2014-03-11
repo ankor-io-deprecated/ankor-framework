@@ -13,18 +13,18 @@ public class SocketModelAddress implements ModelAddress {
     private final String host;
     private final int port;
     private final String modelName;
+    private final int hashCode;
 
     @SuppressWarnings("UnusedDeclaration")
     public SocketModelAddress(String host, int port, String modelName) {
         this.host = host;
         this.port = port;
         this.modelName = modelName;
+        this.hashCode = 31 * (31 * host.hashCode() + port) + modelName.hashCode();
     }
 
     public SocketModelAddress(URI address, String modelName) {
-        this.host = address.getHost();
-        this.port = address.getPort();
-        this.modelName = modelName;
+        this(address.getHost(), address.getPort(), modelName);
     }
 
     public String getHost() {
@@ -56,10 +56,7 @@ public class SocketModelAddress implements ModelAddress {
 
     @Override
     public int hashCode() {
-        int result = host.hashCode();
-        result = 31 * result + port;
-        result = 31 * result + modelName.hashCode();
-        return result;
+        return hashCode;
     }
 
     @Override

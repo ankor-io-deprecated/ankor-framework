@@ -1,11 +1,8 @@
 package at.irian.ankor.servlet.polling;
 
-import at.irian.ankor.akka.AnkorActorSystem;
 import at.irian.ankor.annotation.AnnotationBeanMetadataProvider;
 import at.irian.ankor.application.Application;
 import at.irian.ankor.base.BeanResolver;
-import at.irian.ankor.delay.AkkaScheduler;
-import at.irian.ankor.event.dispatch.AkkaEventDispatcherFactory;
 import at.irian.ankor.system.AnkorSystem;
 import at.irian.ankor.system.AnkorSystemBuilder;
 import at.irian.ankor.viewmodel.proxy.CglibProxyBeanFactory;
@@ -24,15 +21,13 @@ public abstract class AnkorServletContextListener implements ServletContextListe
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        AnkorActorSystem actorSystem = AnkorActorSystem.create();
         AnnotationBeanMetadataProvider beanMetadataProvider = new AnnotationBeanMetadataProvider();
         AnkorSystem ankorSystem = new AnkorSystemBuilder()
                 .withName(getName())
                 .withBeanResolver(getBeanResolver())
                 .withApplication(getApplication())
                 //.withMessageBus(new ServletMessageBus(new ViewModelJsonMessageMapper(beanMetadataProvider)))
-                .withDispatcherFactory(new AkkaEventDispatcherFactory(actorSystem))
-                .withScheduler(new AkkaScheduler(actorSystem))
+                .withActorSystemEnabled()
                 .withBeanMetadataProvider(beanMetadataProvider)
                 .withBeanFactory(new CglibProxyBeanFactory(beanMetadataProvider))
                 .createServer();

@@ -1,11 +1,8 @@
 package at.irian.ankor.servlet.websocket;
 
-import at.irian.ankor.akka.AnkorActorSystem;
 import at.irian.ankor.application.Application;
 import at.irian.ankor.application.SimpleSingleRootApplication;
 import at.irian.ankor.connection.RemoteSystem;
-import at.irian.ankor.delay.AkkaScheduler;
-import at.irian.ankor.event.dispatch.AkkaEventDispatcherFactory;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.system.AnkorSystem;
 import at.irian.ankor.system.AnkorSystemBuilder;
@@ -183,7 +180,7 @@ public abstract class AnkorEndpoint extends Endpoint implements ServerApplicatio
         //webSocketMessageBus = new WebSocketMessageBus(new ViewModelJsonMessageMapper(beanMetadataProvider));
         ankorSystem = ankorSystemBuilder
                 //.withMessageBus(webSocketMessageBus)
-                .withDispatcherFactory(new AkkaEventDispatcherFactory())
+                .withActorSystemEnabled()
                 .createServer();
 
         // todo  register EventMessageListener
@@ -193,12 +190,10 @@ public abstract class AnkorEndpoint extends Endpoint implements ServerApplicatio
     }
 
     protected AnkorSystemBuilder getAnkorSystemBuilder() {
-        AnkorActorSystem actorSystem = AnkorActorSystem.create();
         return new AnkorSystemBuilder()
                 .withName(getName())
                 .withApplication(getApplication())
-                .withDispatcherFactory(new AkkaEventDispatcherFactory((actorSystem)))
-                .withScheduler(new AkkaScheduler(actorSystem));
+                .withActorSystemEnabled();
     }
 
     /**
