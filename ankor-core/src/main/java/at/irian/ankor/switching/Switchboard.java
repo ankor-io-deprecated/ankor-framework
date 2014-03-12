@@ -32,10 +32,10 @@ public interface Switchboard {
     /**
      * Send the give EventMessage to a specific receiver.
      * @param sender   ModelAddress that sends the EventMessage
-     * @param receiver ModelAddress that shall receive the EventMessage
      * @param message  an EventMessage
+     * @param receiver ModelAddress that shall receive the EventMessage
      */
-    void send(ModelAddress sender, ModelAddress receiver, EventMessage message);
+    void send(ModelAddress sender, EventMessage message, ModelAddress receiver);
 
     /**
      * Close the connections to all currently connected receivers of the given sender.
@@ -52,12 +52,14 @@ public interface Switchboard {
 
 
     /**
-     * Start switching.
+     * Start switching and accept "open", "send" and "close" requests.
+     * Calling one of the "open", "send", or "close" methods before starting will result in an IllegalStateException.
      */
     void start();
 
     /**
      * Disconnect all addresses and stop switching.
+     * Calling one of the "open", "send", or "close" methods after stopping will result in an IllegalStateException.
      */
     void stop();
 }

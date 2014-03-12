@@ -40,7 +40,7 @@ public class ConcurrentSwitchboard extends AbstractSwitchboard implements Switch
 
     @Override
     protected void dispatchableSend(ModelAddress originalSender, ModelAddress receiver, EventMessage message) {
-        send(originalSender, receiver, message);
+        send(originalSender, message, receiver);
     }
 
     @Override

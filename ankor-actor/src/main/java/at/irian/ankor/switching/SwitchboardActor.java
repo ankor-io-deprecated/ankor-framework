@@ -37,10 +37,14 @@ public class SwitchboardActor extends UntypedActor {
                 handleStop();
             } else if (msg instanceof OpenMsg) {
                 handleOpen(((OpenMsg) msg).getSender(), ((OpenMsg) msg).getConnectParameters());
-            } else if (msg instanceof SendMsg) {
-                handleSend(((SendMsg) msg).getSender(), ((SendMsg) msg).getReceiver(), ((SendMsg) msg).getMessage());
-            } else if (msg instanceof CloseMsg) {
-                handleClose(((CloseMsg) msg).getSender(), ((CloseMsg) msg).getReceiver());
+            } else if (msg instanceof SendFromMsg) {
+                handleSendFrom(((SendFromMsg) msg).getSender(), ((SendFromMsg) msg).getMessage());
+            } else if (msg instanceof SendToMsg) {
+                handleSendTo(((SendToMsg) msg).getSender(), ((SendToMsg) msg).getMessage(), ((SendToMsg) msg).getReceiver());
+            } else if (msg instanceof CloseFromMsg) {
+                handleCloseFrom(((CloseFromMsg) msg).getSender());
+            } else if (msg instanceof CloseToMsg) {
+                handleCloseTo(((CloseToMsg) msg).getSender(), ((CloseToMsg) msg).getReceiver());
             } else {
                 unhandled(msg);
             }
@@ -65,25 +69,24 @@ public class SwitchboardActor extends UntypedActor {
         delegateSwitchboard.openConnection(sender, connectParameters);
     }
 
-    private void handleSend(ModelAddress sender, ModelAddress receiver, EventMessage message) {
+    private void handleSendFrom(ModelAddress sender, EventMessage message) {
         checkRunning();
-        if (receiver == null) {
-            delegateSwitchboard.send(sender, message);
-        } else {
-            delegateSwitchboard.send(sender,
-                                   receiver,
-                                   message);
-        }
+        delegateSwitchboard.send(sender, message);
     }
 
-    private void handleClose(ModelAddress sender, ModelAddress receiver) {
+    private void handleSendTo(ModelAddress sender, EventMessage message, ModelAddress receiver) {
         checkRunning();
-        if (receiver == null) {
-            delegateSwitchboard.closeAllConnections(sender);
-        } else {
-            delegateSwitchboard.closeConnection(sender,
-                                        receiver);
-        }
+        delegateSwitchboard.send(sender, message, receiver);
+    }
+
+    private void handleCloseFrom(ModelAddress sender) {
+        checkRunning();
+        delegateSwitchboard.closeAllConnections(sender);
+    }
+
+    private void handleCloseTo(ModelAddress sender, ModelAddress receiver) {
+        checkRunning();
+        delegateSwitchboard.closeConnection(sender, receiver);
     }
 
     private void checkRunning() {
@@ -137,7 +140,7 @@ public class SwitchboardActor extends UntypedActor {
 
         @Override
         public Object consistentHashKey() {
-            return getConsistentHashKeyFor(sender, null);
+            return sender;
         }
 
         @Override
@@ -149,16 +152,43 @@ public class SwitchboardActor extends UntypedActor {
         }
     }
 
-    public static class SendMsg implements ConsistentHashingRouter.ConsistentHashable {
+    public static class SendFromMsg implements ConsistentHashingRouter.ConsistentHashable {
+        private final ModelAddress sender;
+        private final EventMessage message;
+
+        public SendFromMsg(ModelAddress sender, EventMessage message) {
+            this.sender = sender;
+            this.message = message;
+        }
+
+        public ModelAddress getSender() {
+            return sender;
+        }
+
+        public EventMessage getMessage() {
+            return message;
+        }
+
+        @Override
+        public Object consistentHashKey() {
+            return sender;
+        }
+
+        @Override
+        public String toString() {
+            return "SendFromMsg{" +
+                   "sender=" + sender +
+                   ", message=" + message +
+                   '}';
+        }
+    }
+
+    public static class SendToMsg implements ConsistentHashingRouter.ConsistentHashable {
         private final ModelAddress sender;
         private final ModelAddress receiver;
         private final EventMessage message;
 
-        public SendMsg(ModelAddress sender, EventMessage message) {
-            this(sender, null, message);
-        }
-
-        public SendMsg(ModelAddress sender, ModelAddress receiver, EventMessage message) {
+        public SendToMsg(ModelAddress sender, ModelAddress receiver, EventMessage message) {
             this.sender = sender;
             this.receiver = receiver;
             this.message = message;
@@ -178,12 +208,12 @@ public class SwitchboardActor extends UntypedActor {
 
         @Override
         public Object consistentHashKey() {
-            return getConsistentHashKeyFor(sender, receiver);
+            return receiver;
         }
 
         @Override
         public String toString() {
-            return "SendMsg{" +
+            return "SendToMsg{" +
                    "sender=" + sender +
                    ", receiver=" + receiver +
                    ", message=" + message +
@@ -191,15 +221,35 @@ public class SwitchboardActor extends UntypedActor {
         }
     }
 
-    public static class CloseMsg implements ConsistentHashingRouter.ConsistentHashable {
+    public static class CloseFromMsg implements ConsistentHashingRouter.ConsistentHashable {
+        private final ModelAddress sender;
+
+        public CloseFromMsg(ModelAddress sender) {
+            this.sender = sender;
+        }
+
+        public ModelAddress getSender() {
+            return sender;
+        }
+
+        @Override
+        public Object consistentHashKey() {
+            return sender;
+        }
+
+        @Override
+        public String toString() {
+            return "CloseMsg{" +
+                   "sender=" + sender +
+                   '}';
+        }
+    }
+
+    public static class CloseToMsg implements ConsistentHashingRouter.ConsistentHashable {
         private final ModelAddress sender;
         private final ModelAddress receiver;
 
-        public CloseMsg(ModelAddress sender) {
-            this(sender, null);
-        }
-
-        public CloseMsg(ModelAddress sender, ModelAddress receiver) {
+        public CloseToMsg(ModelAddress sender, ModelAddress receiver) {
             this.sender = sender;
             this.receiver = receiver;
         }
@@ -214,7 +264,7 @@ public class SwitchboardActor extends UntypedActor {
 
         @Override
         public Object consistentHashKey() {
-            return getConsistentHashKeyFor(sender, receiver);
+            return receiver;
         }
 
         @Override
@@ -226,9 +276,5 @@ public class SwitchboardActor extends UntypedActor {
         }
     }
 
-
-    private static Object getConsistentHashKeyFor(ModelAddress sender, ModelAddress receiver) {
-        return 31 * (sender != null ? sender.hashCode() : 0) + (receiver != null ? receiver.hashCode() : 0);
-    }
 
 }

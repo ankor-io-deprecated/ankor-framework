@@ -40,7 +40,6 @@ public abstract class AbstractSwitchboard implements Switchboard {
         this.routingLogic = routingLogic;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void openConnection(ModelAddress sender, Map<String, Object> connectParameters) {
         checkRunning();
@@ -59,7 +58,7 @@ public abstract class AbstractSwitchboard implements Switchboard {
         }
 
         // open connection
-        connectorMapping.getConnectionHandler(receiver).openConnection(sender, receiver, connectParameters);
+        handleOpenConnection(sender, connectParameters, receiver);
     }
 
     @Override
@@ -84,13 +83,11 @@ public abstract class AbstractSwitchboard implements Switchboard {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public void send(ModelAddress sender, ModelAddress receiver, EventMessage message) {
+    public void send(ModelAddress sender, EventMessage message, ModelAddress receiver) {
         checkRunningOrStopping();
-        connectorMapping.getTransmissionHandler(receiver).transmitEventMessage(sender, receiver, message);
+        handleTransmitEventMessage(sender, receiver, message);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void closeAllConnections(ModelAddress sender) {
         checkRunningOrStopping();
@@ -115,7 +112,7 @@ public abstract class AbstractSwitchboard implements Switchboard {
     @SuppressWarnings("unchecked")
     protected void closeDirectedConnection(ModelAddress sender, ModelAddress receiver) {
         boolean noMoreRouteToReceiver = !routingTable.hasConnectedAddresses(receiver);
-        connectorMapping.getConnectionHandler(receiver).closeConnection(sender, receiver, noMoreRouteToReceiver);
+        handleCloseConnection(sender, receiver, noMoreRouteToReceiver);
     }
 
     @Override
@@ -136,20 +133,20 @@ public abstract class AbstractSwitchboard implements Switchboard {
         this.status = Status.STOPPED;
     }
 
-    private void checkRunning() {
+    protected void checkRunning() {
         if (status != Status.RUNNING) {
             throw new IllegalStateException("Switchboard is " + status);
         }
     }
 
-    private void checkRunningOrStopping() {
+    protected void checkRunningOrStopping() {
         if (status != Status.RUNNING && status != Status.STOPPING) {
             throw new IllegalStateException("Switchboard is " + status);
         }
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    private void checkNotRunning() {
+    protected void checkNotRunning() {
         if (status == Status.RUNNING || status == Status.STOPPING) {
             throw new IllegalStateException("Switchboard is " + status);
         }
@@ -159,5 +156,23 @@ public abstract class AbstractSwitchboard implements Switchboard {
     protected abstract void dispatchableSend(ModelAddress sender, ModelAddress receiver, EventMessage message);
 
     protected abstract void dispatchableCloseConnection(ModelAddress sender, ModelAddress receiver);
+
+
+    @SuppressWarnings("unchecked")
+    protected void handleOpenConnection(ModelAddress sender,
+                                        Map<String, Object> connectParameters,
+                                        ModelAddress receiver) {
+        connectorMapping.getConnectionHandler(receiver).openConnection(sender, receiver, connectParameters);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void handleTransmitEventMessage(ModelAddress sender, ModelAddress receiver, EventMessage message) {
+        connectorMapping.getTransmissionHandler(receiver).transmitEventMessage(sender, receiver, message);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void handleCloseConnection(ModelAddress sender, ModelAddress receiver, boolean noMoreRouteToReceiver) {
+        connectorMapping.getConnectionHandler(receiver).closeConnection(sender, receiver, noMoreRouteToReceiver);
+    }
 
 }

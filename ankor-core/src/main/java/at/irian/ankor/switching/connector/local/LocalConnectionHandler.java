@@ -38,8 +38,8 @@ public class LocalConnectionHandler implements ConnectionHandler<LocalModelAddre
 
         // send an inital change event for the model root back to the sender
         Object modelRoot = modelSession.getModelRoot(modelName);
-        switchboard.send(receiver, sender,
-                         new ChangeEventMessage(modelName, Change.valueChange(modelRoot)));
+        switchboard.send(receiver, new ChangeEventMessage(modelName, Change.valueChange(modelRoot)), sender
+        );
     }
 
     @Override

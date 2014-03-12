@@ -38,7 +38,7 @@ public class SimpleSwitchboard extends AbstractSwitchboard implements Switchboar
 
     @Override
     protected void dispatchableSend(ModelAddress originalSender, ModelAddress receiver, EventMessage message) {
-        send(originalSender, receiver, message);
+        send(originalSender, message, receiver);
     }
 
     @Override
