@@ -140,7 +140,7 @@ public class SwitchboardActor extends UntypedActor {
 
         @Override
         public Object consistentHashKey() {
-            return sender;
+            return sender.consistentHashKey();
         }
 
         @Override
@@ -171,7 +171,7 @@ public class SwitchboardActor extends UntypedActor {
 
         @Override
         public Object consistentHashKey() {
-            return sender;
+            return sender.consistentHashKey();
         }
 
         @Override
@@ -208,7 +208,7 @@ public class SwitchboardActor extends UntypedActor {
 
         @Override
         public Object consistentHashKey() {
-            return receiver;
+            return receiver.consistentHashKey();
         }
 
         @Override
@@ -234,7 +234,7 @@ public class SwitchboardActor extends UntypedActor {
 
         @Override
         public Object consistentHashKey() {
-            return sender;
+            return sender.consistentHashKey();
         }
 
         @Override
@@ -264,7 +264,7 @@ public class SwitchboardActor extends UntypedActor {
 
         @Override
         public Object consistentHashKey() {
-            return receiver;
+            return receiver.consistentHashKey();
         }
 
         @Override

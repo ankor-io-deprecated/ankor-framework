@@ -12,11 +12,13 @@ public class WebSocketModelAddress implements ModelAddress, Serializable {
     private final String clientId;
     private final String modelName;
     private final int hashCode;
+    private String consistentHashKey;
 
     public WebSocketModelAddress(String clientId, String modelName) {
         this.clientId = clientId;
         this.modelName = modelName;
         this.hashCode = 31 * clientId.hashCode() + modelName.hashCode();
+        this.consistentHashKey = clientId + modelName;
     }
 
     @Override
@@ -45,6 +47,11 @@ public class WebSocketModelAddress implements ModelAddress, Serializable {
     @Override
     public int hashCode() {
         return hashCode;
+    }
+
+    @Override
+    public String consistentHashKey() {
+        return consistentHashKey;
     }
 
     @Override

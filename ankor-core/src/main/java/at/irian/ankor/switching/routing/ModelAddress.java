@@ -15,5 +15,11 @@ public interface ModelAddress {
      */
     int hashCode();
 
+    /**
+     * See https://weblogs.java.net/blog/tomwhite/archive/2007/11/consistent_hash.html
+     * @return a String that is suitable as this ModelAddress' consistent hash key
+     */
+    String consistentHashKey();
+
     String toString();
 }

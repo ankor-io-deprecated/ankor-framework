@@ -14,6 +14,7 @@ public class LocalModelAddress implements ModelAddress, Serializable {
     private final String modelSessionId;
     private final String modelName;
     private final int hashCode;
+    private final String consistentHashKey;
 
     public LocalModelAddress(ModelSession modelSession, String modelName) {
         this(modelSession.getId(), modelName);
@@ -23,6 +24,7 @@ public class LocalModelAddress implements ModelAddress, Serializable {
         this.modelSessionId = modelSessionId;
         this.modelName = modelName;
         this.hashCode = 31 * modelSessionId.hashCode() + modelName.hashCode();
+        this.consistentHashKey = modelSessionId + modelName;
     }
 
     public String getModelSessionId() {
@@ -46,12 +48,16 @@ public class LocalModelAddress implements ModelAddress, Serializable {
         LocalModelAddress that = (LocalModelAddress) o;
 
         return modelName.equals(that.modelName) && modelSessionId.equals(that.modelSessionId);
-
     }
 
     @Override
     public int hashCode() {
         return hashCode;
+    }
+
+    @Override
+    public String consistentHashKey() {
+        return consistentHashKey;
     }
 
     @Override

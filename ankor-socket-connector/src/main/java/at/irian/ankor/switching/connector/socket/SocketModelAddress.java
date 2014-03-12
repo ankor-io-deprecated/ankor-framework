@@ -15,6 +15,7 @@ public class SocketModelAddress implements ModelAddress, Serializable {
     private final int port;
     private final String modelName;
     private final int hashCode;
+    private String consistentHashKey;
 
     @SuppressWarnings("UnusedDeclaration")
     public SocketModelAddress(String host, int port, String modelName) {
@@ -22,6 +23,7 @@ public class SocketModelAddress implements ModelAddress, Serializable {
         this.port = port;
         this.modelName = modelName;
         this.hashCode = 31 * (31 * host.hashCode() + port) + modelName.hashCode();
+        this.consistentHashKey = host + port + modelName;
     }
 
     public SocketModelAddress(URI address, String modelName) {
@@ -58,6 +60,11 @@ public class SocketModelAddress implements ModelAddress, Serializable {
     @Override
     public int hashCode() {
         return hashCode;
+    }
+
+    @Override
+    public String consistentHashKey() {
+        return consistentHashKey;
     }
 
     @Override
