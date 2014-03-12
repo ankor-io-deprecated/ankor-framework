@@ -5,6 +5,8 @@ import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.Multimap;
 
 import java.util.Collection;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * A thread-safe AND concurrent-modification-safe RoutingTable.
@@ -14,6 +16,7 @@ public class ConcurrentRoutingTable implements RoutingTable {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RoutingTable.class);
 
     private volatile ImmutableSetMultimap<ModelAddress, ModelAddress> connections = ImmutableSetMultimap.of();
+    private Lock writeLock = new ReentrantLock();
 
     @Override
     public boolean connect(ModelAddress a, ModelAddress b) {
@@ -25,11 +28,16 @@ public class ConcurrentRoutingTable implements RoutingTable {
         }
 
         if (!isConnected(a, b)) {
-            connections = ImmutableSetMultimap.<ModelAddress, ModelAddress>builder()
-                                              .putAll(connections)
-                                              .put(a, b)
-                                              .put(b, a)
-                                              .build();
+            writeLock.lock();
+            try {
+                connections = ImmutableSetMultimap.<ModelAddress, ModelAddress>builder()
+                                                  .putAll(connections)
+                                                  .put(a, b)
+                                                  .put(b, a)
+                                                  .build();
+            } finally {
+                writeLock.unlock();
+            }
             return true;
         } else {
             return false;
@@ -46,10 +54,15 @@ public class ConcurrentRoutingTable implements RoutingTable {
         }
 
         if (isConnected(a, b)) {
-            Multimap<ModelAddress, ModelAddress> mutable = HashMultimap.create(connections);
-            mutable.remove(a, b);
-            mutable.remove(b, a);
-            connections = ImmutableSetMultimap.copyOf(mutable);
+            writeLock.lock();
+            try {
+                Multimap<ModelAddress, ModelAddress> mutable = HashMultimap.create(connections);
+                mutable.remove(a, b);
+                mutable.remove(b, a);
+                connections = ImmutableSetMultimap.copyOf(mutable);
+            } finally {
+                writeLock.unlock();
+            }
             return true;
         } else {
             return false;
@@ -112,6 +125,11 @@ public class ConcurrentRoutingTable implements RoutingTable {
 
     @Override
     public void clear() {
-        connections = ImmutableSetMultimap.of();
+        writeLock.lock();
+        try {
+            connections = ImmutableSetMultimap.of();
+        } finally {
+            writeLock.unlock();
+        }
     }
 }
