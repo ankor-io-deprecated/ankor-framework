@@ -9,7 +9,7 @@
 
     <artifactId>ankor-web-socket-connector</artifactId>
     <packaging>jar</packaging>
-    <name>Ankor - Socket Connector</name>
+    <name>Ankor - WebSocket Connector</name>
 
     <dependencies>
 
