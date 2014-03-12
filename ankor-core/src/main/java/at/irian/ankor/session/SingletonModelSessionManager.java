@@ -1,9 +1,5 @@
 package at.irian.ankor.session;
 
-import com.google.common.collect.ImmutableSet;
-
-import java.util.Collection;
-
 /**
  * @author Manfred Geiler
  */
@@ -63,8 +59,7 @@ public class SingletonModelSessionManager implements ModelSessionManager {
     @Override
     public void close() {
         if (modelSession != null) {
-            Collection<String> modelNames = ImmutableSet.copyOf(modelSession.getModelNames());
-            for (String modelName : modelNames) {
+            for (String modelName : modelSession.getModelNames()) {
                 modelSession.getRefContext().closeModelConnection(modelName);
             }
             modelSession.close();
