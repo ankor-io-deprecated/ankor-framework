@@ -14,7 +14,7 @@ public class WebSocketModelAddress implements ModelAddress {
     public WebSocketModelAddress(String clientId, String modelName) {
         this.clientId = clientId;
         this.modelName = modelName;
-        this.hashCode = 31 * (31 * clientId.hashCode());
+        this.hashCode = 31 * clientId.hashCode() + modelName.hashCode();
     }
 
     @Override
@@ -24,6 +24,20 @@ public class WebSocketModelAddress implements ModelAddress {
 
     public String getClientId() {
         return clientId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        WebSocketModelAddress that = (WebSocketModelAddress) o;
+
+        return clientId.equals(that.clientId) && modelName.equals(that.modelName);
     }
 
     @Override
