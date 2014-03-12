@@ -21,7 +21,7 @@ public class WebSocketConnectionHandler implements ConnectionHandler<WebSocketMo
         webSocketSender.send(
                 sender,
                 receiver,
-                WebSocketMessage.createConnectMsg(null, sender.getModelName(), connectParameters));
+                WebSocketMessage.createConnectMsg(sender.getModelName(), connectParameters));
     }
 
     @Override
@@ -29,7 +29,7 @@ public class WebSocketConnectionHandler implements ConnectionHandler<WebSocketMo
         webSocketSender.send(
                 sender,
                 receiver,
-                WebSocketMessage.createCloseMsg(null, sender.getModelName()));
+                WebSocketMessage.createCloseMsg(sender.getModelName()));
     }
 
 }

@@ -46,15 +46,6 @@ public class WebSocketEndpoint extends Endpoint {
         LOG.debug("New client connected {}", clientId);
     }
 
-    private String getClientId(Session session) {
-        String clientId = (String) session.getUserProperties().get(CLIENT_ID);
-        if (clientId == null) {
-            clientId = session.getPathParameters().get(CLIENT_ID);
-            session.getUserProperties().put(CLIENT_ID, clientId);
-        }
-        return clientId;
-    }
-
     @Override
     public void onClose(Session session, CloseReason closeReason) {
         LOG.info("Invalidating session {} because of {}: {}", session.getId(), closeReason.getCloseCode(),
@@ -73,5 +64,14 @@ public class WebSocketEndpoint extends Endpoint {
         if (clientId != null) {
             WebSocketConnector.getInstance().getSessionRegistry().removeSession(clientId);
         }
+    }
+
+    private String getClientId(Session session) {
+        String clientId = (String) session.getUserProperties().get(CLIENT_ID);
+        if (clientId == null) {
+            clientId = session.getPathParameters().get(CLIENT_ID);
+            session.getUserProperties().put(CLIENT_ID, clientId);
+        }
+        return clientId;
     }
 }

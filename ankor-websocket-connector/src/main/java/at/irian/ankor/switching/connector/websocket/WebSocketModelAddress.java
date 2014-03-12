@@ -7,14 +7,14 @@ import at.irian.ankor.switching.routing.ModelAddress;
  */
 public class WebSocketModelAddress implements ModelAddress {
 
-    private final String remoteSystemId;
+    private final String clientId;
     private final String modelName;
     private final int hashCode;
 
-    public WebSocketModelAddress(String remoteSystemId, String modelName) {
-        this.remoteSystemId = remoteSystemId;
+    public WebSocketModelAddress(String clientId, String modelName) {
+        this.clientId = clientId;
         this.modelName = modelName;
-        this.hashCode = 31 * (31 * remoteSystemId.hashCode());
+        this.hashCode = 31 * (31 * clientId.hashCode());
     }
 
     @Override
@@ -22,8 +22,8 @@ public class WebSocketModelAddress implements ModelAddress {
         return null;
     }
 
-    public String getRemoteSystemId() {
-        return remoteSystemId;
+    public String getClientId() {
+        return clientId;
     }
 
     @Override
@@ -34,7 +34,7 @@ public class WebSocketModelAddress implements ModelAddress {
     @Override
     public String toString() {
         return "WebSocketModelAddress{" +
-                "remoteSystemId='" + remoteSystemId + '\'' +
+                "clientId='" + clientId + '\'' +
                 ", modelName='" + modelName + '\'' +
                 '}';
     }

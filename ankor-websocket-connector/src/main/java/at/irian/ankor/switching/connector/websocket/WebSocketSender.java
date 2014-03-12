@@ -26,23 +26,23 @@ public class WebSocketSender {
         this.messageSerializer = messageSerializer;
     }
 
-    public void send(ModelAddress sender, WebSocketModelAddress receiver, WebSocketMessage webSocketMessage) {
-        Session session = sessionRegistry.getSession(receiver.getRemoteSystemId());
+    public void send(ModelAddress sender, WebSocketModelAddress receiver, WebSocketMessage message) {
+        Session session = sessionRegistry.getSession(receiver.getClientId());
         if (session == null) {
             LOG.error("Error sending {} from {} to {} - automatically disconnecting {}, reason: NO WS SESSION FOUND ...",
-                    webSocketMessage,
+                    message,
                     sender,
                     receiver,
                     receiver);
             switchboard.closeConnection(sender, receiver);
         } else {
             try {
-                String serializedMsg = messageSerializer.serialize(webSocketMessage);
+                String serializedMsg = messageSerializer.serialize(message);
                 LOG.debug("Sending serialized message to {}: {}", receiver, serializedMsg);
                 session.getBasicRemote().sendText(serializedMsg);
             } catch (IOException e) {
                 LOG.error("Error sending {} from {} to {} - automatically disconnecting {} ...",
-                        webSocketMessage,
+                        message,
                         sender,
                         receiver,
                         receiver, e);

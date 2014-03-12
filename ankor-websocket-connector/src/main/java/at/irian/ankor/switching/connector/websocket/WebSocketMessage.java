@@ -10,9 +10,6 @@ import java.util.Map;
  * @author Thomas Spiegl
  */
 public class WebSocketMessage {
-    @JsonInclude(JsonInclude.Include.ALWAYS)
-    private String senderId;
-
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String property;
 
@@ -34,22 +31,16 @@ public class WebSocketMessage {
     @SuppressWarnings("UnusedDeclaration")
     protected WebSocketMessage() {}
 
-    private WebSocketMessage(String senderId,
-                          String property,
+    private WebSocketMessage(String property,
                           Action action,
                           Change change,
                           Map<String, Object> connectParams,
                           boolean close) {
-        this.senderId = senderId;
         this.property = property;
         this.action = action;
         this.change = change;
         this.connectParams = connectParams;
         this.close = close;
-    }
-
-    public String getSenderId() {
-        return senderId;
     }
 
     public String getProperty() {
@@ -72,34 +63,31 @@ public class WebSocketMessage {
         return close;
     }
 
-    public static WebSocketMessage createActionMsg(String senderAddress, String property, Action action) {
-        return new WebSocketMessage(senderAddress, property, action, null, null, false);
+    public static WebSocketMessage createActionMsg(String property, Action action) {
+        return new WebSocketMessage(property, action, null, null, false);
     }
 
-    public static WebSocketMessage createChangeMsg(String senderAddress, String property, Change change) {
-        return new WebSocketMessage(senderAddress, property, null, change, null, false);
+    public static WebSocketMessage createChangeMsg(String property, Change change) {
+        return new WebSocketMessage(property, null, change, null, false);
     }
 
-    public static WebSocketMessage createConnectMsg(String senderAddress,
-                                                 String modelName,
+    public static WebSocketMessage createConnectMsg(String modelName,
                                                  Map<String, Object> connectParameters) {
-        return new WebSocketMessage(senderAddress, modelName, null, null, connectParameters, false);
+        return new WebSocketMessage(modelName, null, null, connectParameters, false);
     }
 
-    public static WebSocketMessage createCloseMsg(String senderAddress, String modelName) {
-        return new WebSocketMessage(senderAddress, modelName, null, null, null, true);
+    public static WebSocketMessage createCloseMsg(String modelName) {
+        return new WebSocketMessage(modelName, null, null, null, true);
     }
 
     @Override
     public String toString() {
-        return "SocketMessage{" +
-                "senderId='" + senderId + '\'' +
-                ", property='" + property + '\'' +
+        return "WebSocketMessage{" +
+                "property='" + property + '\'' +
                 ", action=" + action +
                 ", change=" + change +
                 ", connectParams=" + connectParams +
                 ", close=" + close +
                 '}';
     }
-
 }

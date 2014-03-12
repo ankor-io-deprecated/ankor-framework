@@ -25,11 +25,11 @@ public class WebSocketTransmissionHandler implements TransmissionHandler<WebSock
         WebSocketMessage socketMessage;
 
         if (message instanceof ActionEventMessage) {
-            socketMessage = WebSocketMessage.createActionMsg(receiver.getRemoteSystemId(),
+            socketMessage = WebSocketMessage.createActionMsg(
                     ((ActionEventMessage) message).getProperty(),
                     ((ActionEventMessage) message).getAction());
         } else if (message instanceof ChangeEventMessage) {
-            socketMessage = WebSocketMessage.createChangeMsg(receiver.getRemoteSystemId(),
+            socketMessage = WebSocketMessage.createChangeMsg(
                     ((ChangeEventMessage) message).getProperty(),
                     ((ChangeEventMessage) message).getChange());
         } else {
