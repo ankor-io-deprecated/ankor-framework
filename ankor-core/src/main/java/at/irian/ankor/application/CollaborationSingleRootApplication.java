@@ -20,6 +20,7 @@ public abstract class CollaborationSingleRootApplication extends SimpleSingleRoo
         super(applicationName, modelName);
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     protected Map<String, Object> getModelInstanceMap() {
         return instanceMap;
     }
@@ -38,7 +39,9 @@ public abstract class CollaborationSingleRootApplication extends SimpleSingleRoo
     public Object createModel(Ref rootRef, Map<String, Object> connectParameters) {
         Object modelRoot = doCreateModel(rootRef, connectParameters);
         String instanceId = (String) connectParameters.get(MODEL_INSTANCE_ID_PARAM);
-        instanceMap.put(instanceId, modelRoot);
+        if (instanceId != null) {
+            instanceMap.put(instanceId, modelRoot);
+        }
         return modelRoot;
     }
 

@@ -5,7 +5,7 @@ import at.irian.ankor.switching.routing.ModelAddress;
 /**
  * @author Manfred Geiler
  */
-public interface ConnectorRegistry {
+public interface ConnectorRegistry extends ConnectorMapping {
 
     void registerConnectionHandler(Class<? extends ModelAddress> receiverAddressType,
                                    ConnectionHandler<? extends ModelAddress> connectionHandler);

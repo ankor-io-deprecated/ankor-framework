@@ -171,7 +171,7 @@ public class AnkorSystemBuilder {
                                                                          refContextFactory,
                                                                          application);
 
-        ModelSessionManager modelSessionManager = new LockingModelSessionManager();
+        ModelSessionManager modelSessionManager = DefaultModelSessionManager.create();
 
         if (!configValues.containsKey(MESSAGE_MAPPER_CONFIG_KEY)) {
             configValues.put(MESSAGE_MAPPER_CONFIG_KEY, ViewModelJsonMessageMapper.class.getName());
@@ -318,7 +318,7 @@ public class AnkorSystemBuilder {
         if (switchboard == null) {
             ActorSystem actorSystem = getActorSystem();
             if (actorSystem == null) {
-                switchboard = ConcurrentSwitchboard.create();
+                switchboard = DefaultSwitchboard.createForConcurrency();
             } else {
                 switchboard = AkkaSwitchboard.create(actorSystem);
             }
@@ -328,7 +328,7 @@ public class AnkorSystemBuilder {
 
     private SwitchboardImplementor getClientSwitchboard() {
         if (switchboard == null) {
-            switchboard = SimpleSwitchboard.create();
+            switchboard = DefaultSwitchboard.createForSingleThread();
         }
         return switchboard;
     }

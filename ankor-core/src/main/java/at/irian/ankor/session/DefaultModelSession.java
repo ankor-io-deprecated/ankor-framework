@@ -88,7 +88,10 @@ class DefaultModelSession implements ModelSession, DispatchThreadAware {
         }
 
         for (Map.Entry<String, Object> entry : modelRootMap.entrySet()) {
-            application.releaseModel(entry.getKey(), entry.getValue());
+            String modelName = entry.getKey();
+            Object modelRoot = entry.getValue();
+            refContext.closeModelConnection(modelName);
+            application.releaseModel(modelName, modelRoot);
         }
 
         modelRootMap = Collections.emptyMap();
@@ -111,11 +114,6 @@ class DefaultModelSession implements ModelSession, DispatchThreadAware {
     @Override
     public Thread getCurrentDispatchThread() {
         return dispatchThread;
-    }
-
-    @Override
-    public Set<String> getAttributeNames() {
-        return attributes.keySet();
     }
 
     @SuppressWarnings("unchecked")

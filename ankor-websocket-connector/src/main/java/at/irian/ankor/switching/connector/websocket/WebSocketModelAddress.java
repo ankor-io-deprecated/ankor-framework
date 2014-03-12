@@ -2,10 +2,12 @@ package at.irian.ankor.switching.connector.websocket;
 
 import at.irian.ankor.switching.routing.ModelAddress;
 
+import java.io.Serializable;
+
 /**
  * @author Thomas Spiegl
  */
-public class WebSocketModelAddress implements ModelAddress {
+public class WebSocketModelAddress implements ModelAddress, Serializable {
 
     private final String clientId;
     private final String modelName;

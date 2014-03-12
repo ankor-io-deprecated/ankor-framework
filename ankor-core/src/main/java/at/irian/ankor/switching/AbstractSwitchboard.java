@@ -105,12 +105,6 @@ public abstract class AbstractSwitchboard implements Switchboard {
         LOG.debug("Remove route between {} and {}", sender, receiver);
         routingTable.disconnect(sender, receiver);
 
-        closeDirectedConnection(sender, receiver);
-        closeDirectedConnection(receiver, sender);
-    }
-
-    @SuppressWarnings("unchecked")
-    protected void closeDirectedConnection(ModelAddress sender, ModelAddress receiver) {
         boolean noMoreRouteToReceiver = !routingTable.hasConnectedAddresses(receiver);
         handleCloseConnection(sender, receiver, noMoreRouteToReceiver);
     }

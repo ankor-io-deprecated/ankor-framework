@@ -5,7 +5,6 @@ import at.irian.ankor.event.dispatch.EventDispatcher;
 import at.irian.ankor.ref.RefContext;
 
 import java.util.Collection;
-import java.util.Set;
 
 /**
  * The ModelSession provides access to all information that belongs to one specific model instance. It represents
@@ -28,30 +27,24 @@ public interface ModelSession {
     EventListeners getEventListeners();
 
     /**
-     * Close this model and free all resources.
+     * Close this model and free all resources used by this ModelSession.
      * After a model is closed, the framework is free to cleanup all resources that might have been used by this
      * model.
-     * ModelSession implementations should close the associated EventDispatcher(s), release all associated
+     * ModelSession implementations should inform all (remotely) connected Models about the closing,
+     * close the associated EventDispatcher(s), release all associated
      * model roots and omit all references to these model root instances.
      */
     void close();
 
     /**
-     * Get a custom attributes map that may be used by Ankor extensions.
-     * Extensions, that want to store custom attributes for a model, must take care that the map key they use is unique.
-     * @return immutable attributes map
-     */
-    Set<String> getAttributeNames();
-
-    /**
-     * Change a custom attribute of this ModelSession.
+     * Change a custom user attribute of this ModelSession.
      * @param key   a key
      * @param value a value
      */
     void setAttribute(String key, Object value);
 
     /**
-     * Get the custom attribute with the given key.
+     * Get the custom user attribute with the given key.
      * @param key   a key
      * @param <T>   type of value
      * @return the value associated with the given key or null if there is no such value

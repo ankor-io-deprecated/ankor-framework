@@ -3,11 +3,12 @@ package at.irian.ankor.switching;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.routing.Broadcast;
-import at.irian.ankor.switching.connector.ConcurrentConnectorRegistry;
+import at.irian.ankor.switching.connector.DefaultConnectorRegistry;
 import at.irian.ankor.switching.connector.ConnectorMapping;
 import at.irian.ankor.switching.connector.ConnectorRegistry;
 import at.irian.ankor.switching.msg.EventMessage;
 import at.irian.ankor.switching.routing.*;
+import com.typesafe.config.Config;
 
 import java.util.Map;
 
@@ -17,12 +18,12 @@ import java.util.Map;
 public class AkkaSwitchboard implements SwitchboardImplementor {
 
     private final ActorRef switchboardRouterActor;
-    private final ConcurrentConnectorRegistry connectorRegistry;
+    private final ConnectorRegistry connectorRegistry;
     private final RoutingTable routingTable;
     private MySimpleSwitchboard delegateSwitchboard;
 
     protected AkkaSwitchboard(ActorRef switchboardRouterActor,
-                              ConcurrentConnectorRegistry connectorRegistry,
+                              ConnectorRegistry connectorRegistry,
                               RoutingTable routingTable) {
         this.switchboardRouterActor = switchboardRouterActor;
         this.connectorRegistry = connectorRegistry;
@@ -32,9 +33,12 @@ public class AkkaSwitchboard implements SwitchboardImplementor {
 
     public static SwitchboardImplementor create(ActorSystem actorSystem) {
 
-        ActorRef switchboardActor = actorSystem.actorOf(SwitchboardActor.props(actorSystem.settings().config()),
+        Config config = actorSystem.settings().config();
+        int nrOfInstances = config.getInt("at.irian.ankor.switching.SwitchboardActor.poolSize");
+
+        ActorRef switchboardActor = actorSystem.actorOf(SwitchboardActor.props(config),
                                                         SwitchboardActor.name());
-        ConcurrentConnectorRegistry connectorRegistry = new ConcurrentConnectorRegistry();
+        ConnectorRegistry connectorRegistry = DefaultConnectorRegistry.createForConcurrency(nrOfInstances);
         RoutingTable routingTable = new ConcurrentRoutingTable();
 
         return new AkkaSwitchboard(switchboardActor, connectorRegistry, routingTable);

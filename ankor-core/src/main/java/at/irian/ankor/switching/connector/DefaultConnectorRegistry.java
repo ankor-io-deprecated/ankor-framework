@@ -2,19 +2,43 @@ package at.irian.ankor.switching.connector;
 
 import at.irian.ankor.switching.routing.ModelAddress;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Manfred Geiler
  */
-public class SimpleConnectorRegistry implements ConnectorRegistry, ConnectorMapping {
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SimpleConnectorRegistry.class);
+public class DefaultConnectorRegistry implements ConnectorRegistry {
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(DefaultConnectorRegistry.class);
 
-    private final Map<Class<? extends ModelAddress>, ConnectionHandler<? extends ModelAddress>> connectionHandlers
-            = new HashMap<Class<? extends ModelAddress>, ConnectionHandler<? extends ModelAddress>>();
-    private final Map<Class<? extends ModelAddress>, TransmissionHandler<? extends ModelAddress>> transmissionHandlers
-            = new HashMap<Class<? extends ModelAddress>, TransmissionHandler<? extends ModelAddress>>();
+    /**
+     * We assume not much more than 4 connector plugins at all.
+     */
+    private static final int INITIAL_CAPACITY = 4;
+
+    private static final float LOAD_FACTOR = 0.75f;
+
+    private final Map<Class, ConnectionHandler> connectionHandlers;
+    private final Map<Class, TransmissionHandler> transmissionHandlers;
+
+    protected DefaultConnectorRegistry(Map<Class, ConnectionHandler> connectionHandlers,
+                                       Map<Class, TransmissionHandler> transmissionHandlers) {
+        this.connectionHandlers = connectionHandlers;
+        this.transmissionHandlers = transmissionHandlers;
+    }
+
+    public static ConnectorRegistry createForSingleThread() {
+        return createForConcurrency(1);
+    }
+
+    public static ConnectorRegistry createForConcurrency(int concurrencyLevel) {
+        return new DefaultConnectorRegistry(new ConcurrentHashMap<Class, ConnectionHandler>(INITIAL_CAPACITY,
+                                                                                               LOAD_FACTOR,
+                                                                                               concurrencyLevel),
+                                               new ConcurrentHashMap<Class, TransmissionHandler>(INITIAL_CAPACITY,
+                                                                                                 LOAD_FACTOR,
+                                                                                                 concurrencyLevel));
+    }
 
     @Override
     public void registerConnectionHandler(Class<? extends ModelAddress> receiverAddressType,

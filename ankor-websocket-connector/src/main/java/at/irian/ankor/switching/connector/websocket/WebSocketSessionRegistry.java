@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 class WebSocketSessionRegistry {
 
-    private Map<String, Session> sessions = new ConcurrentHashMap<String, Session>(1000);
+    private Map<String, Session> sessions = new ConcurrentHashMap<String, Session>(1000); // todo  make concurrency level configurable
 
     public Session addSession(String clientId, Session session) {
         return sessions.put(clientId, session);

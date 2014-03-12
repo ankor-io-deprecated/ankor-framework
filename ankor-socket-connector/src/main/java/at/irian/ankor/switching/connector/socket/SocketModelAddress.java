@@ -2,12 +2,13 @@ package at.irian.ankor.switching.connector.socket;
 
 import at.irian.ankor.switching.routing.ModelAddress;
 
+import java.io.Serializable;
 import java.net.URI;
 
 /**
  * @author Manfred Geiler
  */
-public class SocketModelAddress implements ModelAddress {
+public class SocketModelAddress implements ModelAddress, Serializable {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SocketModelAddress.class);
 
     private final String host;

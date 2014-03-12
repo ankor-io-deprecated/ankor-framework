@@ -21,14 +21,14 @@ import java.util.Map;
 public abstract class SocketFxClientApplication extends javafx.application.Application {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SocketFxClientApplication.class);
 
-   private static final String DEFAULT_SERVER_ADDRESS = "//localhost:8080";
+    private static final String DEFAULT_SERVER_ADDRESS = "//localhost:8080";
     private static final String DEFAULT_CLIENT_ADDRESS = "//localhost:9090";
 
     private final String applicationName;
     private final String modelName;
     private String clientAddress;
     private String serverAddress;
-    private String appInstanceIdToConnect = null;
+    private String modelInstanceIdToConnect = null;
     private AnkorSystem ankorSystem;
 
     protected SocketFxClientApplication(String applicationName, String modelName) {
@@ -63,16 +63,16 @@ public abstract class SocketFxClientApplication extends javafx.application.Appli
     }
 
     protected String getModelInstanceIdToConnect() {
-        return appInstanceIdToConnect;
+        return modelInstanceIdToConnect;
     }
 
     /**
-     * @param appInstanceIdToConnect  ID of application instance on server to connect to (for collaboration)
-     *                                or null if server shall create a new instance on every connect
+     * @param modelInstanceIdToConnect  ID of model instance on server to connect to (for collaboration)
+     *                                  or null if server shall create a new instance on every connect
      */
     @SuppressWarnings("UnusedDeclaration")
-    protected void setAppInstanceIdToConnect(String appInstanceIdToConnect) {
-        this.appInstanceIdToConnect = appInstanceIdToConnect;
+    protected void setModelInstanceIdToConnect(String modelInstanceIdToConnect) {
+        this.modelInstanceIdToConnect = modelInstanceIdToConnect;
     }
 
     /**
@@ -107,7 +107,7 @@ public abstract class SocketFxClientApplication extends javafx.application.Appli
 
         String appInstanceId = params.get("appInstanceId");
         if (appInstanceId != null) {
-            setAppInstanceIdToConnect(appInstanceId);
+            setModelInstanceIdToConnect(appInstanceId);
         }
     }
 
@@ -134,7 +134,6 @@ public abstract class SocketFxClientApplication extends javafx.application.Appli
                 = (SingletonModelSessionManager) ankorSystem.getModelSessionManager();
         ModelSession modelSession = modelSessionManager.getModelSession();
         FxRefContext refContext = (FxRefContext) modelSession.getRefContext();
-        //modelSessionManager.getApplicationInstance().init(refContext);
 
         // store the singleton RefContext in a static place - for access from FX controllers and FX event handlers
         FxRefs.setStaticRefContext(refContext);
@@ -144,7 +143,7 @@ public abstract class SocketFxClientApplication extends javafx.application.Appli
 
         LOG.debug("FxClient Ankor system '{}' was started", getApplicationName());
 
-        LOG.info("Opening connection to server {} ...", serverAddress);
+        LOG.info("Opening connection to server {} ...", getServerAddress());
         // Send the "connect" message to the server
         Map<String, Object> connectParams;
         if (getModelInstanceIdToConnect() != null) {

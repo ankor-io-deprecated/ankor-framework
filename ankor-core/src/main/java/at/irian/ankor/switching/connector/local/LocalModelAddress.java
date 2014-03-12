@@ -3,10 +3,12 @@ package at.irian.ankor.switching.connector.local;
 import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.switching.routing.ModelAddress;
 
+import java.io.Serializable;
+
 /**
  * @author Manfred Geiler
  */
-public class LocalModelAddress implements ModelAddress {
+public class LocalModelAddress implements ModelAddress, Serializable {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(LocalModelAddress.class);
 
     private final String modelSessionId;

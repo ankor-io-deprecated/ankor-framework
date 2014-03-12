@@ -75,11 +75,11 @@ public class SocketListener {
 
     private void loop(ServerSocket listenSocket) {
         boolean interrupted = false;
-        LOG.debug("SocketListener for '{}' is listening...", systemName);
+        LOG.debug("{} is now listening...", SocketListener.this);
         while (started && !interrupted) {
             try {
                 String serializedMsg = receive(listenSocket);
-                LOG.debug("SocketListener for '{}' receives {}", systemName, serializedMsg);
+                LOG.debug("{} received: {}", SocketListener.this, serializedMsg);
                 try {
                     SocketMessage socketMessage = messageDeserializer.deserialize(serializedMsg, SocketMessage.class);
                     if (socketMessage.getAction() != null) {
