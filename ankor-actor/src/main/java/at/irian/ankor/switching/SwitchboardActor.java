@@ -5,6 +5,7 @@ import akka.actor.UntypedActor;
 import akka.routing.ConsistentHashingRouter;
 import at.irian.ankor.switching.msg.EventMessage;
 import at.irian.ankor.switching.routing.ModelAddress;
+import at.irian.ankor.worker.WorkerContext;
 import com.typesafe.config.Config;
 
 import java.util.Map;
@@ -26,30 +27,36 @@ public class SwitchboardActor extends UntypedActor {
     }
 
     private Switchboard delegateSwitchboard;
+    private final WorkerContext workerContext = new WorkerContext();
 
     @Override
     public void onReceive(Object msg) throws Exception {
         LOG.debug("{} received {}", self(), msg);
+        WorkerContext.setCurrentInstance(workerContext);
         try {
-            if (msg instanceof StartMsg) {
-                handleStart(((StartMsg) msg).getDelegateSwitchboard());
-            } else if (msg instanceof StopMsg) {
-                handleStop();
-            } else if (msg instanceof OpenMsg) {
-                handleOpen(((OpenMsg) msg).getSender(), ((OpenMsg) msg).getConnectParameters());
-            } else if (msg instanceof SendFromMsg) {
-                handleSendFrom(((SendFromMsg) msg).getSender(), ((SendFromMsg) msg).getMessage());
-            } else if (msg instanceof SendToMsg) {
-                handleSendTo(((SendToMsg) msg).getSender(), ((SendToMsg) msg).getMessage(), ((SendToMsg) msg).getReceiver());
-            } else if (msg instanceof CloseFromMsg) {
-                handleCloseFrom(((CloseFromMsg) msg).getSender());
-            } else if (msg instanceof CloseToMsg) {
-                handleCloseTo(((CloseToMsg) msg).getSender(), ((CloseToMsg) msg).getReceiver());
-            } else {
-                unhandled(msg);
+            try {
+                if (msg instanceof StartMsg) {
+                    handleStart(((StartMsg) msg).getDelegateSwitchboard());
+                } else if (msg instanceof StopMsg) {
+                    handleStop();
+                } else if (msg instanceof OpenMsg) {
+                    handleOpen(((OpenMsg) msg).getSender(), ((OpenMsg) msg).getConnectParameters());
+                } else if (msg instanceof SendFromMsg) {
+                    handleSendFrom(((SendFromMsg) msg).getSender(), ((SendFromMsg) msg).getMessage());
+                } else if (msg instanceof SendToMsg) {
+                    handleSendTo(((SendToMsg) msg).getSender(), ((SendToMsg) msg).getMessage(), ((SendToMsg) msg).getReceiver());
+                } else if (msg instanceof CloseFromMsg) {
+                    handleCloseFrom(((CloseFromMsg) msg).getSender());
+                } else if (msg instanceof CloseToMsg) {
+                    handleCloseTo(((CloseToMsg) msg).getSender(), ((CloseToMsg) msg).getReceiver());
+                } else {
+                    unhandled(msg);
+                }
+            } catch (Exception e) {
+                LOG.error("Exception while handling " + msg, e);
             }
-        } catch (Exception e) {
-            LOG.error("Exception while handling " + msg, e);
+        } finally {
+            WorkerContext.setCurrentInstance(null);
         }
     }
 
