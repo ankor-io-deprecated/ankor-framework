@@ -53,7 +53,7 @@ public class AnkorSerializerModifier extends BeanSerializerModifier {
             ListToBigListDummyConverter converter = ListToBigListDummyConverter.createFromMetadata(bigListMetadata);
             JsonSerializer serializer = new BigListSerializer(converter);
             //noinspection unchecked
-            beanProperty.assignSerializer(serializer);
+            beanProperty.assignSerializer(serializer); // TODO thread safety!!!
             LOG.info("Assigned {} for property {}", serializer, beanProperty);
         }
     }
@@ -65,7 +65,7 @@ public class AnkorSerializerModifier extends BeanSerializerModifier {
             MapToBigMapDummyConverter converter = MapToBigMapDummyConverter.createFromMetadata(bigMapMetadata);
             JsonSerializer serializer = new BigMapSerializer(converter);
             //noinspection unchecked
-            beanProperty.assignSerializer(serializer);
+            beanProperty.assignSerializer(serializer); // TODO thread safety!!!
             LOG.info("Assigned {} for property {}", serializer, beanProperty);
         }
     }

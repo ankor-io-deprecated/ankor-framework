@@ -16,6 +16,7 @@
         <module>ankor-netty</module>
         <module>ankor-actor</module>
         <module>ankor-socket-connector</module>
+        <module>ankor-websocket-connector</module>
         <module>ankor-service</module>
         <module>ankor-servlet</module>
         <module>ankor-fx</module>
