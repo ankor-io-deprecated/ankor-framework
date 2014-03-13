@@ -10,25 +10,26 @@ import at.irian.ankor.system.AnkorSystem;
  */
 public class WebSocketConnector implements Connector {
 
-    private AnkorSystem ankorSystem;
-    private WebSocketSessionRegistry sessionRegistry;
-    private MessageMapperFactory<String> messageMapperFactory;
-    private MessageDeserializer<String> messageDeserializer;
+    private static final String MESSAGE_MAPPER_ATTR_KEY = WebSocketConnector.class + ".MessageMapper";
+    private static final String MESSAGE_DESERIALIZER_ATTR_KEY = WebSocketConnector.class + ".MessageDeserializer";
+    private static final String WEB_SOCKET_SESSION_REGISTRY_ATTR_KEY = WebSocketConnector.class + ".WebSocketSessionRegistry";
 
-    private static WebSocketConnector INSTANCE;
+    private AnkorSystem ankorSystem;
 
     @Override
     public void init(AnkorSystem ankorSystem) {
         this.ankorSystem = ankorSystem;
-        this.sessionRegistry = new WebSocketSessionRegistry();
-        this.messageMapperFactory = new MessageMapperFactory<String>(ankorSystem);
-        this.messageDeserializer = messageMapperFactory.createMessageMapper();
-        INSTANCE = this;
+        MessageMapperFactory<String> messageMapperFactory = new MessageMapperFactory<String>(ankorSystem);
+        registerMessageMapper(ankorSystem, messageMapperFactory);
+        registerSingletonMessageDeserializer(ankorSystem, messageMapperFactory);
+        registerSessionRegistry(ankorSystem, new WebSocketSessionRegistry());
     }
 
     @Override
     public void start() {
-        WebSocketSender webSocketSender = new WebSocketSender(sessionRegistry, ankorSystem.getSwitchboard(), messageMapperFactory);
+        WebSocketSessionRegistry sessionRegistry = getSessionRegistry(ankorSystem);
+        WebSocketSender webSocketSender = new WebSocketSender(sessionRegistry, ankorSystem.getSwitchboard(),
+                                                              getMessageMapperFactory(ankorSystem));
         ankorSystem.getConnectorPlug().registerConnectionHandler(WebSocketModelAddress.class,
                                                                  new WebSocketConnectionHandler(webSocketSender));
         ankorSystem.getConnectorPlug().registerTransmissionHandler(WebSocketModelAddress.class,
@@ -41,19 +42,43 @@ public class WebSocketConnector implements Connector {
         ankorSystem.getConnectorPlug().unregisterTransmissionHandler(WebSocketModelAddress.class);
     }
 
-    public static WebSocketConnector getInstance() {
-        return INSTANCE;
+    private void registerMessageMapper(AnkorSystem ankorSystem, MessageMapperFactory<String> messageMapperFactory) {
+        ankorSystem.getAttributes().put(MESSAGE_MAPPER_ATTR_KEY, messageMapperFactory);
     }
 
-    public MessageDeserializer<String> getMessageDeserializer() {
+    public static MessageMapperFactory<String> getMessageMapperFactory(AnkorSystem ankorSystem) {
+        @SuppressWarnings("unchecked") MessageMapperFactory<String> messageMapperFactory
+                = (MessageMapperFactory) ankorSystem.getAttributes().get(MESSAGE_MAPPER_ATTR_KEY);
+        if (messageMapperFactory == null) {
+            throw new IllegalStateException("WebSocketConnector not initialized for " + ankorSystem);
+        }
+        return messageMapperFactory;
+    }
+
+    private void registerSingletonMessageDeserializer(AnkorSystem ankorSystem,
+                                                      MessageMapperFactory<String> messageMapperFactory) {
+        ankorSystem.getAttributes().put(MESSAGE_DESERIALIZER_ATTR_KEY, messageMapperFactory.createMessageMapper());
+    }
+
+    public static MessageDeserializer<String> getSingletonMessageDeserializer(AnkorSystem ankorSystem) {
+        @SuppressWarnings("unchecked") MessageDeserializer<String> messageDeserializer
+                = (MessageDeserializer) ankorSystem.getAttributes().get(MESSAGE_DESERIALIZER_ATTR_KEY);
+        if (messageDeserializer == null) {
+            throw new IllegalStateException("WebSocketConnector not initialized for " + ankorSystem);
+        }
         return messageDeserializer;
     }
 
-    public AnkorSystem getAnkorSystem() {
-        return ankorSystem;
+    private void registerSessionRegistry(AnkorSystem ankorSystem, WebSocketSessionRegistry sessionRegistry) {
+        ankorSystem.getAttributes().put(WEB_SOCKET_SESSION_REGISTRY_ATTR_KEY, sessionRegistry);
     }
 
-    public WebSocketSessionRegistry getSessionRegistry() {
+    public static WebSocketSessionRegistry getSessionRegistry(AnkorSystem ankorSystem) {
+        WebSocketSessionRegistry sessionRegistry
+                = (WebSocketSessionRegistry) ankorSystem.getAttributes().get(WEB_SOCKET_SESSION_REGISTRY_ATTR_KEY);
+        if (sessionRegistry == null) {
+            throw new IllegalStateException("WebSocketConnector not initialized for " + ankorSystem);
+        }
         return sessionRegistry;
     }
 }

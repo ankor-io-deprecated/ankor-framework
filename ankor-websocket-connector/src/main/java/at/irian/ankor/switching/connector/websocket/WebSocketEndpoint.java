@@ -1,6 +1,7 @@
 package at.irian.ankor.switching.connector.websocket;
 
 
+import at.irian.ankor.messaging.MessageDeserializer;
 import at.irian.ankor.path.el.SimpleELPathSyntax;
 import at.irian.ankor.system.AnkorSystem;
 import org.slf4j.Logger;
@@ -16,7 +17,6 @@ import java.io.IOException;
  * @author Thomas Spiegl
  */
 public abstract class WebSocketEndpoint extends Endpoint {
-
     private static Logger LOG = LoggerFactory.getLogger(WebSocketEndpoint.class);
 
     private static final String CLIENT_ID = WebSocketEndpoint.class.getName() + ".CLIENT_ID";
@@ -32,20 +32,13 @@ public abstract class WebSocketEndpoint extends Endpoint {
 
         AnkorSystem ankorSystem = getAnkorSystem();
 
-        // todo  get rid of this static instance... store all in AnkorSystem attributes
-        WebSocketConnector connector = WebSocketConnector.getInstance();
+        registerSession(ankorSystem, clientId, session);
 
-        Session oldSession = connector.getSessionRegistry().addSession(clientId, session);
-        if (oldSession != null) {
-            try {
-                oldSession.close();
-            } catch (IOException ignore) {
-            }
-        }
-
+        MessageDeserializer<String> messageDeserializer
+                = WebSocketConnector.getSingletonMessageDeserializer(ankorSystem);
         WebSocketListener listener =
-                new WebSocketListener(connector.getMessageDeserializer(), ankorSystem.getSwitchboard(),
-                        SimpleELPathSyntax.getInstance(), clientId);
+                new WebSocketListener(messageDeserializer, ankorSystem.getSwitchboard(),
+                                      SimpleELPathSyntax.getInstance(), clientId);
         session.addMessageHandler(listener.getByteMessageHandler());
         session.addMessageHandler(listener.getStringMessageHandler());
 
@@ -65,10 +58,22 @@ public abstract class WebSocketEndpoint extends Endpoint {
         unregisterSession(session);
     }
 
+    private void registerSession(AnkorSystem ankorSystem, String clientId, Session session) {
+        WebSocketSessionRegistry sessionRegistry = WebSocketConnector.getSessionRegistry(ankorSystem);
+        Session oldSession = sessionRegistry.addSession(clientId, session);
+        if (oldSession != null) {
+            try {
+                oldSession.close();
+            } catch (IOException ignore) {
+            }
+        }
+    }
+
     private void unregisterSession(Session session) {
         String clientId = getClientId(session);
         if (clientId != null) {
-            WebSocketConnector.getInstance().getSessionRegistry().removeSession(clientId);
+            AnkorSystem ankorSystem = getAnkorSystem();
+            WebSocketConnector.getSessionRegistry(ankorSystem).removeSession(clientId);
         }
     }
 
