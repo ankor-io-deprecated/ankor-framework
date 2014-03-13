@@ -1,9 +1,9 @@
 ### Reloading the Todo List
 
-In this step we want to update the todo list when the users selects one of the filters at the bottom.
+In this step we want to update the todo list when the users selects one of the filters in the footer.
 
 We add a [`Filter`][1] as a property in `TaskListModel` and initialize it with `Filter.all`.
-We also add a boolean property for the active state of each of the filter buttons:
+We also add a boolean property for the active state of each of the filter buttons individually.
 
     :::java
     private Filter filter = Filter.all;
@@ -20,7 +20,7 @@ We also add a boolean property for the active state of each of the filter button
 Next we add another change listener for the `filter` property.
 This method will update the active state of the buttons at the bottom.
 It will also reload the tasks based on the current filter.
-We still have to implement this method though.
+We still have to implement the reload method.
 
     :::java
     @ChangeListener(pattern = "root.model.filter")
@@ -31,9 +31,8 @@ We still have to implement this method though.
         reloadTasks(filter);
     }
 
-`reloadTasks` fetches the list of tasks that should be visible to the user based on the `filter`.
-It than transforms the `Task`s into `TaskModel`s and
-sets those tasks as the value of our task `Ref`.
+`reloadTasks` fetches the list of tasks that should be visible to the user based on the selected filter.
+It than transforms the `Task`s into `TaskModel`s and sets them as our `tasksRef`.
 
     :::java
     private void reloadTasks(Filter filter) {
@@ -53,7 +52,7 @@ sets those tasks as the value of our task `Ref`.
         return res;
     }
 
-Now we can click the filter in the UI and the list updates.
+Now we can click the filter in the UI and the list will reload.
 
 #### Implementing the remaining actions
 
@@ -63,7 +62,7 @@ With the `reloadTasks` method we can also implement the remaining two action lis
 
 The functionality for this is already implemented in the repository.
 We just have to update the UI state to reflect the changes.
-We do so by calling our two helper methods:
+We do so by calling our helper methods:
 
     :::java
     @ActionListener
@@ -75,11 +74,12 @@ We do so by calling our two helper methods:
 
 ##### Toggle all tasks
 
-The other action is changes the `completed` property of all todos to `true` if at least one todo isn't completed.
+The other action changes the `completed` property of all todos to `true` if at least one todo isn't completed.
 Otherwise it sets all tasks' completed property to `false`.
 
-The method gets invoked with the desired state of all todos.
-Again we just update the item count and reload the task list.
+The method gets invoked with the target state as parameter.
+Again, the functionality is already provided by the repository. 
+We just update the item count and reload the task list.
 
     :::java
     @ActionListener

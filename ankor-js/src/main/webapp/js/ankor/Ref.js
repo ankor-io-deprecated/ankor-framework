@@ -14,6 +14,8 @@ define([
     Ref.prototype.append = function(path) {
         return new Ref(this.ankorSystem, this.path.append(path));
     };
+  
+    Ref.prototype.appendPath = Ref.prototype.append;
 
     Ref.prototype.appendIndex = function(index) {
         return new Ref(this.ankorSystem, this.path.appendIndex(index));

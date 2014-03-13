@@ -1,7 +1,7 @@
 ### Reacting to Changes
 
 Earlier we've seen how to use the `@ActionListener` annotation to react to `Action`s from the client.
-In this step we'll be using the `@ChangeListener` annotation to react to changes form both the client and server.
+In this step we'll be using the [`@ChangeListener`][1] annotation to react to changes form both client and server.
 
 #### Before we start
 
@@ -23,7 +23,7 @@ It's time to add some additional properties:
     Don't forget to create getters and setters for these properties.
 </div>
 
-Let's set the initial state of our view model text properties:
+Let's set the correct initial state of our view model text properties (Remove the old dummy values):
 
     :::java
     public TaskListModel(Ref modelRef, TaskRepository taskRepository) {
@@ -56,9 +56,9 @@ What we want to have is a method that updates the `itemsLeftText` based on the n
 These statements should be called whenever the `itemsLeft` property changes.
 We can get this behaviour with a change listener.
 
-A method annotated with the [`@ChangeListener`][1] annotation gets called whenever a certain property changes.
+A method annotated with the `@ChangeListener` annotation gets called whenever a certain property changes.
 The property is specified by a `pattern`.
-Roughly speaking the pattern is the same syntax as if you were accessing the property in JSON.
+Roughly speaking the pattern has the same syntax as accessing properties in JSON.
 We will see more advanced patterns later.
 
 In our chase we have `"root.model.itemsLeft"`.
@@ -66,8 +66,8 @@ In our chase we have `"root.model.itemsLeft"`.
 
 ##### Updating itemsLeftText
 
-This will keep `itemsLeftText` in sync with `itemsLeft`.
-We will also set `toggleAll`, since it depends on `itemsLeft` as well:
+This will do the trick.
+It will also set `toggleAll`, since it depends on `itemsLeft` as well:
 
     :::java
     @ChangeListener(pattern = "root.model.itemsLeft")
@@ -78,7 +78,7 @@ We will also set `toggleAll`, since it depends on `itemsLeft` as well:
 
 ##### Updating the clear button
 
-Another one for the clear button:
+We need another change listener to keep the clear button updated:
 
     :::java
     @ChangeListener(pattern = "root.model.itemsComplete")
@@ -89,7 +89,7 @@ Another one for the clear button:
 
 ##### Changing the footer visibility
 
-We can also listen to multiple patterns:
+Change listeners can also listen to multiple patterns:
 
     :::java
     @ChangeListener(pattern = {
@@ -124,4 +124,3 @@ with:
 
 
 [1]: http://ankor.io/static/javadoc/apidocs/at/irian/ankor/annotation/ChangeListener.html
-
