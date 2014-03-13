@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Deprecated
 public class WebSocketMessageBus extends MessageBus<String> {
     private static Logger LOG = LoggerFactory.getLogger(WebSocketMessageBus.class);
     private Map<String, WebSocketRemoteSystem> remoteSystems = new ConcurrentHashMap<String, WebSocketRemoteSystem>(0, 0.9f, 1);

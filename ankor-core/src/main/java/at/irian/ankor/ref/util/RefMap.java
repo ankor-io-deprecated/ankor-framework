@@ -1,4 +1,4 @@
-package at.irian.ankor.util;
+package at.irian.ankor.ref.util;
 
 import at.irian.ankor.change.Change;
 import at.irian.ankor.event.source.ModelSource;

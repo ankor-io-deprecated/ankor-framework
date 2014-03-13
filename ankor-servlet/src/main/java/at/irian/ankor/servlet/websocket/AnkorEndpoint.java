@@ -37,6 +37,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author Florian Klampfer
  */
+@Deprecated
 public abstract class AnkorEndpoint extends Endpoint implements ServerApplicationConfig {
     private static Logger LOG = LoggerFactory.getLogger(AnkorEndpoint.class);
 

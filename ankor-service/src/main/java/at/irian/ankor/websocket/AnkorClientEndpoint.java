@@ -12,6 +12,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+@Deprecated
 public class AnkorClientEndpoint extends Endpoint {
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(AnkorClientEndpoint.class);
     private static final long HEARTBEAT_INTERVAL = 5000;

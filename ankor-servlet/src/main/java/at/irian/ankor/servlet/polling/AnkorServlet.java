@@ -23,6 +23,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * @author Manfred Geiler
  */
+@Deprecated
 public class AnkorServlet extends HttpServlet {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnkorServlet.class);
 

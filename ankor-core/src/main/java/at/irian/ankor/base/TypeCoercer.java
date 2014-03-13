@@ -1,4 +1,4 @@
-package at.irian.ankor.util;
+package at.irian.ankor.base;
 
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorManager;

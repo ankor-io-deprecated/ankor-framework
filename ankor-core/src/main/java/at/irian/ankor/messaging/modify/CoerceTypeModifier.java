@@ -4,7 +4,7 @@ import at.irian.ankor.change.Change;
 import at.irian.ankor.change.ChangeType;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.impl.RefImplementor;
-import at.irian.ankor.util.TypeCoercer;
+import at.irian.ankor.base.TypeCoercer;
 
 /**
  * Makes sure that received untyped values are coerced to the correct java type of the corresponding Ref.

@@ -14,6 +14,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * @author Manfred Geiler
  */
+@Deprecated
 public class ServletMessageBus extends MessageBus<String> {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ServletMessageBus.class);
 

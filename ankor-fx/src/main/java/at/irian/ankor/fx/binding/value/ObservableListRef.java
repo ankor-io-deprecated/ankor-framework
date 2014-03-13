@@ -4,7 +4,7 @@ import at.irian.ankor.change.Change;
 import at.irian.ankor.change.ChangeEventListener;
 import at.irian.ankor.fx.binding.cache.FxCacheSupport;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.util.RefList;
+import at.irian.ankor.ref.util.RefList;
 import com.sun.javafx.collections.ListListenerHelper;
 import javafx.beans.InvalidationListener;
 import javafx.collections.ListChangeListener;

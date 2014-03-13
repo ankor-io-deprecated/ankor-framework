@@ -11,8 +11,6 @@ import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.session.SingletonModelSessionManager;
-import at.irian.ankor.socket.SocketAnkorSystemStarter;
-import at.irian.ankor.socket.SocketMessageLoop;
 import at.irian.ankor.system.AnkorSystem;
 import at.irian.ankor.system.AnkorSystemBuilder;
 import at.irian.ankor.websocket.WebSocketMessageBus;
@@ -235,31 +233,31 @@ public class App extends javafx.application.Application {
 
     private void createServerSystem(String server, boolean daemon) {
 
-        SocketAnkorSystemStarter appBuilder = new SocketAnkorSystemStarter()
-                .withApplication(new MyApplication())
-                .withLocalHost(parseHost(server));
-
-        appBuilder.createAndStartServerSystem(daemon);
+//        SocketAnkorSystemStarter appBuilder = new SocketAnkorSystemStarter()
+//                .withApplication(new MyApplication())
+//                .withLocalHost(parseHost(server));
+//
+//        appBuilder.createAndStartServerSystem(daemon);
     }
 
-    private SocketMessageLoop.Host parseHost(String systemIdAndHost) {
-        String name = systemIdAndHost.split("@")[0];
-        String hostAndPort = systemIdAndHost.split("@")[1];
-        String hostname = hostAndPort.split(":")[0];
-        int port = Integer.parseInt(hostAndPort.split(":")[1]);
-        return new SocketMessageLoop.Host(name, hostname, port);
-    }
+//    private SocketMessageLoop.Host parseHost(String systemIdAndHost) {
+//        String name = systemIdAndHost.split("@")[0];
+//        String hostAndPort = systemIdAndHost.split("@")[1];
+//        String hostname = hostAndPort.split(":")[0];
+//        int port = Integer.parseInt(hostAndPort.split(":")[1]);
+//        return new SocketMessageLoop.Host(name, hostname, port);
+//    }
 
     private void createClientSystem(String client, String server) {
 
-        SocketMessageLoop.Host clientHost = parseHost(client);
+//        SocketMessageLoop.Host clientHost = parseHost(client);
 
-        SocketAnkorSystemStarter appBuilder = new SocketAnkorSystemStarter()
-                .withLocalHost(clientHost)
-                .withServerHost(parseHost(server))
-                .withRefContextFactoryProvider(new FxRefContextFactoryProvider());
-
-        refFactory = (FxRefFactory) appBuilder.createAndStartClientSystem();
+//        SocketAnkorSystemStarter appBuilder = new SocketAnkorSystemStarter()
+//                .withLocalHost(clientHost)
+//                .withServerHost(parseHost(server))
+//                .withRefContextFactoryProvider(new FxRefContextFactoryProvider());
+//
+//        refFactory = (FxRefFactory) appBuilder.createAndStartClientSystem();
 
     }
 

@@ -5,6 +5,7 @@ import at.irian.ankor.connection.RemoteSystem;
 import javax.websocket.Session;
 import java.util.concurrent.atomic.AtomicLong;
 
+@Deprecated
 public class WebSocketRemoteSystem implements RemoteSystem {
     //private static Logger LOG = LoggerFactory.getLogger(WebSocketRemoteSystem.class);
 

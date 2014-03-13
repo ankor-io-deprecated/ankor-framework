@@ -1,4 +1,4 @@
-package at.irian.ankor.system;
+package at.irian.ankor.event;
 
 import at.irian.ankor.change.Change;
 import at.irian.ankor.change.ChangeEvent;

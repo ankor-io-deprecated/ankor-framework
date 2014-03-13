@@ -4,7 +4,7 @@ import at.irian.ankor.change.Change;
 import at.irian.ankor.change.ChangeEventListener;
 import at.irian.ankor.fx.binding.cache.FxCacheSupport;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.util.RefMap;
+import at.irian.ankor.ref.util.RefMap;
 import com.sun.javafx.collections.MapListenerHelper;
 import javafx.beans.InvalidationListener;
 import javafx.collections.MapChangeListener;

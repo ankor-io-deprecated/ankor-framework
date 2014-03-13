@@ -14,6 +14,7 @@ import javax.servlet.ServletContextListener;
 /**
  * @author Manfred Geiler
  */
+@Deprecated
 public abstract class AnkorServletContextListener implements ServletContextListener {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnkorServletContextListener.class);
 

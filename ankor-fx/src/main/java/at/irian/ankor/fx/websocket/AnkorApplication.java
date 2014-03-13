@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author Florian Klampfer
  */
+@Deprecated
 public abstract class AnkorApplication extends Application {
     public static final int CONNECT_TIMEOUT = 10000;
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnkorApplication.class);

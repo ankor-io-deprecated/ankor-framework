@@ -1,4 +1,4 @@
-package at.irian.ankor.system;
+package at.irian.ankor.event;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.action.ActionEvent;

@@ -22,6 +22,7 @@ import java.util.concurrent.*;
 /**
  * @author Manfred Geiler
  */
+@Deprecated
 public class ClientHttpMessageLoop extends AbstractMessageLoop<Message> {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ClientHttpMessageLoop.class);
 

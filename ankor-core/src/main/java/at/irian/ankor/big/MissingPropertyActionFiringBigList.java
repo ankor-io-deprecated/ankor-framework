@@ -4,7 +4,7 @@ import at.irian.ankor.action.Action;
 import at.irian.ankor.delay.FloodControl;
 import at.irian.ankor.messaging.AnkorIgnore;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.system.MissingPropertyActionEventListener;
+import at.irian.ankor.event.MissingPropertyActionEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
