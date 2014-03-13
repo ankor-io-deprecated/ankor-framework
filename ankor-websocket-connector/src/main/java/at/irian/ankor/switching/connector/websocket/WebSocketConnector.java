@@ -1,6 +1,6 @@
 package at.irian.ankor.switching.connector.websocket;
 
-import at.irian.ankor.messaging.MessageMapper;
+import at.irian.ankor.messaging.MessageDeserializer;
 import at.irian.ankor.messaging.MessageMapperFactory;
 import at.irian.ankor.switching.connector.Connector;
 import at.irian.ankor.system.AnkorSystem;
@@ -12,7 +12,8 @@ public class WebSocketConnector implements Connector {
 
     private AnkorSystem ankorSystem;
     private WebSocketSessionRegistry sessionRegistry;
-    private MessageMapper<String> messageMapper;
+    private MessageMapperFactory<String> messageMapperFactory;
+    private MessageDeserializer<String> messageDeserializer;
 
     private static WebSocketConnector INSTANCE;
 
@@ -20,17 +21,18 @@ public class WebSocketConnector implements Connector {
     public void init(AnkorSystem ankorSystem) {
         this.ankorSystem = ankorSystem;
         this.sessionRegistry = new WebSocketSessionRegistry();
-        messageMapper = new MessageMapperFactory<String>(ankorSystem).createMessageMapper();
+        this.messageMapperFactory = new MessageMapperFactory<String>(ankorSystem);
+        this.messageDeserializer = messageMapperFactory.createMessageMapper();
         INSTANCE = this;
     }
 
     @Override
     public void start() {
-        WebSocketSender webSocketSender = new WebSocketSender(sessionRegistry, ankorSystem.getSwitchboard(), messageMapper);
+        WebSocketSender webSocketSender = new WebSocketSender(sessionRegistry, ankorSystem.getSwitchboard(), messageMapperFactory);
         ankorSystem.getConnectorPlug().registerConnectionHandler(WebSocketModelAddress.class,
-                new WebSocketConnectionHandler(webSocketSender));
+                                                                 new WebSocketConnectionHandler(webSocketSender));
         ankorSystem.getConnectorPlug().registerTransmissionHandler(WebSocketModelAddress.class,
-                new WebSocketTransmissionHandler(webSocketSender));
+                                                                   new WebSocketTransmissionHandler(webSocketSender));
     }
 
     @Override
@@ -43,8 +45,8 @@ public class WebSocketConnector implements Connector {
         return INSTANCE;
     }
 
-    public MessageMapper<String> getMessageMapper() {
-        return messageMapper;
+    public MessageDeserializer<String> getMessageDeserializer() {
+        return messageDeserializer;
     }
 
     public AnkorSystem getAnkorSystem() {

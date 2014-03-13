@@ -38,7 +38,7 @@ public class WebSocketEndpoint extends Endpoint {
         }
 
         WebSocketListener listener =
-                new WebSocketListener(connector.getMessageMapper(), connector.getAnkorSystem().getSwitchboard(),
+                new WebSocketListener(connector.getMessageDeserializer(), connector.getAnkorSystem().getSwitchboard(),
                         SimpleELPathSyntax.getInstance(), clientId);
         session.addMessageHandler(listener.getByteMessageHandler());
         session.addMessageHandler(listener.getStringMessageHandler());
