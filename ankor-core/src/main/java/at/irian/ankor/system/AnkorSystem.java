@@ -13,6 +13,9 @@ import at.irian.ankor.switching.connector.ConnectorRegistry;
 import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
 import com.typesafe.config.Config;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * This is the main system object that sticks all the Ankor parts together.
  * Typically every node in an Ankor environment has exactly one AnkorSystem instance.
@@ -35,6 +38,7 @@ public class AnkorSystem {
     private final ConnectorLoader connectorLoader;
     private final BeanMetadataProvider beanMetadataProvider;
     private final Scheduler scheduler;
+    private final Map<String, Object> attributes;
     private boolean running;
 
     protected AnkorSystem(Application application,
@@ -57,6 +61,7 @@ public class AnkorSystem {
         this.scheduler = scheduler;
         this.connectorLoader = new ConnectorLoader();
         this.running = false;
+        this.attributes = new ConcurrentHashMap<String, Object>();
     }
 
     public String getSystemName() {
@@ -101,6 +106,10 @@ public class AnkorSystem {
 
     public Scheduler getScheduler() {
         return scheduler;
+    }
+
+    public Map<String, Object> getAttributes() {
+        return attributes;
     }
 
     @Override

@@ -2,6 +2,7 @@ package at.irian.ankor.switching.connector.websocket;
 
 
 import at.irian.ankor.path.el.SimpleELPathSyntax;
+import at.irian.ankor.system.AnkorSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,11 +15,13 @@ import java.io.IOException;
 /**
  * @author Thomas Spiegl
  */
-public class WebSocketEndpoint extends Endpoint {
+public abstract class WebSocketEndpoint extends Endpoint {
 
     private static Logger LOG = LoggerFactory.getLogger(WebSocketEndpoint.class);
 
     private static final String CLIENT_ID = WebSocketEndpoint.class.getName() + ".CLIENT_ID";
+
+    protected abstract AnkorSystem getAnkorSystem();
 
     @Override
     public void onOpen(Session session, EndpointConfig config) {
@@ -27,6 +30,7 @@ public class WebSocketEndpoint extends Endpoint {
             throw new IllegalStateException("No valid client id in path");
         }
 
+        // todo  get rid of this static instance... store all in AnkorSystem attributes
         WebSocketConnector connector = WebSocketConnector.getInstance();
 
         Session oldSession = connector.getSessionRegistry().addSession(clientId, session);
@@ -38,7 +42,7 @@ public class WebSocketEndpoint extends Endpoint {
         }
 
         WebSocketListener listener =
-                new WebSocketListener(connector.getMessageDeserializer(), connector.getAnkorSystem().getSwitchboard(),
+                new WebSocketListener(connector.getMessageDeserializer(), getAnkorSystem().getSwitchboard(),
                         SimpleELPathSyntax.getInstance(), clientId);
         session.addMessageHandler(listener.getByteMessageHandler());
         session.addMessageHandler(listener.getStringMessageHandler());
