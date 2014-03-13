@@ -18,6 +18,10 @@ public class AkkaScheduler implements Scheduler {
     }
 
     @Override
+    public void init() {
+    }
+
+    @Override
     public Cancellable schedule(long delayMillis, Runnable runnable) {
         final akka.actor.Cancellable akkaCancellable = actorSystem.scheduler()
                                              .scheduleOnce(Duration.create(delayMillis, TimeUnit.MILLISECONDS),
@@ -29,5 +33,9 @@ public class AkkaScheduler implements Scheduler {
                 akkaCancellable.cancel();
             }
         };
+    }
+
+    @Override
+    public void close() {
     }
 }

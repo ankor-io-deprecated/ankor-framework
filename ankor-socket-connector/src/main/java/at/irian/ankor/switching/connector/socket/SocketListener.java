@@ -2,17 +2,18 @@ package at.irian.ankor.switching.connector.socket;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.change.Change;
+import at.irian.ankor.messaging.MessageDeserializer;
+import at.irian.ankor.path.PathSyntax;
 import at.irian.ankor.switching.Switchboard;
 import at.irian.ankor.switching.msg.ActionEventMessage;
 import at.irian.ankor.switching.msg.ChangeEventMessage;
-import at.irian.ankor.messaging.MessageDeserializer;
-import at.irian.ankor.path.PathSyntax;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.URI;
 
 /**
@@ -26,7 +27,8 @@ public class SocketListener {
     private final MessageDeserializer<String> messageDeserializer;
     private final Switchboard switchboard;
     private final PathSyntax pathSyntax;
-    private volatile boolean started;
+    private volatile boolean running;
+    private ServerSocket serverSocket;
     private Thread receiveLoopThread;
 
     public SocketListener(String systemName,
@@ -48,7 +50,6 @@ public class SocketListener {
     public void start() {
         LOG.info("Starting {} ...", this);
 
-        final ServerSocket serverSocket;
         try {
             serverSocket = new ServerSocket(listenPort);
         } catch (IOException e) {
@@ -58,58 +59,64 @@ public class SocketListener {
         this.receiveLoopThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                loop(serverSocket);
+                loop();
             }
         }, "Ankor '" + systemName + "'");
         this.receiveLoopThread.setDaemon(true);
 
-        this.started = true;
+        this.running = true;
         this.receiveLoopThread.start();
         LOG.info("{} successfully started", this);
     }
 
     public void stop() {
-        this.started = false;
+        this.running = false;
+        try {
+            this.serverSocket.close();
+        } catch (IOException ignore) {}
         this.receiveLoopThread.interrupt();
     }
 
-    private void loop(ServerSocket listenSocket) {
-        boolean interrupted = false;
+    private void loop() {
         LOG.debug("{} is now listening...", SocketListener.this);
-        while (started && !interrupted) {
+        while (running) {
+
+            String serializedMsg;
             try {
-                String serializedMsg = receive(listenSocket);
-                LOG.debug("{} received: {}", SocketListener.this, serializedMsg);
-                try {
-                    SocketMessage socketMessage = messageDeserializer.deserialize(serializedMsg, SocketMessage.class);
-                    if (socketMessage.getAction() != null) {
-                        handleIncomingActionEventMessage(socketMessage);
-                    } else if (socketMessage.getChange() != null) {
-                        handleIncomingChangeEventMessage(socketMessage);
-                    } else if (socketMessage.isClose()) {
-                        handleIncomingCloseMessage(socketMessage);
-                    } else {
-                        handleIncomingConnectMessage(socketMessage);
-                    }
-                } catch (Exception e) {
-                    LOG.error("Exception while handling socket message " + serializedMsg, e);
+                serializedMsg = receive();
+            } catch (IOException e) {
+                if (e instanceof SocketException && "Socket closed".equals(e.getMessage())) {
+                    LOG.info("Socket was closed");
+                    return;
                 }
-            } catch (InterruptedException e) {
-                interrupted = true;
+                throw new RuntimeException("Error reading message from " + serverSocket, e);
+            }
+
+            LOG.debug("{} received: {}", SocketListener.this, serializedMsg);
+            try {
+                SocketMessage socketMessage = messageDeserializer.deserialize(serializedMsg, SocketMessage.class);
+                if (socketMessage.getAction() != null) {
+                    handleIncomingActionEventMessage(socketMessage);
+                } else if (socketMessage.getChange() != null) {
+                    handleIncomingChangeEventMessage(socketMessage);
+                } else if (socketMessage.isClose()) {
+                    handleIncomingCloseMessage(socketMessage);
+                } else {
+                    handleIncomingConnectMessage(socketMessage);
+                }
+            } catch (Exception e) {
+                LOG.error("Exception while handling socket message " + serializedMsg, e);
             }
         }
-        Thread.currentThread().interrupt();
     }
 
-    private String receive(ServerSocket listenSocket) throws InterruptedException {
+    private String receive() throws IOException {
         Socket accept = null;
         try {
-            accept = listenSocket.accept();
+            accept = serverSocket.accept();
             InputStreamReader inReader = new InputStreamReader(accept.getInputStream(), "UTF-8");
             BufferedReader reader = new BufferedReader(inReader);
             return reader.readLine();
-        } catch (IOException e) {
-            throw new RuntimeException("Error reading message from " + listenSocket);
         } finally {
             if (accept != null) {
                 try {

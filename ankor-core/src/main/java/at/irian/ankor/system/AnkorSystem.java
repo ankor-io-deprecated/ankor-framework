@@ -1,6 +1,7 @@
 package at.irian.ankor.system;
 
 import at.irian.ankor.application.Application;
+import at.irian.ankor.delay.Scheduler;
 import at.irian.ankor.messaging.modify.Modifier;
 import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.session.ModelSessionFactory;
@@ -33,6 +34,7 @@ public class AnkorSystem {
     private final Modifier modifier;
     private final ConnectorLoader connectorLoader;
     private final BeanMetadataProvider beanMetadataProvider;
+    private final Scheduler scheduler;
     private boolean running;
 
     protected AnkorSystem(Application application,
@@ -42,7 +44,8 @@ public class AnkorSystem {
                           ModelSessionManager modelSessionManager,
                           ModelSessionFactory modelSessionFactory,
                           Modifier modifier,
-                          BeanMetadataProvider beanMetadataProvider) {
+                          BeanMetadataProvider beanMetadataProvider,
+                          Scheduler scheduler) {
         this.application = application;
         this.config = config;
         this.switchboard = switchboard;
@@ -51,6 +54,7 @@ public class AnkorSystem {
         this.modelSessionFactory = modelSessionFactory;
         this.modifier = modifier;
         this.beanMetadataProvider = beanMetadataProvider;
+        this.scheduler = scheduler;
         this.connectorLoader = new ConnectorLoader();
         this.running = false;
     }
@@ -95,6 +99,10 @@ public class AnkorSystem {
         return beanMetadataProvider;
     }
 
+    public Scheduler getScheduler() {
+        return scheduler;
+    }
+
     @Override
     public String toString() {
         return "AnkorSystem{'" + getSystemName() + "'}";
@@ -102,6 +110,7 @@ public class AnkorSystem {
 
     public AnkorSystem start() {
         LOG.info("Starting {}", this);
+        scheduler.init();
         connectorLoader.loadAndInitConnectors(this);
         connectorLoader.startAllConnectors();
         switchboard.start();
@@ -115,6 +124,7 @@ public class AnkorSystem {
         LOG.info("Stopping {}", this);
         switchboard.stop();
         connectorLoader.stopAllConnectors();
+        scheduler.close();
         running = false;
     }
 

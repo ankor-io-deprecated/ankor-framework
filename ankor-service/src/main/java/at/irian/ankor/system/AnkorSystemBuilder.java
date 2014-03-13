@@ -188,7 +188,7 @@ public class AnkorSystemBuilder {
                                modelSessionManager,
                                modelSessionFactory,
                                modifier,
-                               beanMetadataProvider);
+                               beanMetadataProvider, scheduler);
     }
 
     public AnkorSystem createClient() {
@@ -240,7 +240,7 @@ public class AnkorSystemBuilder {
                                modelSessionManager,
                                modelSessionFactory,
                                modifier,
-                               beanMetadataProvider);
+                               beanMetadataProvider, scheduler);
     }
 
     private BeanFactory getBeanFactory() {

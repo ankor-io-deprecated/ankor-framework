@@ -8,9 +8,10 @@ import java.util.concurrent.*;
 public class SimpleScheduler implements Scheduler {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SimpleScheduler.class);
 
-    private final ScheduledExecutorService executorService;
+    private ScheduledExecutorService executorService = null;
 
-    public SimpleScheduler() {
+    @Override
+    public void init() {
         this.executorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
@@ -28,5 +29,10 @@ public class SimpleScheduler implements Scheduler {
                 future.cancel(false);
             }
         };
+    }
+
+    @Override
+    public void close() {
+        executorService.shutdown();
     }
 }
