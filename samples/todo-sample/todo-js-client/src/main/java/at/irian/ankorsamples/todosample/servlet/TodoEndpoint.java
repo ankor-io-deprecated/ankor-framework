@@ -5,9 +5,9 @@ import at.irian.ankor.servlet.websocket.AnkorEndpoint;
 import at.irian.ankorsamples.todosample.domain.TaskRepository;
 import at.irian.ankorsamples.todosample.viewmodel.ModelRoot;
 
-public class TodoEndpoint extends AnkorEndpoint {
-    @Override
-    protected Object getModelRoot(Ref rootRef) {
-        return new ModelRoot(rootRef, new TaskRepository());
-    }
+public class TodoEndpoint /*extends AnkorEndpoint*/ {
+//    @Override
+//    protected Object getModelRoot(Ref rootRef) {
+//        return new ModelRoot(rootRef, new TaskRepository());
+//    }
 }

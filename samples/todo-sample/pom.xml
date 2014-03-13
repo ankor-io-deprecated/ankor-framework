@@ -57,6 +57,12 @@
 
             <dependency>
                 <groupId>at.irian.ankor</groupId>
+                <artifactId>ankor-websocket-connector</artifactId>
+                <version>${ankor.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>at.irian.ankor</groupId>
                 <artifactId>ankor-socket-connector</artifactId>
                 <version>${ankor.version}</version>
             </dependency>

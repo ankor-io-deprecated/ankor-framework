@@ -22,6 +22,12 @@
 
         <dependency>
             <groupId>at.irian.ankor</groupId>
+            <artifactId>ankor-websocket-connector</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>at.irian.ankor</groupId>
             <artifactId>ankor-js</artifactId>
             <type>war</type>
             <scope>runtime</scope>

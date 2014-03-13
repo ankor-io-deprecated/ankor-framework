@@ -9,24 +9,38 @@ import at.irian.ankor.system.AnkorSystem;
  * @author Thomas Spiegl
  */
 public class WebSocketConnector implements Connector {
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(WebSocketConnector.class);
 
     private static final String MESSAGE_MAPPER_ATTR_KEY = WebSocketConnector.class + ".MessageMapper";
     private static final String MESSAGE_DESERIALIZER_ATTR_KEY = WebSocketConnector.class + ".MessageDeserializer";
     private static final String WEB_SOCKET_SESSION_REGISTRY_ATTR_KEY = WebSocketConnector.class + ".WebSocketSessionRegistry";
 
+    private boolean enabled;
     private AnkorSystem ankorSystem;
 
     @Override
     public void init(AnkorSystem ankorSystem) {
+        this.enabled = ankorSystem.getConfig().getBoolean("at.irian.ankor.switching.connector.websocket.WebSocketConnector.enabled");
+        if (!enabled) {
+            LOG.info("WebSocketConnector not initialized because it is disabled - see ./ankor-websocket-connector/src/main/resources/reference.conf for details on how to enable websocket support");
+            return;
+        }
+
         this.ankorSystem = ankorSystem;
         MessageMapperFactory<String> messageMapperFactory = new MessageMapperFactory<String>(ankorSystem);
         registerMessageMapper(ankorSystem, messageMapperFactory);
         registerSingletonMessageDeserializer(ankorSystem, messageMapperFactory);
         registerSessionRegistry(ankorSystem, new WebSocketSessionRegistry());
+        LOG.info("WebSocketConnector initialized");
     }
 
     @Override
     public void start() {
+        if (!enabled) {
+            LOG.debug("WebSocketConnector not started because it is disabled");
+            return;
+        }
+
         WebSocketSessionRegistry sessionRegistry = getSessionRegistry(ankorSystem);
         WebSocketSender webSocketSender = new WebSocketSender(sessionRegistry, ankorSystem.getSwitchboard(),
                                                               getMessageMapperFactory(ankorSystem));
@@ -38,6 +52,10 @@ public class WebSocketConnector implements Connector {
 
     @Override
     public void stop() {
+        if (!enabled) {
+            return;
+        }
+
         ankorSystem.getConnectorPlug().unregisterConnectionHandler(WebSocketModelAddress.class);
         ankorSystem.getConnectorPlug().unregisterTransmissionHandler(WebSocketModelAddress.class);
     }

@@ -5,7 +5,7 @@ define([
         BaseTransport.call(this);
 
         var _options = options || {};
-        this.endpoint = endpoint || "/websocket/ankor";
+        this.endpoint = endpoint || "/websocket/ankor/123";
         this.heartbeatInterval = _options.heartbeatInterval || 5000;
 
         this._idReceived = false;

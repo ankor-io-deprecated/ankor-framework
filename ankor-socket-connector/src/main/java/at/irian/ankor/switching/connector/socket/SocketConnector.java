@@ -42,6 +42,7 @@ public class SocketConnector implements Connector {
                                                  this.messageMapper,
                                                  this.switchboard,
                                                  SimpleELPathSyntax.getInstance());
+        LOG.info("SocketConnector initialized");
     }
 
     @Override
