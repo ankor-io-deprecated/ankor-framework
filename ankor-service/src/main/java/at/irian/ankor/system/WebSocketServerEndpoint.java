@@ -5,13 +5,18 @@ import at.irian.ankor.application.Application;
 import at.irian.ankor.switching.connector.websocket.WebSocketEndpoint;
 import at.irian.ankor.viewmodel.proxy.CglibProxyBeanFactory;
 
+import javax.websocket.Endpoint;
+import javax.websocket.server.ServerApplicationConfig;
+import javax.websocket.server.ServerEndpointConfig;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Manfred Geiler
  */
-public abstract class WebSocketServerEndpoint extends WebSocketEndpoint {
+public abstract class WebSocketServerEndpoint extends WebSocketEndpoint implements ServerApplicationConfig {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(WebSocketServerEndpoint.class);
 
     private static final Map<Class<? extends WebSocketServerEndpoint>, AnkorSystem> SYSTEM_MAP
@@ -43,6 +48,20 @@ public abstract class WebSocketServerEndpoint extends WebSocketEndpoint {
                 .createServer();
     }
 
+    @Override
+    public final Set<ServerEndpointConfig> getEndpointConfigs(Set<Class<? extends Endpoint>> endpointClasses) {
+        return Collections.singleton(ServerEndpointConfig.Builder.create(this.getClass(),
+                                                                         this.getPath())
+                                                                 .build());
+    }
+
+    @Override
+    public final Set<Class<?>> getAnnotatedEndpointClasses(Set<Class<?>> scanned) {
+        return Collections.emptySet();
+    }
+
     protected abstract Application createApplication();
+
+    protected abstract String getPath();
 
 }

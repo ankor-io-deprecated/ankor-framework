@@ -30,6 +30,8 @@ public abstract class WebSocketEndpoint extends Endpoint {
             throw new IllegalStateException("No valid client id in path");
         }
 
+        AnkorSystem ankorSystem = getAnkorSystem();
+
         // todo  get rid of this static instance... store all in AnkorSystem attributes
         WebSocketConnector connector = WebSocketConnector.getInstance();
 
@@ -42,7 +44,7 @@ public abstract class WebSocketEndpoint extends Endpoint {
         }
 
         WebSocketListener listener =
-                new WebSocketListener(connector.getMessageDeserializer(), getAnkorSystem().getSwitchboard(),
+                new WebSocketListener(connector.getMessageDeserializer(), ankorSystem.getSwitchboard(),
                         SimpleELPathSyntax.getInstance(), clientId);
         session.addMessageHandler(listener.getByteMessageHandler());
         session.addMessageHandler(listener.getStringMessageHandler());
@@ -73,7 +75,7 @@ public abstract class WebSocketEndpoint extends Endpoint {
     private String getClientId(Session session) {
         String clientId = (String) session.getUserProperties().get(CLIENT_ID);
         if (clientId == null) {
-            clientId = session.getPathParameters().get(CLIENT_ID);
+            clientId = session.getPathParameters().get("clientId");
             session.getUserProperties().put(CLIENT_ID, clientId);
         }
         return clientId;
