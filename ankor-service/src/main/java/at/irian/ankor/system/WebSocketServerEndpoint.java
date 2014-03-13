@@ -22,15 +22,22 @@ public abstract class WebSocketServerEndpoint extends WebSocketEndpoint implemen
     private static final Map<Class<? extends WebSocketServerEndpoint>, AnkorSystem> SYSTEM_MAP
             = new ConcurrentHashMap<Class<? extends WebSocketServerEndpoint>, AnkorSystem>();
 
+    /**
+     * Gets the AnkorSystem for this endpoint class.
+     * If there is no AnkorSystem yet running, it is created by a call to {@link #createAnkorSystem()}.
+     *
+     * @return AnkorSystem for this endpoint class.
+     */
     @Override
     protected AnkorSystem getAnkorSystem() {
-        AnkorSystem ankorSystem = SYSTEM_MAP.get(this.getClass());
+        Class<? extends WebSocketServerEndpoint> endpointClass = this.getClass();
+        AnkorSystem ankorSystem = SYSTEM_MAP.get(endpointClass);
         if (ankorSystem == null) {
             synchronized (SYSTEM_MAP) {
-                ankorSystem = SYSTEM_MAP.get(this.getClass());
+                ankorSystem = SYSTEM_MAP.get(endpointClass);
                 if (ankorSystem == null) {
                     ankorSystem = createAnkorSystem();
-                    SYSTEM_MAP.put(this.getClass(), ankorSystem);
+                    SYSTEM_MAP.put(endpointClass, ankorSystem);
                 }
             }
         }
