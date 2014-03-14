@@ -1,14 +1,14 @@
 package at.irian.ankorsamples.todosample.fxclient;
 
-import at.irian.ankor.fx.websocket.AnkorApplication;
+import at.irian.ankor.system.WebSocketFxClientApplication;
 import javafx.application.HostServices;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
-public class App extends AnkorApplication {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(App.class);
+public class TodoWebSocketFxClientStarter extends WebSocketFxClientApplication {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TodoWebSocketFxClientStarter.class);
 
     // used to open the browser
     private static HostServices services;
@@ -17,28 +17,21 @@ public class App extends AnkorApplication {
         launch(args);
     }
 
-    @Override
-    protected String getWebSocketUri() {
-        // return "wss://ankor-todo-sample.irian.at/websocket/ankor";
-        return "ws://localhost:8080/websocket/ankor";
+    public TodoWebSocketFxClientStarter() {
+        super("Todo FX Client", "root");
     }
 
     @Override
-    protected String getModelSessionId() {
-        return "collabTest";
-    }
-
-    @Override
-    protected void startFXClient(Stage primaryStage) throws Exception {
+    public void startFx(Stage stage) throws Exception {
         services = getHostServices();
 
-        primaryStage.setTitle("Ankor JavaFX Todo Sample");
+        stage.setTitle("Ankor JavaFX Todo Sample");
         Pane myPane = FXMLLoader.load(getClass().getClassLoader().getResource("tasks.fxml"));
 
         Scene myScene = new Scene(myPane);
         myScene.getStylesheets().add("style.css");
-        primaryStage.setScene(myScene);
-        primaryStage.show();
+        stage.setScene(myScene);
+        stage.show();
     }
 
     public static HostServices getServices() {

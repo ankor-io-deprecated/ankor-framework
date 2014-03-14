@@ -98,7 +98,7 @@ public abstract class AnkorApplication extends Application {
         // todo  register WebsocketEventMessageListener
         // todo  forard received websocket messages to MessageBus
 
-        CountDownLatch latch = new CountDownLatch(2);
+        CountDownLatch latch = new CountDownLatch(1);
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         container.connectToServer(new AnkorClientEndpoint(systemBuilder, messageBus, latch), URI.create(uri));
 

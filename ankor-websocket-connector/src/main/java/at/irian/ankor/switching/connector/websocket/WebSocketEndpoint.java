@@ -85,4 +85,13 @@ public abstract class WebSocketEndpoint extends Endpoint {
         }
         return clientId;
     }
+
+    protected void setClientId(Session session, String clientId) {
+        if (getClientId(session) != null) {
+            throw new IllegalStateException("ClientId already set");
+        }
+        session.getUserProperties().put(CLIENT_ID, clientId);
+    }
+
+
 }

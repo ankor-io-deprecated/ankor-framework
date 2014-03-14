@@ -223,7 +223,12 @@ public class AnkorSystemBuilder {
 
         ModelSession modelSession = modelSessionFactory.createModelSession();
 
-        ModelSessionManager modelSessionManager = new SingletonModelSessionManager();
+        ModelSessionManager modelSessionManager = new SingletonModelSessionManager() {
+            @Override
+            public void remove(ModelSession modelSession) {
+                // ignore; // TODO WebSocket reconnect problem, we need a reconnect, instead of connect! (see WebSocketFxClientApplication.connectionManager)
+            }
+        };
         modelSessionManager.add(modelSession);
 
         if (!configValues.containsKey(MESSAGE_MAPPER_CONFIG_KEY)) {
