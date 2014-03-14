@@ -7,6 +7,9 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class TodoWebSocketFxClientStarter extends WebSocketFxClientApplication {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TodoWebSocketFxClientStarter.class);
 
@@ -19,6 +22,13 @@ public class TodoWebSocketFxClientStarter extends WebSocketFxClientApplication {
 
     public TodoWebSocketFxClientStarter() {
         super("Todo FX Client", "root");
+    }
+
+    @Override
+    protected Map<String, Object> getConnectParams() {
+        Map<String, Object> connectParams = new HashMap<>();
+        connectParams.put("todoListId", "collaborationTest");
+        return connectParams;
     }
 
     @Override
