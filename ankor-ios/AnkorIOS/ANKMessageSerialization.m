@@ -10,6 +10,7 @@
 #import "ANKActionMessage.h"
 #import "ANKChangeMessage.h"
 #import "ANKChange.h"
+#import "ANKConnectMessage.h"
 
 static NSString* senderId   = @"senderId";
 static NSString* modelId    = @"modelId";
@@ -47,9 +48,9 @@ static NSString* _replace   = @"replace";
             NSMutableDictionary *dict = [NSMutableDictionary dictionary];
             if ([msg isKindOfClass:[ANKChangeMessage class]]) {
                 ANKChangeMessage *message = (ANKChangeMessage*) msg;
-                [dict setValue:message.senderId forKey:senderId];
-                [dict setValue:message.modelId forKey:modelId];
-                [dict setValue:message.messageId forKey:messageId];
+                //[dict setValue:message.senderId forKey:senderId];
+                //[dict setValue:message.modelId forKey:modelId];
+                //[dict setValue:message.messageId forKey:messageId];
                 [dict setValue:message.property forKey:property];
                 NSMutableDictionary *changeDict = [NSMutableDictionary dictionary];
                 [changeDict setValue:[self changeTypeToString:message.type] forKey:type];
@@ -58,9 +59,9 @@ static NSString* _replace   = @"replace";
                 [dict setValue:changeDict forKey:change];
             } else if ([msg isKindOfClass:[ANKActionMessage class]]) {
                 ANKActionMessage *message = (ANKActionMessage*) msg;
-                [dict setValue:message.senderId forKey:senderId];
-                [dict setValue:message.modelId forKey:modelId];
-                [dict setValue:message.messageId forKey:messageId];
+                //[dict setValue:message.senderId forKey:senderId];
+                //[dict setValue:message.modelId forKey:modelId];
+                //[dict setValue:message.messageId forKey:messageId];
                 [dict setValue:message.property forKey:property];
                 if (message.params && [message.params count] > 0) {
                     NSMutableDictionary *actionDict = [NSMutableDictionary dictionary];
@@ -70,6 +71,16 @@ static NSString* _replace   = @"replace";
                 } else {
                     [dict setValue:message.action forKey:action];
                 }
+            } else if ([msg isKindOfClass:[ANKConnectMessage class]]) {
+                ANKConnectMessage *message = (ANKConnectMessage*) msg;
+                //[dict setValue:message.senderId forKey:senderId];
+                //[dict setValue:message.modelId forKey:modelId];
+                //[dict setValue:message.messageId forKey:messageId];
+                [dict setValue:message.property forKey:property];
+                if (message.params && [message.params count] > 0) {
+                    NSMutableDictionary *paramDict = [NSMutableDictionary dictionary];
+                    [paramDict setValue:message.params forKey:params];
+                }
             }
             [msgArray addObject:dict];
         }
@@ -78,9 +89,9 @@ static NSString* _replace   = @"replace";
         NSMutableDictionary *dict = [NSMutableDictionary dictionary];
         if ([msg isKindOfClass:[ANKChangeMessage class]]) {
             ANKChangeMessage *message = (ANKChangeMessage*) msg;
-            [dict setValue:message.senderId forKey:senderId];
-            [dict setValue:message.modelId forKey:modelId];
-            [dict setValue:message.messageId forKey:messageId];
+            //[dict setValue:message.senderId forKey:senderId];
+            //[dict setValue:message.modelId forKey:modelId];
+            //[dict setValue:message.messageId forKey:messageId];
             [dict setValue:message.property forKey:property];
             NSMutableDictionary *changeDict = [NSMutableDictionary dictionary];
             [changeDict setValue:[self changeTypeToString:message.type] forKey:type];
@@ -89,17 +100,27 @@ static NSString* _replace   = @"replace";
             [dict setValue:changeDict forKey:change];
         } else if ([msg isKindOfClass:[ANKActionMessage class]]) {
             ANKActionMessage *message = (ANKActionMessage*) msg;
-            [dict setValue:message.senderId forKey:senderId];
-            [dict setValue:message.modelId forKey:modelId];
-            [dict setValue:message.messageId forKey:messageId];
+            //[dict setValue:message.senderId forKey:senderId];
+            //[dict setValue:message.modelId forKey:modelId];
+            //[dict setValue:message.messageId forKey:messageId];
             [dict setValue:message.property forKey:property];
             if (message.params && [message.params count] > 0) {
-                NSMutableDictionary *actionDict = [NSMutableDictionary dictionary];
-                [actionDict setValue:message.action forKey:name];
-                [actionDict setValue:message.params forKey:params];
-                [dict setValue:actionDict forKey:action];
+                NSMutableDictionary *paramDict = [NSMutableDictionary dictionary];
+                [paramDict setValue:message.action forKey:name];
+                [paramDict setValue:message.params forKey:params];
+                [dict setValue:paramDict forKey:action];
             } else {
                 [dict setValue:message.action forKey:action];
+            }
+        } else if ([msg isKindOfClass:[ANKConnectMessage class]]) {
+            ANKConnectMessage *message = (ANKConnectMessage*) msg;
+            //[dict setValue:message.senderId forKey:senderId];
+            //[dict setValue:message.modelId forKey:modelId];
+            //[dict setValue:message.messageId forKey:messageId];
+            [dict setValue:message.property forKey:property];
+            if (message.params && [message.params count] > 0) {
+                NSMutableDictionary *paramDict = [NSMutableDictionary dictionary];
+                [paramDict setValue:message.params forKey:params];
             }
         }
         return dict;

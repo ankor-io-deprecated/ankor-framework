@@ -12,9 +12,9 @@
 #import "ANKMessage.h"
 
 typedef enum {
-    ANK_WS_INIT_CONNECTION   = 0,
-    ANK_WS_INIT_MODEL        = 1,
-    ANK_WS_INITIALIZED       = 2,
+    ANK_WS_UNDEFINED         = 0,
+    ANK_WS_INIT_CONNECTION   = 1,
+    ANK_WS_CONNECTED         = 2,
 } ANKWebSocketState;
 
 @interface ANKWebSocketMessageLoop() <SRWebSocketDelegate> {
@@ -26,6 +26,7 @@ typedef enum {
     ANKMessageSerialization *msgSerialization;
     ANKMessageFactory *messageFactory;
     dispatch_semaphore_t sema;
+    NSString* clientId;
     
     SRWebSocket *_webSocket;
     
@@ -44,8 +45,11 @@ typedef enum {
     messageFactory = factory;
     messages = [[NSMutableArray alloc] init];
     msgSerialization = [ANKMessageSerialization new];
-    url = sUrl;
+    clientId = [[NSUUID UUID] UUIDString];
+    messageFactory.senderId = clientId;
+    url = [sUrl stringByAppendingString:[NSString stringWithFormat:@"/%@", clientId]];
     [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(sendHeartbeat) userInfo:Nil repeats:YES];
+    _state = ANK_WS_UNDEFINED;
     return self;
 }
 
@@ -80,11 +84,6 @@ typedef enum {
             NSData* data = [msgSerialization serialize:msg];
             NSLog(@"Sending json %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
             [_webSocket send:data];
-            if (_state == ANK_WS_INIT_MODEL) {
-                // send out init model message, ignore rest
-                [messages removeObjectAtIndex:0];
-                return;
-            }
         }
         [messages removeAllObjects];
     }
@@ -128,29 +127,17 @@ typedef enum {
     NSLog(@"didReceiveMessage %@", data);
     @autoreleasepool {
         @synchronized(self) {
-            if (_state == ANK_WS_INIT_MODEL) {
-                _state = ANK_WS_INITIALIZED;
-                [self doSend];
-            }
-            if (_state == ANK_WS_INIT_CONNECTION) {
-                messageFactory.senderId = data;
-                ANKActionMessage *initMessage = [messageFactory createActionMessage:@"root" action:@"init"];
-                [messages insertObject:initMessage atIndex:0];
-                _state = ANK_WS_INIT_MODEL;
-                [self doSend];
-            } else {
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    @autoreleasepool {
-                        NSMutableData *dataBytes = [NSMutableData new];
-                        [dataBytes appendData: [(NSString*) data dataUsingEncoding:NSUTF8StringEncoding]];
-                        for (id message in [msgSerialization deserialize:dataBytes]) {
-                            if (message) {
-                                [messageListener onMessage:message];
-                            }
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                @autoreleasepool {
+                    NSMutableData *dataBytes = [NSMutableData new];
+                    [dataBytes appendData: [(NSString*) data dataUsingEncoding:NSUTF8StringEncoding]];
+                    for (id message in [msgSerialization deserialize:dataBytes]) {
+                        if (message) {
+                            [messageListener onMessage:message];
                         }
                     }
-                }];
-            }
+                }
+            }];
         }
     }
 }
@@ -171,15 +158,21 @@ typedef enum {
 
 - (void)webSocketDidOpen:(SRWebSocket *)webSocket {
     NSLog(@"webSocketDidOpen");
+    _state = ANK_WS_CONNECTED;
+    ANKConnectMessage* initMessage = [messageFactory createConnectMessage:@"root"];
+    [messages insertObject:initMessage atIndex:0];
+    [self doSend];
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error {
     NSLog(@"didFailWithError");
+    _state = ANK_WS_UNDEFINED;
     [self reconnect];
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean {
     NSLog(@"didCloseWithCode");
+    _state = ANK_WS_UNDEFINED;
     [self reconnect];
 }
 

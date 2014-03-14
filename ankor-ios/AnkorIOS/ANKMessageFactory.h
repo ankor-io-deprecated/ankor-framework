@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "ANKActionMessage.h"
 #import "ANKChangeMessage.h"
+#import "ANKConnectMessage.h"
 
 @interface ANKMessageFactory : NSObject
 
@@ -16,6 +17,7 @@
 -(ANKChangeMessage*)createValueChangeMessage:(NSString *)property value:(NSString *)value;
 -(ANKActionMessage*)createActionMessage:(NSString*)property action:(NSString*)action;
 -(ANKActionMessage*)createActionMessage:(NSString*)property action:(NSString*)action params:(NSDictionary*)params;
+-(ANKConnectMessage*)createConnectMessage:(NSString *)modelId;
 
 @property NSString* senderId;
 

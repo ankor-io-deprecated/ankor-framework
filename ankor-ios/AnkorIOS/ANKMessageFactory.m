@@ -9,6 +9,7 @@
 #import "ANKMessageFactory.h"
 #import "ANKActionMessage.h"
 #import "ANKChangeMessage.h"
+#import "ANKConnectMessage.h"
 #import "ANKChange.h"
 
 @implementation ANKMessageFactory
@@ -41,6 +42,14 @@ NSString *modelId;
         messageId = [NSString stringWithFormat:@"%i",currentMessageId++];
     }
     return [[ANKActionMessage alloc] initWith:_senderId modelId:modelId messageId:messageId property:property action:action params:params];
+}
+
+-(ANKConnectMessage *)createConnectMessage:(NSString *)property {
+    NSString *messageId;
+    @synchronized(self) {
+        messageId = [NSString stringWithFormat:@"%i",currentMessageId++];
+    }
+    return [[ANKConnectMessage alloc] initWith:_senderId property:property messageId:messageId];
 }
 
 @end
