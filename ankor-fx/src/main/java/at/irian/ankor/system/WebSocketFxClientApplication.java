@@ -32,7 +32,6 @@ public abstract class WebSocketFxClientApplication extends javafx.application.Ap
     private final String applicationName;
     private final String modelName;
     private String serverAddress;
-    private String modelInstanceIdToConnect = null;
     private AnkorSystem ankorSystem;
     private final String clientId;
     private final WebSocketConnectionManager connectionManager;
@@ -50,6 +49,10 @@ public abstract class WebSocketFxClientApplication extends javafx.application.Ap
         return applicationName;
     }
 
+    protected Map<String, Object> getConnectParams() {
+        return Collections.emptyMap();
+    }
+
     protected String getModelName() {
         return modelName;
     }
@@ -61,19 +64,6 @@ public abstract class WebSocketFxClientApplication extends javafx.application.Ap
     protected void setServerAddress(String serverAddress) {
         LOG.debug("Server address is {}", serverAddress);
         this.serverAddress = serverAddress;
-    }
-
-    protected String getModelInstanceIdToConnect() {
-        return modelInstanceIdToConnect;
-    }
-
-    /**
-     * @param modelInstanceIdToConnect  ID of model instance on server to connect to (for collaboration)
-     *                                  or null if server shall create a new instance on every connect
-     */
-    @SuppressWarnings("UnusedDeclaration")
-    protected void setModelInstanceIdToConnect(String modelInstanceIdToConnect) {
-        this.modelInstanceIdToConnect = modelInstanceIdToConnect;
     }
 
     /**
@@ -97,11 +87,6 @@ public abstract class WebSocketFxClientApplication extends javafx.application.Ap
             setServerAddress(serverAddress);
         } else {
             setServerAddress(DEFAULT_SERVER_ADDRESS);
-        }
-
-        String appInstanceId = params.get("appInstanceId");
-        if (appInstanceId != null) {
-            setModelInstanceIdToConnect(appInstanceId);
         }
     }
 
@@ -277,15 +262,7 @@ public abstract class WebSocketFxClientApplication extends javafx.application.Ap
         private void openModelConnection() {
             // Send the "connect" message to the server
             Map<String, Object> connectParams;
-            if (getModelInstanceIdToConnect() != null) {
-                //noinspection unchecked
-                connectParams = new HashMap();
-                connectParams.put(CollaborationSingleRootApplication.MODEL_INSTANCE_ID_PARAM,
-                        getModelInstanceIdToConnect());
-            } else {
-                connectParams = Collections.emptyMap();
-            }
-            FxRefs.refContext().openModelConnection(getModelName(), connectParams);
+            FxRefs.refContext().openModelConnection(getModelName(), getConnectParams());
         }
     }
 
