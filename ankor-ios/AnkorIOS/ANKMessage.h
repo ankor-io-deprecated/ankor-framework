@@ -10,10 +10,8 @@
 
 @interface ANKMessage : NSObject
 
-@property NSString *senderId;
-@property NSString *modelId;
-@property NSString *messageId;
+@property NSString *property;
 
-- (id) initWith: (NSString*)senderId modelId:(NSString*)modelId messageId:(NSString*)messageId;
+- (id) initWith: (NSString*)property;
 
 @end

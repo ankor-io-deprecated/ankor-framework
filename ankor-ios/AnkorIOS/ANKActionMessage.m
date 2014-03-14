@@ -10,13 +10,14 @@
 
 @implementation ANKActionMessage
 
-- (id)initWith:(NSString *)senderId modelId:(NSString *)modelId messageId:(NSString *)messageId property:(NSString *)property action:(NSString *)action {
-    return [self initWith:senderId modelId:modelId  messageId:messageId property:property action:action params:nil];
+
+
+- (id) initWith:(NSString*)property action:(NSString*)action {
+    return [self initWith:property action:action params:nil];
 }
 
-- (id)initWith:(NSString *)senderId modelId:(NSString *)modelId messageId:(NSString *)messageId property:(NSString *)property action:(NSString *)action params:(NSDictionary *)params {
-    self = [super initWith:senderId modelId:modelId messageId:messageId];
-    self.property = property;
+- (id) initWith:(NSString*)property action:(NSString*)action params:(NSDictionary*)params {
+    self = [super initWith:property];
     self.action = action;
     self.params = params;
     return self;

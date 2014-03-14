@@ -14,6 +14,7 @@
 
 @interface ANKHttpMessageLoop : NSObject <ANKMessageLoop, ANKMessageBus>
 
-- (id) initWith: (id <ANKMessageListener>)listener messageFactory:(ANKMessageFactory*) messageFactory senderId:(NSString*)senderId url:(NSString*)url;
+- (id) initWith: (id <ANKMessageListener>)listener messageFactory:(ANKMessageFactory*) messageFactory url:(NSString*)url
+    connectProperty:(NSString*)connectProperty params:(NSDictionary*)connectParams;
 
 @end

@@ -11,12 +11,10 @@
 
 @interface ANKActionMessage : ANKMessage
 
-@property NSString *property;
 @property NSString *action;
 @property NSDictionary *params;
 
-- (id) initWith:(NSString *)senderId modelId:(NSString *)modelId messageId:(NSString *)messageId property:(NSString*)property action:(NSString*)name;
-
-- (id) initWith: (NSString *)senderId modelId:(NSString *)modelId messageId:(NSString *)messageId property:(NSString*)property action:(NSString*)action params:(NSDictionary*)params;
+- (id) initWith:(NSString*)property action:(NSString*)action;
+- (id) initWith:(NSString*)property action:(NSString*)action params:(NSDictionary*)params;
 
 @end

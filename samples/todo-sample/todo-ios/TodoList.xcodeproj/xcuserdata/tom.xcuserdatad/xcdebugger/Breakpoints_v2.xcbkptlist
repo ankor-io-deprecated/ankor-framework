@@ -9,28 +9,12 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "../../../ankor-ios/AnkorIOS/ANKMessageSerialization.m"
-            timestampString = "416490153.538153"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "116"
-            endingLineNumber = "116"
-            landmarkName = "-messagesAsArrayOfDict:"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "../../../ankor-ios/AnkorIOS/ANKWebSocketMessageLoop.m"
-            timestampString = "416490729.529417"
+            timestampString = "416494518.035485"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "84"
-            endingLineNumber = "84"
+            startingLineNumber = "88"
+            endingLineNumber = "88"
             landmarkName = "-doSend"
             landmarkType = "5">
          </BreakpointContent>
@@ -42,12 +26,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../../ankor-ios/AnkorIOS/ANKWebSocketMessageLoop.m"
-            timestampString = "416490757.747533"
+            timestampString = "416495096.641797"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "162"
-            endingLineNumber = "162"
-            landmarkName = "-webSocketDidOpen:"
+            startingLineNumber = "56"
+            endingLineNumber = "56"
+            landmarkName = "-initWith:messageFactory:url:connectProperty:params:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

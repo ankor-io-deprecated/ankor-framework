@@ -26,23 +26,22 @@
 
 @implementation ANKSystem
 
--(id)initWith:(NSString*)modelId url:(NSString*)url useWebsocket:(BOOL)useWebsocket {
+-(id)initWith:(NSString*)connectProperty connectParams:(NSDictionary*)connectParams url:(NSString*)url useWebsocket:(BOOL)useWebsocket {
     
-    NSString *senderId = [NSString stringWithFormat:@"%i", arc4random_uniform(1000)];
-    ANKMessageFactory *messageFactory = [[ANKMessageFactory alloc] initWith:senderId];
+    ANKMessageFactory *messageFactory = [[ANKMessageFactory alloc] init];
     
     ANKRefContextFactory* refContextFactory = [[ANKRefContextFactory alloc] init];
     
-    ANKModelContext* modelContext = [[ANKModelContext alloc] initWith:modelId];
+    ANKModelContext* modelContext = [[ANKModelContext alloc] initWith:connectProperty];
     
     _refContext = [refContextFactory createRefContextFor:modelContext];
     
     ANKRemoteMessageListener* messageListener = [[ANKRemoteMessageListener alloc]initWith:_refContext];
     
     if (useWebsocket) {
-        _messageLoop = [[ANKWebSocketMessageLoop alloc] initWith:messageListener messageFactory:messageFactory url:url];
+        _messageLoop = [[ANKWebSocketMessageLoop alloc] initWith:messageListener messageFactory:messageFactory url:url connectProperty:connectProperty params:connectParams];
     } else {
-        _messageLoop = [[ANKHttpMessageLoop alloc] initWith:messageListener messageFactory:messageFactory senderId:senderId url:url];
+        _messageLoop = [[ANKHttpMessageLoop alloc] initWith:messageListener messageFactory:messageFactory url:url connectProperty:connectProperty params:connectParams];
     }
     
     ANKRemoteEventListener* remoteEventListener = [[ANKRemoteEventListener alloc]initWith:messageFactory messageLoop:_messageLoop];

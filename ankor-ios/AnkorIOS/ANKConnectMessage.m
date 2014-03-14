@@ -10,15 +10,14 @@
 
 @implementation ANKConnectMessage
 
-- (id)initWith:(NSString *)senderId property:(NSString *)property messageId:(NSString *)messageId {
-    self = [super initWith:senderId modelId:nil messageId:messageId];
+- (id)initWith:(NSString *)property {
+    return [self initWith:property params:nil];
     self.property = property;
     return self;
 }
 
-- (id)initWith:(NSString *)senderId property:(NSString *)property messageId:(NSString *)messageId params:(NSDictionary*)params {
-    self = [super initWith:senderId modelId:nil messageId:messageId];
-    self.property = property;
+- (id)initWith:(NSString *)property params:(NSDictionary*)params {
+    self = [super initWith:property];
     self.params = params;
     return self;
 }

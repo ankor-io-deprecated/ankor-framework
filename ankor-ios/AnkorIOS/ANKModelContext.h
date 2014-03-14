@@ -15,7 +15,7 @@
 - (id)initWith:(NSString*) modelId;
 - (void)dispatch:(id <ANKModelEvent>) event;
 
-@property (readonly) NSString* modelId;
+@property (readonly) NSString* modelId2;
 @property NSDictionary* root;
 @property (readonly) ANKEventListeners* eventListeners;
 

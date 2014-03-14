@@ -10,10 +10,8 @@
 
 @implementation ANKMessage
 
-- (id)initWith:(NSString *)senderId modelId:(NSString *)modelId messageId:(NSString *)messageId {
-    self.senderId = senderId;
-    self.modelId = modelId;
-    self.messageId = messageId;
+- (id)initWith:(NSString *)property {
+    self.property = property;
     return self;
 }
 

@@ -10,10 +10,8 @@
 
 @implementation ANKChangeMessage
 
--(id)initWith:(NSString *)senderId modelId:(NSString *)modelId messageId:(NSString *)messageId
-     property:(NSString *)property type:(ANKChangeType)type key:(id)key value:(NSObject *)value {
-    self = [super initWith:senderId modelId:modelId messageId:messageId];
-    self.property = property;
+- (id) initWith:(NSString*)property type:(ANKChangeType)type key:(id)key value:(NSObject*)value {
+    self = [super initWith:property];
     self.type = type;
     self.key = key;
     self.value = value;

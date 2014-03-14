@@ -27,7 +27,9 @@ typedef enum {
     ANKMessageFactory *messageFactory;
     dispatch_semaphore_t sema;
     NSString* clientId;
-    
+    NSString* connProperty;
+    NSDictionary* connParams;
+
     SRWebSocket *_webSocket;
     
     ANKWebSocketState _state;
@@ -40,13 +42,15 @@ typedef enum {
 
 #pragma mark - ANKMessageLoop
 
-- (id)initWith:(id <ANKMessageListener>)listener messageFactory:(ANKMessageFactory *)factory url:(NSString*)sUrl {
+- (id)initWith:(id <ANKMessageListener>)listener messageFactory:(ANKMessageFactory *)factory url:(NSString*)sUrl
+    connectProperty:(NSString*)connectProperty params:(NSDictionary*)connectParams {
     messageListener = listener;
     messageFactory = factory;
     messages = [[NSMutableArray alloc] init];
     msgSerialization = [ANKMessageSerialization new];
     clientId = [[NSUUID UUID] UUIDString];
-    messageFactory.senderId = clientId;
+    connProperty = connectProperty;
+    connParams = connectParams;
     url = [sUrl stringByAppendingString:[NSString stringWithFormat:@"/%@", clientId]];
     [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(sendHeartbeat) userInfo:Nil repeats:YES];
     _state = ANK_WS_UNDEFINED;
@@ -108,7 +112,6 @@ typedef enum {
     }
 }
 
-
 - (void)connect;
 {
     @synchronized(self) {
@@ -159,7 +162,7 @@ typedef enum {
 - (void)webSocketDidOpen:(SRWebSocket *)webSocket {
     NSLog(@"webSocketDidOpen");
     _state = ANK_WS_CONNECTED;
-    ANKConnectMessage* initMessage = [messageFactory createConnectMessage:@"root"];
+    ANKConnectMessage* initMessage = [messageFactory createConnectMessage:connProperty params:connParams];
     [messages insertObject:initMessage atIndex:0];
     [self doSend];
 }

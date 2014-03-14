@@ -12,9 +12,6 @@
 #import "ANKChange.h"
 #import "ANKConnectMessage.h"
 
-static NSString* senderId   = @"senderId";
-static NSString* modelId    = @"modelId";
-static NSString* messageId  = @"messageId";
 static NSString* property   = @"property";
 static NSString* key        = @"key";
 static NSString* _value      = @"value";
@@ -22,6 +19,7 @@ static NSString* change     = @"change";
 static NSString* type       = @"type";
 static NSString* action     = @"action";
 static NSString* params     = @"params";
+static NSString* connectParams = @"connectParams";
 static NSString* name       = @"name";
 
 static NSString* _insert    = @"insert";
@@ -48,9 +46,6 @@ static NSString* _replace   = @"replace";
             NSMutableDictionary *dict = [NSMutableDictionary dictionary];
             if ([msg isKindOfClass:[ANKChangeMessage class]]) {
                 ANKChangeMessage *message = (ANKChangeMessage*) msg;
-                //[dict setValue:message.senderId forKey:senderId];
-                //[dict setValue:message.modelId forKey:modelId];
-                //[dict setValue:message.messageId forKey:messageId];
                 [dict setValue:message.property forKey:property];
                 NSMutableDictionary *changeDict = [NSMutableDictionary dictionary];
                 [changeDict setValue:[self changeTypeToString:message.type] forKey:type];
@@ -59,9 +54,6 @@ static NSString* _replace   = @"replace";
                 [dict setValue:changeDict forKey:change];
             } else if ([msg isKindOfClass:[ANKActionMessage class]]) {
                 ANKActionMessage *message = (ANKActionMessage*) msg;
-                //[dict setValue:message.senderId forKey:senderId];
-                //[dict setValue:message.modelId forKey:modelId];
-                //[dict setValue:message.messageId forKey:messageId];
                 [dict setValue:message.property forKey:property];
                 if (message.params && [message.params count] > 0) {
                     NSMutableDictionary *actionDict = [NSMutableDictionary dictionary];
@@ -73,13 +65,9 @@ static NSString* _replace   = @"replace";
                 }
             } else if ([msg isKindOfClass:[ANKConnectMessage class]]) {
                 ANKConnectMessage *message = (ANKConnectMessage*) msg;
-                //[dict setValue:message.senderId forKey:senderId];
-                //[dict setValue:message.modelId forKey:modelId];
-                //[dict setValue:message.messageId forKey:messageId];
                 [dict setValue:message.property forKey:property];
                 if (message.params && [message.params count] > 0) {
-                    NSMutableDictionary *paramDict = [NSMutableDictionary dictionary];
-                    [paramDict setValue:message.params forKey:params];
+                    [dict setValue:message.params forKey:connectParams];
                 }
             }
             [msgArray addObject:dict];
@@ -89,9 +77,6 @@ static NSString* _replace   = @"replace";
         NSMutableDictionary *dict = [NSMutableDictionary dictionary];
         if ([msg isKindOfClass:[ANKChangeMessage class]]) {
             ANKChangeMessage *message = (ANKChangeMessage*) msg;
-            //[dict setValue:message.senderId forKey:senderId];
-            //[dict setValue:message.modelId forKey:modelId];
-            //[dict setValue:message.messageId forKey:messageId];
             [dict setValue:message.property forKey:property];
             NSMutableDictionary *changeDict = [NSMutableDictionary dictionary];
             [changeDict setValue:[self changeTypeToString:message.type] forKey:type];
@@ -100,9 +85,6 @@ static NSString* _replace   = @"replace";
             [dict setValue:changeDict forKey:change];
         } else if ([msg isKindOfClass:[ANKActionMessage class]]) {
             ANKActionMessage *message = (ANKActionMessage*) msg;
-            //[dict setValue:message.senderId forKey:senderId];
-            //[dict setValue:message.modelId forKey:modelId];
-            //[dict setValue:message.messageId forKey:messageId];
             [dict setValue:message.property forKey:property];
             if (message.params && [message.params count] > 0) {
                 NSMutableDictionary *paramDict = [NSMutableDictionary dictionary];
@@ -114,13 +96,9 @@ static NSString* _replace   = @"replace";
             }
         } else if ([msg isKindOfClass:[ANKConnectMessage class]]) {
             ANKConnectMessage *message = (ANKConnectMessage*) msg;
-            //[dict setValue:message.senderId forKey:senderId];
-            //[dict setValue:message.modelId forKey:modelId];
-            //[dict setValue:message.messageId forKey:messageId];
             [dict setValue:message.property forKey:property];
             if (message.params && [message.params count] > 0) {
-                NSMutableDictionary *paramDict = [NSMutableDictionary dictionary];
-                [paramDict setValue:message.params forKey:params];
+                [dict setValue:message.params forKey:connectParams];
             }
         }
         return dict;
@@ -137,15 +115,13 @@ static NSString* _replace   = @"replace";
             if ([dict valueForKey:action]) {
                 [messages addObject:
                  [[ANKActionMessage alloc]
-                  initWith:[dict valueForKey:senderId] modelId:[dict valueForKey:modelId] messageId:[dict valueForKey:messageId]
-                  property:[dict valueForKey:property]
+                  initWith: [dict valueForKey:property]
                   action:[dict valueForKey:action]]];
             } else if ([dict valueForKey:change]) {
                 NSDictionary *changeDict = [dict valueForKey:change];
                 [messages addObject:
-                 [[ANKChangeMessage alloc]
-                  initWith:[dict valueForKey:senderId] modelId:[dict valueForKey:modelId] messageId:[dict valueForKey:messageId]
-                  property:[dict valueForKey:property]
+                 [[ANKChangeMessage alloc] initWith:
+                  [dict valueForKey:property]
                   type:[self changeTypeFromString:[changeDict valueForKey:type]]
                   key:[changeDict valueForKey:key]
                   value:[changeDict valueForKey:_value]]];
@@ -157,8 +133,7 @@ static NSString* _replace   = @"replace";
         if ([dict valueForKey:action]) {
             [messages addObject:
              [[ANKActionMessage alloc]
-              initWith:[dict valueForKey:senderId] modelId:[dict valueForKey:modelId] messageId:[dict valueForKey:messageId]
-              property:[dict valueForKey:property]
+              initWith: [dict valueForKey:property]
               action:[dict valueForKey:action]]];
         } else if ([dict valueForKey:change]) {
             NSDictionary *changeDict = [dict valueForKey:change];
@@ -174,8 +149,7 @@ static NSString* _replace   = @"replace";
             }
             [messages addObject:
              [[ANKChangeMessage alloc]
-              initWith:[dict valueForKey:senderId] modelId:[dict valueForKey:modelId] messageId:[dict valueForKey:messageId]
-              property:[dict valueForKey:property]
+              initWith: [dict valueForKey:property]
               type:typeObj
               key:[changeDict valueForKey:key]
               value:valueObj]];
