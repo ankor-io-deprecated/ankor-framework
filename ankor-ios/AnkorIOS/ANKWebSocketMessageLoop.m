@@ -105,20 +105,25 @@ typedef enum {
 
 - (void)reconnect {
     if (_state == ANK_WS_INIT_CONNECTION) {
-        return; // already connecting
+        return; // already connecting or reconnect scheduled
     } else {
-        _webSocket = nil;
-        [self connect];
+        _state = ANK_WS_INIT_CONNECTION;
+        [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(executeReconnect) userInfo:Nil repeats:NO];
     }
+}
+
+- (void)executeReconnect {
+    _webSocket = nil;
+    [self connect];
 }
 
 - (void)connect;
 {
     @synchronized(self) {
+        _webSocket = [[SRWebSocket alloc] initWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]]];
         if (_webSocket && _webSocket.readyState == SR_OPEN) {
             return;
         }
-        _webSocket = [[SRWebSocket alloc] initWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]]];
         _webSocket.delegate = self;
         
         _state = ANK_WS_INIT_CONNECTION;
@@ -153,8 +158,6 @@ typedef enum {
             @synchronized(self) {
                 [_webSocket send:data];
             }
-        } else {
-            [self connect];
         }
     }
 }

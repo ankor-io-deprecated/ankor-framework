@@ -34,14 +34,6 @@ public abstract class WebSocketEndpoint extends Endpoint {
 
         registerSession(ankorSystem, clientId, session);
 
-        MessageDeserializer<String> messageDeserializer
-                = WebSocketConnector.getSingletonMessageDeserializer(ankorSystem);
-        WebSocketListener listener =
-                new WebSocketListener(messageDeserializer, ankorSystem.getSwitchboard(),
-                                      SimpleELPathSyntax.getInstance(), clientId);
-        session.addMessageHandler(listener.getByteMessageHandler());
-        session.addMessageHandler(listener.getStringMessageHandler());
-
         LOG.debug("New client connected {}", clientId);
     }
 
@@ -60,11 +52,20 @@ public abstract class WebSocketEndpoint extends Endpoint {
 
     private void registerSession(AnkorSystem ankorSystem, String clientId, Session session) {
         WebSocketSessionRegistry sessionRegistry = WebSocketConnector.getSessionRegistry(ankorSystem);
-        Session oldSession = sessionRegistry.addSession(clientId, session);
-        if (oldSession != null) {
-            try {
-                oldSession.close();
-            } catch (IOException ignore) {
+        if (!sessionRegistry.containsSession(clientId, session)) {
+            Session oldSession = sessionRegistry.addSession(clientId, session);
+            MessageDeserializer<String> messageDeserializer
+                    = WebSocketConnector.getSingletonMessageDeserializer(ankorSystem);
+            WebSocketListener listener =
+                    new WebSocketListener(messageDeserializer, ankorSystem.getSwitchboard(),
+                            SimpleELPathSyntax.getInstance(), clientId);
+            session.addMessageHandler(listener.getByteMessageHandler());
+            session.addMessageHandler(listener.getStringMessageHandler());
+            if (oldSession != null) {
+                try {
+                    oldSession.close();
+                } catch (IOException ignore) {
+                }
             }
         }
     }

@@ -22,4 +22,8 @@ class WebSocketSessionRegistry {
     public void removeSession(String clientId) {
         sessions.remove(clientId);
     }
+
+    public boolean containsSession(String clientId, Session session) {
+        return session == sessions.get(clientId);
+    }
 }
