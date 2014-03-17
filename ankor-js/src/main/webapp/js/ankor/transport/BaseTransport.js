@@ -59,9 +59,9 @@ define([
     BaseTransport.prototype.encodeMessage = function(message) {
         var event = message.event;
         var jsonMessage = {
-            senderId: message.senderId,
-            modelId: message.modelId,
-            messageId: message.messageId,
+            //senderId: message.senderId, TODO remove senderId
+            //modelId: message.modelId,   TODO remove modelId
+            //messageId: message.messageId, TODO remove messageId
             property: event.path.toString()
         };
         if (event instanceof ActionEvent) {
@@ -76,6 +76,8 @@ define([
                 key: event.key,
                 value: event.value
             };
+        } else if (message.connectParams) {
+            jsonMessage.connectParams = message.connectParams;
         }
         return jsonMessage;
     };

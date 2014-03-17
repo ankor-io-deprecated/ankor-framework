@@ -61,6 +61,9 @@ define([
       var task = this.props.model.tasks;
 
       var todoItems = task.map(function (todo, i) {
+          if (!todo) {
+              return;
+          }
         return (
           <TodoItem
           key={todo.id}
