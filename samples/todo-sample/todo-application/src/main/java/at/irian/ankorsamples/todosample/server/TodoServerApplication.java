@@ -39,4 +39,14 @@ public class TodoServerApplication extends CollaborationSingleRootApplication {
             return new ModelRoot(rootRef, new TaskRepository());
         }
     }
+
+    @Override
+    public Object lookupModel(Map<String, Object> connectParameters) {
+        String taskListId = (String) connectParameters.get("todoListId");
+        if (taskListId != null) {
+            return models.get(taskListId);
+        } else {
+            return null;
+        }
+    }
 }
