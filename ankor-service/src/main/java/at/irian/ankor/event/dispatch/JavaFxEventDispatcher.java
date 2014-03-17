@@ -11,10 +11,11 @@ import javafx.application.Platform;
 public class JavaFxEventDispatcher extends SynchronisedEventDispatcher {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(JavaFxEventDispatcher.class);
 
-    private WorkerContext workerContext = new WorkerContext();
+    private final WorkerContext workerContext;
 
-    public JavaFxEventDispatcher(ModelSession modelSession) {
+    public JavaFxEventDispatcher(ModelSession modelSession, WorkerContext workerContext) {
         super(modelSession);
+        this.workerContext = workerContext;
     }
 
     @Override
