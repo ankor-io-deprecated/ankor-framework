@@ -68,7 +68,7 @@ public final class AnkorPatterns {
         runLater(property, new Runnable() {
             @Override
             public void run() {
-                ((RefImplementor) property).apply(new ModelSource(property, AnkorPatterns.class), change);
+                ((RefImplementor) property).apply(ModelSource.createFrom(property, AnkorPatterns.class), change);
             }
         });
     }

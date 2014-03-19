@@ -25,9 +25,9 @@ public abstract class ModelPropertyEvent extends ModelEvent {
 
     public boolean isLocalEvent() {
         if (getSource() instanceof ModelSource) {
-            ModelSession sourceModelSession = ((ModelSource) getSource()).getModelSession();
+            String sourceModelSessionId = ((ModelSource) getSource()).getModelSessionId();
             ModelSession currentModelSession = getProperty().context().modelSession();
-            return sourceModelSession.equals(currentModelSession);
+            return sourceModelSessionId.equals(currentModelSession.getId());
         } else {
             return false;
         }

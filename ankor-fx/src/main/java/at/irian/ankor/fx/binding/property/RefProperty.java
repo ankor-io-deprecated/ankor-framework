@@ -82,7 +82,7 @@ public class RefProperty<T> extends ObservableRef<T> implements Property<T> {
             @Override
             public void run() {
                 RefImplementor thisRef = (RefImplementor) RefProperty.this.ref;
-                thisRef.apply(new ModelSource(thisRef, RefProperty.this),
+                thisRef.apply(ModelSource.createFrom(thisRef, RefProperty.this),
                               Change.valueChange(newValue));
             }
         });

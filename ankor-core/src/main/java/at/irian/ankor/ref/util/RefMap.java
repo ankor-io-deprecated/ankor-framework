@@ -11,6 +11,7 @@ import java.util.*;
 /**
  * @author Manfred Geiler
  */
+@SuppressWarnings("NullableProblems")
 public class RefMap<K,V> extends AbstractMap<K,V> {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RefMap.class);
 
@@ -63,7 +64,7 @@ public class RefMap<K,V> extends AbstractMap<K,V> {
             throw new IllegalArgumentException("unsupported key " + key);
         }
         V oldVal = getReferencedMap().get(key);
-        ((RefImplementor)mapRef.appendLiteralKey((String)key)).apply(new ModelSource(mapRef, this),
+        ((RefImplementor)mapRef.appendLiteralKey((String)key)).apply(ModelSource.createFrom(mapRef, this),
                                                                      Change.valueChange(value));
         return oldVal;
     }
@@ -72,7 +73,7 @@ public class RefMap<K,V> extends AbstractMap<K,V> {
     @Override
     public V remove(Object key) {
         V oldVal = getReferencedMap().get(key);
-        ((RefImplementor)mapRef).apply(new ModelSource(mapRef, this), Change.deleteChange(key));
+        ((RefImplementor)mapRef).apply(ModelSource.createFrom(mapRef, this), Change.deleteChange(key));
         return oldVal;
     }
 
@@ -127,7 +128,7 @@ public class RefMap<K,V> extends AbstractMap<K,V> {
                             throw new IllegalStateException();
                         }
                         iterator.remove();
-                        ((RefImplementor)mapRef).signal(new ModelSource(mapRef, this),
+                        ((RefImplementor)mapRef).signal(ModelSource.createFrom(mapRef, this),
                                                         Change.deleteChange(lastEntry.getKey()));
                     }
                 };

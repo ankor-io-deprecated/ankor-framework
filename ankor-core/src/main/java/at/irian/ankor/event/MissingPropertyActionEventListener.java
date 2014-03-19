@@ -55,7 +55,7 @@ public class MissingPropertyActionEventListener extends ActionEventListener {
                         if (fromIndex <= toIndex) {
                             List subList = list.subList(fromIndex, toIndex);
                             Change change = Change.replaceChange(fromIndex, subList);
-                            ((RefImplementor)maybeCollRef).signal(new ModelSource(missingProperty, this), change);
+                            ((RefImplementor)maybeCollRef).signal(ModelSource.createFrom(missingProperty, this), change);
                         }
                         return;
                     }

@@ -1,8 +1,7 @@
 package at.irian.ankor.event.source;
 
-import at.irian.ankor.switching.connector.local.LocalModelAddress;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.session.ModelSession;
+import at.irian.ankor.switching.connector.local.LocalModelAddress;
 
 /**
  * Local source of a model event.
@@ -11,19 +10,18 @@ import at.irian.ankor.session.ModelSession;
  */
 public class ModelSource extends ModelAddressSource {
 
-    private final ModelSession modelSession;
-
-    public ModelSource(ModelSession modelSession, String modelName, Object origination) {
-        super(new LocalModelAddress(modelSession.getId(), modelName), origination);
-        this.modelSession = modelSession;
+    public ModelSource(String modelSessionId, String modelName, Object origination) {
+        super(new LocalModelAddress(modelSessionId, modelName), origination);
     }
 
-    public ModelSource(Ref ref, Object origination) {
-        this(ref.context().modelSession(), ref.root().propertyName(), origination);
+    public static ModelSource createFrom(Ref modelProperty, Object origination) {
+        return new ModelSource(modelProperty.context().modelSession().getId(),
+                               modelProperty.root().propertyName(),
+                               origination);
     }
 
-    public ModelSession getModelSession() {
-        return modelSession;
+    public String getModelSessionId() {
+        return ((LocalModelAddress)getModelAddress()).getModelSessionId();
     }
 
     @Override
@@ -31,7 +29,7 @@ public class ModelSource extends ModelAddressSource {
         return "ModelSource{" +
                "address=" + getModelAddress() +
                ", origination=" + getOrigination() +
-               ", modelSession=" + modelSession +
+               ", modelSessionId=" + getModelSessionId() +
                "}";
     }
 }

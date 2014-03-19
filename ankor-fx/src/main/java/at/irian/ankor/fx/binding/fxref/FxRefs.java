@@ -107,7 +107,7 @@ public final class FxRefs {
                     AnkorPatterns.runLater(ref, new Runnable() {
                         @Override
                         public void run() {
-                            ((RefImplementor) ref).apply(new ModelSource(ref, circuitBreaker),
+                            ((RefImplementor) ref).apply(ModelSource.createFrom(ref, circuitBreaker),
                                                          Change.valueChange(newToggle.getUserData()));
                         }
                     });

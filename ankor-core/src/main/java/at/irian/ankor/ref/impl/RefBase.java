@@ -36,7 +36,7 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
     }
 
     private ModelSource getModelSource() {
-        return new ModelSource(this, this);
+        return ModelSource.createFrom(this, this);
     }
 
     @Override
