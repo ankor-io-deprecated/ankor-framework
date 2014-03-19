@@ -17,6 +17,8 @@ import at.irian.ankor.switching.msg.EventMessage;
 import at.irian.ankor.switching.routing.ModelAddress;
 
 /**
+ * Delivers received EventMessages to the according local ModelSessions.
+ *
  * @author Manfred Geiler
  */
 public class LocalTransmissionHandler implements TransmissionHandler<LocalModelAddress> {
