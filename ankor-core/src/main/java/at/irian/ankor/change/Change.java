@@ -1,5 +1,6 @@
 package at.irian.ankor.change;
 
+import at.irian.ankor.messaging.AnkorIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.Collection;
@@ -65,7 +66,7 @@ public class Change {
     }
 
 
-
+    @AnkorIgnore
     public int getKeyAsIndex() {
         if (key instanceof Number) {
             return ((Number) key).intValue();
@@ -76,6 +77,7 @@ public class Change {
         }
     }
 
+    @AnkorIgnore
     public String getKeyAsMapKey() {
         if (key instanceof String) {
             return (String)key;
