@@ -142,15 +142,15 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
                 break;
 
             case insert:
-                handleInsertChange(getValue(), change.getKey(), change.getValue());
+                handleInsertChange(getValue(), change.getKeyAsIndex(), change.getValue());
                 break;
 
             case delete:
-                handleDeleteChange(getValue(), change.getKey());
+                handleDeleteChange(getValue(), change);
                 break;
 
             case replace:
-                handleReplaceChange(getValue(), change.getKey(), change.getValue());
+                handleReplaceChange(getValue(), change.getKeyAsIndex(), change.getValue());
                 break;
 
             default:
@@ -188,10 +188,9 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
     }
 
     @SuppressWarnings({"unchecked", "SuspiciousSystemArraycopy"})
-    private void handleInsertChange(Object listOrArray, Object key, Object value) {
+    private void handleInsertChange(Object listOrArray, int idx, Object value) {
         if (listOrArray instanceof List) {
             // TODO: list.size() is sometimes not returning the correct value. why?
-            int idx = asIndex(key);
             List list = (List)listOrArray;
             if (idx == list.size()) {
                 list.add(value);
@@ -202,7 +201,6 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
                         idx, list.size());
             }
         } else if (listOrArray.getClass().isArray()) {
-            int idx = asIndex(key);
             int length = Array.getLength(listOrArray);
             Class<?> componentType = listOrArray.getClass().getComponentType();
             Object newArray = Array.newInstance(componentType, length + 1);
@@ -220,9 +218,9 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
     }
 
     @SuppressWarnings("SuspiciousSystemArraycopy")
-    private void handleDeleteChange(Object listOrArrayOrMap, Object key) {
+    private void handleDeleteChange(Object listOrArrayOrMap, Change change) {
         if (listOrArrayOrMap instanceof List) {
-            int idx = asIndex(key);
+            int idx = change.getKeyAsIndex();
             List list = (List)listOrArrayOrMap;
             if (idx < list.size()) {
                 list.remove(idx);
@@ -230,7 +228,7 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
                 LOG.warn("Could not handle delete change on {} because index {} is out of bounds", this, idx);
             }
         } else if (listOrArrayOrMap.getClass().isArray()) {
-            int idx = asIndex(key);
+            int idx = change.getKeyAsIndex();
             int length = Array.getLength(listOrArrayOrMap);
             Class<?> componentType = listOrArrayOrMap.getClass().getComponentType();
             Object newArray = Array.newInstance(componentType, length - 1);
@@ -242,11 +240,11 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
             }
             internalSetValue(newArray);
         } else if (listOrArrayOrMap instanceof Map) {
-            String mapKey = asMapKey(key);
+            String mapKey = change.getKeyAsMapKey();
             ((Map) listOrArrayOrMap).remove(mapKey);
-        } else if (key instanceof String) {
+        } else if (change.getKey() instanceof String) {
             // neither List nor Array nor Map, than we assume it is a bean and set the corresponding property to null...
-            Ref propertyRef = refFactory().ref(pathSyntax().concat(path(), (String) key));
+            Ref propertyRef = refFactory().ref(pathSyntax().concat(path(), (String) change.getKey()));
             ((RefBase)propertyRef).handleValueChange(null);
         } else {
             throw new IllegalArgumentException("list/array/map of type " + listOrArrayOrMap.getClass().getName());
@@ -254,8 +252,7 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
     }
 
     @SuppressWarnings({"unchecked", "SuspiciousSystemArraycopy"})
-    private void handleReplaceChange(Object listOrArray, Object key, Object value) {
-        int fromIdx = asIndex(key);
+    private void handleReplaceChange(Object listOrArray, int fromIdx, Object value) {
         Collection replacementElements = asCollection(value);
         if (listOrArray instanceof List) {
             List list = (List)listOrArray;
@@ -282,24 +279,6 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
             internalSetValue(newArray);
         } else {
             throw new IllegalArgumentException("list/array of type " + listOrArray.getClass().getName());
-        }
-    }
-
-    private int asIndex(Object idxObj) {
-        if (idxObj instanceof Number) {
-            return ((Number) idxObj).intValue();
-        } else if (idxObj instanceof String) {
-            return Integer.parseInt((String) idxObj);
-        } else {
-            throw new IllegalArgumentException("list/array index of type " + idxObj.getClass());
-        }
-    }
-
-    private String asMapKey(Object keyObj) {
-        if (keyObj instanceof String) {
-            return (String)keyObj;
-        } else {
-            throw new IllegalArgumentException("map key of type " + keyObj.getClass());
         }
     }
 

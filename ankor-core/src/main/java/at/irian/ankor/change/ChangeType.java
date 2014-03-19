@@ -6,6 +6,6 @@ package at.irian.ankor.change;
 public enum ChangeType {
     value,
     insert,
-    delete,
+    delete,     //todo  distinguish between array/list remove and map remove
     replace
 }

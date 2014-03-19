@@ -64,6 +64,28 @@ public class Change {
         return value;
     }
 
+
+
+    public int getKeyAsIndex() {
+        if (key instanceof Number) {
+            return ((Number) key).intValue();
+        } else if (key instanceof String) {
+            return Integer.parseInt((String) key);
+        } else {
+            throw new IllegalArgumentException("list/array index of type " + key.getClass());
+        }
+    }
+
+    public String getKeyAsMapKey() {
+        if (key instanceof String) {
+            return (String)key;
+        } else {
+            throw new IllegalArgumentException("map key of type " + key.getClass());
+        }
+    }
+
+
+
     @SuppressWarnings("RedundantIfStatement")
     @Override
     public boolean equals(Object o) {
