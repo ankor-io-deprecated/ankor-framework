@@ -72,7 +72,7 @@ public class TodoWebSocketFxClientStarter extends javafx.application.Application
 
     private class EndpointListener extends Endpoint {
 
-        private String status;
+        private String status = "Server Connection: not connected";
 
         @Override
         public void onOpen(Session session, EndpointConfig config) {
