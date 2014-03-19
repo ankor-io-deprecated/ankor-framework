@@ -17,9 +17,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 
 import java.net.URL;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  * @author Thomas Spiegl
@@ -75,18 +73,31 @@ public class MainController implements Initializable {
         }
     }
 
-    @ChangeListener(pattern = "root.contentPane.panels[(*)]")
-    public void tabsChanged(Ref tabRef) {
-        String tabId = tabRef.propertyName();
-        if (tabRef.getValue() == null) {
-            for (Tab tab : tabPane.getTabs()) {
-                if (tab.getUserData().equals(tabId)) {
-                    tabPane.getTabs().remove(tab);
-                    break;
-                }
+    @ChangeListener(pattern = {"root.contentPane.(panels)",
+                               "root.contentPane.(panels).*"})
+    public void tabsChanged(Ref panelsRef) {
+        Map<String, ?> panels = panelsRef.getValue();
+
+        Set<String> currentOpenTabIds = new HashSet<>(tabPane.getTabs().size());
+        for (Tab tab : tabPane.getTabs()) {
+            currentOpenTabIds.add((String) tab.getUserData());
+        }
+
+        // are there any new panels to show as tab?
+        for (String panelId : panels.keySet()) {
+            if (!currentOpenTabIds.contains(panelId)) {
+                showTab(panelsRef.appendLiteralKey(panelId));
             }
-        } else {
-            showTab(tabRef);
+        }
+
+        // are there any open tabs to close?
+        Iterator<Tab> tabsIterator = tabPane.getTabs().iterator();
+        while (tabsIterator.hasNext()) {
+            Tab tab = tabsIterator.next();
+            String tabId = (String) tab.getUserData();
+            if (!panels.keySet().contains(tabId)) {
+                tabsIterator.remove();
+            }
         }
     }
 
