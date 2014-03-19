@@ -2,7 +2,6 @@ package at.irian.ankor.event.dispatch;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
-import at.irian.ankor.event.ModelEvent;
 import at.irian.ankor.session.ModelSession;
 
 /**
@@ -20,17 +19,7 @@ public class AkkaEventDispatcherFactory implements EventDispatcherFactory {
 
     @Override
     public EventDispatcher createFor(final ModelSession modelSession) {
-        return new EventDispatcher() {
-            @Override
-            public void dispatch(ModelEvent event) {
-                eventDispatcherActor.tell(new EventDispatcherActor.ModelEventMsg(modelSession, event), ActorRef.noSender());
-            }
-
-            @Override
-            public void close() {
-
-            }
-        };
+        return new AkkaEventDispatcher(modelSession, eventDispatcherActor);
     }
 
 }

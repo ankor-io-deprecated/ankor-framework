@@ -14,7 +14,7 @@ import at.irian.ankor.delay.TaskRequestEventListener;
 import at.irian.ankor.event.*;
 import at.irian.ankor.event.dispatch.AkkaEventDispatcherFactory;
 import at.irian.ankor.event.dispatch.EventDispatcherFactory;
-import at.irian.ankor.event.dispatch.SynchronisedEventDispatcherFactory;
+import at.irian.ankor.event.dispatch.SynchronizedSimpleEventDispatcherFactory;
 import at.irian.ankor.messaging.json.simpletree.SimpleTreeJsonMessageMapper;
 import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
 import at.irian.ankor.messaging.modify.CoerceTypeModifier;
@@ -374,7 +374,7 @@ public class AnkorSystemBuilder {
         if (eventDispatcherFactory == null) {
             ActorSystem actorSystem = getActorSystem();
             if (actorSystem == null) {
-                eventDispatcherFactory = new SynchronisedEventDispatcherFactory();
+                eventDispatcherFactory = new SynchronizedSimpleEventDispatcherFactory();
             } else {
                 eventDispatcherFactory = new AkkaEventDispatcherFactory(actorSystem);
             }

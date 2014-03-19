@@ -28,10 +28,10 @@ public class ModelSessionELResolver extends ELResolver {
     public Object getValue(ELContext context, Object base, Object property) {
         if (base == null) {
             String propertyName = property.toString();
-            if (modelSession.getModelNames().contains(propertyName)) {
+            if (modelSession.getModels().keySet().contains(propertyName)) {
                 context.setPropertyResolved(true);
                 return modelSession.getModelRoot(propertyName);
-            } else if (propertyName.startsWith("&") && modelSession.getModelNames().contains(propertyName.substring(1))) {
+            } else if (propertyName.startsWith("&") && modelSession.getModels().keySet().contains(propertyName.substring(1))) {
                 context.setPropertyResolved(true);
                 return refFactory.ref(propertyName.substring(1));
             }
@@ -43,7 +43,7 @@ public class ModelSessionELResolver extends ELResolver {
     public Class<?> getType(ELContext context, Object base, Object property) {
         if (base == null) {
             String propertyName = property.toString();
-            if (modelSession.getModelNames().contains(propertyName)) {
+            if (modelSession.getModels().keySet().contains(propertyName)) {
                 context.setPropertyResolved(true);
                 Object modelRoot = modelSession.getModelRoot(propertyName);
                 return modelRoot != null ? modelRoot.getClass() : Object.class;
@@ -60,7 +60,7 @@ public class ModelSessionELResolver extends ELResolver {
         if (base == null) {
             String propertyName = property.toString();
             context.setPropertyResolved(true);
-            modelSession.addModelRoot(propertyName, value);
+            modelSession.setModelRoot(propertyName, value);
         }
     }
 
@@ -68,7 +68,7 @@ public class ModelSessionELResolver extends ELResolver {
     public boolean isReadOnly(ELContext context, Object base, Object property) {
         if (base == null) {
             String propertyName = property.toString();
-            if (modelSession.getModelNames().contains(propertyName)) {
+            if (modelSession.getModels().keySet().contains(propertyName)) {
                 return false;
             } else if (propertyName.startsWith("&")) {
                 return true;
@@ -83,7 +83,7 @@ public class ModelSessionELResolver extends ELResolver {
             List<FeatureDescriptor> featureDescriptors = new ArrayList<FeatureDescriptor>();
 
             FeatureDescriptor fd;
-            for (String rootName : modelSession.getModelNames()) {
+            for (String rootName : modelSession.getModels().keySet()) {
                 fd = new FeatureDescriptor();
                 fd.setName(rootName);
                 fd.setDisplayName(rootName);

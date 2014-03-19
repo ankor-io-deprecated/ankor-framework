@@ -45,8 +45,7 @@ public class DefaultModelSessionManager implements ModelSessionManager {
 
         for (Map.Entry<String, ModelSession> entry : modelSessionIdMap.entrySet()) {
             modelSession = entry.getValue();
-            for (String modelName : modelSession.getModelNames()) {
-                Object mr = modelSession.getModelRoot(modelName);
+            for (Object mr : modelSession.getModels().values()) {
                 if (mr == modelRoot) {
                     modelRootCache.put(modelRoot, modelSession);
                     return modelSession;

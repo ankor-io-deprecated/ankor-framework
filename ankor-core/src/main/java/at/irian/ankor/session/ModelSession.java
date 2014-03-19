@@ -4,7 +4,7 @@ import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.event.dispatch.EventDispatcher;
 import at.irian.ankor.ref.RefContext;
 
-import java.util.Collection;
+import java.util.Map;
 
 /**
  * The ModelSession provides access to all information that belongs to one specific model instance. It represents
@@ -52,34 +52,39 @@ public interface ModelSession {
     <T> T getAttribute(String key);
 
     /**
-     * @return the event dispatcher that is currently used for this model
+     * Set the event dispatcher that shall be used for this ModelSession.
+     * @param eventDispatcher  an EventDispatcher
+     */
+    void setEventDispatcher(EventDispatcher eventDispatcher);
+
+    /**
+     * @return the EventDispatcher that is currently used for this ModelSession
      */
     EventDispatcher getEventDispatcher();
-
-    /**
-     * Replace the currently used EventDispatcher by the given EventDispatcher. The current dispatcher is
-     * put on a stack and may later be restored by a call to {@link #popEventDispatcher()}.
-     * @param eventDispatcher the new EventDispatcher
-     */
-    void pushEventDispatcher(EventDispatcher eventDispatcher);  // todo  move this to special StackEventDispatcher impl
-
-    /**
-     * Omit the current EventDispatcher and restore the previously used EventDispatcher for this model.
-     * @return the restored EventDispatcher
-     * @throws java.util.NoSuchElementException if there is no previous EventDispatcher
-     */
-    EventDispatcher popEventDispatcher();
 
     /**
      * @return the RefContext for this ModelSession
      */
     RefContext getRefContext();
 
+    /**
+     * Set the root object for the model with the given name.
+     * @param modelName  model name
+     * @param modelRoot  root object
+     */
+    void setModelRoot(String modelName, Object modelRoot);
 
-    void addModelRoot(String modelName, Object modelRoot);
-
+    /**
+     * Get the root object of the model with the given name.
+     * @param modelName  model name
+     * @return the root of the model with the given name.
+     */
     Object getModelRoot(String modelName);
 
-    Collection<String> getModelNames();
+    /**
+     * Return all models in this ModelSession.
+     * @return a map that maps all model names to the corresponding root object
+     */
+    Map<String,Object> getModels();
 
 }

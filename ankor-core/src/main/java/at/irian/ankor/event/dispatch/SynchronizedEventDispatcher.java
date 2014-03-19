@@ -6,14 +6,15 @@ import at.irian.ankor.event.ModelEvent;
 /**
  * @author Manfred Geiler
  */
-public class SynchronisedEventDispatcher extends SimpleEventDispatcher {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SynchronisedEventDispatcher.class);
+public class SynchronizedEventDispatcher implements EventDispatcher {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SynchronizedEventDispatcher.class);
 
     private final ModelSession modelSession;
+    private final EventDispatcher delegateEventDispatcher;
 
-    public SynchronisedEventDispatcher(ModelSession modelSession) {
-        super(modelSession.getEventListeners());
+    public SynchronizedEventDispatcher(ModelSession modelSession, EventDispatcher delegateEventDispatcher) {
         this.modelSession = modelSession;
+        this.delegateEventDispatcher = delegateEventDispatcher;
     }
 
     @Override
@@ -22,7 +23,7 @@ public class SynchronisedEventDispatcher extends SimpleEventDispatcher {
             DispatchThreadChecker dispatchThreadChecker = new DispatchThreadChecker(modelSession);
             boolean registered = dispatchThreadChecker.registerCurrentThread();
             try {
-                super.dispatch(event);
+                delegateEventDispatcher.dispatch(event);
             } finally {
                 if (registered) {
                     dispatchThreadChecker.clear();
@@ -33,5 +34,6 @@ public class SynchronisedEventDispatcher extends SimpleEventDispatcher {
 
     @Override
     public void close() {
+        delegateEventDispatcher.close();
     }
 }

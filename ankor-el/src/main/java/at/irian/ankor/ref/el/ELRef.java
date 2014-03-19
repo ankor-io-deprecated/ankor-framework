@@ -33,7 +33,7 @@ public class ELRef extends RefBase {
         } catch (PropertyNotFoundException e) {
             if (isRoot()) {
                 LOG.debug("Root property with name '{}' not found - setting model root in session", propertyName());
-                context().modelSession().addModelRoot(propertyName(), newValue);
+                context().modelSession().setModelRoot(propertyName(), newValue);
             } else {
                 throw e;
             }

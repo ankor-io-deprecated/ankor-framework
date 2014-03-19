@@ -10,7 +10,9 @@ import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefContextFactory;
 import com.google.common.collect.ImmutableMap;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author Manfred Geiler
@@ -20,9 +22,9 @@ class DefaultModelSession implements ModelSession, DispatchThreadAware {
 
     private final String id;
     private final EventListeners eventListeners;
-    private final Deque<EventDispatcher> eventDispatcherStack;
     private final Application application;
     private RefContext refContext;
+    private EventDispatcher eventDispatcher;
     private volatile Map<String, Object> modelRootMap;
     private volatile Map<String, Object> attributes;
 
@@ -35,7 +37,6 @@ class DefaultModelSession implements ModelSession, DispatchThreadAware {
         this.eventListeners = eventListeners;
         this.application = application;
         this.modelRootMap = Collections.emptyMap();
-        this.eventDispatcherStack = new ArrayDeque<EventDispatcher>();
         this.attributes = Collections.emptyMap();
         this.refContext = null;
     }
@@ -49,7 +50,7 @@ class DefaultModelSession implements ModelSession, DispatchThreadAware {
                                                                    eventListeners,
                                                                    application);
         modelSession.refContext = refContextFactory.createRefContextFor(modelSession); // ugly, but we have to init it this way, because we have a bi-directional relation here
-        modelSession.pushEventDispatcher(eventDispatcherFactory.createFor(modelSession));
+        modelSession.eventDispatcher = eventDispatcherFactory.createFor(modelSession);
         return modelSession;
     }
 
@@ -67,25 +68,18 @@ class DefaultModelSession implements ModelSession, DispatchThreadAware {
     }
 
     @Override
-    public void pushEventDispatcher(EventDispatcher eventDispatcher) {
-        eventDispatcherStack.push(eventDispatcher);
-    }
-
-    @Override
-    public EventDispatcher popEventDispatcher() {
-        return eventDispatcherStack.pop();
+    public void setEventDispatcher(EventDispatcher eventDispatcher) {
+        this.eventDispatcher = eventDispatcher;
     }
 
     @Override
     public EventDispatcher getEventDispatcher() {
-        return eventDispatcherStack.peek();
+        return eventDispatcher;
     }
 
     @Override
     public void close() {
-        for (EventDispatcher eventDispatcher : eventDispatcherStack) {
-            eventDispatcher.close();
-        }
+        eventDispatcher.close();
 
         for (Map.Entry<String, Object> entry : modelRootMap.entrySet()) {
             String modelName = entry.getKey();
@@ -136,7 +130,7 @@ class DefaultModelSession implements ModelSession, DispatchThreadAware {
     }
 
     @Override
-    public void addModelRoot(String modelName, Object modelRoot) {
+    public void setModelRoot(String modelName, Object modelRoot) {
         modelRootMap = ImmutableMap.<String,Object>builder()
                                    .putAll(modelRootMap)
                                    .put(modelName, modelRoot)
@@ -153,7 +147,7 @@ class DefaultModelSession implements ModelSession, DispatchThreadAware {
     }
 
     @Override
-    public Collection<String> getModelNames() {
-        return modelRootMap.keySet();
+    public Map<String, Object> getModels() {
+        return Collections.unmodifiableMap(modelRootMap);
     }
 }

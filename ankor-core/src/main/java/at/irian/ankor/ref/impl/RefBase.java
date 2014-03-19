@@ -9,10 +9,12 @@ import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.change.ChangeType;
 import at.irian.ankor.event.ModelEvent;
 import at.irian.ankor.event.dispatch.BufferingEventDispatcher;
+import at.irian.ankor.event.dispatch.EventDispatcher;
 import at.irian.ankor.event.source.ModelSource;
 import at.irian.ankor.event.source.Source;
 import at.irian.ankor.path.PathSyntax;
 import at.irian.ankor.ref.*;
+import at.irian.ankor.session.ModelSession;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -88,18 +90,20 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
     @Override
     public void apply(Source source, Change change) {
 
-        // buffer events
-        BufferingEventDispatcher bufferingEventDispatcher = new BufferingEventDispatcher();
-        context().modelSession().pushEventDispatcher(bufferingEventDispatcher);
-        try {
-            // apply change to local view model
-            handleChange(change);
-        } finally {
-            context().modelSession().popEventDispatcher();
-        }
+        ModelSession modelSession = context().modelSession();
 
         if (change.getType() == ChangeType.value) {
-            for (ModelEvent modelEvent : bufferingEventDispatcher.getBufferedEvents()) {
+            // Handle the given value change and delay all events that might happen during
+            // the actual applying of the changed value to the model. Technically speaking we buffer
+            // all events that are fired during the call to the according setter of the property that
+            // is subject to this change.
+            List<ModelEvent> bufferedEvents = handleValueChangeAndBufferEvents(modelSession, change.getValue());
+
+            // By having delayed all events until here, we are now able to detect any value change events that
+            // carry the very same change info as we are currently applying to the model. We suppress the
+            // dispatching of these duplicate events because we fire an equal event for this change anyway
+            // later down below.
+            for (ModelEvent modelEvent : bufferedEvents) {
                 if (modelEvent instanceof ChangeEvent) {
                     Ref changedProperty = ((ChangeEvent) modelEvent).getChangedProperty();
                     if (changedProperty.equals(this)) {
@@ -109,21 +113,26 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
                             Object v2 = nestedChange.getValue();
                             if (ObjectUtils.nullSafeEquals(v1, v2)) {
                                 // found exactly this change
-                                // do ignore, because we fire it anyway down below!
+                                // do ignore, because we fire it anyway down below
                                 LOG.debug("Suppressing nested change for {}: {}", changedProperty, change);
                                 continue;
                             }
                         }
                     }
                 }
-                context().modelSession().getEventDispatcher().dispatch(modelEvent);
+                modelSession.getEventDispatcher().dispatch(modelEvent);
             }
+
+        } else {
+            // Handle the given change normally without delaying any events
+            handleChange(change);
         }
 
         // fire change event
         ChangeEvent changeEvent = new ChangeEvent(source, this, change);
-        context().modelSession().getEventDispatcher().dispatch(changeEvent);
+        modelSession.getEventDispatcher().dispatch(changeEvent);
     }
+
 
     private void handleChange(Change change) {
         ChangeType changeType = change.getType();
@@ -148,6 +157,21 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
                 throw new IllegalArgumentException("Unsupported change type " + changeType);
         }
     }
+
+
+    private List<ModelEvent> handleValueChangeAndBufferEvents(ModelSession modelSession, Object newValue) {
+        BufferingEventDispatcher bufferingEventDispatcher = new BufferingEventDispatcher();
+        EventDispatcher originalEventDispatcher = modelSession.getEventDispatcher();
+        try {
+            modelSession.setEventDispatcher(bufferingEventDispatcher);
+            // apply change to local view model
+            handleValueChange(newValue);
+        } finally {
+            modelSession.setEventDispatcher(originalEventDispatcher);
+        }
+        return bufferingEventDispatcher.getBufferedEvents();
+    }
+
 
     private void handleValueChange(Object newValue) {
         if (isValid()) {

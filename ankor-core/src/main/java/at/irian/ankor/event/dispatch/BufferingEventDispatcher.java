@@ -24,6 +24,7 @@ public class BufferingEventDispatcher implements EventDispatcher {
 
     @Override
     public void close() {
+        bufferedEvents = null;
     }
 
     public List<ModelEvent> getBufferedEvents() {

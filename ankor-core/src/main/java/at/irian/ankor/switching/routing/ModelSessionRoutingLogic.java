@@ -43,7 +43,7 @@ public class ModelSessionRoutingLogic implements RoutingLogic {
         if (modelRoot == null) {
             modelSession = modelSessionFactory.createModelSession();
             modelRoot = application.createModel(modelName, connectParameters, modelSession.getRefContext());
-            modelSession.addModelRoot(modelName, modelRoot);
+            modelSession.setModelRoot(modelName, modelRoot);
             modelSessionManager.add(modelSession);
         } else {
             modelSession = modelSessionManager.findByModelRoot(modelRoot);
@@ -51,7 +51,7 @@ public class ModelSessionRoutingLogic implements RoutingLogic {
                 LOG.warn("Could not find ModelSession for model root {} - most likely a timeout had happened, creating a new session...",
                          modelRoot);
                 modelSession = modelSessionFactory.createModelSession();
-                modelSession.addModelRoot(modelName, modelRoot);
+                modelSession.setModelRoot(modelName, modelRoot);
                 modelSessionManager.add(modelSession);
             }
         }

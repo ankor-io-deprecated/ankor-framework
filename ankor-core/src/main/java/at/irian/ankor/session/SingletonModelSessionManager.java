@@ -19,8 +19,7 @@ public class SingletonModelSessionManager implements ModelSessionManager {
     @Override
     public ModelSession findByModelRoot(Object modelRoot) {
         checkModelSession();
-        for (String modelName : modelSession.getModelNames()) {
-            Object mr = modelSession.getModelRoot(modelName);
+        for (Object mr : modelSession.getModels().values()) {
             if (mr == modelRoot) {
                 return modelSession;
             }
@@ -59,7 +58,7 @@ public class SingletonModelSessionManager implements ModelSessionManager {
     @Override
     public void close() {
         if (modelSession != null) {
-            for (String modelName : modelSession.getModelNames()) {
+            for (String modelName : modelSession.getModels().keySet()) {
                 modelSession.getRefContext().closeModelConnection(modelName);
             }
             modelSession.close();
