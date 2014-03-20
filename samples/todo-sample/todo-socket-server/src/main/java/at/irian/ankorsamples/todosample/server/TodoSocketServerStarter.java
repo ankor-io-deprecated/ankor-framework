@@ -1,18 +1,15 @@
 package at.irian.ankorsamples.todosample.server;
 
-import at.irian.ankor.system.SocketServerStarter;
+import at.irian.ankor.system.SocketStandaloneServer;
 
 /**
  * @author Manfred Geiler
  */
-public class TodoSocketServerStarter extends SocketServerStarter {
+public class TodoSocketServerStarter {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalsSocketServerStarter.class);
 
     public static void main(String[] args) {
-        new TodoSocketServerStarter().start();
+        new SocketStandaloneServer(new TodoServerApplication()).start();
     }
 
-    public TodoSocketServerStarter() {
-        super(new TodoServerApplication());
-    }
 }
