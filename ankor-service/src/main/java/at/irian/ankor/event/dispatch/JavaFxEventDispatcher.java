@@ -1,7 +1,6 @@
 package at.irian.ankor.event.dispatch;
 
 import at.irian.ankor.event.ModelEvent;
-import at.irian.ankor.worker.WorkerContext;
 import javafx.application.Platform;
 
 /**
@@ -11,11 +10,9 @@ public class JavaFxEventDispatcher implements EventDispatcher {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(JavaFxEventDispatcher.class);
 
     private final EventDispatcher delegateEventDispatcher;
-    private final WorkerContext workerContext;
 
     public JavaFxEventDispatcher(EventDispatcher delegateEventDispatcher) {
         this.delegateEventDispatcher = delegateEventDispatcher;
-        this.workerContext = new WorkerContext();
     }
 
     @Override
@@ -23,12 +20,7 @@ public class JavaFxEventDispatcher implements EventDispatcher {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                WorkerContext.setCurrentInstance(workerContext);
-                try {
-                    delegateEventDispatcher.dispatch(event);
-                } finally {
-                    WorkerContext.setCurrentInstance(null);
-                }
+                delegateEventDispatcher.dispatch(event);
             }
         });
     }

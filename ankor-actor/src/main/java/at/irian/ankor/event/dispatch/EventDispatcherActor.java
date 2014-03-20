@@ -5,7 +5,6 @@ import akka.actor.UntypedActor;
 import akka.routing.ConsistentHashingRouter;
 import at.irian.ankor.event.ModelEvent;
 import at.irian.ankor.session.ModelSession;
-import at.irian.ankor.worker.WorkerContext;
 import com.typesafe.config.Config;
 
 /**
@@ -23,20 +22,13 @@ public class EventDispatcherActor extends UntypedActor {
         return "ankor_event_dispatcher";
     }
 
-    private final WorkerContext workerContext = new WorkerContext();
-
     @Override
     public void onReceive(Object msg) throws Exception {
         LOG.debug("{} received {}", self(), msg);
-        WorkerContext.setCurrentInstance(workerContext);
-        try {
-            if (msg instanceof ModelEventMsg) {
-                handleEvent(((ModelEventMsg) msg).getModelSession(), ((ModelEventMsg) msg).getModelEvent());
-            } else {
-                unhandled(msg);
-            }
-        } finally {
-            WorkerContext.setCurrentInstance(null);
+        if (msg instanceof ModelEventMsg) {
+            handleEvent(((ModelEventMsg) msg).getModelSession(), ((ModelEventMsg) msg).getModelEvent());
+        } else {
+            unhandled(msg);
         }
     }
 

@@ -1,5 +1,6 @@
 package at.irian.ankor.switching.connector.websocket;
 
+import at.irian.ankor.switching.connector.HandlerScopeContext;
 import at.irian.ankor.switching.connector.TransmissionHandler;
 import at.irian.ankor.switching.msg.ActionEventMessage;
 import at.irian.ankor.switching.msg.ChangeEventMessage;
@@ -20,7 +21,10 @@ public class WebSocketTransmissionHandler implements TransmissionHandler<WebSock
     }
 
     @Override
-    public void transmitEventMessage(ModelAddress sender, WebSocketModelAddress receiver, EventMessage message) {
+    public void transmitEventMessage(ModelAddress sender,
+                                     WebSocketModelAddress receiver,
+                                     EventMessage message,
+                                     HandlerScopeContext context) {
 
         WebSocketMessage socketMessage;
 
@@ -36,7 +40,7 @@ public class WebSocketTransmissionHandler implements TransmissionHandler<WebSock
             throw new IllegalArgumentException("Unsupported message type " + message.getClass().getName());
         }
 
-        webSocketSender.send(sender, receiver, socketMessage);
+        webSocketSender.send(sender, receiver, socketMessage, context);
     }
 
 }

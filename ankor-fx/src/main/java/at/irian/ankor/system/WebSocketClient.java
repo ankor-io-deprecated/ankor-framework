@@ -9,7 +9,6 @@ import at.irian.ankor.session.SingletonModelSessionManager;
 import at.irian.ankor.switching.connector.websocket.WebSocketEndpoint;
 import at.irian.ankor.switching.connector.websocket.WebSocketModelAddress;
 import at.irian.ankor.switching.routing.FixedWebSocketRoutingLogic;
-import at.irian.ankor.worker.WorkerContext;
 
 import javax.websocket.*;
 import java.io.IOException;
@@ -39,7 +38,6 @@ public class WebSocketClient {
     private AnkorSystem ankorSystem;
     private final String clientId;
     private final WebSocketConnectionManager connectionManager;
-    private final WorkerContext workerContext;
 
     public WebSocketClient(String applicationName, String modelName, Map<String, Object> connectParams, String host, int port, String serverPath, Endpoint listener) {
         this.listener = listener;
@@ -62,7 +60,6 @@ public class WebSocketClient {
         this.serverPath = serverPath;
         this.clientId = UUID.randomUUID().toString();
         this.connectionManager = new WebSocketConnectionManager();
-        this.workerContext = new WorkerContext();
         this.heartbeatIntervalMillis = 25 * 1000;
         this.reconnectIntervalMillis = 500;
     }
@@ -141,8 +138,6 @@ public class WebSocketClient {
         FxRefContext refContext = (FxRefContext) modelSession.getRefContext();
         // store the singleton RefContext in a static place - for access from FX controllers and FX event handlers
         FxRefs.setStaticRefContext(refContext);
-        // Set WorkerContext
-        WorkerContext.setCurrentInstance(workerContext);
         // Gentlemen, start your engines...
         ankorSystem.start();
         // Connect to WebSocket
@@ -210,13 +205,11 @@ public class WebSocketClient {
                     public void run() {
                         if (!connected.get()) {
                             try {
-                                WorkerContext.setCurrentInstance(workerContext);
                                 internalConnect();
                             } finally {
                                 if (connected.get()) {
                                     reconnectTimer.cancel();
                                 }
-                                WorkerContext.setCurrentInstance(null);
                             }
                         } else {
                             reconnectTimer.cancel();

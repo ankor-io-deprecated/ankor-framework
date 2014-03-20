@@ -3,8 +3,8 @@ package at.irian.ankor.switching.connector.websocket;
 import at.irian.ankor.messaging.MessageMapperFactory;
 import at.irian.ankor.messaging.MessageSerializer;
 import at.irian.ankor.switching.Switchboard;
+import at.irian.ankor.switching.connector.HandlerScopeContext;
 import at.irian.ankor.switching.routing.ModelAddress;
-import at.irian.ankor.worker.WorkerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +31,10 @@ public class WebSocketSender {
         this.messageMapperFactory = messageMapperFactory;
     }
 
-    public void send(ModelAddress sender, WebSocketModelAddress receiver, WebSocketMessage message) {
+    public void send(ModelAddress sender,
+                     WebSocketModelAddress receiver,
+                     WebSocketMessage message,
+                     HandlerScopeContext context) {
         Session session = sessionRegistry.getSession(receiver.getClientId());
         if (session == null) {
             LOG.error("Error sending {} from {} to {} - automatically disconnecting {}, reason: NO WS SESSION FOUND ...",
@@ -44,7 +47,7 @@ public class WebSocketSender {
             }
         } else {
             try {
-                String serializedMsg = getMessageSerializer().serialize(message);
+                String serializedMsg = getMessageSerializer(context).serialize(message);
                 LOG.debug("Sending serialized message to {}: {}", receiver, serializedMsg);
                 session.getBasicRemote().sendText(serializedMsg);
             } catch (IOException e) {
@@ -60,14 +63,13 @@ public class WebSocketSender {
         }
     }
 
-    private MessageSerializer<String> getMessageSerializer() {
+    private MessageSerializer<String> getMessageSerializer(HandlerScopeContext context) {
         @SuppressWarnings("unchecked")
         MessageSerializer<String> messageSerializer
-                = (MessageSerializer<String>) WorkerContext.getCurrentInstance().getAttributes().get(
-                MESSAGE_SERIALIZER_CTXT_ATTR_KEY);
+                = (MessageSerializer<String>) context.getAttributes().get(MESSAGE_SERIALIZER_CTXT_ATTR_KEY);
         if (messageSerializer == null) {
             messageSerializer = messageMapperFactory.createMessageMapper();
-            WorkerContext.getCurrentInstance().getAttributes().put(MESSAGE_SERIALIZER_CTXT_ATTR_KEY, messageSerializer);
+            context.getAttributes().put(MESSAGE_SERIALIZER_CTXT_ATTR_KEY, messageSerializer);
         }
         return messageSerializer;
     }

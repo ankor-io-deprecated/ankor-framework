@@ -5,6 +5,7 @@ import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.session.ModelSessionManager;
 import at.irian.ankor.switching.Switchboard;
 import at.irian.ankor.switching.connector.ConnectionHandler;
+import at.irian.ankor.switching.connector.HandlerScopeContext;
 import at.irian.ankor.switching.msg.ChangeEventMessage;
 import at.irian.ankor.switching.routing.ModelAddress;
 
@@ -26,7 +27,10 @@ public class LocalConnectionHandler implements ConnectionHandler<LocalModelAddre
     }
 
     @Override
-    public void openConnection(ModelAddress sender, LocalModelAddress receiver, Map<String, Object> connectParameters) {
+    public void openConnection(ModelAddress sender,
+                               LocalModelAddress receiver,
+                               Map<String, Object> connectParameters,
+                               HandlerScopeContext context) {
         LOG.debug("open connection from {} to {}", sender, receiver);
 
         String modelName = receiver.getModelName();
@@ -43,7 +47,10 @@ public class LocalConnectionHandler implements ConnectionHandler<LocalModelAddre
     }
 
     @Override
-    public void closeConnection(ModelAddress sender, LocalModelAddress receiver, boolean lastRoute) {
+    public void closeConnection(ModelAddress sender,
+                                LocalModelAddress receiver,
+                                boolean lastRoute,
+                                HandlerScopeContext context) {
         if (lastRoute) {
             String modelSessionId = receiver.getModelSessionId();
             ModelSession modelSession = modelSessionManager.getById(modelSessionId);

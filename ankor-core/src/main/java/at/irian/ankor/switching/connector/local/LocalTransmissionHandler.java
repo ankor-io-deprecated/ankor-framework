@@ -10,6 +10,7 @@ import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.impl.RefImplementor;
 import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.session.ModelSessionManager;
+import at.irian.ankor.switching.connector.HandlerScopeContext;
 import at.irian.ankor.switching.connector.TransmissionHandler;
 import at.irian.ankor.switching.msg.ActionEventMessage;
 import at.irian.ankor.switching.msg.ChangeEventMessage;
@@ -33,7 +34,10 @@ public class LocalTransmissionHandler implements TransmissionHandler<LocalModelA
     }
 
     @Override
-    public void transmitEventMessage(ModelAddress sender, LocalModelAddress receiver, EventMessage message) {
+    public void transmitEventMessage(ModelAddress sender,
+                                     LocalModelAddress receiver,
+                                     EventMessage message,
+                                     HandlerScopeContext context) {
         LOG.debug("delivering {} from {} to {}", message, sender, receiver);
 
         String modelSessionId = receiver.getModelSessionId();
