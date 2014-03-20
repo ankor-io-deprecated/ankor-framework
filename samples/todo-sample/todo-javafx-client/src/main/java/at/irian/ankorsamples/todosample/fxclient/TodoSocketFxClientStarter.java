@@ -1,6 +1,8 @@
 package at.irian.ankorsamples.todosample.fxclient;
 
-import at.irian.ankor.system.SocketFxClientApplication;
+import at.irian.ankor.system.AnkorClient;
+import at.irian.ankor.system.SocketFxClient;
+import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
@@ -9,30 +11,39 @@ import javafx.stage.Stage;
 /**
  * @author Manfred Geiler
  */
-public class TodoSocketFxClientStarter extends SocketFxClientApplication {
+public class TodoSocketFxClientStarter extends Application {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TodoSocketFxClientStarter.class);
 
-    private static final String APPLICATION_NAME = "Todo Sample FX Client";
-    private static final String MODEL_NAME = "root";
+    protected static final String APPLICATION_NAME = "Todo Sample FX Client";
+    protected static final String MODEL_NAME = "root";
 
     public static void main(String[] args) {
         launch(args);
     }
 
-    public TodoSocketFxClientStarter() {
-        super(APPLICATION_NAME, MODEL_NAME);
+    private AnkorClient ankorClient;
+
+    protected AnkorClient createAnkorClient() {
+        return SocketFxClient.create(APPLICATION_NAME, MODEL_NAME, getParameters());
     }
 
     @Override
-    public void startFx(Stage stage) throws Exception {
+    public void start(Stage stage) throws Exception {
+        ankorClient = createAnkorClient();
+        ankorClient.start();
+
         stage.setTitle("Ankor JavaFX Todo Sample");
-
         Pane myPane = FXMLLoader.load(getClass().getClassLoader().getResource("tasks.fxml"));
-
         Scene myScene = new Scene(myPane);
         myScene.getStylesheets().add("style.css");
         stage.setScene(myScene);
         stage.show();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        ankorClient.stop();
+        super.stop();
     }
 
 }
