@@ -34,6 +34,7 @@
 		E2B72F86184F98A3007F21F7 /* ANKChange.h in Sources */ = {isa = PBXBuildFile; fileRef = E2B72F7E184F4C31007F21F7 /* ANKChange.h */; };
 		E2B72F92184F9B7F007F21F7 /* ANKRefContextFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = E2B72F91184F9B7F007F21F7 /* ANKRefContextFactory.m */; };
 		E2B72F99184F9BD7007F21F7 /* ANKModelContext.m in Sources */ = {isa = PBXBuildFile; fileRef = E2B72F98184F9BD7007F21F7 /* ANKModelContext.m */; };
+		E2B9FBE018D31DC400B6A970 /* ANKConnectMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = E2B9FBDF18D31DC400B6A970 /* ANKConnectMessage.m */; };
 		E2CF2B66187D988D004E46F6 /* ANKChangeEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = E2CF2B65187D988D004E46F6 /* ANKChangeEvent.m */; };
 		E2CF2B6A187DF343004E46F6 /* ANKEventListeners.m in Sources */ = {isa = PBXBuildFile; fileRef = E2CF2B69187DF343004E46F6 /* ANKEventListeners.m */; };
 		E2CF2B7C187EB06B004E46F6 /* ANKRemoteMessageListener.m in Sources */ = {isa = PBXBuildFile; fileRef = E2CF2B7B187EB06B004E46F6 /* ANKRemoteMessageListener.m */; };
@@ -132,6 +133,8 @@
 		E2B72F91184F9B7F007F21F7 /* ANKRefContextFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ANKRefContextFactory.m; sourceTree = "<group>"; };
 		E2B72F97184F9BD7007F21F7 /* ANKModelContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ANKModelContext.h; sourceTree = "<group>"; };
 		E2B72F98184F9BD7007F21F7 /* ANKModelContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ANKModelContext.m; sourceTree = "<group>"; };
+		E2B9FBDE18D31DC400B6A970 /* ANKConnectMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ANKConnectMessage.h; sourceTree = "<group>"; };
+		E2B9FBDF18D31DC400B6A970 /* ANKConnectMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ANKConnectMessage.m; sourceTree = "<group>"; };
 		E2CF2B64187D988D004E46F6 /* ANKChangeEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ANKChangeEvent.h; sourceTree = "<group>"; };
 		E2CF2B65187D988D004E46F6 /* ANKChangeEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ANKChangeEvent.m; sourceTree = "<group>"; };
 		E2CF2B68187DF343004E46F6 /* ANKEventListeners.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ANKEventListeners.h; sourceTree = "<group>"; };
@@ -277,6 +280,8 @@
 				E24756FB184E878A00D75019 /* ANKChangeMessage.m */,
 				E24756FC184E878A00D75019 /* ANKMessage.h */,
 				E24756FD184E878A00D75019 /* ANKMessage.m */,
+				E2B9FBDE18D31DC400B6A970 /* ANKConnectMessage.h */,
+				E2B9FBDF18D31DC400B6A970 /* ANKConnectMessage.m */,
 			);
 			name = message;
 			sourceTree = "<group>";
@@ -499,6 +504,7 @@
 				E2D7B6E4187FF3150027646C /* ANKRemoteEventListener.m in Sources */,
 				E2475701184E878A00D75019 /* ANKChangeMessage.m in Sources */,
 				E2CF2B7C187EB06B004E46F6 /* ANKRemoteMessageListener.m in Sources */,
+				E2B9FBE018D31DC400B6A970 /* ANKConnectMessage.m in Sources */,
 				E2D7B6C8187EF1080027646C /* ANKRef.m in Sources */,
 				E2D7B6D2187F40F80027646C /* ANKRefChangeListener.m in Sources */,
 				E2B72F80184F4C31007F21F7 /* ANKChange.m in Sources */,

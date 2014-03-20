@@ -131,12 +131,12 @@ public class TaskListController implements Initializable {
 
     @FXML
     public void openIRIAN(ActionEvent actionEvent) {
-        App.getServices().showDocument("http://www.irian.at");
+        TodoWebSocketFxClientStarter.getServices().showDocument("http://www.irian.at");
     }
 
     @FXML
     public void openTodoMVC(ActionEvent actionEvent) {
-        App.getServices().showDocument("http://todomvc.com/");
+        TodoWebSocketFxClientStarter.getServices().showDocument("http://todomvc.com/");
     }
 
     @FXML

@@ -12,9 +12,9 @@
 #import "ANKMessage.h"
 
 typedef enum {
-    ANK_WS_INIT_CONNECTION   = 0,
-    ANK_WS_INIT_MODEL        = 1,
-    ANK_WS_INITIALIZED       = 2,
+    ANK_WS_UNDEFINED         = 0,
+    ANK_WS_INIT_CONNECTION   = 1,
+    ANK_WS_CONNECTED         = 2,
 } ANKWebSocketState;
 
 @interface ANKWebSocketMessageLoop() <SRWebSocketDelegate> {
@@ -26,7 +26,10 @@ typedef enum {
     ANKMessageSerialization *msgSerialization;
     ANKMessageFactory *messageFactory;
     dispatch_semaphore_t sema;
-    
+    NSString* clientId;
+    NSString* connProperty;
+    NSDictionary* connParams;
+
     SRWebSocket *_webSocket;
     
     ANKWebSocketState _state;
@@ -39,13 +42,18 @@ typedef enum {
 
 #pragma mark - ANKMessageLoop
 
-- (id)initWith:(id <ANKMessageListener>)listener messageFactory:(ANKMessageFactory *)factory url:(NSString*)sUrl {
+- (id)initWith:(id <ANKMessageListener>)listener messageFactory:(ANKMessageFactory *)factory url:(NSString*)sUrl
+    connectProperty:(NSString*)connectProperty params:(NSDictionary*)connectParams {
     messageListener = listener;
     messageFactory = factory;
     messages = [[NSMutableArray alloc] init];
     msgSerialization = [ANKMessageSerialization new];
-    url = sUrl;
+    clientId = [[NSUUID UUID] UUIDString];
+    connProperty = connectProperty;
+    connParams = connectParams;
+    url = [sUrl stringByAppendingString:[NSString stringWithFormat:@"/%@", clientId]];
     [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(sendHeartbeat) userInfo:Nil repeats:YES];
+    _state = ANK_WS_UNDEFINED;
     return self;
 }
 
@@ -80,11 +88,6 @@ typedef enum {
             NSData* data = [msgSerialization serialize:msg];
             NSLog(@"Sending json %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
             [_webSocket send:data];
-            if (_state == ANK_WS_INIT_MODEL) {
-                // send out init model message, ignore rest
-                [messages removeObjectAtIndex:0];
-                return;
-            }
         }
         [messages removeAllObjects];
     }
@@ -102,21 +105,25 @@ typedef enum {
 
 - (void)reconnect {
     if (_state == ANK_WS_INIT_CONNECTION) {
-        return; // already connecting
+        return; // already connecting or reconnect scheduled
     } else {
-        _webSocket = nil;
-        [self connect];
+        _state = ANK_WS_INIT_CONNECTION;
+        [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(executeReconnect) userInfo:Nil repeats:NO];
     }
 }
 
+- (void)executeReconnect {
+    _webSocket = nil;
+    [self connect];
+}
 
 - (void)connect;
 {
     @synchronized(self) {
+        _webSocket = [[SRWebSocket alloc] initWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]]];
         if (_webSocket && _webSocket.readyState == SR_OPEN) {
             return;
         }
-        _webSocket = [[SRWebSocket alloc] initWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]]];
         _webSocket.delegate = self;
         
         _state = ANK_WS_INIT_CONNECTION;
@@ -128,29 +135,17 @@ typedef enum {
     NSLog(@"didReceiveMessage %@", data);
     @autoreleasepool {
         @synchronized(self) {
-            if (_state == ANK_WS_INIT_MODEL) {
-                _state = ANK_WS_INITIALIZED;
-                [self doSend];
-            }
-            if (_state == ANK_WS_INIT_CONNECTION) {
-                messageFactory.senderId = data;
-                ANKActionMessage *initMessage = [messageFactory createActionMessage:@"root" action:@"init"];
-                [messages insertObject:initMessage atIndex:0];
-                _state = ANK_WS_INIT_MODEL;
-                [self doSend];
-            } else {
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    @autoreleasepool {
-                        NSMutableData *dataBytes = [NSMutableData new];
-                        [dataBytes appendData: [(NSString*) data dataUsingEncoding:NSUTF8StringEncoding]];
-                        for (id message in [msgSerialization deserialize:dataBytes]) {
-                            if (message) {
-                                [messageListener onMessage:message];
-                            }
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                @autoreleasepool {
+                    NSMutableData *dataBytes = [NSMutableData new];
+                    [dataBytes appendData: [(NSString*) data dataUsingEncoding:NSUTF8StringEncoding]];
+                    for (id message in [msgSerialization deserialize:dataBytes]) {
+                        if (message) {
+                            [messageListener onMessage:message];
                         }
                     }
-                }];
-            }
+                }
+            }];
         }
     }
 }
@@ -163,23 +158,27 @@ typedef enum {
             @synchronized(self) {
                 [_webSocket send:data];
             }
-        } else {
-            [self connect];
         }
     }
 }
 
 - (void)webSocketDidOpen:(SRWebSocket *)webSocket {
     NSLog(@"webSocketDidOpen");
+    _state = ANK_WS_CONNECTED;
+    ANKConnectMessage* initMessage = [messageFactory createConnectMessage:connProperty params:connParams];
+    [messages insertObject:initMessage atIndex:0];
+    [self doSend];
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error {
     NSLog(@"didFailWithError");
+    _state = ANK_WS_UNDEFINED;
     [self reconnect];
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean {
     NSLog(@"didCloseWithCode");
+    _state = ANK_WS_UNDEFINED;
     [self reconnect];
 }
 

@@ -20,6 +20,8 @@
     ANKMessageFactory *messageFactory;
     dispatch_semaphore_t sema;
     bool sendInitMessage;
+    NSString* connProperty;
+    NSDictionary* connParams;
 }
 
 @end
@@ -29,12 +31,15 @@
 static dispatch_once_t once;
 static NSOperationQueue *connectionQueue;
 
-- (id)initWith:(id <ANKMessageListener>)listener messageFactory:(ANKMessageFactory *)factory senderId:(NSString *)sId url:(NSString*)sUrl {
+- (id)initWith:(id <ANKMessageListener>)listener messageFactory:(ANKMessageFactory *)factory senderId:(NSString *)sId url:(NSString*)sUrl
+    connectProperty:(NSString*)connectProperty params:(NSDictionary*)connectParams {
     messageListener = listener;
     messageFactory = factory;
-    senderId = sId;
+    senderId = [[NSUUID UUID] UUIDString];
     messages = [[NSMutableArray alloc] init];
     lock = [NSLock new];
+    connProperty = connectProperty;
+    connParams = connectParams;
     msgSerialization = [ANKMessageSerialization new];
     url = sUrl;
     return self;
@@ -74,7 +79,7 @@ static NSOperationQueue *connectionQueue;
 
     [lock lock];
     if (sendInitMessage) {
-        ANKActionMessage *initMessage = [messageFactory createActionMessage:@"root" action:@"init"];
+        ANKConnectMessage* initMessage = [messageFactory createConnectMessage:connProperty params:connParams];
         [messages removeAllObjects];
         [messages addObject:initMessage];
         sendInitMessage = false;

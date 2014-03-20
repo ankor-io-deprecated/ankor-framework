@@ -10,7 +10,7 @@
 
 @interface ANKSystem : NSObject
 
--(id)initWith:(NSString*)modelId url:(NSString*)url useWebsocket:(BOOL)useWebSocket;
+-(id)initWith:(NSString*)connectProperty connectParams:(NSDictionary*)connectParams url:(NSString*)url useWebsocket:(BOOL)useWebSocket;
 
 -(void)start;
 

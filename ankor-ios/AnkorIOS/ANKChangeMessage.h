@@ -11,12 +11,10 @@
 
 @interface ANKChangeMessage : ANKMessage
 
-@property NSString *property;
 @property ANKChangeType type;
 @property id key;
 @property NSObject *value;
 
-- (id) initWith:(NSString *)senderId modelId:(NSString *)modelId messageId:(NSString *)messageId property:(NSString*)property
-     type:(ANKChangeType)type key:(id)key value:(NSObject*)value;
+- (id) initWith:(NSString*)property type:(ANKChangeType)type key:(id)key value:(NSObject*)value;
 
 @end

@@ -23,7 +23,7 @@ public class WebSocketModelAddress implements ModelAddress, Serializable {
 
     @Override
     public String getModelName() {
-        return null;
+        return modelName;
     }
 
     public String getClientId() {

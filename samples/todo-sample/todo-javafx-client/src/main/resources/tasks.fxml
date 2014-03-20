@@ -102,6 +102,11 @@
               <children>
                 <HBox alignment="TOP_CENTER">
                   <children>
+                    <Label id="serverStatus" prefHeight="19.0" styleClass="footerText" text="" HBox.hgrow="ALWAYS" />
+                  </children>
+                </HBox>
+                <HBox alignment="TOP_CENTER">
+                  <children>
                     <Label prefHeight="19.0" styleClass="footerText" text="Double-click to edit a todo" HBox.hgrow="ALWAYS" />
                   </children>
                 </HBox>

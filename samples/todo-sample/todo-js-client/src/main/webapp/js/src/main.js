@@ -33,6 +33,5 @@ define([
   render = _.throttle(render, 10);
 
   rootRef.addTreeChangeListener(render);
-  rootRef.fire("init");
 });
 

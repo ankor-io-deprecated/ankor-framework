@@ -4,11 +4,12 @@ define([
     var WebSocketTransport = function (endpoint, options) {
         BaseTransport.call(this);
 
-        var _options = options || {};
-        this.endpoint = endpoint || "/websocket/ankor/123";
-        this.heartbeatInterval = _options.heartbeatInterval || 5000;
+        this.options = options || {};
+        this.endpoint = endpoint || "/websocket/ankor";  // TODO remove hack
+        this.endpoint += "/" + Math.random().toString(36).substring(2, 15) +
+            Math.random().toString(36).substring(2, 15);
+        this.heartbeatInterval = options.heartbeatInterval || 5000;
 
-        this._idReceived = false;
         this._isReady = false;
 
         // Sends pending messages after the connection has been established
@@ -62,6 +63,13 @@ define([
                 // console.log('WebSocket connected');
                 self._isReady = true;
 
+                var ConnectMsg = function(property) {  // TODO create connectionManager, then move connect message, implement disconnect
+                    this.event = {};
+                    this.event["path"] = self.options.connectProperty;
+                    this.connectParams = self.options.connectParams;
+                };
+                self.sendMessage(new ConnectMsg("root"));
+
                 var heartbeat = function() {
                     console.log("\u2665-beat");
                     self.socket.send("");
@@ -85,18 +93,9 @@ define([
 
             this.socket.onmessage = function (jsonMessage) {
                 // the server assigns an id to this client, which will be the first message the server sends
-                if (self._idReceived == false) {
-                    // console.log('WebSocket received id from server');
-
-                    // the id will be "forced" on this ankor system
-                    self.ankorSystem.senderId = jsonMessage.data;
-                    self._sendPendingMessages();
-                    self._idReceived = true;
-                } else {
-                    var message = self.decodeMessage(self.utils.jsonParse(jsonMessage.data));
-                    // console.log('WebSocket received messages', jsonMessage.data);
-                    self.receiveMessage(message);
-                }
+                var message = self.decodeMessage(self.utils.jsonParse(jsonMessage.data));
+                // console.log('WebSocket received messages', jsonMessage.data);
+                self.receiveMessage(message);
             };
         }
     };
