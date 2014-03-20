@@ -3,11 +3,13 @@ package at.irian.ankor.switching;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.routing.Broadcast;
-import at.irian.ankor.switching.connector.DefaultConnectorRegistry;
-import at.irian.ankor.switching.connector.ConnectorMapping;
 import at.irian.ankor.switching.connector.ConnectorRegistry;
+import at.irian.ankor.switching.connector.DefaultConnectorRegistry;
 import at.irian.ankor.switching.msg.EventMessage;
-import at.irian.ankor.switching.routing.*;
+import at.irian.ankor.switching.routing.ConcurrentRoutingTable;
+import at.irian.ankor.switching.routing.ModelAddress;
+import at.irian.ankor.switching.routing.RoutingLogic;
+import at.irian.ankor.switching.routing.RoutingTable;
 import com.typesafe.config.Config;
 
 import java.util.Map;
@@ -20,7 +22,7 @@ public class AkkaSwitchboard implements SwitchboardImplementor {
     private final ActorRef switchboardRouterActor;
     private final ConnectorRegistry connectorRegistry;
     private final RoutingTable routingTable;
-    private MySimpleSwitchboard delegateSwitchboard;
+    private RoutingLogic routingLogic;
 
     protected AkkaSwitchboard(ActorRef switchboardRouterActor,
                               ConnectorRegistry connectorRegistry,
@@ -28,7 +30,6 @@ public class AkkaSwitchboard implements SwitchboardImplementor {
         this.switchboardRouterActor = switchboardRouterActor;
         this.connectorRegistry = connectorRegistry;
         this.routingTable = routingTable;
-        this.delegateSwitchboard = new MySimpleSwitchboard(routingTable, connectorRegistry);
     }
 
     public static SwitchboardImplementor create(ActorSystem actorSystem) {
@@ -36,17 +37,19 @@ public class AkkaSwitchboard implements SwitchboardImplementor {
         Config config = actorSystem.settings().config();
         int nrOfInstances = config.getInt("at.irian.ankor.switching.SwitchboardActor.poolSize");
 
-        ActorRef switchboardActor = actorSystem.actorOf(SwitchboardActor.props(config),
-                                                        SwitchboardActor.name());
-        ConnectorRegistry connectorRegistry = DefaultConnectorRegistry.createForConcurrency(nrOfInstances);
         RoutingTable routingTable = new ConcurrentRoutingTable();
+        ConnectorRegistry connectorRegistry = DefaultConnectorRegistry.createForConcurrency(nrOfInstances);
+        ActorRef switchboardRouterActor = actorSystem.actorOf(SwitchboardActor.props(config,
+                                                                                     routingTable,
+                                                                                     connectorRegistry),
+                                                              SwitchboardActor.name());
 
-        return new AkkaSwitchboard(switchboardActor, connectorRegistry, routingTable);
+        return new AkkaSwitchboard(switchboardRouterActor, connectorRegistry, routingTable);
     }
 
     @Override
     public void setRoutingLogic(RoutingLogic routingLogic) {
-        delegateSwitchboard.setRoutingLogic(routingLogic);
+        this.routingLogic = routingLogic;
     }
 
     @Override
@@ -121,8 +124,8 @@ public class AkkaSwitchboard implements SwitchboardImplementor {
 
     @Override
     public void start() {
-        delegateSwitchboard.start();
-        switchboardRouterActor.tell(new Broadcast(new SwitchboardActor.StartMsg(delegateSwitchboard)), ActorRef.noSender());
+        switchboardRouterActor.tell(new Broadcast(new SwitchboardActor.StartMsg(routingLogic)),
+                                    ActorRef.noSender());
     }
 
     @Override
@@ -131,24 +134,6 @@ public class AkkaSwitchboard implements SwitchboardImplementor {
             closeAllConnections(p);
         }
         switchboardRouterActor.tell(new Broadcast(new SwitchboardActor.StopMsg()), ActorRef.noSender());
-        delegateSwitchboard.stop();
-    }
-
-
-    private class MySimpleSwitchboard extends AbstractSwitchboard {
-        private MySimpleSwitchboard(RoutingTable routingTable, ConnectorMapping connectorMapping) {
-            super(routingTable, connectorMapping);
-        }
-
-        @Override
-        protected void dispatchableSend(ModelAddress originalSender, ModelAddress receiver, EventMessage message) {
-            AkkaSwitchboard.this.send(originalSender, message, receiver);
-        }
-
-        @Override
-        protected void dispatchableCloseConnection(ModelAddress sender, ModelAddress receiver) {
-            AkkaSwitchboard.this.closeConnection(sender, receiver);
-        }
     }
 
 

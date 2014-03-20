@@ -1,7 +1,6 @@
 package at.irian.ankor.switching;
 
-import at.irian.ankor.switching.connector.ConnectorRegistry;
-import at.irian.ankor.switching.connector.DefaultConnectorRegistry;
+import at.irian.ankor.switching.connector.*;
 import at.irian.ankor.switching.msg.EventMessage;
 import at.irian.ankor.switching.routing.ConcurrentRoutingTable;
 import at.irian.ankor.switching.routing.ModelAddress;
@@ -18,14 +17,18 @@ public class DefaultSwitchboard extends AbstractSwitchboard implements Switchboa
 
     private final ConnectorRegistry connectorRegistry;
 
-    protected DefaultSwitchboard(RoutingTable routingTable, ConnectorRegistry connectorRegistry) {
-        super(routingTable, connectorRegistry);
+    protected DefaultSwitchboard(RoutingTable routingTable,
+                                 ConnectorRegistry connectorRegistry,
+                                 HandlerScopeContext handlerScopeContext) {
+        super(routingTable, connectorRegistry, handlerScopeContext);
         this.connectorRegistry = connectorRegistry;
     }
 
     public static SwitchboardImplementor createForSingleThread() {
         ConnectorRegistry connectorRegistry = DefaultConnectorRegistry.createForSingleThread();
-        return new DefaultSwitchboard(new ConcurrentRoutingTable(), connectorRegistry);
+        return new DefaultSwitchboard(new ConcurrentRoutingTable(),
+                                      connectorRegistry,
+                                      new SimpleHandlerScopeContext());
     }
 
     public static SwitchboardImplementor createForConcurrency() {
@@ -34,7 +37,9 @@ public class DefaultSwitchboard extends AbstractSwitchboard implements Switchboa
 
     public static SwitchboardImplementor createForConcurrency(int concurrencyLevel) {
         ConnectorRegistry connectorRegistry = DefaultConnectorRegistry.createForConcurrency(concurrencyLevel);
-        return new DefaultSwitchboard(new ConcurrentRoutingTable(), connectorRegistry);
+        return new DefaultSwitchboard(new ConcurrentRoutingTable(),
+                                      connectorRegistry,
+                                      new ThreadLocalHandlerScopeContext());
     }
 
     @Override

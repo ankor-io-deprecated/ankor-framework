@@ -2,6 +2,7 @@ package at.irian.ankor.switching.connector.socket;
 
 import at.irian.ankor.messaging.MessageSerializer;
 import at.irian.ankor.switching.Switchboard;
+import at.irian.ankor.switching.connector.HandlerScopeContext;
 import at.irian.ankor.switching.connector.TransmissionHandler;
 import at.irian.ankor.switching.msg.ActionEventMessage;
 import at.irian.ankor.switching.msg.ChangeEventMessage;
@@ -30,7 +31,10 @@ public class SocketTransmissionHandler implements TransmissionHandler<SocketMode
     }
 
     @Override
-    public void transmitEventMessage(ModelAddress sender, SocketModelAddress receiver, EventMessage message) {
+    public void transmitEventMessage(ModelAddress sender,
+                                     SocketModelAddress receiver,
+                                     EventMessage message,
+                                     HandlerScopeContext context) {
         try {
             send(receiver, message);
         } catch (IOException e) {

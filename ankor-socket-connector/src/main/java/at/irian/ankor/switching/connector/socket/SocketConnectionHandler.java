@@ -2,6 +2,7 @@ package at.irian.ankor.switching.connector.socket;
 
 import at.irian.ankor.messaging.MessageSerializer;
 import at.irian.ankor.switching.connector.ConnectionHandler;
+import at.irian.ankor.switching.connector.HandlerScopeContext;
 import at.irian.ankor.switching.routing.ModelAddress;
 
 import java.io.IOException;
@@ -24,7 +25,10 @@ public class SocketConnectionHandler implements ConnectionHandler<SocketModelAdd
     }
 
     @Override
-    public void openConnection(ModelAddress sender, SocketModelAddress receiver, Map<String, Object> connectParameters) {
+    public void openConnection(ModelAddress sender,
+                               SocketModelAddress receiver,
+                               Map<String, Object> connectParameters,
+                               HandlerScopeContext context) {
         SocketMessage connectMsg = SocketMessage.createConnectMsg(localAddress.toString(),
                                                                      sender.getModelName(),
                                                                      connectParameters);
@@ -32,7 +36,10 @@ public class SocketConnectionHandler implements ConnectionHandler<SocketModelAdd
     }
 
     @Override
-    public void closeConnection(ModelAddress sender, SocketModelAddress receiver, boolean lastRoute) {
+    public void closeConnection(ModelAddress sender,
+                                SocketModelAddress receiver,
+                                boolean lastRoute,
+                                HandlerScopeContext context) {
         SocketMessage closeMsg = SocketMessage.createCloseMsg(localAddress.toString(),
                                                               sender.getModelName());
         send(sender, receiver, closeMsg);

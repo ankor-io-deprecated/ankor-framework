@@ -1,6 +1,7 @@
 package at.irian.ankor.switching;
 
 import at.irian.ankor.switching.connector.ConnectorMapping;
+import at.irian.ankor.switching.connector.HandlerScopeContext;
 import at.irian.ankor.switching.msg.EventMessage;
 import at.irian.ankor.switching.routing.ModelAddress;
 import at.irian.ankor.switching.routing.RoutingLogic;
@@ -25,14 +26,18 @@ public abstract class AbstractSwitchboard implements Switchboard {
         STOPPED
     }
 
-    protected final RoutingTable routingTable;
-    protected final ConnectorMapping connectorMapping;
-    protected RoutingLogic routingLogic;
+    private final RoutingTable routingTable;
+    private final ConnectorMapping connectorMapping;
+    private final HandlerScopeContext handlerScopeContext;
+    private volatile RoutingLogic routingLogic;
     private volatile Status status = Status.INITIALIZED;
 
-    public AbstractSwitchboard(RoutingTable routingTable, ConnectorMapping connectorMapping) {
+    public AbstractSwitchboard(RoutingTable routingTable,
+                               ConnectorMapping connectorMapping,
+                               HandlerScopeContext handlerScopeContext) {
         this.routingTable = routingTable;
         this.connectorMapping = connectorMapping;
+        this.handlerScopeContext = handlerScopeContext;
     }
 
     protected void setRoutingLogic(RoutingLogic routingLogic) {
@@ -156,17 +161,26 @@ public abstract class AbstractSwitchboard implements Switchboard {
     protected void handleOpenConnection(ModelAddress sender,
                                         Map<String, Object> connectParameters,
                                         ModelAddress receiver) {
-        connectorMapping.getConnectionHandler(receiver).openConnection(sender, receiver, connectParameters);
+        connectorMapping.getConnectionHandler(receiver).openConnection(sender,
+                                                                       receiver,
+                                                                       connectParameters,
+                                                                       handlerScopeContext);
     }
 
     @SuppressWarnings("unchecked")
     protected void handleTransmitEventMessage(ModelAddress sender, ModelAddress receiver, EventMessage message) {
-        connectorMapping.getTransmissionHandler(receiver).transmitEventMessage(sender, receiver, message);
+        connectorMapping.getTransmissionHandler(receiver).transmitEventMessage(sender,
+                                                                               receiver,
+                                                                               message,
+                                                                               handlerScopeContext);
     }
 
     @SuppressWarnings("unchecked")
     protected void handleCloseConnection(ModelAddress sender, ModelAddress receiver, boolean noMoreRouteToReceiver) {
-        connectorMapping.getConnectionHandler(receiver).closeConnection(sender, receiver, noMoreRouteToReceiver);
+        connectorMapping.getConnectionHandler(receiver).closeConnection(sender,
+                                                                        receiver,
+                                                                        noMoreRouteToReceiver,
+                                                                        handlerScopeContext);
     }
 
 }

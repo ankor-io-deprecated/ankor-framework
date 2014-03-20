@@ -3,9 +3,13 @@ package at.irian.ankor.switching;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.routing.ConsistentHashingRouter;
+import at.irian.ankor.switching.connector.ConnectorMapping;
+import at.irian.ankor.switching.connector.HandlerScopeContext;
+import at.irian.ankor.switching.connector.SimpleHandlerScopeContext;
 import at.irian.ankor.switching.msg.EventMessage;
 import at.irian.ankor.switching.routing.ModelAddress;
-import at.irian.ankor.worker.WorkerContext;
+import at.irian.ankor.switching.routing.RoutingLogic;
+import at.irian.ankor.switching.routing.RoutingTable;
 import com.typesafe.config.Config;
 
 import java.util.Map;
@@ -16,9 +20,11 @@ import java.util.Map;
 public class SwitchboardActor extends UntypedActor {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SwitchboardActor.class);
 
-    public static Props props(@SuppressWarnings("UnusedParameters") Config config) {
+    public static Props props(@SuppressWarnings("UnusedParameters") Config config,
+                              RoutingTable routingTable,
+                              ConnectorMapping connectorMapping) {
         int nrOfInstances = config.getInt("at.irian.ankor.switching.SwitchboardActor.poolSize");
-        return Props.create(SwitchboardActor.class)
+        return Props.create(SwitchboardActor.class, routingTable, connectorMapping)
                     .withRouter(new ConsistentHashingRouter(nrOfInstances));
     }
 
@@ -26,78 +32,76 @@ public class SwitchboardActor extends UntypedActor {
         return "ankor_switchboard";
     }
 
-    private Switchboard delegateSwitchboard;
-    private final WorkerContext workerContext = new WorkerContext();
+    private final MySwitchboard mySwitchboard;
+
+    public SwitchboardActor(RoutingTable routingTable,
+                            ConnectorMapping connectorMapping) {
+        HandlerScopeContext handlerScopeContext = new SimpleHandlerScopeContext();
+        this.mySwitchboard = new MySwitchboard(routingTable, connectorMapping, handlerScopeContext);
+    }
 
     @Override
     public void onReceive(Object msg) throws Exception {
         LOG.debug("{} received {}", self(), msg);
-        WorkerContext.setCurrentInstance(workerContext);
         try {
-            try {
-                if (msg instanceof StartMsg) {
-                    handleStart(((StartMsg) msg).getDelegateSwitchboard());
-                } else if (msg instanceof StopMsg) {
-                    handleStop();
-                } else if (msg instanceof OpenMsg) {
-                    handleOpen(((OpenMsg) msg).getSender(), ((OpenMsg) msg).getConnectParameters());
-                } else if (msg instanceof SendFromMsg) {
-                    handleSendFrom(((SendFromMsg) msg).getSender(), ((SendFromMsg) msg).getMessage());
-                } else if (msg instanceof SendToMsg) {
-                    handleSendTo(((SendToMsg) msg).getSender(), ((SendToMsg) msg).getMessage(), ((SendToMsg) msg).getReceiver());
-                } else if (msg instanceof CloseFromMsg) {
-                    handleCloseFrom(((CloseFromMsg) msg).getSender());
-                } else if (msg instanceof CloseToMsg) {
-                    handleCloseTo(((CloseToMsg) msg).getSender(), ((CloseToMsg) msg).getReceiver());
-                } else {
-                    unhandled(msg);
-                }
-            } catch (Exception e) {
-                LOG.error("Exception while handling " + msg, e);
+            if (msg instanceof StartMsg) {
+                handleStart(((StartMsg) msg).getRoutingLogic());
+            } else if (msg instanceof StopMsg) {
+                handleStop();
+            } else if (msg instanceof OpenMsg) {
+                handleOpen(((OpenMsg) msg).getSender(), ((OpenMsg) msg).getConnectParameters());
+            } else if (msg instanceof SendFromMsg) {
+                handleSendFrom(((SendFromMsg) msg).getSender(), ((SendFromMsg) msg).getMessage());
+            } else if (msg instanceof SendToMsg) {
+                handleSendTo(((SendToMsg) msg).getSender(), ((SendToMsg) msg).getMessage(), ((SendToMsg) msg).getReceiver());
+            } else if (msg instanceof CloseFromMsg) {
+                handleCloseFrom(((CloseFromMsg) msg).getSender());
+            } else if (msg instanceof CloseToMsg) {
+                handleCloseTo(((CloseToMsg) msg).getSender(), ((CloseToMsg) msg).getReceiver());
+            } else {
+                unhandled(msg);
             }
-        } finally {
-            WorkerContext.setCurrentInstance(null);
+        } catch (Exception e) {
+            LOG.error("Exception while handling " + msg, e);
         }
     }
 
-    private void handleStart(Switchboard delegateSwitchboard) {
-        if (this.delegateSwitchboard != null) {
-            throw new IllegalStateException("Switchboard already set");
-        }
-        this.delegateSwitchboard = delegateSwitchboard;
+    private void handleStart(RoutingLogic routingLogic) {
+        this.mySwitchboard.setRoutingLogic(routingLogic);
+        this.mySwitchboard.start();
     }
 
     private void handleStop() {
-        this.delegateSwitchboard = null;
+        this.mySwitchboard.stop();
     }
 
     private void handleOpen(ModelAddress sender, Map<String, Object> connectParameters) {
         checkRunning();
-        delegateSwitchboard.openConnection(sender, connectParameters);
+        mySwitchboard.openConnection(sender, connectParameters);
     }
 
     private void handleSendFrom(ModelAddress sender, EventMessage message) {
         checkRunning();
-        delegateSwitchboard.send(sender, message);
+        mySwitchboard.send(sender, message);
     }
 
     private void handleSendTo(ModelAddress sender, EventMessage message, ModelAddress receiver) {
         checkRunning();
-        delegateSwitchboard.send(sender, message, receiver);
+        mySwitchboard.send(sender, message, receiver);
     }
 
     private void handleCloseFrom(ModelAddress sender) {
         checkRunning();
-        delegateSwitchboard.closeAllConnections(sender);
+        mySwitchboard.closeAllConnections(sender);
     }
 
     private void handleCloseTo(ModelAddress sender, ModelAddress receiver) {
         checkRunning();
-        delegateSwitchboard.closeConnection(sender, receiver);
+        mySwitchboard.closeConnection(sender, receiver);
     }
 
     private void checkRunning() {
-        if (delegateSwitchboard == null) {
+        if (mySwitchboard == null) {
             throw new IllegalStateException("Not yet started");
         }
     }
@@ -105,14 +109,14 @@ public class SwitchboardActor extends UntypedActor {
 
 
     public static class StartMsg {
-        private final Switchboard delegateSwitchboard;
+        private final RoutingLogic routingLogic;
 
-        public StartMsg(Switchboard delegateSwitchboard) {
-            this.delegateSwitchboard = delegateSwitchboard;
+        public StartMsg(RoutingLogic routingLogic) {
+            this.routingLogic = routingLogic;
         }
 
-        public Switchboard getDelegateSwitchboard() {
-            return delegateSwitchboard;
+        public RoutingLogic getRoutingLogic() {
+            return routingLogic;
         }
 
         @Override
@@ -283,5 +287,29 @@ public class SwitchboardActor extends UntypedActor {
         }
     }
 
+
+
+    private class MySwitchboard extends AbstractSwitchboard {
+        private MySwitchboard(RoutingTable routingTable,
+                              ConnectorMapping connectorMapping,
+                              HandlerScopeContext handlerScopeContext) {
+            super(routingTable, connectorMapping, handlerScopeContext);
+        }
+
+        @Override
+        protected void setRoutingLogic(RoutingLogic routingLogic) {
+            super.setRoutingLogic(routingLogic);
+        }
+
+        @Override
+        protected void dispatchableSend(ModelAddress originalSender, ModelAddress receiver, EventMessage message) {
+            context().parent().tell(new SwitchboardActor.SendToMsg(originalSender, receiver, message), self());
+        }
+
+        @Override
+        protected void dispatchableCloseConnection(ModelAddress sender, ModelAddress receiver) {
+            context().parent().tell(new SwitchboardActor.CloseToMsg(sender, receiver), self());
+        }
+    }
 
 }
