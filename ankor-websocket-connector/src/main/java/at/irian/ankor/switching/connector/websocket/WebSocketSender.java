@@ -39,7 +39,9 @@ public class WebSocketSender {
                     sender,
                     receiver,
                     receiver);
-            switchboard.closeConnection(sender, receiver);
+            if (!message.isClose()) {
+                switchboard.closeConnection(sender, receiver);
+            }
         } else {
             try {
                 String serializedMsg = getMessageSerializer().serialize(message);
@@ -51,7 +53,9 @@ public class WebSocketSender {
                         sender,
                         receiver,
                         receiver, e);
-                switchboard.closeConnection(sender, receiver);
+                if (!message.isClose()) {
+                    switchboard.closeConnection(sender, receiver);
+                }
             }
         }
     }
