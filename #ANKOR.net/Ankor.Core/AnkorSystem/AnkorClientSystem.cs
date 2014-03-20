@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Windows.Threading;
 using Ankor.Core.Action;
@@ -47,32 +48,36 @@ namespace Ankor.Core.AnkorSystem  {
 		public class WebSocketBuilder {
 			public string WebSocketUri { get; set; }
 
-			public string ModelContextId { get; set; }
+			public string ModelName { get; set; }
 
-			public Dispatcher Dispatcher { get; set; }
-
-// TODO move to a common builder
+			public IDictionary<string, string> ConnectionParams { get; private set; }
 
 			public WebSocketBuilder() {
+				ConnectionParams = new Dictionary<string, string>();
 				WebSocketUri = "ws://localhost:8080/websocket/ankor";
 			}
 
-			public AnkorClientSystem Build() {
+			public WebSocketBuilder AddConnectParam(string key, string param) {
+				ConnectionParams[key] = param;
+				return this;
+			}
+
+			public AnkorClientSystem StartAnkor() {
 				WebSocketMessenger messenger = new WebSocketMessenger(WebSocketUri, new JsonMessageMapper());
 				messenger.Start();
 
 				var systemName = messenger.ClientId;
 
 				var factory = new MessageFactory(systemName);
-				factory.ModelContextId = ModelContextId;
+				factory.ModelContextId = ModelName;
 
 				var ankor =  new AnkorClientSystem(messenger, factory);
-				ankor.Dispatcher = Dispatcher;
+				//ankor.Dispatcher = Dispatcher;
 				return ankor;
 			}
 		}
 
-		private readonly IMessenger messageBus;
+		private readonly IMessenger messenger;
 		private readonly MessageFactory messageFactory;
 		private readonly IInternalModel internalModel;
 		private readonly DynaModel dynaModel;
@@ -85,19 +90,19 @@ namespace Ankor.Core.AnkorSystem  {
 		private AnkorClientSystem(IMessenger messenger, MessageFactory factory) {
 			//SystemName = "unknown Client";
 			//MessageMapper = new JsonMessageMapper();
-			this.messageBus = messenger;
+			this.messenger = messenger;
 			this.messageFactory = factory;
 
 			internalModel = new RModel();
 			dynaModel = new DynaModel(internalModel);
 
-			Connect();
+			WireUp();
 
 		}
 
-		private void Connect() {
+		private void WireUp() {
 
-			messageBus.OnMessage += OnServerMessage;
+			messenger.OnMessage += OnServerMessage;
 
 			internalModel.EventRegistry.Add(new ActionEventListener(SendActionToRemote));
 			internalModel.EventRegistry.Add(new ChangeEventListener(SendChangeToRemote));
@@ -106,24 +111,26 @@ namespace Ankor.Core.AnkorSystem  {
 
 		private void SendChangeToRemote(ChangeEvent modelevent) {
 			if (!(modelevent.Source is RemoteSource)) {
-				messageBus.Send(messageFactory.CreateChangeMessage(modelevent.Property.Path, modelevent.Change));
+				//messageBus.Send(messageFactory.CreateChangeMessage(modelevent.Property.Path, modelevent.Change));
+				messenger.Send(WebSocketMessage.CreateChangeMsg(modelevent.Property.Path, modelevent.Change));
 			}
 		}
 
 		private void SendActionToRemote(ActionEvent modelEvent) {
 			// only if remote
 			if (!(modelEvent.Source is RemoteSource)) {
-				messageBus.Send(messageFactory.CreateActionMessage(modelEvent.Property.Path, modelEvent.Action));
+				messenger.Send(WebSocketMessage.CreateActionMsg(modelEvent.Property.Path, modelEvent.Action));
 			}
 		}
 
-		private void OnServerMessage(Message msg) {
-			if (msg is ChangeMessage) {
+		private void OnServerMessage(WebSocketMessage msg) {
+			if (msg.Change != null) {
+			//if (msg is ChangeMessage) {
 				if (Dispatcher != null) {
 					//Console.WriteLine("dispatch change msg");
-					Dispatcher.Invoke(new Action<ChangeMessage>(ProcessChangeMessage), msg);
+					Dispatcher.Invoke(new Action<WebSocketMessage>(ProcessChangeMessage), msg);
 				} else {
-					ProcessChangeMessage((ChangeMessage) msg);
+					ProcessChangeMessage(msg);
 				}
 			} else {
 				//throw new ApplicationException("unsupported message at this place: " + msg);
@@ -131,7 +138,7 @@ namespace Ankor.Core.AnkorSystem  {
 			}
 		}
 
-		private void ProcessChangeMessage(ChangeMessage msg) {
+		private void ProcessChangeMessage(WebSocketMessage msg) {
 			//Console.WriteLine("process change msg");
 			internalModel.UpdateFromExternal(msg.Property, msg.Change);
 		}
@@ -142,10 +149,16 @@ namespace Ankor.Core.AnkorSystem  {
 
 		public void Dispose() {
 			try {
-				messageBus.Dispose();
+				messenger.Send(WebSocketMessage.CreateCloseMsg("root"));
+				messenger.Dispose();
 			} catch (Exception e) {
 				Console.WriteLine(e);
 			}
+		}
+
+		public void Connect() {
+			messenger.Send(WebSocketMessage.CreateConnectMsg("root", 
+				new Dictionary<string, object> {{"todoListId", "collaborationTest"}}));
 		}
 	}
 }

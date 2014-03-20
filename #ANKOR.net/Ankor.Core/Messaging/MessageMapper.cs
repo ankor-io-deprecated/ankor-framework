@@ -8,10 +8,10 @@
 	}
 	
 	public interface MessageSerializer<T> {
-		T Serialize(Message msg);
+		T Serialize(object msg);
 	}
 	
 	public interface MessageDeserializer<T> {
-		Message Deserialize(T serializedMsg);
+		TR Deserialize<TR>(T serializedMsg);
 	}
 }

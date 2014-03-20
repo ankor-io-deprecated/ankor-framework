@@ -51,7 +51,7 @@ namespace Ankor.Core.Test.Messaging {
 				
 			AreJsonEqual(expectedJson, json);
 
-			var msg2 = (ChangeMessage) mapper.Deserialize(json);
+			var msg2 = mapper.Deserialize<ChangeMessage>(json);
 			msg2.Property.Should().Be(msg.Property);
 			msg2.Change.Should().Be(msg.Change);
 
@@ -61,7 +61,7 @@ namespace Ankor.Core.Test.Messaging {
 
 		[Test]
 		public void TestDeSerializeComplexChange() {
-			var msg = (ChangeMessage) mapper.Deserialize(GetReferenceMsg("complexChange"));
+			var msg = mapper.Deserialize<ChangeMessage>(GetReferenceMsg("complexChange"));
 			//dynamic dmsg = msg.Change.Value;
 			String val = (string) evaluator.GetValue(msg.Change.Value, "model.selectItems.types[0]");
 			val.Should().Be("Fish");
@@ -97,7 +97,7 @@ namespace Ankor.Core.Test.Messaging {
 
 			Console.WriteLine(json);
 
-			Message outMsg = mapper.Deserialize(json);
+			Message outMsg = mapper.Deserialize<ActionMessage>(json);
 			outMsg.Should().BeOfType<ActionMessage>();
 
 			var amsg = outMsg as ActionMessage;
@@ -136,7 +136,7 @@ namespace Ankor.Core.Test.Messaging {
 
 			AreJsonEqual(expectedJson, json);
 
-			var outMsg = mapper.Deserialize(json);
+			var outMsg = mapper.Deserialize<ActionMessage>(json);
 			outMsg.Should().BeOfType<ActionMessage>();
 
 			var amsg = outMsg as ActionMessage;			

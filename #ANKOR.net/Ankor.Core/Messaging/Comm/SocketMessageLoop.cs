@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using Ankor.Core.Messaging.WebSockets;
 
 namespace Ankor.Core.Messaging.Comm {
 	public abstract class SocketMessageLoop : IDisposable {
@@ -26,7 +27,7 @@ namespace Ankor.Core.Messaging.Comm {
 		}
 
 
-		public void Send(Message msg) {
+		public void Send(WebSocketMessage msg) {
 			using (var client = new TcpClient()) {
 				client.Connect(RemoteEndPoint);
 				using (var writer = new StreamWriter(client.GetStream(), new UTF8Encoding(false))) {
@@ -54,7 +55,7 @@ namespace Ankor.Core.Messaging.Comm {
 			            using (var reader = new StreamReader(client.GetStream(), new UTF8Encoding(false))) {
 			                string rawMsg = reader.ReadToEnd();
 			                Console.WriteLine("RECEIVED: " + ToDebugString(rawMsg));
-			                var message = MessageMapper.Deserialize(rawMsg);
+			                var message = MessageMapper.Deserialize<WebSocketMessage>(rawMsg);
 			                OnMessage(message);
 			            }
 			        }

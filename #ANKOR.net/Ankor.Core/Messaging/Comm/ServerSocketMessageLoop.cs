@@ -7,7 +7,8 @@ namespace Ankor.Core.Messaging.Comm {
 		public ServerSocketMessageLoop(string localHost, int listenPort, MessageMapper<string> messageMapper)
 			: base(localHost, listenPort, messageMapper) {
 
-			OnMessage += HandleConnectMessage;
+			//OnMessage += HandleConnectMessage;
+			throw new NotImplementedException();
 		}
 
 		private void HandleConnectMessage(Message msg) {

@@ -14,7 +14,7 @@ namespace Ankor.Core.Messaging.Json {
 		public JsonMessageMapper() {
 		}
 
-		public string Serialize(Message msg) {			
+		public string Serialize(Object msg) {			
 			JsonSerializerSettings settings = new JsonSerializerSettings() {
 				NullValueHandling = NullValueHandling.Ignore,
 				ContractResolver = new CamelCasePropertyNamesContractResolver(),
@@ -51,7 +51,7 @@ namespace Ankor.Core.Messaging.Json {
 			return JsonConvert.DeserializeObject<object>(json, new ExpandoForObjectConverter());
 		}
 
-		public Message Deserialize(string serializedMsg) {
+		public TR Deserialize<TR>(string serializedMsg) {
 			var contractResolver = new DefaultContractResolver(true);
 			contractResolver.DefaultMembersSearchFlags |= System.Reflection.BindingFlags.NonPublic;
 			var settings = new JsonSerializerSettings() {
@@ -63,14 +63,16 @@ namespace Ankor.Core.Messaging.Json {
 
 			JObject json = JObject.Parse(serializedMsg);
 
-			if (json.Property("action") != null) {
-				return JsonConvert.DeserializeObject<ActionMessage>(serializedMsg, settings);
-			}
-			if (json.Property("change") != null) {
-				return JsonConvert.DeserializeObject<ChangeMessage>(serializedMsg, settings);
-			}
+			return JsonConvert.DeserializeObject<TR>(serializedMsg, settings);
+//			if (json.Property("action") != null) {
+//				return JsonConvert.DeserializeObject<ActionMessage>(serializedMsg, settings);
+//			}
+//			if (json.Property("change") != null) {
+//				return JsonConvert.DeserializeObject<ChangeMessage>(serializedMsg, settings);
+//			}
 			throw new ArgumentException("unable to determine message type of json message " + serializedMsg);
 		}
+
 	}
 
 	class ExpandoForObjectConverter : ExpandoObjectConverter {

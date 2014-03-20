@@ -33,7 +33,6 @@ public class ActionMessage extends Message {
         return action;
     }
 
-    @SuppressWarnings("RedundantIfStatement")
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -48,11 +47,8 @@ public class ActionMessage extends Message {
         if (!property.equals(that.property)) {
             return false;
         }
-        if (!action.equals(that.action)) {
-            return false;
-        }
+        return action.equals(that.action);
 
-        return true;
     }
 
     @Override

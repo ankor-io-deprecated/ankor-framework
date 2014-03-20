@@ -28,7 +28,7 @@ namespace Ankor.Sample.Todo.Client {
 		public MainWindow() {
 			RootRef = App.Ankor.RefModel.RootRef;			
 
-			RootRef.Fire("init");
+			App.Ankor.Connect();
 
 			Thread.Sleep(200);
 			// wait for init to complete, make this somehow nicer, but the list box data binding fails if no model is here.
@@ -40,25 +40,7 @@ namespace Ankor.Sample.Todo.Client {
 			// because otherwise the client side model would not be complete and the binding will fail
 			App.Ankor.Dispatcher = this.Dispatcher;
 
-			//((DynaRef)RootRef.model.tasks).PropertyChanged += TasksChanged;
-			
 		}
-
-//		void TasksChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
-//			Console.WriteLine("CHANGED " + e.PropertyName);
-//			if (e.PropertyName.EndsWith(".editing")) {
-				//Dispatcher.BeginInvoke(new Action<string>(DoTaskChanged), e.PropertyName);
-//				
-//			}
-//		}
-//
-//		private void DoTaskChanged(string path) {
-//			string refPath = path.Substring(0, path.Length - ".editable".Length + 1);
-//			dynamic changedTodoRef = RootRef.model.tasks[refPath];
-//			Console.WriteLine("CHANGED ref" + changedTodoRef);
-//			var ctrl = this.FindName("todoTextBox");
-//			Console.WriteLine("found " + ctrl);
-//		}
 
 		private void BtnDebugClick(object sender, RoutedEventArgs e) {
 			App.Ankor.PrintDebug();
@@ -72,7 +54,6 @@ namespace Ankor.Sample.Todo.Client {
 				}
 			}
 		}
-
 
 		private void RemoveTaskClick(object sender, RoutedEventArgs e) {
 			DynaRef currentItemRef = (DynaRef)((FrameworkElement)sender).Tag;
@@ -123,20 +104,20 @@ namespace Ankor.Sample.Todo.Client {
 			RootRef.model.Fire(new AAction(name: "toggleAll", paramKey: "toggleAll", paramVal: btnToggleAll.IsChecked));
 		}
 
+		private void FilterAllSelected(object sender, RoutedEventArgs e) {
+			ApplyFilter("all");
+		}		
 
-		private void HandleFilterButton(object sender, RoutedEventArgs e) {
-			DoToggleGroup(sender, btnFilterAll, btnFilterCompleted, btnFilterActive);
-			e.Handled = true;
+		private void FilterActiveSelected(object sender, RoutedEventArgs e) {
+			ApplyFilter("active");
 		}
 
-		private void DoToggleGroup(object sender, params ToggleButton[] btns) {
-			foreach (var btn in btns) {
-				if (btn != null) {
-					btn.IsChecked = btn == sender;
-					(btn.Tag as dynamic).Value = btn.IsChecked;
-				}
-			}			
+		private void FilterCompletedSelected(object sender, RoutedEventArgs e) {
+			ApplyFilter("completed");
 		}
 
+		private void ApplyFilter(string filterVal) {
+			RootRef.model.filter = filterVal;
+		}
 	}
 }

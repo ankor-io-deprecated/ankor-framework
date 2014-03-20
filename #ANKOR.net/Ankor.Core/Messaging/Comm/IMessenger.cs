@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Ankor.Core.Messaging.WebSockets;
 
 namespace Ankor.Core.Messaging.Comm {
 
-	public delegate void MessageHandler(Message msg);
+	public delegate void MessageHandler(WebSocketMessage msg);
 
 	public interface IMessenger : IDisposable {
 
@@ -13,7 +14,7 @@ namespace Ankor.Core.Messaging.Comm {
 
 		void Start();
 
-		void Send(Message message);
+		void Send(WebSocketMessage message);
 	}
 }
 

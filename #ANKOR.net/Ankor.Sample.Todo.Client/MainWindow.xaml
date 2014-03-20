@@ -152,18 +152,17 @@
 					
 					<!-- would be nicer to use a radio box, but all the restyling... -->
 					<ToggleButton Name="btnFilterAll" Content="All "  Style="{StaticResource toggleToBoldButton}" 
-												Tag="{Binding model.filterAllSelected}"
-												IsChecked="{Binding model.filterAllSelected.Value, Mode=OneWay}" Checked="HandleFilterButton"
+												IsChecked="{Binding model.filterAllSelected.Value, Mode=OneWay}" Click="FilterAllSelected"
 												IsEnabled="{Binding model.filterAllSelected.Value, Mode=OneWay, Converter={Ankor:ReverseBoolean}}"												
 												/>
 					<ToggleButton Name="btnFilterActive" Content="Active " Style="{StaticResource toggleToBoldButton}"
-												Tag="{Binding model.filterActiveSelected}"
-												IsChecked="{Binding model.filterActiveSelected.Value, Mode=OneWay}" Checked="HandleFilterButton"
-												IsEnabled="{Binding model.filterActiveSelected.Value, Mode=OneWay, Converter={Ankor:ReverseBoolean}}" />
+												IsChecked="{Binding model.filterActiveSelected.Value, Mode=OneWay}" Click="FilterActiveSelected"
+												IsEnabled="{Binding model.filterActiveSelected.Value, Mode=OneWay, Converter={Ankor:ReverseBoolean}}"
+												/>
 					<ToggleButton Name="btnFilterCompleted" Content="Completed " Style="{StaticResource toggleToBoldButton}"
-												Tag="{Binding model.filterCompletedSelected}"
-												IsChecked="{Binding model.filterCompletedSelected.Value, Mode=OneWay}" Checked="HandleFilterButton"
-												IsEnabled="{Binding model.filterCompletedSelected.Value, Mode=OneWay, Converter={Ankor:ReverseBoolean}}" />
+												IsChecked="{Binding model.filterCompletedSelected.Value, Mode=OneWay}" Click="FilterCompletedSelected"
+												IsEnabled="{Binding model.filterCompletedSelected.Value, Mode=OneWay, Converter={Ankor:ReverseBoolean}}"
+												/>
 				</DockPanel>
 			</DockPanel>
 		</StackPanel>

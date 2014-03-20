@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Net;
 using Ankor.Core.Action;
+using Ankor.Core.Messaging.WebSockets;
 
 namespace Ankor.Core.Messaging.Comm {
 	public class ClientSocketMessageLoop : SocketMessageLoop, IMessenger {
@@ -26,13 +28,14 @@ namespace Ankor.Core.Messaging.Comm {
 						{"port", ListenEndPoint.Port}
 					}));
 
-			Send(connectMsg);
+			//Send(connectMsg);
+			throw new NotImplementedException("change sockets back again");
 
 
 		}
 
 		public new void Dispose() {
-			Send(messageFactory.CreateActionMessage("root", new AAction("$close")));
+			//Send(messageFactory.CreateActionMessage("root", new AAction("$close")));
 			base.Dispose();			
 		}
 
