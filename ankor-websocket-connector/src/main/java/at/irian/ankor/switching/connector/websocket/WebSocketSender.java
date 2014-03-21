@@ -2,6 +2,7 @@ package at.irian.ankor.switching.connector.websocket;
 
 import at.irian.ankor.messaging.MessageMapperFactory;
 import at.irian.ankor.messaging.MessageSerializer;
+import at.irian.ankor.monitor.Monitor;
 import at.irian.ankor.switching.Switchboard;
 import at.irian.ankor.switching.connector.HandlerScopeContext;
 import at.irian.ankor.switching.routing.ModelAddress;
@@ -22,13 +23,15 @@ public class WebSocketSender {
     private final WebSocketSessionRegistry sessionRegistry;
     private final Switchboard switchboard;
     private final MessageMapperFactory<String> messageMapperFactory;
+    private final Monitor monitor;
 
     public WebSocketSender(WebSocketSessionRegistry sessionRegistry,
                            Switchboard switchboard,
-                           MessageMapperFactory<String> messageMapperFactory) {
+                           MessageMapperFactory<String> messageMapperFactory, Monitor monitor) {
         this.sessionRegistry = sessionRegistry;
         this.switchboard = switchboard;
         this.messageMapperFactory = messageMapperFactory;
+        this.monitor = monitor;
     }
 
     public void send(ModelAddress sender,
@@ -37,7 +40,7 @@ public class WebSocketSender {
                      HandlerScopeContext context) {
         Session session = sessionRegistry.getSession(receiver.getClientId());
         if (session == null) {
-            LOG.error("Error sending {} from {} to {} - automatically disconnecting {}, reason: NO WS SESSION FOUND ...",
+            LOG.warn("Cannot send {} from {} to {} - automatically disconnecting {}, reason: NO WS SESSION FOUND ...",
                     message,
                     sender,
                     receiver,
@@ -50,6 +53,7 @@ public class WebSocketSender {
                 String serializedMsg = getMessageSerializer(context).serialize(message);
                 LOG.debug("Sending serialized message to {}: {}", receiver, serializedMsg);
                 session.getBasicRemote().sendText(serializedMsg);
+                monitor.outboundMessage(receiver);
             } catch (IOException e) {
                 LOG.error("Error sending {} from {} to {} - automatically disconnecting {} ...",
                         message,

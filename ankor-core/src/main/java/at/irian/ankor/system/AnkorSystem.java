@@ -3,6 +3,7 @@ package at.irian.ankor.system;
 import at.irian.ankor.application.Application;
 import at.irian.ankor.delay.Scheduler;
 import at.irian.ankor.messaging.modify.Modifier;
+import at.irian.ankor.monitor.Monitor;
 import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.session.ModelSessionFactory;
 import at.irian.ankor.session.ModelSessionManager;
@@ -39,6 +40,7 @@ public class AnkorSystem {
     private final BeanMetadataProvider beanMetadataProvider;
     private final Scheduler scheduler;
     private final Map<String, Object> attributes;
+    private final Monitor monitor;
     private boolean running;
 
     protected AnkorSystem(Application application,
@@ -49,7 +51,7 @@ public class AnkorSystem {
                           ModelSessionFactory modelSessionFactory,
                           Modifier modifier,
                           BeanMetadataProvider beanMetadataProvider,
-                          Scheduler scheduler) {
+                          Scheduler scheduler, Monitor monitor) {
         this.application = application;
         this.config = config;
         this.switchboard = switchboard;
@@ -59,6 +61,7 @@ public class AnkorSystem {
         this.modifier = modifier;
         this.beanMetadataProvider = beanMetadataProvider;
         this.scheduler = scheduler;
+        this.monitor = monitor;
         this.connectorLoader = new ConnectorLoader();
         this.running = false;
         this.attributes = new ConcurrentHashMap<String, Object>();
@@ -110,6 +113,10 @@ public class AnkorSystem {
 
     public Map<String, Object> getAttributes() {
         return attributes;
+    }
+
+    public Monitor getMonitor() {
+        return monitor;
     }
 
     @Override

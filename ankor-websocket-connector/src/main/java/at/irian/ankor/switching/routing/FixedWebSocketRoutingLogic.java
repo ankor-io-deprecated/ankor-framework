@@ -18,6 +18,6 @@ public class FixedWebSocketRoutingLogic implements RoutingLogic {
 
     @Override
     public ModelAddress findRoutee(ModelAddress sender, Map<String, Object> connectParameters) {
-        return new WebSocketModelAddress(clientId, sender.getModelName());
+        return new WebSocketModelAddress("WebSocket", clientId, sender.getModelName());
     }
 }

@@ -1,5 +1,6 @@
 package at.irian.ankor.switching;
 
+import at.irian.ankor.monitor.Monitor;
 import at.irian.ankor.switching.connector.ConnectorMapping;
 import at.irian.ankor.switching.connector.HandlerScopeContext;
 import at.irian.ankor.switching.msg.EventMessage;
@@ -29,15 +30,17 @@ public abstract class AbstractSwitchboard implements Switchboard {
     private final RoutingTable routingTable;
     private final ConnectorMapping connectorMapping;
     private final HandlerScopeContext handlerScopeContext;
+    protected final Monitor monitor;
     private volatile RoutingLogic routingLogic;
     private volatile Status status = Status.INITIALIZED;
 
     public AbstractSwitchboard(RoutingTable routingTable,
                                ConnectorMapping connectorMapping,
-                               HandlerScopeContext handlerScopeContext) {
+                               HandlerScopeContext handlerScopeContext, Monitor monitor) {
         this.routingTable = routingTable;
         this.connectorMapping = connectorMapping;
         this.handlerScopeContext = handlerScopeContext;
+        this.monitor = monitor;
     }
 
     protected void setRoutingLogic(RoutingLogic routingLogic) {
@@ -173,6 +176,7 @@ public abstract class AbstractSwitchboard implements Switchboard {
                                                                                receiver,
                                                                                message,
                                                                                handlerScopeContext);
+        monitor.send(sender, message, receiver);
     }
 
     @SuppressWarnings("unchecked")

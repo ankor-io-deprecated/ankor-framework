@@ -3,6 +3,7 @@ package at.irian.ankor.switching.connector.websocket;
 import at.irian.ankor.action.Action;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.messaging.MessageDeserializer;
+import at.irian.ankor.monitor.Monitor;
 import at.irian.ankor.path.PathSyntax;
 import at.irian.ankor.switching.Switchboard;
 import at.irian.ankor.switching.msg.ActionEventMessage;
@@ -21,22 +22,25 @@ public class WebSocketListener {
 
     private static Logger LOG = LoggerFactory.getLogger(WebSocketListener.class);
 
+    private final String path;
     private final String clientId;
     private final MessageDeserializer<String> messageDeserializer;
     private final Switchboard switchboard;
     private final PathSyntax pathSyntax;
+    private final Monitor monitor;
 
-    WebSocketListener(MessageDeserializer<String> messageDeserializer, Switchboard switchboard, PathSyntax pathSyntax, String clientId) {
+    WebSocketListener(String path, MessageDeserializer<String> messageDeserializer, Switchboard switchboard, PathSyntax pathSyntax, String clientId, Monitor monitor) {
+        this.path = path;
         this.messageDeserializer = messageDeserializer;
         this.switchboard = switchboard;
         this.pathSyntax = pathSyntax;
         this.clientId = clientId;
+        this.monitor = monitor;
     }
 
     public void onWebSocketMessage(String message) {
         if (!isHeartbeat(message)) {
             LOG.info("MessageHandler received {}, length = {}", message, message.length());
-
             try {
                 WebSocketMessage socketMessage = messageDeserializer.deserialize(message, WebSocketMessage.class);
                 if (socketMessage.getAction() != null) {
@@ -58,28 +62,32 @@ public class WebSocketListener {
     private void handleIncomingConnectMessage(WebSocketMessage socketMessage) {
         WebSocketModelAddress sender = getAddress(socketMessage);
         switchboard.openConnection(sender, socketMessage.getConnectParams());
+        monitor.inboundMessage(sender);
     }
 
     private void handleIncomingActionEventMessage(WebSocketMessage socketMessage) {
         Action action = socketMessage.getAction();
         WebSocketModelAddress sender = getAddress(socketMessage);
         switchboard.send(sender, new ActionEventMessage(socketMessage.getProperty(), action));
+        monitor.inboundMessage(sender);
     }
 
     private void handleIncomingChangeEventMessage(WebSocketMessage socketMessage) {
         Change change = socketMessage.getChange();
         WebSocketModelAddress sender = getAddress(socketMessage);
         switchboard.send(sender, new ChangeEventMessage(socketMessage.getProperty(), change));
+        monitor.inboundMessage(sender);
     }
 
     private void handleIncomingCloseMessage(WebSocketMessage socketMessage) {
         WebSocketModelAddress sender = getAddress(socketMessage);
         switchboard.closeAllConnections(sender);
+        monitor.inboundMessage(sender);
     }
 
     private WebSocketModelAddress getAddress(WebSocketMessage socketMessage) {
         String modelName = pathSyntax.rootOf(socketMessage.getProperty());
-        return new WebSocketModelAddress(clientId, modelName);
+        return new WebSocketModelAddress(path, clientId, modelName);
     }
 
     public static boolean isHeartbeat(String message) {

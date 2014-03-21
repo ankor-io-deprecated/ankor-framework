@@ -73,6 +73,5 @@ public abstract class WebSocketServerEndpoint extends WebSocketEndpoint implemen
 
     protected abstract Application createApplication();
 
-    protected abstract String getPath();
 
 }

@@ -23,6 +23,8 @@ public abstract class WebSocketEndpoint extends Endpoint {
 
     protected abstract AnkorSystem getAnkorSystem();
 
+    protected abstract String getPath();
+
     @Override
     public void onOpen(Session session, EndpointConfig config) {
         String clientId = getClientId(session);
@@ -57,8 +59,8 @@ public abstract class WebSocketEndpoint extends Endpoint {
             MessageDeserializer<String> messageDeserializer
                     = WebSocketConnector.getSingletonMessageDeserializer(ankorSystem);
             WebSocketListener listener =
-                    new WebSocketListener(messageDeserializer, ankorSystem.getSwitchboard(),
-                            SimpleELPathSyntax.getInstance(), clientId);
+                    new WebSocketListener(getPath(), messageDeserializer, ankorSystem.getSwitchboard(),
+                            SimpleELPathSyntax.getInstance(), clientId, ankorSystem.getMonitor());
             session.addMessageHandler(listener.getByteMessageHandler());
             session.addMessageHandler(listener.getStringMessageHandler());
             if (oldSession != null) {

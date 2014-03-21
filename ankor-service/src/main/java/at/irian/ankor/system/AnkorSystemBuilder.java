@@ -20,6 +20,9 @@ import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
 import at.irian.ankor.messaging.modify.CoerceTypeModifier;
 import at.irian.ankor.messaging.modify.Modifier;
 import at.irian.ankor.messaging.modify.PassThroughModifier;
+import at.irian.ankor.monitor.AkkaMonitor;
+import at.irian.ankor.monitor.Monitor;
+import at.irian.ankor.monitor.SimpleMonitor;
 import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.ref.RefContextFactoryProvider;
 import at.irian.ankor.ref.el.ELRefContextFactoryProvider;
@@ -62,6 +65,7 @@ public class AnkorSystemBuilder {
     private RoutingLogic routingLogic;
     private boolean actorSystemEnabled;
     private ActorSystem actorSystem;
+    private Monitor monitor;
 
     public AnkorSystemBuilder() {
         this.systemName = null;
@@ -140,6 +144,18 @@ public class AnkorSystemBuilder {
         return this;
     }
 
+    public Monitor getMonitor() {
+        if (monitor == null) {
+            ActorSystem actorSystem = getActorSystem();
+            if (actorSystem == null) {
+                monitor = new SimpleMonitor(5000);
+            } else {
+                monitor = AkkaMonitor.create(actorSystem);
+            }
+        }
+        return monitor;
+    }
+
     public AnkorSystem createServer() {
 
         SwitchboardImplementor switchboard = getServerSwitchboard();
@@ -187,7 +203,7 @@ public class AnkorSystemBuilder {
                                modelSessionManager,
                                modelSessionFactory,
                                modifier,
-                               beanMetadataProvider, scheduler);
+                               beanMetadataProvider, scheduler, getMonitor());
     }
 
     public AnkorSystem createClient() {
@@ -244,7 +260,7 @@ public class AnkorSystemBuilder {
                                modelSessionManager,
                                modelSessionFactory,
                                modifier,
-                               beanMetadataProvider, scheduler);
+                               beanMetadataProvider, scheduler, getMonitor());
     }
 
     private BeanFactory getBeanFactory() {
@@ -324,7 +340,7 @@ public class AnkorSystemBuilder {
             if (actorSystem == null) {
                 switchboard = DefaultSwitchboard.createForConcurrency();
             } else {
-                switchboard = AkkaSwitchboard.create(actorSystem);
+                switchboard = AkkaSwitchboard.create(actorSystem, getMonitor());
             }
         }
         return switchboard;

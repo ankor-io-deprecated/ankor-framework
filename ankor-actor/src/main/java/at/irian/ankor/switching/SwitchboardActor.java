@@ -3,6 +3,7 @@ package at.irian.ankor.switching;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.routing.ConsistentHashingRouter;
+import at.irian.ankor.monitor.Monitor;
 import at.irian.ankor.switching.connector.ConnectorMapping;
 import at.irian.ankor.switching.connector.HandlerScopeContext;
 import at.irian.ankor.switching.connector.SimpleHandlerScopeContext;
@@ -22,9 +23,10 @@ public class SwitchboardActor extends UntypedActor {
 
     public static Props props(@SuppressWarnings("UnusedParameters") Config config,
                               RoutingTable routingTable,
-                              ConnectorMapping connectorMapping) {
+                              ConnectorMapping connectorMapping,
+                              Monitor monitor) {
         int nrOfInstances = config.getInt("at.irian.ankor.switching.SwitchboardActor.poolSize");
-        return Props.create(SwitchboardActor.class, routingTable, connectorMapping)
+        return Props.create(SwitchboardActor.class, routingTable, connectorMapping, monitor)
                     .withRouter(new ConsistentHashingRouter(nrOfInstances));
     }
 
@@ -35,9 +37,10 @@ public class SwitchboardActor extends UntypedActor {
     private final MySwitchboard mySwitchboard;
 
     public SwitchboardActor(RoutingTable routingTable,
-                            ConnectorMapping connectorMapping) {
+                            ConnectorMapping connectorMapping,
+                            Monitor monitor) {
         HandlerScopeContext handlerScopeContext = new SimpleHandlerScopeContext();
-        this.mySwitchboard = new MySwitchboard(routingTable, connectorMapping, handlerScopeContext);
+        this.mySwitchboard = new MySwitchboard(routingTable, connectorMapping, handlerScopeContext, monitor);
     }
 
     @Override
@@ -292,8 +295,9 @@ public class SwitchboardActor extends UntypedActor {
     private class MySwitchboard extends AbstractSwitchboard {
         private MySwitchboard(RoutingTable routingTable,
                               ConnectorMapping connectorMapping,
-                              HandlerScopeContext handlerScopeContext) {
-            super(routingTable, connectorMapping, handlerScopeContext);
+                              HandlerScopeContext handlerScopeContext,
+                              Monitor monitor) {
+            super(routingTable, connectorMapping, handlerScopeContext, monitor);
         }
 
         @Override

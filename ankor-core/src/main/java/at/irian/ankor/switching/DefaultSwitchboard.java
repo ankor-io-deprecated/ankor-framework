@@ -1,5 +1,7 @@
 package at.irian.ankor.switching;
 
+import at.irian.ankor.monitor.Monitor;
+import at.irian.ankor.monitor.NoMonitor;
 import at.irian.ankor.switching.connector.*;
 import at.irian.ankor.switching.msg.EventMessage;
 import at.irian.ankor.switching.routing.ConcurrentRoutingTable;
@@ -19,16 +21,18 @@ public class DefaultSwitchboard extends AbstractSwitchboard implements Switchboa
 
     protected DefaultSwitchboard(RoutingTable routingTable,
                                  ConnectorRegistry connectorRegistry,
-                                 HandlerScopeContext handlerScopeContext) {
-        super(routingTable, connectorRegistry, handlerScopeContext);
+                                 HandlerScopeContext handlerScopeContext,
+                                 Monitor monitor) {
+        super(routingTable, connectorRegistry, handlerScopeContext, monitor);
         this.connectorRegistry = connectorRegistry;
     }
 
     public static SwitchboardImplementor createForSingleThread() {
         ConnectorRegistry connectorRegistry = DefaultConnectorRegistry.createForSingleThread();
-        return new DefaultSwitchboard(new ConcurrentRoutingTable(),
+        return new DefaultSwitchboard(new ConcurrentRoutingTable(new NoMonitor()),
                                       connectorRegistry,
-                                      new SimpleHandlerScopeContext());
+                                      new SimpleHandlerScopeContext(),
+                                      new NoMonitor());
     }
 
     public static SwitchboardImplementor createForConcurrency() {
@@ -37,9 +41,10 @@ public class DefaultSwitchboard extends AbstractSwitchboard implements Switchboa
 
     public static SwitchboardImplementor createForConcurrency(int concurrencyLevel) {
         ConnectorRegistry connectorRegistry = DefaultConnectorRegistry.createForConcurrency(concurrencyLevel);
-        return new DefaultSwitchboard(new ConcurrentRoutingTable(),
+        return new DefaultSwitchboard(new ConcurrentRoutingTable(new NoMonitor()),
                                       connectorRegistry,
-                                      new ThreadLocalHandlerScopeContext());
+                                      new ThreadLocalHandlerScopeContext(),
+                                      new NoMonitor());
     }
 
     @Override

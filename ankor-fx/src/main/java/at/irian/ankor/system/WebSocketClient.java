@@ -272,7 +272,7 @@ public class WebSocketClient {
         }
 
         private void closeModelConnection() {
-            ankorSystem.getSwitchboard().closeAllConnections(new WebSocketModelAddress(clientId, modelName));
+            ankorSystem.getSwitchboard().closeAllConnections(new WebSocketModelAddress("WebSocket", clientId, modelName));
         }
 
         private void openModelConnection() {
@@ -288,6 +288,11 @@ public class WebSocketClient {
         @Override
         protected AnkorSystem getAnkorSystem() {
             return ankorSystem;
+        }
+
+        @Override
+        protected String getPath() {
+            return "WebSocket";
         }
 
         @Override
