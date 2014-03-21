@@ -18,15 +18,15 @@ import java.util.Map;
 /**
  * @author Manfred Geiler
  */
-public class SwitchboardActor extends UntypedActor {
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SwitchboardActor.class);
+public class AkkaConsistentHashingSwitchboardActor extends UntypedActor {
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AkkaConsistentHashingSwitchboardActor.class);
 
     public static Props props(@SuppressWarnings("UnusedParameters") Config config,
                               RoutingTable routingTable,
                               ConnectorMapping connectorMapping,
                               SwitchboardMonitor monitor) {
-        int nrOfInstances = config.getInt("at.irian.ankor.switching.SwitchboardActor.poolSize");
-        return Props.create(SwitchboardActor.class, routingTable, connectorMapping, monitor)
+        int nrOfInstances = config.getInt("at.irian.ankor.switching.AkkaConsistentHashingSwitchboardActor.poolSize");
+        return Props.create(AkkaConsistentHashingSwitchboardActor.class, routingTable, connectorMapping, monitor)
                     .withRouter(new ConsistentHashingRouter(nrOfInstances));
     }
 
@@ -36,9 +36,9 @@ public class SwitchboardActor extends UntypedActor {
 
     private final MySwitchboard mySwitchboard;
 
-    public SwitchboardActor(RoutingTable routingTable,
-                            ConnectorMapping connectorMapping,
-                            SwitchboardMonitor monitor) {
+    public AkkaConsistentHashingSwitchboardActor(RoutingTable routingTable,
+                                                 ConnectorMapping connectorMapping,
+                                                 SwitchboardMonitor monitor) {
         HandlerScopeContext handlerScopeContext = new SimpleHandlerScopeContext();
         this.mySwitchboard = new MySwitchboard(routingTable, connectorMapping, handlerScopeContext, monitor);
     }
@@ -295,12 +295,12 @@ public class SwitchboardActor extends UntypedActor {
 
         @Override
         protected void dispatchableSend(ModelAddress originalSender, ModelAddress receiver, EventMessage message) {
-            context().parent().tell(new SwitchboardActor.SendToMsg(originalSender, receiver, message), self());
+            context().parent().tell(new AkkaConsistentHashingSwitchboardActor.SendToMsg(originalSender, receiver, message), self());
         }
 
         @Override
         protected void dispatchableCloseConnection(ModelAddress sender, ModelAddress receiver) {
-            context().parent().tell(new SwitchboardActor.CloseToMsg(sender, receiver), self());
+            context().parent().tell(new AkkaConsistentHashingSwitchboardActor.CloseToMsg(sender, receiver), self());
         }
     }
 

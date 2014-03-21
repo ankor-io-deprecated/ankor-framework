@@ -19,16 +19,16 @@ import java.util.Map;
 /**
 * @author Manfred Geiler
 */
-public class AkkaSwitchboard implements SwitchboardImplementor {
+public class AkkaConsistentHashingSwitchboard implements SwitchboardImplementor {
 
     private final ActorRef switchboardRouterActor;
     private final ConnectorRegistry connectorRegistry;
     private final RoutingTable routingTable;
     private RoutingLogic routingLogic;
 
-    protected AkkaSwitchboard(ActorRef switchboardRouterActor,
-                              ConnectorRegistry connectorRegistry,
-                              RoutingTable routingTable) {
+    protected AkkaConsistentHashingSwitchboard(ActorRef switchboardRouterActor,
+                                               ConnectorRegistry connectorRegistry,
+                                               RoutingTable routingTable) {
         this.switchboardRouterActor = switchboardRouterActor;
         this.connectorRegistry = connectorRegistry;
         this.routingTable = routingTable;
@@ -37,17 +37,17 @@ public class AkkaSwitchboard implements SwitchboardImplementor {
     public static SwitchboardImplementor create(ActorSystem actorSystem, SwitchboardMonitor monitor) {
 
         Config config = actorSystem.settings().config();
-        int nrOfInstances = config.getInt("at.irian.ankor.switching.SwitchboardActor.poolSize");
+        int nrOfInstances = config.getInt("at.irian.ankor.switching.AkkaConsistentHashingSwitchboardActor.poolSize");
 
         RoutingTable routingTable = new ConcurrentRoutingTable(new NopRoutingTableMonitor());
         ConnectorRegistry connectorRegistry = DefaultConnectorRegistry.createForConcurrency(nrOfInstances);
-        ActorRef switchboardRouterActor = actorSystem.actorOf(SwitchboardActor.props(config,
-                                                                                     routingTable,
-                                                                                     connectorRegistry,
-                                                                                     monitor),
-                                                              SwitchboardActor.name());
+        ActorRef switchboardRouterActor = actorSystem.actorOf(AkkaConsistentHashingSwitchboardActor.props(config,
+                                                                                                          routingTable,
+                                                                                                          connectorRegistry,
+                                                                                                          monitor),
+                                                              AkkaConsistentHashingSwitchboardActor.name());
 
-        return new AkkaSwitchboard(switchboardRouterActor, connectorRegistry, routingTable);
+        return new AkkaConsistentHashingSwitchboard(switchboardRouterActor, connectorRegistry, routingTable);
     }
 
     @Override
@@ -70,7 +70,7 @@ public class AkkaSwitchboard implements SwitchboardImplementor {
      */
     @Override
     public void openConnection(ModelAddress sender, Map<String, Object> connectParameters) {
-        switchboardRouterActor.tell(new SwitchboardActor.OpenMsg(sender, connectParameters), ActorRef.noSender());
+        switchboardRouterActor.tell(new AkkaConsistentHashingSwitchboardActor.OpenMsg(sender, connectParameters), ActorRef.noSender());
     }
 
     /**
@@ -83,7 +83,7 @@ public class AkkaSwitchboard implements SwitchboardImplementor {
      */
     @Override
     public void send(ModelAddress sender, EventMessage message) {
-        switchboardRouterActor.tell(new SwitchboardActor.SendFromMsg(sender, message), ActorRef.noSender());
+        switchboardRouterActor.tell(new AkkaConsistentHashingSwitchboardActor.SendFromMsg(sender, message), ActorRef.noSender());
     }
 
     /**
@@ -97,7 +97,7 @@ public class AkkaSwitchboard implements SwitchboardImplementor {
      */
     @Override
     public void send(ModelAddress sender, EventMessage message, ModelAddress receiver) {
-        switchboardRouterActor.tell(new SwitchboardActor.SendToMsg(sender, receiver, message), ActorRef.noSender());
+        switchboardRouterActor.tell(new AkkaConsistentHashingSwitchboardActor.SendToMsg(sender, receiver, message), ActorRef.noSender());
     }
 
     /**
@@ -109,7 +109,7 @@ public class AkkaSwitchboard implements SwitchboardImplementor {
      */
     @Override
     public void closeAllConnections(ModelAddress sender) {
-        switchboardRouterActor.tell(new SwitchboardActor.CloseFromMsg(sender), ActorRef.noSender());
+        switchboardRouterActor.tell(new AkkaConsistentHashingSwitchboardActor.CloseFromMsg(sender), ActorRef.noSender());
     }
 
     /**
@@ -122,12 +122,12 @@ public class AkkaSwitchboard implements SwitchboardImplementor {
      */
     @Override
     public void closeConnection(ModelAddress sender, ModelAddress receiver) {
-        switchboardRouterActor.tell(new SwitchboardActor.CloseToMsg(sender, receiver), ActorRef.noSender());
+        switchboardRouterActor.tell(new AkkaConsistentHashingSwitchboardActor.CloseToMsg(sender, receiver), ActorRef.noSender());
     }
 
     @Override
     public void start() {
-        switchboardRouterActor.tell(new Broadcast(new SwitchboardActor.StartMsg(routingLogic)),
+        switchboardRouterActor.tell(new Broadcast(new AkkaConsistentHashingSwitchboardActor.StartMsg(routingLogic)),
                                     ActorRef.noSender());
     }
 
@@ -136,7 +136,7 @@ public class AkkaSwitchboard implements SwitchboardImplementor {
         for (ModelAddress p : routingTable.getAllConnectedAddresses()) {
             closeAllConnections(p);
         }
-        switchboardRouterActor.tell(new Broadcast(new SwitchboardActor.StopMsg()), ActorRef.noSender());
+        switchboardRouterActor.tell(new Broadcast(new AkkaConsistentHashingSwitchboardActor.StopMsg()), ActorRef.noSender());
     }
 
 

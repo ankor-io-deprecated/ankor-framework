@@ -29,10 +29,7 @@ import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.ref.RefContextFactoryProvider;
 import at.irian.ankor.ref.el.ELRefContextFactoryProvider;
 import at.irian.ankor.session.*;
-import at.irian.ankor.switching.AkkaSwitchboard;
-import at.irian.ankor.switching.DefaultSwitchboard;
-import at.irian.ankor.switching.Switchboard;
-import at.irian.ankor.switching.SwitchboardImplementor;
+import at.irian.ankor.switching.*;
 import at.irian.ankor.switching.routing.ModelSessionRoutingLogic;
 import at.irian.ankor.switching.routing.RoutingLogic;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
@@ -347,7 +344,8 @@ public class AnkorSystemBuilder {
             if (actorSystem == null) {
                 switchboard = DefaultSwitchboard.createForConcurrency();
             } else {
-                switchboard = AkkaSwitchboard.create(actorSystem, getMonitor().switchboard());
+                switchboard = AkkaConsistentHashingSwitchboard.create(actorSystem, getMonitor().switchboard());
+                //switchboard = AkkaAddressBoundSwitchboard.create(actorSystem, getMonitor().switchboard());
             }
         }
         return switchboard;
