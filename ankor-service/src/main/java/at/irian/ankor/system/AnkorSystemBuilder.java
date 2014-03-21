@@ -7,6 +7,7 @@ import at.irian.ankor.application.SimpleClientApplication;
 import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.big.modify.ClientSideBigDataModifier;
 import at.irian.ankor.big.modify.ServerSideBigDataModifier;
+import at.irian.ankor.console.ConsoleApplication;
 import at.irian.ankor.delay.AkkaScheduler;
 import at.irian.ankor.delay.Scheduler;
 import at.irian.ankor.delay.SimpleScheduler;
@@ -70,6 +71,7 @@ public class AnkorSystemBuilder {
     private boolean actorSystemEnabled;
     private ActorSystem actorSystem;
     private AnkorSystemMonitor monitor;
+    private AnkorSystemStats stats;
 
     public AnkorSystemBuilder() {
         this.systemName = null;
@@ -84,6 +86,8 @@ public class AnkorSystemBuilder {
         this.routingLogic = null;
         this.actorSystemEnabled = false;
         this.actorSystem = null;
+        this.monitor = null;
+        this.stats = null;
     }
 
     public AnkorSystemBuilder withName(String name) {
@@ -434,9 +438,11 @@ public class AnkorSystemBuilder {
 
     private RoutingLogic getServerRoutingLogic(ModelSessionFactory modelSessionFactory,
                                                ModelSessionManager modelSessionManager,
-                                               Application application) {
+                                               Application userApplication) {
         if (routingLogic == null) {
-            routingLogic = new ModelSessionRoutingLogic(modelSessionFactory, modelSessionManager, application);
+            routingLogic = new ModelSessionRoutingLogic(modelSessionFactory, modelSessionManager)
+                    .withApplication(new ConsoleApplication(getStats()))
+                    .withApplication(userApplication);
         }
         return routingLogic;
     }
@@ -464,12 +470,19 @@ public class AnkorSystemBuilder {
         if (monitor == null) {
             ActorSystem actorSystem = getActorSystem();
             if (actorSystem == null) {
-                monitor = new StatsAnkorSystemMonitor(new AnkorSystemStats());
+                monitor = new StatsAnkorSystemMonitor(getStats());
             } else {
-                monitor = AkkaAnkorSystemMonitor.create(actorSystem);
+                monitor = AkkaAnkorSystemMonitor.create(actorSystem, getStats());
             }
         }
         return monitor;
+    }
+
+    private AnkorSystemStats getStats() {
+        if (stats == null) {
+            stats = new AnkorSystemStats();
+        }
+        return stats;
     }
 
 }

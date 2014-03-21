@@ -22,6 +22,11 @@ public class SimpleClientApplication implements Application {
     }
 
     @Override
+    public boolean supportsModel(String modelName) {
+        return true;
+    }
+
+    @Override
     public Object lookupModel(String modelName, Map<String, Object> connectCriteria) {
         throw new UnsupportedOperationException();
     }

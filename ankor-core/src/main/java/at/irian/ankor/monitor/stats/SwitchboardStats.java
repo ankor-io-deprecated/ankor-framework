@@ -6,22 +6,22 @@ package at.irian.ankor.monitor.stats;
 public class SwitchboardStats {
      //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SwitchboardStats.class);
 
-    private volatile int totalInboundMessages = 0;
-    private volatile int totalOutboundMessages = 0;
+    private volatile long totalInboundMessages = 0;
+    private volatile long totalOutboundMessages = 0;
 
-    public void incrementInboundMessages(int n) {
-        totalInboundMessages += n;
+    public void incrementInboundMessages() {
+        totalInboundMessages++;
     }
 
-    public void incrementOutboundMessages(int n) {
-        totalOutboundMessages += n;
+    public void incrementOutboundMessages() {
+        totalOutboundMessages++;
     }
 
-    public int getTotalInboundMessages() {
+    public long getTotalInboundMessages() {
         return totalInboundMessages;
     }
 
-    public int getTotalOutboundMessages() {
+    public long getTotalOutboundMessages() {
         return totalOutboundMessages;
     }
 }

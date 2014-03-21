@@ -15,6 +15,12 @@ public interface Application {
     String getName();
 
     /**
+     * @param modelName  name of model
+     * @return true, if this Application supports models with the given name
+     */
+    boolean supportsModel(String modelName);
+
+    /**
      * Lookup a model by one or more (application specific) connect parameters.
      * Typical parameters are:
      * <ul>

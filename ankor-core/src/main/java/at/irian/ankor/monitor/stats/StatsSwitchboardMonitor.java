@@ -22,7 +22,13 @@ public class StatsSwitchboardMonitor implements SwitchboardMonitor {
 
     @Override
     public void monitor_openConnection(Switchboard sb, ModelAddress sender, Map<String, Object> connectParameters) {
-
+        // Switchboard just received a connect request and is looking for a routee
+        if (sender instanceof LocalModelAddress) {
+            // connect request came from local model session
+        } else {
+            // connect request came from external connector
+            stats.incrementInboundMessages();
+        }
     }
 
     @Override
@@ -32,7 +38,7 @@ public class StatsSwitchboardMonitor implements SwitchboardMonitor {
             // EventMessage came from local model session
         } else {
             // EventMessage came from external connector
-            stats.incrementInboundMessages(1);
+            stats.incrementInboundMessages();
         }
     }
 
@@ -43,7 +49,7 @@ public class StatsSwitchboardMonitor implements SwitchboardMonitor {
             // ... to another local model
         } else {
             // ... to an external receiver
-            stats.incrementOutboundMessages(1);
+            stats.incrementOutboundMessages();
         }
     }
 

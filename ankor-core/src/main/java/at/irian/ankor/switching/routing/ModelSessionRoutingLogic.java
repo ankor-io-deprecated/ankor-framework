@@ -1,12 +1,14 @@
 package at.irian.ankor.switching.routing;
 
 import at.irian.ankor.application.Application;
-import at.irian.ankor.session.ModelSessionFactory;
-import at.irian.ankor.switching.connector.local.LocalModelAddress;
 import at.irian.ankor.session.ModelSession;
+import at.irian.ankor.session.ModelSessionFactory;
 import at.irian.ankor.session.ModelSessionManager;
+import at.irian.ankor.switching.connector.local.LocalModelAddress;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,15 +19,27 @@ public class ModelSessionRoutingLogic implements RoutingLogic {
 
     private final ModelSessionFactory modelSessionFactory;
     private final ModelSessionManager modelSessionManager;
-    private final Application application;
+    private final List<Application> applications;
 
     public ModelSessionRoutingLogic(ModelSessionFactory modelSessionFactory,
-                                    ModelSessionManager modelSessionManager,
-                                    Application application) {
+                                    ModelSessionManager modelSessionManager) {
+        this(modelSessionFactory, modelSessionManager, Collections.<Application>emptyList());
+    }
+
+    protected ModelSessionRoutingLogic(ModelSessionFactory modelSessionFactory,
+                                       ModelSessionManager modelSessionManager,
+                                       List<Application> applications) {
         this.modelSessionFactory = modelSessionFactory;
         this.modelSessionManager = modelSessionManager;
-        this.application = application;
+        this.applications = applications;
     }
+
+    public ModelSessionRoutingLogic withApplication(Application application) {
+        List<Application> newList = new ArrayList<Application>(applications);
+        newList.add(application);
+        return new ModelSessionRoutingLogic(modelSessionFactory, modelSessionManager, newList);
+    }
+
 
     @Override
     public ModelAddress findRoutee(ModelAddress sender, Map<String, Object> connectParameters) {
@@ -36,6 +50,11 @@ public class ModelSessionRoutingLogic implements RoutingLogic {
         LOG.info("Connect request received from {} with parameters {}", sender, connectParameters);
 
         String modelName = sender.getModelName();
+
+        Application application = findApplicationFor(modelName);
+        if (application == null) {
+            throw new IllegalArgumentException("Could not find application for model {}" + modelName);
+        }
 
         Object modelRoot = application.lookupModel(modelName, connectParameters);
         ModelSession modelSession;
@@ -63,5 +82,19 @@ public class ModelSessionRoutingLogic implements RoutingLogic {
         }
 
         return receiver;
+    }
+
+    private Application findApplicationFor(String modelName) {
+        Application application = null;
+        for (Application app : applications) {
+            if (app.supportsModel(modelName)) {
+                if (application != null) {
+                    LOG.warn("Multiple applications found that support models with name {}", modelName);
+                } else {
+                    application = app;
+                }
+            }
+        }
+        return application;
     }
 }

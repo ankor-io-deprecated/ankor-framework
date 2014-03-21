@@ -47,6 +47,13 @@
             <systemPath>${javafx.runtime.lib.jar}</systemPath>
         </dependency>
 
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.0.7</version>
+            <scope>runtime</scope>
+        </dependency>
+
     </dependencies>
 
     <build>

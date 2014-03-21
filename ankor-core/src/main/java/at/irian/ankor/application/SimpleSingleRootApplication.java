@@ -22,6 +22,11 @@ public abstract class SimpleSingleRootApplication extends BaseApplication {
     }
 
     @Override
+    public boolean supportsModel(String modelName) {
+        return this.modelName.equals(modelName);
+    }
+
+    @Override
     public final Object lookupModel(String modelName, Map<String, Object> connectCriteria) {
         checkModelName(modelName);
         return lookupModel(connectCriteria);

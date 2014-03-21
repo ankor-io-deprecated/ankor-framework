@@ -24,18 +24,18 @@ public class MonitorActor extends UntypedActor {
     private final long logInterval;
     private Cancellable logStats;
 
-    public MonitorActor(long interval, long logInitialDelay, long logInterval) {
-        this.stats = new AnkorSystemStats();
+    public MonitorActor(long interval, long logInitialDelay, long logInterval, AnkorSystemStats stats) {
+        this.stats = stats;
         this.statsAnkorSystemMonitor = new StatsAnkorSystemMonitor(stats);
         this.logInitialDelay = logInitialDelay;
         this.logInterval = logInterval;
     }
 
-    public static Props props(@SuppressWarnings("UnusedParameters") Config config) {
+    public static Props props(@SuppressWarnings("UnusedParameters") Config config, AnkorSystemStats stats) {
         long interval = config.getMilliseconds("at.irian.ankor.monitor.akka.MonitorActor.interval");
         long logInitialDelay = config.getMilliseconds("at.irian.ankor.monitor.akka.MonitorActor.logInitialDelay");
         long logInterval = config.getMilliseconds("at.irian.ankor.monitor.akka.MonitorActor.logInterval");
-        return Props.create(MonitorActor.class, interval, logInitialDelay, logInterval);
+        return Props.create(MonitorActor.class, interval, logInitialDelay, logInterval, stats);
     }
 
     @Override

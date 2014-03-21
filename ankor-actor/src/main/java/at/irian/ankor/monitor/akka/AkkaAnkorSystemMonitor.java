@@ -5,6 +5,7 @@ import akka.actor.ActorSystem;
 import at.irian.ankor.monitor.AnkorSystemMonitor;
 import at.irian.ankor.monitor.ModelSessionMonitor;
 import at.irian.ankor.monitor.SwitchboardMonitor;
+import at.irian.ankor.monitor.stats.AnkorSystemStats;
 import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.switching.Switchboard;
 import at.irian.ankor.switching.msg.EventMessage;
@@ -25,9 +26,9 @@ public class AkkaAnkorSystemMonitor implements AnkorSystemMonitor {
         this.monitorActor = monitorActor;
     }
 
-    public static AkkaAnkorSystemMonitor create(ActorSystem actorSystem) {
+    public static AkkaAnkorSystemMonitor create(ActorSystem actorSystem, AnkorSystemStats stats) {
         Config config = actorSystem.settings().config();
-        ActorRef monitorActor = actorSystem.actorOf(MonitorActor.props(config),
+        ActorRef monitorActor = actorSystem.actorOf(MonitorActor.props(config, stats),
                                                     MonitorActor.name());
         return new AkkaAnkorSystemMonitor(monitorActor);
     }
