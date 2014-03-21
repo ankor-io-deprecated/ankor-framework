@@ -3,7 +3,8 @@ package at.irian.ankor.switching;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.routing.Broadcast;
-import at.irian.ankor.monitor.Monitor;
+import at.irian.ankor.monitor.nop.NopRoutingTableMonitor;
+import at.irian.ankor.monitor.SwitchboardMonitor;
 import at.irian.ankor.switching.connector.ConnectorRegistry;
 import at.irian.ankor.switching.connector.DefaultConnectorRegistry;
 import at.irian.ankor.switching.msg.EventMessage;
@@ -33,12 +34,12 @@ public class AkkaSwitchboard implements SwitchboardImplementor {
         this.routingTable = routingTable;
     }
 
-    public static SwitchboardImplementor create(ActorSystem actorSystem, Monitor monitor) {
+    public static SwitchboardImplementor create(ActorSystem actorSystem, SwitchboardMonitor monitor) {
 
         Config config = actorSystem.settings().config();
         int nrOfInstances = config.getInt("at.irian.ankor.switching.SwitchboardActor.poolSize");
 
-        RoutingTable routingTable = new ConcurrentRoutingTable(monitor);
+        RoutingTable routingTable = new ConcurrentRoutingTable(new NopRoutingTableMonitor());
         ConnectorRegistry connectorRegistry = DefaultConnectorRegistry.createForConcurrency(nrOfInstances);
         ActorRef switchboardRouterActor = actorSystem.actorOf(SwitchboardActor.props(config,
                                                                                      routingTable,

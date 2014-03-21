@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Thomas Spiegl
  */
+@Deprecated
 public class SimpleMonitor implements Monitor {
 
     private static Logger LOG = LoggerFactory.getLogger(SimpleMonitor.class);

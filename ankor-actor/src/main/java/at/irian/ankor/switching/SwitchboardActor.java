@@ -3,7 +3,7 @@ package at.irian.ankor.switching;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.routing.ConsistentHashingRouter;
-import at.irian.ankor.monitor.Monitor;
+import at.irian.ankor.monitor.SwitchboardMonitor;
 import at.irian.ankor.switching.connector.ConnectorMapping;
 import at.irian.ankor.switching.connector.HandlerScopeContext;
 import at.irian.ankor.switching.connector.SimpleHandlerScopeContext;
@@ -24,7 +24,7 @@ public class SwitchboardActor extends UntypedActor {
     public static Props props(@SuppressWarnings("UnusedParameters") Config config,
                               RoutingTable routingTable,
                               ConnectorMapping connectorMapping,
-                              Monitor monitor) {
+                              SwitchboardMonitor monitor) {
         int nrOfInstances = config.getInt("at.irian.ankor.switching.SwitchboardActor.poolSize");
         return Props.create(SwitchboardActor.class, routingTable, connectorMapping, monitor)
                     .withRouter(new ConsistentHashingRouter(nrOfInstances));
@@ -38,7 +38,7 @@ public class SwitchboardActor extends UntypedActor {
 
     public SwitchboardActor(RoutingTable routingTable,
                             ConnectorMapping connectorMapping,
-                            Monitor monitor) {
+                            SwitchboardMonitor monitor) {
         HandlerScopeContext handlerScopeContext = new SimpleHandlerScopeContext();
         this.mySwitchboard = new MySwitchboard(routingTable, connectorMapping, handlerScopeContext, monitor);
     }
@@ -79,36 +79,24 @@ public class SwitchboardActor extends UntypedActor {
     }
 
     private void handleOpen(ModelAddress sender, Map<String, Object> connectParameters) {
-        checkRunning();
         mySwitchboard.openConnection(sender, connectParameters);
     }
 
     private void handleSendFrom(ModelAddress sender, EventMessage message) {
-        checkRunning();
         mySwitchboard.send(sender, message);
     }
 
     private void handleSendTo(ModelAddress sender, EventMessage message, ModelAddress receiver) {
-        checkRunning();
         mySwitchboard.send(sender, message, receiver);
     }
 
     private void handleCloseFrom(ModelAddress sender) {
-        checkRunning();
         mySwitchboard.closeAllConnections(sender);
     }
 
     private void handleCloseTo(ModelAddress sender, ModelAddress receiver) {
-        checkRunning();
         mySwitchboard.closeConnection(sender, receiver);
     }
-
-    private void checkRunning() {
-        if (mySwitchboard == null) {
-            throw new IllegalStateException("Not yet started");
-        }
-    }
-
 
 
     public static class StartMsg {
@@ -296,7 +284,7 @@ public class SwitchboardActor extends UntypedActor {
         private MySwitchboard(RoutingTable routingTable,
                               ConnectorMapping connectorMapping,
                               HandlerScopeContext handlerScopeContext,
-                              Monitor monitor) {
+                              SwitchboardMonitor monitor) {
             super(routingTable, connectorMapping, handlerScopeContext, monitor);
         }
 

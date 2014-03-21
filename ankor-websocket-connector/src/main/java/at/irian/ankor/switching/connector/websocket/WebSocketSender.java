@@ -2,7 +2,6 @@ package at.irian.ankor.switching.connector.websocket;
 
 import at.irian.ankor.messaging.MessageMapperFactory;
 import at.irian.ankor.messaging.MessageSerializer;
-import at.irian.ankor.monitor.Monitor;
 import at.irian.ankor.switching.Switchboard;
 import at.irian.ankor.switching.connector.HandlerScopeContext;
 import at.irian.ankor.switching.routing.ModelAddress;
@@ -23,15 +22,13 @@ public class WebSocketSender {
     private final WebSocketSessionRegistry sessionRegistry;
     private final Switchboard switchboard;
     private final MessageMapperFactory<String> messageMapperFactory;
-    private final Monitor monitor;
 
     public WebSocketSender(WebSocketSessionRegistry sessionRegistry,
                            Switchboard switchboard,
-                           MessageMapperFactory<String> messageMapperFactory, Monitor monitor) {
+                           MessageMapperFactory<String> messageMapperFactory) {
         this.sessionRegistry = sessionRegistry;
         this.switchboard = switchboard;
         this.messageMapperFactory = messageMapperFactory;
-        this.monitor = monitor;
     }
 
     public void send(ModelAddress sender,
@@ -53,7 +50,6 @@ public class WebSocketSender {
                     String serializedMsg = getMessageSerializer(context).serialize(message);
                     LOG.debug("Sending serialized message to {}: {}", receiver, serializedMsg);
                     session.getBasicRemote().sendText(serializedMsg);
-                    monitor.outboundMessage(receiver);
                 } catch (IOException e) {
                     LOG.debug("Error sending {} from {} to {} - automatically disconnecting {} ...",
                             message,

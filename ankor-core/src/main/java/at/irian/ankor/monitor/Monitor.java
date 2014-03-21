@@ -6,6 +6,7 @@ import at.irian.ankor.switching.routing.ModelAddress;
 /**
  * @author Thomas Spiegl
  */
+@Deprecated
 public interface Monitor {
 
     void connect(ModelAddress a, ModelAddress b);

@@ -1,6 +1,6 @@
 package at.irian.ankor.switching;
 
-import at.irian.ankor.monitor.Monitor;
+import at.irian.ankor.monitor.SwitchboardMonitor;
 import at.irian.ankor.switching.connector.ConnectorMapping;
 import at.irian.ankor.switching.connector.HandlerScopeContext;
 import at.irian.ankor.switching.msg.EventMessage;
@@ -30,17 +30,18 @@ public abstract class AbstractSwitchboard implements Switchboard {
     private final RoutingTable routingTable;
     private final ConnectorMapping connectorMapping;
     private final HandlerScopeContext handlerScopeContext;
-    protected final Monitor monitor;
+    private final SwitchboardMonitor switchboardMonitor;
     private volatile RoutingLogic routingLogic;
     private volatile Status status = Status.INITIALIZED;
 
     public AbstractSwitchboard(RoutingTable routingTable,
                                ConnectorMapping connectorMapping,
-                               HandlerScopeContext handlerScopeContext, Monitor monitor) {
+                               HandlerScopeContext handlerScopeContext,
+                               SwitchboardMonitor switchboardMonitor) {
         this.routingTable = routingTable;
         this.connectorMapping = connectorMapping;
         this.handlerScopeContext = handlerScopeContext;
-        this.monitor = monitor;
+        this.switchboardMonitor = switchboardMonitor;
     }
 
     protected void setRoutingLogic(RoutingLogic routingLogic) {
@@ -50,6 +51,7 @@ public abstract class AbstractSwitchboard implements Switchboard {
 
     @Override
     public void openConnection(ModelAddress sender, Map<String, Object> connectParameters) {
+        switchboardMonitor.monitor_openConnection(this, sender, connectParameters);
         checkRunning();
 
         // find route
@@ -72,6 +74,7 @@ public abstract class AbstractSwitchboard implements Switchboard {
 
     @Override
     public void send(ModelAddress sender, EventMessage message) {
+        switchboardMonitor.monitor_send(this, sender, message);
         checkRunning();
         Set<ModelAddress> alreadyDelivered = new HashSet<ModelAddress>(); // todo  optimze for 99% one-to-one routings (with Guava?)
         alreadyDelivered.add(sender);
@@ -93,12 +96,14 @@ public abstract class AbstractSwitchboard implements Switchboard {
     }
 
     public void send(ModelAddress sender, EventMessage message, ModelAddress receiver) {
+        switchboardMonitor.monitor_send(this, sender, message, receiver);
         checkRunningOrStopping();
         handleTransmitEventMessage(sender, receiver, message);
     }
 
     @Override
     public void closeAllConnections(ModelAddress sender) {
+        switchboardMonitor.monitor_closeAllConnections(this, sender);
         checkRunningOrStopping();
 
         Collection<ModelAddress> receivers = routingTable.getConnectedAddresses(sender);
@@ -109,6 +114,7 @@ public abstract class AbstractSwitchboard implements Switchboard {
 
     @Override
     public void closeConnection(ModelAddress sender, ModelAddress receiver) {
+        switchboardMonitor.monitor_closeConnection(this, sender, receiver);
         checkRunningOrStopping();
 
         LOG.debug("Remove route between {} and {}", sender, receiver);
@@ -120,6 +126,7 @@ public abstract class AbstractSwitchboard implements Switchboard {
 
     @Override
     public void start() {
+        switchboardMonitor.monitor_start(this);
         if (this.routingLogic == null) {
             throw new IllegalStateException("No RoutingLogic");
         }
@@ -128,6 +135,7 @@ public abstract class AbstractSwitchboard implements Switchboard {
 
     @Override
     public void stop() {
+        switchboardMonitor.monitor_stop(this);
         this.status = Status.STOPPING;
         for (ModelAddress p : routingTable.getAllConnectedAddresses()) {
             closeAllConnections(p);
@@ -177,7 +185,6 @@ public abstract class AbstractSwitchboard implements Switchboard {
                                                                                receiver,
                                                                                message,
                                                                                handlerScopeContext);
-        monitor.send(sender, message, receiver);
     }
 
     @SuppressWarnings("unchecked")

@@ -1,7 +1,8 @@
 package at.irian.ankor.switching;
 
-import at.irian.ankor.monitor.Monitor;
-import at.irian.ankor.monitor.NoMonitor;
+import at.irian.ankor.monitor.nop.NopRoutingTableMonitor;
+import at.irian.ankor.monitor.nop.NopSwitchboardMonitor;
+import at.irian.ankor.monitor.SwitchboardMonitor;
 import at.irian.ankor.switching.connector.*;
 import at.irian.ankor.switching.msg.EventMessage;
 import at.irian.ankor.switching.routing.ConcurrentRoutingTable;
@@ -22,17 +23,17 @@ public class DefaultSwitchboard extends AbstractSwitchboard implements Switchboa
     protected DefaultSwitchboard(RoutingTable routingTable,
                                  ConnectorRegistry connectorRegistry,
                                  HandlerScopeContext handlerScopeContext,
-                                 Monitor monitor) {
-        super(routingTable, connectorRegistry, handlerScopeContext, monitor);
+                                 SwitchboardMonitor switchboardMonitor) {
+        super(routingTable, connectorRegistry, handlerScopeContext, switchboardMonitor);
         this.connectorRegistry = connectorRegistry;
     }
 
     public static SwitchboardImplementor createForSingleThread() {
         ConnectorRegistry connectorRegistry = DefaultConnectorRegistry.createForSingleThread();
-        return new DefaultSwitchboard(new ConcurrentRoutingTable(new NoMonitor()),
+        return new DefaultSwitchboard(new ConcurrentRoutingTable(new NopRoutingTableMonitor()),
                                       connectorRegistry,
                                       new SimpleHandlerScopeContext(),
-                                      new NoMonitor());
+                                      new NopSwitchboardMonitor());
     }
 
     public static SwitchboardImplementor createForConcurrency() {
@@ -41,10 +42,10 @@ public class DefaultSwitchboard extends AbstractSwitchboard implements Switchboa
 
     public static SwitchboardImplementor createForConcurrency(int concurrencyLevel) {
         ConnectorRegistry connectorRegistry = DefaultConnectorRegistry.createForConcurrency(concurrencyLevel);
-        return new DefaultSwitchboard(new ConcurrentRoutingTable(new NoMonitor()),
+        return new DefaultSwitchboard(new ConcurrentRoutingTable(new NopRoutingTableMonitor()),
                                       connectorRegistry,
                                       new ThreadLocalHandlerScopeContext(),
-                                      new NoMonitor());
+                                      new NopSwitchboardMonitor());
     }
 
     @Override
