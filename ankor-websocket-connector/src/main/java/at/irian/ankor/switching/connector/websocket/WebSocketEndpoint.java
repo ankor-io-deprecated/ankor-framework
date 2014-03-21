@@ -11,7 +11,6 @@ import javax.websocket.CloseReason;
 import javax.websocket.Endpoint;
 import javax.websocket.EndpointConfig;
 import javax.websocket.Session;
-import java.io.IOException;
 
 /**
  * @author Thomas Spiegl
@@ -60,7 +59,7 @@ public abstract class WebSocketEndpoint extends Endpoint {
                     = WebSocketConnector.getSingletonMessageDeserializer(ankorSystem);
             WebSocketListener listener =
                     new WebSocketListener(getPath(), messageDeserializer, ankorSystem.getSwitchboard(),
-                            SimpleELPathSyntax.getInstance(), clientId, ankorSystem.getMonitor());
+                            SimpleELPathSyntax.getInstance(), clientId);
             session.addMessageHandler(listener.getByteMessageHandler());
             session.addMessageHandler(listener.getStringMessageHandler());
         }
