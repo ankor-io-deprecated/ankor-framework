@@ -1,6 +1,6 @@
 package at.irian.ankor.switching.routing;
 
-import at.irian.ankor.monitor.Monitor;
+import at.irian.ankor.monitor.RoutingTableMonitor;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.Multimap;
@@ -17,10 +17,10 @@ public class ConcurrentRoutingTable implements RoutingTable {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RoutingTable.class);
 
     private volatile ImmutableSetMultimap<ModelAddress, ModelAddress> connections = ImmutableSetMultimap.of();
-    private Lock writeLock = new ReentrantLock();
-    private final Monitor monitor;
+    private final Lock writeLock = new ReentrantLock();
+    private final RoutingTableMonitor monitor;
 
-    public ConcurrentRoutingTable(Monitor monitor) {
+    public ConcurrentRoutingTable(RoutingTableMonitor monitor) {
         this.monitor = monitor;
     }
 
@@ -44,7 +44,7 @@ public class ConcurrentRoutingTable implements RoutingTable {
             } finally {
                 writeLock.unlock();
             }
-            monitor.connect(a, b);
+            monitor.monitor_connect(this, a, b);
             return true;
         } else {
             return false;
@@ -70,7 +70,7 @@ public class ConcurrentRoutingTable implements RoutingTable {
             } finally {
                 writeLock.unlock();
             }
-            monitor.disconnect(a, b);
+            monitor.monitor_disconnect(this, a, b);
             return true;
         } else {
             return false;

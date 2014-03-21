@@ -60,7 +60,7 @@ public abstract class WebSocketEndpoint extends Endpoint {
                     = WebSocketConnector.getSingletonMessageDeserializer(ankorSystem);
             WebSocketListener listener =
                     new WebSocketListener(getPath(), messageDeserializer, ankorSystem.getSwitchboard(),
-                            SimpleELPathSyntax.getInstance(), clientId, ankorSystem.getMonitor());
+                            SimpleELPathSyntax.getInstance(), clientId);
             session.addMessageHandler(listener.getByteMessageHandler());
             session.addMessageHandler(listener.getStringMessageHandler());
             if (oldSession != null) {

@@ -43,7 +43,7 @@ public class WebSocketConnector implements Connector {
 
         WebSocketSessionRegistry sessionRegistry = getSessionRegistry(ankorSystem);
         WebSocketSender webSocketSender = new WebSocketSender(sessionRegistry, ankorSystem.getSwitchboard(),
-                                                              getMessageMapperFactory(ankorSystem), ankorSystem.getMonitor());
+                                                              getMessageMapperFactory(ankorSystem));
         ankorSystem.getConnectorPlug().registerConnectionHandler(WebSocketModelAddress.class,
                                                                  new WebSocketConnectionHandler(webSocketSender));
         ankorSystem.getConnectorPlug().registerTransmissionHandler(WebSocketModelAddress.class,

@@ -6,6 +6,7 @@ import java.util.Map;
 /**
  * @author Thomas Spiegl
  */
+@Deprecated
 public class SimpleMonitorStatistics {
 
     private final long traceInterval;
