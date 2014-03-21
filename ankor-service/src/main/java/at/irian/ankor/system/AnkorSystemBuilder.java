@@ -13,7 +13,7 @@ import at.irian.ankor.delay.Scheduler;
 import at.irian.ankor.delay.SimpleScheduler;
 import at.irian.ankor.delay.TaskRequestEventListener;
 import at.irian.ankor.event.*;
-import at.irian.ankor.event.dispatch.AkkaEventDispatcherFactory;
+import at.irian.ankor.event.dispatch.AkkaSessionBoundEventDispatcherFactory;
 import at.irian.ankor.event.dispatch.EventDispatcherFactory;
 import at.irian.ankor.event.dispatch.SynchronizedSimpleEventDispatcherFactory;
 import at.irian.ankor.messaging.json.simpletree.SimpleTreeJsonMessageMapper;
@@ -21,8 +21,8 @@ import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
 import at.irian.ankor.messaging.modify.CoerceTypeModifier;
 import at.irian.ankor.messaging.modify.Modifier;
 import at.irian.ankor.messaging.modify.PassThroughModifier;
-import at.irian.ankor.monitor.akka.AkkaAnkorSystemMonitor;
 import at.irian.ankor.monitor.AnkorSystemMonitor;
+import at.irian.ankor.monitor.akka.AkkaAnkorSystemMonitor;
 import at.irian.ankor.monitor.stats.AnkorSystemStats;
 import at.irian.ankor.monitor.stats.StatsAnkorSystemMonitor;
 import at.irian.ankor.ref.RefContextFactory;
@@ -404,7 +404,8 @@ public class AnkorSystemBuilder {
             if (actorSystem == null) {
                 eventDispatcherFactory = new SynchronizedSimpleEventDispatcherFactory();
             } else {
-                eventDispatcherFactory = new AkkaEventDispatcherFactory(actorSystem);
+                //eventDispatcherFactory = new AkkaConsistentHashingEventDispatcherFactory(actorSystem);
+                eventDispatcherFactory = new AkkaSessionBoundEventDispatcherFactory(actorSystem);
             }
         }
         return eventDispatcherFactory;
