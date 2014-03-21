@@ -1,13 +1,14 @@
 define([
     "./BaseTransport"
 ], function (BaseTransport) {
-    var WebSocketTransport = function (endpoint, options) {
+    var WebSocketTransport = function (endpointUri, options) {
         BaseTransport.call(this);
 
         this.options = options || {};
-        this.endpoint = endpoint || "/websocket/ankor";  // TODO remove hack
-        this.endpoint += "/" + Math.random().toString(36).substring(2, 15) +
-            Math.random().toString(36).substring(2, 15);
+        var clientId = Math.random().toString(36).substring(2, 15) ||
+            Math.random().toString(36).substring(2, 15);  // TODO refactor uuid
+        this.endpoint = endpointUri + "/" + clientId;
+        console.log("endpoint:", this.endpoint);
         this.heartbeatInterval = options.heartbeatInterval || 5000;
 
         this._isReady = false;
