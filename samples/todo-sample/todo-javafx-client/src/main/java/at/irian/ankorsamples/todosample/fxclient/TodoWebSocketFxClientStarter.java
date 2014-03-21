@@ -1,6 +1,6 @@
 package at.irian.ankorsamples.todosample.fxclient;
 
-import at.irian.ankor.system.WebSocketClient;
+import at.irian.ankor.system.WebSocketFxClient;
 import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -20,7 +20,7 @@ public class TodoWebSocketFxClientStarter extends javafx.application.Application
     // used to open the browser
     private static HostServices services;
 
-    private WebSocketClient client;
+    private WebSocketFxClient client;
 
     private EndpointListener endpointListener;
 
@@ -31,7 +31,7 @@ public class TodoWebSocketFxClientStarter extends javafx.application.Application
     public TodoWebSocketFxClientStarter() throws Exception {
         serverStatus = new Label();
         endpointListener = new EndpointListener();
-        client = WebSocketClient.builder()
+        client = WebSocketFxClient.builder()
                 .withApplicationName("Todo FX Client")
                 .withModelName("root")
                 .withConnectParam("todoListId", "collaborationTest")
@@ -64,6 +64,7 @@ public class TodoWebSocketFxClientStarter extends javafx.application.Application
     @Override
     public void stop() throws Exception {
         client.stop();
+        super.stop();
     }
 
     public static HostServices getServices() {

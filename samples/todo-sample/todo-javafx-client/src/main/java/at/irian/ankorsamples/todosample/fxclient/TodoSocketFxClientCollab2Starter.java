@@ -1,5 +1,8 @@
 package at.irian.ankorsamples.todosample.fxclient;
 
+import at.irian.ankor.system.AnkorClient;
+import at.irian.ankor.system.SocketFxClient;
+
 /**
  * @author Manfred Geiler
  */
@@ -11,17 +14,8 @@ public class TodoSocketFxClientCollab2Starter extends TodoSocketFxClientStarter 
     }
 
     @Override
-    protected String getApplicationName() {
-        return super.getApplicationName() + " 2";
+    protected AnkorClient createAnkorClient() {
+        return SocketFxClient.create(APPLICATION_NAME + " 2", MODEL_NAME, "collabTest", "//localhost:9092");
     }
 
-    @Override
-    protected String getClientAddress() {
-        return "//localhost:9092";
-    }
-
-    @Override
-    protected String getModelInstanceIdToConnect() {
-        return "collabTest";
-    }
 }

@@ -21,9 +21,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * @author Thomas Spiegl
  */
-public class WebSocketClient {
+public class WebSocketFxClient implements AnkorClient {
 
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(WebSocketClient.class);
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(WebSocketFxClient.class);
 
     private final String applicationName;
     private final String modelName;
@@ -39,7 +39,13 @@ public class WebSocketClient {
     private final String clientId;
     private final WebSocketConnectionManager connectionManager;
 
-    public WebSocketClient(String applicationName, String modelName, Map<String, Object> connectParams, String host, int port, String serverPath, Endpoint listener) {
+    public WebSocketFxClient(String applicationName,
+                             String modelName,
+                             Map<String, Object> connectParams,
+                             String host,
+                             int port,
+                             String serverPath,
+                             Endpoint listener) {
         this.listener = listener;
         if (applicationName == null) { throw new NullPointerException("applicationName"); }
         if (modelName == null) { throw new NullPointerException("modelName"); }
@@ -104,12 +110,13 @@ public class WebSocketClient {
             return this;
         }
 
-        public WebSocketClient build() {
-            return new WebSocketClient(applicationName, modelName, connectParams, host, port, path, listener);
+        public WebSocketFxClient build() {
+            return new WebSocketFxClient(applicationName, modelName, connectParams, host, port, path, listener);
         }
     }
 
-    public final void start() throws Exception {
+    @Override
+    public final void start() {
         createAnkorSystem();
         startAnkorSystemAndConnect();
     }
@@ -147,7 +154,8 @@ public class WebSocketClient {
 
     }
 
-    public void stop() throws Exception {
+    @Override
+    public void stop() {
         ankorSystem.stop();
     }
 

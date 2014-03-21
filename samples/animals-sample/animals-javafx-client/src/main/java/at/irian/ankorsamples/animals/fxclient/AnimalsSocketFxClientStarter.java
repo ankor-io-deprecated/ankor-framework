@@ -1,8 +1,10 @@
 package at.irian.ankorsamples.animals.fxclient;
 
-import at.irian.ankor.system.SocketFxClientApplication;
+import at.irian.ankor.system.AnkorClient;
+import at.irian.ankor.system.SocketFxClient;
 import at.irian.ankor.fx.binding.fxref.FxRefs;
 import at.irian.ankor.fx.controller.AnkorFXMLLoader;
+import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -20,7 +22,7 @@ import javafx.stage.Stage;
  *
  * @author Manfred Geiler
  */
-public class AnimalsSocketFxClientStarter extends SocketFxClientApplication {
+public class AnimalsSocketFxClientStarter extends Application {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalsSocketFxClientStarter.class);
 
     private static final String APPLICATION_NAME = "Animals FX Client";
@@ -30,12 +32,13 @@ public class AnimalsSocketFxClientStarter extends SocketFxClientApplication {
         launch(args);
     }
 
-    public AnimalsSocketFxClientStarter() {
-        super(APPLICATION_NAME, MODEL_NAME);
-    }
+    private AnkorClient ankorClient;
 
     @Override
-    public void startFx(Stage stage) throws Exception {
+    public void start(Stage stage) throws Exception {
+        ankorClient = SocketFxClient.create(APPLICATION_NAME, MODEL_NAME, getParameters());
+        ankorClient.start();
+
         stage.setTitle("Ankor Animals FX Sample");
 
         AnkorFXMLLoader fxmlLoader = new AnkorFXMLLoader();
@@ -47,6 +50,12 @@ public class AnimalsSocketFxClientStarter extends SocketFxClientApplication {
         myScene.getStylesheets().add("style.css");
         stage.setScene(myScene);
         stage.show();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        ankorClient.stop();
+        super.stop();
     }
 
 }

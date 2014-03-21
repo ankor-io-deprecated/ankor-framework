@@ -7,17 +7,20 @@ import at.irian.ankor.viewmodel.proxy.CglibProxyBeanFactory;
 /**
  * @author Manfred Geiler
  */
-public class SocketServerStarter {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SocketServerStarter.class);
+public class SocketStandaloneServer {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SocketStandaloneServer.class);
 
     private final Application application;
+    private Thread thread;
+    private volatile boolean running;
 
-    public SocketServerStarter(Application application) {
+    public SocketStandaloneServer(Application application) {
         this.application = application;
     }
 
     public void start() {
-        Thread thread = createMainThread();
+        thread = createMainThread();
+        running = true;
         thread.start();
         sleepForever();
     }
@@ -48,7 +51,7 @@ public class SocketServerStarter {
 
     protected void sleepForever() {
         boolean interrupted = false;
-        while (!interrupted) {
+        while (running && !interrupted) {
             try {
                 Thread.sleep(Long.MAX_VALUE);
             } catch (InterruptedException e) {
@@ -56,5 +59,10 @@ public class SocketServerStarter {
             }
         }
         Thread.currentThread().interrupt();
+    }
+
+    public void stop() {
+        running = false;
+        thread.interrupt();
     }
 }
