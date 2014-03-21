@@ -14,7 +14,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author Manfred Geiler
  */
 public class ConcurrentRoutingTable implements RoutingTable {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RoutingTable.class);
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RoutingTable.class);
 
     private volatile ImmutableSetMultimap<ModelAddress, ModelAddress> connections = ImmutableSetMultimap.of();
     private Lock writeLock = new ReentrantLock();
@@ -35,6 +35,7 @@ public class ConcurrentRoutingTable implements RoutingTable {
 
         if (!isConnected(a, b)) {
             writeLock.lock();
+            //LOG.warn("connect {} {}", a, b);
             try {
                 connections = ImmutableSetMultimap.<ModelAddress, ModelAddress>builder()
                                                   .putAll(connections)
@@ -47,6 +48,7 @@ public class ConcurrentRoutingTable implements RoutingTable {
             monitor.connect(a, b);
             return true;
         } else {
+            //LOG.error("connected {} {}", a, b);
             return false;
         }
     }

@@ -11,7 +11,6 @@ import javax.websocket.CloseReason;
 import javax.websocket.Endpoint;
 import javax.websocket.EndpointConfig;
 import javax.websocket.Session;
-import java.io.IOException;
 
 /**
  * @author Thomas Spiegl
@@ -55,19 +54,15 @@ public abstract class WebSocketEndpoint extends Endpoint {
     private void registerSession(AnkorSystem ankorSystem, String clientId, Session session) {
         WebSocketSessionRegistry sessionRegistry = WebSocketConnector.getSessionRegistry(ankorSystem);
         if (!sessionRegistry.containsSession(clientId, session)) {
-            Session oldSession = sessionRegistry.addSession(clientId, session);
+            sessionRegistry.addSession(clientId, session);
             MessageDeserializer<String> messageDeserializer
                     = WebSocketConnector.getSingletonMessageDeserializer(ankorSystem);
             WebSocketListener listener =
                     new WebSocketListener(getPath(), messageDeserializer, ankorSystem.getSwitchboard(),
                             SimpleELPathSyntax.getInstance(), clientId, ankorSystem.getMonitor());
-            session.addMessageHandler(listener.getByteMessageHandler());
-            session.addMessageHandler(listener.getStringMessageHandler());
-            if (oldSession != null) {
-                try {
-                    oldSession.close();
-                } catch (IOException ignore) {
-                }
+            if (session.getMessageHandlers().size() == 0) {
+                session.addMessageHandler(listener.getByteMessageHandler());
+                session.addMessageHandler(listener.getStringMessageHandler());
             }
         }
     }
@@ -76,7 +71,7 @@ public abstract class WebSocketEndpoint extends Endpoint {
         String clientId = getClientId(session);
         if (clientId != null) {
             AnkorSystem ankorSystem = getAnkorSystem();
-            WebSocketConnector.getSessionRegistry(ankorSystem).removeSession(clientId);
+            WebSocketConnector.getSessionRegistry(ankorSystem).removeSession(clientId, session);
         }
     }
 

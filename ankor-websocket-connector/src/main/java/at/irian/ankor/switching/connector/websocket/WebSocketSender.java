@@ -38,31 +38,35 @@ public class WebSocketSender {
                      WebSocketModelAddress receiver,
                      WebSocketMessage message,
                      HandlerScopeContext context) {
-        Session session = sessionRegistry.getSession(receiver.getClientId());
-        if (session == null) {
-            LOG.warn("Cannot send {} from {} to {} - automatically disconnecting {}, reason: NO WS SESSION FOUND ...",
-                    message,
-                    sender,
-                    receiver,
-                    receiver);
-            if (!message.isClose()) {
-                switchboard.closeConnection(sender, receiver);
-            }
-        } else {
-            try {
-                String serializedMsg = getMessageSerializer(context).serialize(message);
-                LOG.debug("Sending serialized message to {}: {}", receiver, serializedMsg);
-                session.getBasicRemote().sendText(serializedMsg);
-                monitor.outboundMessage(receiver);
-            } catch (IOException e) {
-                LOG.error("Error sending {} from {} to {} - automatically disconnecting {} ...",
-                        message,
-                        sender,
-                        receiver,
-                        receiver, e);
+        for (Session session : sessionRegistry.getSessions(receiver.getClientId())) {
+            if (!session.isOpen()) {
                 if (!message.isClose()) {
-                    switchboard.closeConnection(sender, receiver);
+                    LOG.debug("Cannot send {} from {} to {} - automatically disconnecting {}, reason: NO WS SESSION NOT OPEN ...",
+                            message,
+                            sender,
+                            receiver,
+                            receiver);
                 }
+                sessionRegistry.removeSession(receiver.getClientId(), session);
+            } else {
+                try {
+                    String serializedMsg = getMessageSerializer(context).serialize(message);
+                    LOG.debug("Sending serialized message to {}: {}", receiver, serializedMsg);
+                    session.getBasicRemote().sendText(serializedMsg);
+                    monitor.outboundMessage(receiver);
+                } catch (IOException e) {
+                    LOG.debug("Error sending {} from {} to {} - automatically disconnecting {} ...",
+                            message,
+                            sender,
+                            receiver,
+                            receiver, e);
+                    sessionRegistry.removeSession(receiver.getClientId(), session);
+                }
+            }
+        }
+        if (!message.isClose()) {
+            if (sessionRegistry.getSessions(receiver.getClientId()).isEmpty()) {
+                switchboard.closeConnection(sender, receiver);
             }
         }
     }

@@ -1,29 +1,51 @@
 package at.irian.ankor.switching.connector.websocket;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableSetMultimap;
+import com.google.common.collect.Multimap;
+
 import javax.websocket.Session;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author Thomas Spiegl
  */
 class WebSocketSessionRegistry {
 
-    private Map<String, Session> sessions = new ConcurrentHashMap<String, Session>(1000); // todo  make concurrency level configurable
+    private volatile ImmutableSetMultimap<String, Session> sessions = ImmutableSetMultimap.of();
 
-    public Session addSession(String clientId, Session session) {
-        return sessions.put(clientId, session);
+    private Lock writeLock = new ReentrantLock();
+
+    public void addSession(String clientId, Session session) {
+        writeLock.lock();
+        try {
+            sessions = ImmutableSetMultimap.<String, Session>builder()
+                    .putAll(sessions)
+                    .put(clientId, session)
+                    .build();
+        } finally {
+            writeLock.unlock();
+        }
     }
 
-    public Session getSession(String clientId) {
+    public Set<Session> getSessions(String clientId) {
         return sessions.get(clientId);
     }
 
-    public void removeSession(String clientId) {
-        sessions.remove(clientId);
+    public void removeSession(String clientId, Session session) {
+        writeLock.lock();
+        try {
+            Multimap<String, Session> mutable = HashMultimap.create(sessions);
+            mutable.remove(clientId, session);
+            sessions = ImmutableSetMultimap.copyOf(mutable);
+        } finally {
+            writeLock.unlock();
+        }
     }
 
     public boolean containsSession(String clientId, Session session) {
-        return session == sessions.get(clientId);
+        return sessions.containsEntry(clientId, session);
     }
 }

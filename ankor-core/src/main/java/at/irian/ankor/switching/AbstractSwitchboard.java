@@ -62,7 +62,8 @@ public abstract class AbstractSwitchboard implements Switchboard {
         // add route
         boolean success = routingTable.connect(sender, receiver);
         if (!success) {
-            throw new IllegalStateException("Already connected: " + sender + " and " + receiver);
+            LOG.warn("Already connected: {} and {}", sender, receiver);
+            return;
         }
 
         // open connection
