@@ -1,10 +1,10 @@
 package at.irian.ankor.console;
 
 import at.irian.ankor.monitor.stats.AnkorSystemStats;
-import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
 
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -18,19 +18,20 @@ public class ConsoleModelRoot {
     private long totalOutboundMessages = 0;
 
     public ConsoleModelRoot(final Ref myRef, final AnkorSystemStats stats) {
-        Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new Runnable() {
+        Executors.newScheduledThreadPool(1, new ThreadFactory() {
+            @Override
+            public Thread newThread(@SuppressWarnings("NullableProblems") Runnable r) {
+                Thread thread = new Thread(r);
+                thread.setDaemon(true);
+                return thread;
+            }
+        }).scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
                 try {
-                    AnkorPatterns.runLater(myRef, new Runnable() {
-                        @Override
-                        public void run() {
-                            myRef.appendPath("totalInboundMessages")
-                                 .setValue(stats.switchboard().getTotalInboundMessages());
-                            myRef.appendPath("totalOutboundMessages")
-                                 .setValue(stats.switchboard().getTotalOutboundMessages());
-                        }
-                    });
+                    totalInboundMessages = stats.switchboard().getTotalInboundMessages();
+                    totalOutboundMessages = stats.switchboard().getTotalOutboundMessages();
+                    myRef.signalValueChange();
                 } catch (RuntimeException e) {
                     e.printStackTrace();
                 }
