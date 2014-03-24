@@ -37,7 +37,9 @@ define([
     
     componentDidUpdate: function (c) {
       if (c.todo.editing === true) {
-        
+        var node = this.refs.editField.getDOMNode();
+        node.focus();
+        node.setSelectionRange(node.value.length, node.value.length);
       }
     },
 
