@@ -27,6 +27,7 @@ public class AkkaConsistentHashingSwitchboardActor extends UntypedActor {
                               SwitchboardMonitor monitor) {
         int nrOfInstances = config.getInt("at.irian.ankor.switching.AkkaConsistentHashingSwitchboardActor.poolSize");
         return Props.create(AkkaConsistentHashingSwitchboardActor.class, routingTable, connectorMapping, monitor)
+                    .withDispatcher("ankor.switchboard-dispatcher")
                     .withRouter(new ConsistentHashingRouter(nrOfInstances));
     }
 

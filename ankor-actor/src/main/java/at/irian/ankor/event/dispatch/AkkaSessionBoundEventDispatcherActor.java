@@ -14,7 +14,7 @@ public class AkkaSessionBoundEventDispatcherActor extends UntypedActor {
 
     public static Props props(@SuppressWarnings("UnusedParameters") Config config) {
         return Props.create(AkkaSessionBoundEventDispatcherActor.class)
-                    .withDispatcher("at.irian.ankor.event.dispatch.ankor-event-dispatcher");
+                    .withDispatcher("ankor.event-dispatcher");
     }
 
     public static String name(ModelSession modelSession) {

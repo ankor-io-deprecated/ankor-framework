@@ -27,7 +27,13 @@ public class AkkaAddressBoundSwitchboardActor extends UntypedActor {
                               SwitchboardMonitor monitor,
                               RoutingLogic routingLogic,
                               Switchboard mainSwitchboard) {
-        return Props.create(AkkaAddressBoundSwitchboardActor.class, routingTable, connectorMapping, monitor, routingLogic, mainSwitchboard);
+        return Props.create(AkkaAddressBoundSwitchboardActor.class,
+                            routingTable,
+                            connectorMapping,
+                            monitor,
+                            routingLogic,
+                            mainSwitchboard)
+                    .withDispatcher("ankor.switchboard-dispatcher");
     }
 
     public static String name(String addressKey) {

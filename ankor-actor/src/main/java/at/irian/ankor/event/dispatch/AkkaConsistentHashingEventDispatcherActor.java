@@ -15,7 +15,9 @@ public class AkkaConsistentHashingEventDispatcherActor extends UntypedActor {
 
     public static Props props(@SuppressWarnings("UnusedParameters") Config config) {
         int nrOfInstances = config.getInt("at.irian.ankor.event.dispatch.AkkaConsistentHashingEventDispatcherActor.poolSize");
-        return Props.create(AkkaConsistentHashingEventDispatcherActor.class).withRouter(new ConsistentHashingRouter(nrOfInstances));
+        return Props.create(AkkaConsistentHashingEventDispatcherActor.class)
+                    .withDispatcher("ankor.event-dispatcher")
+                    .withRouter(new ConsistentHashingRouter(nrOfInstances));
     }
 
     public static String name() {
