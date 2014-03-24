@@ -11,6 +11,7 @@ import at.irian.ankor.ref.RefContextFactory;
 import com.google.common.collect.ImmutableMap;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -131,10 +132,9 @@ class DefaultModelSession implements ModelSession, DispatchThreadAware {
 
     @Override
     public void setModelRoot(String modelName, Object modelRoot) {
-        modelRootMap = ImmutableMap.<String,Object>builder()
-                                   .putAll(modelRootMap)
-                                   .put(modelName, modelRoot)
-                                   .build();
+        Map<String, Object> mutableMap = new HashMap<String, Object>(modelRootMap);
+        mutableMap.put(modelName, modelRoot);
+        modelRootMap = ImmutableMap.copyOf(mutableMap);
     }
 
     @Override
