@@ -9,7 +9,7 @@
 define([
   "react",
   "build/filter"
-], function (React, Filter) {
+], function (React, FILTER) {
   'use strict';
 
   return React.createClass({
@@ -26,12 +26,11 @@ define([
           );
       }
 
-      // React idiom for shortcutting to `classSet` since it'll be used often
       var cx = React.addons.classSet;
       var filter = this.props.filter;
-      var filterAll = cx({selected: filter === Filter.ALL});
-      var filterActive = cx({selected: filter === Filter.ACTIVE});
-      var filterCompleted = cx({selected: filter === Filter.COMPLETED});
+      var filterAll = cx({selected: filter === FILTER.ALL});
+      var filterActive = cx({selected: filter === FILTER.ACTIVE});
+      var filterCompleted = cx({selected: filter === FILTER.COMPLETED});
       return (
         React.DOM.footer( {id:"footer"}, 
           React.DOM.span( {id:"todo-count"}, 

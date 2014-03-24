@@ -8,30 +8,21 @@
 
 define([
   "react",
-  "director",
+  "build/initRouter",
   "build/todoFooter",
   "build/todoItem",
+  "build/keys",
   'base'
-], function (React, Router, TodoFooter, TodoItem) {
+], function (React, initRouter, TodoFooter, TodoItem, KEYS) {
   'use strict';
-
-  var ENTER_KEY = 13;
 
   return React.createClass({
     componentDidMount: function () {
-      var setFilter = function (value) {
-        this.props.modelRef.appendPath("filter").setValue(value);
-      };
-      var router = Router({
-        '/': setFilter.bind(this, "all"),
-        '/active': setFilter.bind(this, "active"),
-        '/completed': setFilter.bind(this, "completed")
-      });
-      router.init('/');
+      initRouter(this.props.modelRef);
     },
 
     handleNewTodoKeyDown: function (event) {
-      if (event.which === ENTER_KEY) {
+      if (event.which === KEYS.ENTER_KEY) {
         var node = this.refs.newField.getDOMNode();
         var val = node.value.trim();
         if (val) {
@@ -58,9 +49,9 @@ define([
       var main;
 
       var tasksRef = this.props.modelRef.appendPath("tasks");
-      var task = this.props.model.tasks;
+      var tasks = this.props.model.tasks;
 
-      var todoItems = task.map(function (todo, i) {
+      var todoItems = tasks.map(function (todo, i) {
         return (
           <TodoItem
           key={todo.id}
@@ -82,7 +73,7 @@ define([
           onClearCompleted={this.clearCompleted}
           />;
 
-        main = (
+        main =
           <section id="main">
             <input
             id="toggle-all"
@@ -93,8 +84,7 @@ define([
             <ul id="todo-list">
 							{todoItems}
             </ul>
-          </section>
-          );
+          </section>;
       }
 
       return (
