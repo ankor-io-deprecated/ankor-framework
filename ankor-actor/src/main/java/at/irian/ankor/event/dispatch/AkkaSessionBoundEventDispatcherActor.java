@@ -13,7 +13,8 @@ public class AkkaSessionBoundEventDispatcherActor extends UntypedActor {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AkkaSessionBoundEventDispatcherActor.class);
 
     public static Props props(@SuppressWarnings("UnusedParameters") Config config) {
-        return Props.create(AkkaSessionBoundEventDispatcherActor.class);
+        return Props.create(AkkaSessionBoundEventDispatcherActor.class)
+                    .withDispatcher("at.irian.ankor.event.dispatch.ankor-event-dispatcher");
     }
 
     public static String name(ModelSession modelSession) {
