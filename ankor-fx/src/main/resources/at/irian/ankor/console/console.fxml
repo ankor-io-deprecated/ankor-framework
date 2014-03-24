@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Text?>
-<BorderPane layoutX="0.0" layoutY="0.0" prefHeight="580.0" prefWidth="710.0" xmlns:fx="http://javafx.com/fxml"
+<BorderPane layoutX="0.0" layoutY="0.0" prefHeight="50.0" prefWidth="250.0" xmlns:fx="http://javafx.com/fxml"
             fx:controller="at.irian.ankor.console.ConsoleController">
 
     <top>
@@ -13,7 +13,7 @@
     </top>
 
     <center>
-        <HBox alignment="TOP_LEFT" minHeight="39.0" prefHeight="39.0001220703125" prefWidth="710.0" spacing="10.0" style="-fx-padding: 15;&#10;-fx-background-color: #333333,&#10; linear-gradient(#f3f3f3 0%, #ced3da 100%);&#10;-fx-background-insets: 0, 0 0 1 0;">
+        <HBox alignment="TOP_LEFT" minHeight="40.0" prefHeight="40.0" prefWidth="250.0" spacing="10.0" style="-fx-padding: 15;&#10;-fx-background-color: #333333,&#10; linear-gradient(#f3f3f3 0%, #ced3da 100%);&#10;-fx-background-insets: 0, 0 0 1 0;">
             <BorderPane.margin>
                 <Insets />
             </BorderPane.margin>
