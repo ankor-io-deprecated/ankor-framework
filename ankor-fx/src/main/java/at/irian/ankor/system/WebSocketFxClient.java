@@ -33,7 +33,7 @@ public class WebSocketFxClient implements AnkorClient {
     private final String serverPath;
     private final long heartbeatIntervalMillis;
     private final long reconnectIntervalMillis;
-    private final Endpoint listener;
+    private final WebSocketEndpointListener endpointListener;
 
     private AnkorSystem ankorSystem;
     private final String clientId;
@@ -45,8 +45,7 @@ public class WebSocketFxClient implements AnkorClient {
                              String host,
                              int port,
                              String serverPath,
-                             Endpoint listener) {
-        this.listener = listener;
+                             WebSocketEndpointListener endpointListener) {
         if (applicationName == null) { throw new NullPointerException("applicationName"); }
         if (modelName == null) { throw new NullPointerException("modelName"); }
         if (connectParams == null) { throw new NullPointerException("connectParams"); }
@@ -64,55 +63,15 @@ public class WebSocketFxClient implements AnkorClient {
             serverPath = serverPath.substring(0, serverPath.length() - 1);
         }
         this.serverPath = serverPath;
+        this.endpointListener = endpointListener;
         this.clientId = UUID.randomUUID().toString();
         this.connectionManager = new WebSocketConnectionManager();
-        this.heartbeatIntervalMillis = 25 * 1000;
+        this.heartbeatIntervalMillis = 25 * 1000;     // todo  config
         this.reconnectIntervalMillis = 500;
     }
 
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    public static class Builder {
-        private String applicationName;
-        private String modelName;
-        private Map<String, Object> connectParams = new HashMap<>();
-        private String host;
-        private int port;
-        private String path;
-        private Endpoint listener;
-
-        public Builder withApplicationName(String applicationName) {
-            this.applicationName = applicationName;
-            return this;
-        }
-
-        public Builder withModelName(String modelName) {
-            this.modelName = modelName;
-            return this;
-        }
-
-        public Builder withConnectParam(String key, Object value) {
-            connectParams.put(key, value);
-            return this;
-        }
-
-        public Builder withServer(String host, int port, String path) {
-            this.host = host;
-            this.port = port;
-            this.path = path;
-            return this;
-        }
-
-        public Builder withEndpointListener(Endpoint listener) {
-            this.listener = listener;
-            return this;
-        }
-
-        public WebSocketFxClient build() {
-            return new WebSocketFxClient(applicationName, modelName, connectParams, host, port, path, listener);
-        }
+    public static WebSocketFxClientBuilder builder() {
+        return new WebSocketFxClientBuilder();
     }
 
     @Override
@@ -308,8 +267,8 @@ public class WebSocketFxClient implements AnkorClient {
             LOG.info("WebSocket connection established");
             setClientId(session, clientId);
             connectionManager.notifyOpen(session);
-            if (listener != null) {
-                listener.onOpen(session, config);
+            if (endpointListener != null) {
+                endpointListener.onOpen(session, config);
             }
             super.onOpen(session, config);
         }
@@ -318,8 +277,8 @@ public class WebSocketFxClient implements AnkorClient {
         public void onClose(Session session, CloseReason closeReason) {
             LOG.info("WebSocket connection closed code: {} reason: {}", closeReason.getCloseCode(), closeReason.getReasonPhrase());
             connectionManager.notifyClose();
-            if (listener != null) {
-                listener.onClose(session, closeReason);
+            if (endpointListener != null) {
+                endpointListener.onClose(session, closeReason);
             }
             super.onClose(session, closeReason);
         }
@@ -328,8 +287,8 @@ public class WebSocketFxClient implements AnkorClient {
         public void onError(Session session, Throwable thr) {
             LOG.info("WebSocket connection closed msg: {} ", thr.getMessage());
             connectionManager.notifyError();
-            if (listener != null) {
-                listener.onError(session, thr);
+            if (endpointListener != null) {
+                endpointListener.onError(session, thr);
             }
             super.onError(session, thr);
         }

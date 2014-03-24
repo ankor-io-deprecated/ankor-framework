@@ -1,5 +1,6 @@
 package at.irian.ankorsamples.todosample.fxclient;
 
+import at.irian.ankor.system.WebSocketEndpointListener;
 import at.irian.ankor.system.WebSocketFxClient;
 import javafx.application.HostServices;
 import javafx.application.Platform;
@@ -10,7 +11,6 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import javax.websocket.CloseReason;
-import javax.websocket.Endpoint;
 import javax.websocket.EndpointConfig;
 import javax.websocket.Session;
 
@@ -71,7 +71,7 @@ public class TodoWebSocketFxClientStarter extends javafx.application.Application
         return services;
     }
 
-    private class EndpointListener extends Endpoint {
+    private class EndpointListener implements WebSocketEndpointListener {
 
         private String status = "Server Connection: not connected";
 
