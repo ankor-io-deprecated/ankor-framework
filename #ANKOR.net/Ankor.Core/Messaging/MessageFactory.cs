@@ -6,6 +6,7 @@ namespace Ankor.Core.Messaging {
 	/// <summary>
 	/// Description of MessageFactory.
 	/// </summary>
+	[Obsolete]
 	public class MessageFactory {
 		public string SystemName { get; private set; }
 		public NextId CreateNextId { get; set; }

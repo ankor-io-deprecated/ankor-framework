@@ -1,6 +1,9 @@
 ﻿﻿
+using System;
+
 namespace Ankor.Core.Messaging {
 
+	[Obsolete]
 	public class ChangeMessage : Message {
 
 		public Change.Change Change { get; private set; }

@@ -71,8 +71,6 @@ namespace Ankor.Core.Test.Messaging {
 			first.Should().Be(0L);
 
 			msg.Change.Value.Should().BeAssignableTo<IDictionary<string, object>>();
-			
-
 		}
 
 		[Test]

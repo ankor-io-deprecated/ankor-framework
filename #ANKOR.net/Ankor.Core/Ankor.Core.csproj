@@ -56,7 +56,7 @@
     <Compile Include="Action\AAction.cs" />
     <Compile Include="Action\ActionEvent.cs" />
     <Compile Include="Action\ActionEventListener.cs" />
-    <Compile Include="Messaging\WebSockets\WebSocketMessage.cs" />
+    <Compile Include="Messaging\Comm\CommMessage.cs" />
     <Compile Include="Messaging\WebSockets\WebSocketMessenger.cs" />
     <Compile Include="Change\Change.cs" />
     <Compile Include="Change\ChangeEvent.cs" />
@@ -66,10 +66,10 @@
     <Compile Include="Event\IEventSource.cs" />
     <Compile Include="Event\IModelEvent.cs" />
     <Compile Include="Event\IModelEventListener.cs" />
-    <Compile Include="Messaging\Comm\ClientSocketMessageLoop.cs" />
+    <Compile Include="Messaging\Socket\ClientSocketMessageLoop.cs" />
     <Compile Include="Messaging\Comm\IMessenger.cs" />
-    <Compile Include="Messaging\Comm\ServerSocketMessageLoop.cs" />
-    <Compile Include="Messaging\Comm\SocketMessageLoop.cs" />
+    <Compile Include="Messaging\Socket\ServerSocketMessageLoop.cs" />
+    <Compile Include="Messaging\Socket\SocketMessageLoop.cs" />
     <Compile Include="Messaging\Json\DictionaryForObjectConverter.cs" />
     <Compile Include="Ref\IInternalModel.cs" />
     <Compile Include="Messaging\Json\JsonMessageMapper.cs" />

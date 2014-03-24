@@ -1,9 +1,12 @@
 ﻿
+using System;
+
 namespace Ankor.Core.Messaging {
 	
 	/// <summary>
 	/// Description of Message.
 	/// </summary>
+	[Obsolete]
 	public abstract class Message {
 		
 		public string SenderId {get;  set;}

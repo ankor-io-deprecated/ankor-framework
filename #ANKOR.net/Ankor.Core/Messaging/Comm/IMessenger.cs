@@ -6,7 +6,7 @@ using Ankor.Core.Messaging.WebSockets;
 
 namespace Ankor.Core.Messaging.Comm {
 
-	public delegate void MessageHandler(WebSocketMessage msg);
+	public delegate void MessageHandler(CommMessage msg);
 
 	public interface IMessenger : IDisposable {
 
@@ -14,7 +14,7 @@ namespace Ankor.Core.Messaging.Comm {
 
 		void Start();
 
-		void Send(WebSocketMessage message);
+		void Send(CommMessage message);
 	}
 }
 

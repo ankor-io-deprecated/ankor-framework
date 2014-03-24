@@ -4,30 +4,31 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using Ankor.Core.Messaging.WebSockets;
+using Ankor.Core.Messaging.Comm;
 
-namespace Ankor.Core.Messaging.Comm {
+namespace Ankor.Core.Messaging.Socket {
 	public abstract class SocketMessageLoop : IDisposable {
-		protected const string SocketConnectToken = "$socketConnect";
 		private const int MaxDebugLen = 1000;
-
 
 		protected readonly MessageMapper<string> MessageMapper;
 		protected IPEndPoint RemoteEndPoint;
-
 		protected readonly IPEndPoint ListenEndPoint;
+		protected readonly Uri LocalHost;
+
 		private TcpListener listener;
-		private Thread receiveThread;		
+		private Thread receiveThread;
+		private bool run = true;
 
 		public event MessageHandler OnMessage;
 
-		protected SocketMessageLoop(string localHost, int listenPort, MessageMapper<string> messageMapper) {
+		protected SocketMessageLoop(Uri localHost, MessageMapper<string> messageMapper) {
 			this.MessageMapper = messageMapper;
-			ListenEndPoint = new IPEndPoint(Dns.GetHostAddresses(localHost)[1], listenPort);
+			this.LocalHost = localHost;
+			ListenEndPoint = new IPEndPoint(Dns.GetHostAddresses(localHost.Host)[1], localHost.Port);
 		}
 
-
-		public void Send(WebSocketMessage msg) {
+		public void Send(CommMessage msg) {
+			msg.SenderId = LocalHost.ToString();
 			using (var client = new TcpClient()) {
 				client.Connect(RemoteEndPoint);
 				using (var writer = new StreamWriter(client.GetStream(), new UTF8Encoding(false))) {
@@ -55,7 +56,7 @@ namespace Ankor.Core.Messaging.Comm {
 			            using (var reader = new StreamReader(client.GetStream(), new UTF8Encoding(false))) {
 			                string rawMsg = reader.ReadToEnd();
 			                Console.WriteLine("RECEIVED: " + ToDebugString(rawMsg));
-			                var message = MessageMapper.Deserialize<WebSocketMessage>(rawMsg);
+			                var message = MessageMapper.Deserialize<CommMessage>(rawMsg);
 			                OnMessage(message);
 			            }
 			        }
@@ -72,8 +73,6 @@ namespace Ankor.Core.Messaging.Comm {
 			}
 			return rawMsg;
 		}
-
-		private bool run = true;
 
 		public virtual void Dispose() {
 			run = false;

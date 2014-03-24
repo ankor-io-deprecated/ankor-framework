@@ -13,7 +13,7 @@ namespace Ankor.Core.Messaging.WebSockets {
 		private volatile string clientId = null;
 		protected readonly MessageMapper<string> MessageMapper;
 		private Timer heartBeatExecutor;
-		private readonly CountdownEvent initMessageEvent = new CountdownEvent(1);
+		private readonly CountdownEvent connectedEvent = new CountdownEvent(1);
 		private readonly string finalUri;
 
 		public event MessageHandler OnMessage;
@@ -25,23 +25,22 @@ namespace Ankor.Core.Messaging.WebSockets {
 		public WebSocketMessenger(string webSocketUri, MessageMapper<string> messageMapper) {
 			MessageMapper = messageMapper;
 
-			this.clientId = System.Guid.NewGuid().ToString();
+			this.clientId = Guid.NewGuid().ToString();
 			finalUri = webSocketUri + "/" + this.clientId;
 			Console.WriteLine("try to connect to websocket " + finalUri);
 			websocket = new WebSocket(finalUri);
 			websocket.AllowUnstrustedCertificate = true;
-			websocket.Opened += new EventHandler(OnOpened);
-			websocket.Error += new EventHandler<ErrorEventArgs>(OnError);
-			websocket.Closed += new EventHandler(OnClosed);
-			websocket.MessageReceived += new EventHandler<MessageReceivedEventArgs>(OnReceived);
-			
+			websocket.Opened += OnOpened;
+			websocket.Error += OnError;
+			websocket.Closed += OnClosed;
+			websocket.MessageReceived += OnReceived;
 		}
 
 		public void Start() {
 			
 			websocket.Open();
 
-			if (!initMessageEvent.Wait(5000)) {
+			if (!connectedEvent.Wait(5000)) {
 				throw new ApplicationException("websocket open not successful to " + finalUri);
 			}
 
@@ -50,19 +49,14 @@ namespace Ankor.Core.Messaging.WebSockets {
 
 		private void OnOpened(object sender, EventArgs e) {
 			Console.WriteLine("OPENED ws connection");
-			initMessageEvent.Signal();
+			connectedEvent.Signal();
 		}
 
 		private void OnReceived(object sender, MessageReceivedEventArgs e) {
 			string rawMsg = e.Message;
 			//Console.WriteLine("RECEIVED: " + ToDebugString(rawMsg));
-//			if (clientId == null) {
-//				clientId = rawMsg;
-//				initMessageEvent.Signal();
-//			} else {
-				var message = MessageMapper.Deserialize<WebSocketMessage>(rawMsg);
-				OnMessage(message);
-			//}
+			var message = MessageMapper.Deserialize<CommMessage>(rawMsg);
+			OnMessage(message);
 		}
 
 		private void OnClosed(object sender, EventArgs e) {
@@ -73,12 +67,11 @@ namespace Ankor.Core.Messaging.WebSockets {
 			Console.WriteLine("ERROR " + e.Exception);
 		}
 
-
 		private void SendHeartBeat(object state) {
 			websocket.Send("");
 		}
 
-		public void Send(WebSocketMessage message) {
+		public void Send(CommMessage message) {
 			string rawMsg = MessageMapper.Serialize(message);
 			//Console.WriteLine("SENDING: " + ToDebugString(rawMsg));			
 			websocket.Send(rawMsg);
@@ -86,7 +79,7 @@ namespace Ankor.Core.Messaging.WebSockets {
 
 		public void Dispose() {
 			heartBeatExecutor.Dispose();
-			initMessageEvent.Dispose();
+			connectedEvent.Dispose();
 			websocket.Close();
 		}
 

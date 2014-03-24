@@ -16,29 +16,41 @@ namespace Ankor.Sample.Todo.Client {
 		public static AnkorClientSystem Ankor { get; private set; }
 
 		protected override void OnStartup(StartupEventArgs e) {
+			var builder = InitWithWebSocket();
 
-			var builder = new AnkorClientSystem.WebSocketBuilder() {
-				WebSocketUri = "ws://localhost:8080/websocket/ankor",
-				//builder.WebSocketUri = "wss://ankor-todo-sample.irian.at/websocket/ankor";
-				ModelName = "root",
-			};
-			builder.AddConnectParam("todoListId", "collaborationTest");
-
-			builder.WebSocketUri = ConfigurationManager.AppSettings["serverUrl"];
+			//var builder = InitWithSocket();
 
 			try {
 				Ankor = builder.StartAnkor();
 
 				base.OnStartup(e);
 			} catch (Exception ex) {
-				MessageBox.Show("error starting with server '" + builder.WebSocketUri + "'\n" + ex.ToString(), "error");
+				MessageBox.Show("error starting with server '" + builder.ServerAddress + "'\n" + ex.ToString(), "error");
 				throw;
 			}
 		}
 
+		private static AnkorClientSystemBuilder InitWithSocket() {
+			var builder = new AnkorClientSystem.SocketBuilder() {
+				ClientAddress = new Uri("//localhost:9091"),
+				ServerAddress = new Uri("//localhost:8089"),
+				ModelName = "root"
+			};
+			return builder;
+		}
+
+		private static AnkorClientSystemBuilder InitWithWebSocket() {
+			var builder = new AnkorClientSystem.WebSocketBuilder() {
+				ServerAddress = new Uri("ws://localhost:8080/websocket/ankor"),
+				//builder.WebSocketUri = "wss://ankor-todo-sample.irian.at/websocket/ankor";
+				ModelName = "root",
+			};
+			builder.AddConnectParam("todoListId", "collaborationTest");
+			builder.ServerAddress = new Uri(ConfigurationManager.AppSettings["serverUrl"]);
+			return builder;
+		}
 
 		protected override void OnExit(ExitEventArgs e) {
-
 			Ankor.Dispose();
 			base.OnExit(e);
 		}

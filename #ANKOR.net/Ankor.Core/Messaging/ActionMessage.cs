@@ -1,11 +1,12 @@
 ﻿
+using System;
 using Ankor.Core.Action;
 
 namespace Ankor.Core.Messaging {
 	/// <summary>
 	/// Description of ActionMessage.
 	/// </summary>
-	///
+	[Obsolete]
 	public class ActionMessage : Message {
 				
 		// this is not a generic type to enable different json messages, maybe go for a type property and a single msg class

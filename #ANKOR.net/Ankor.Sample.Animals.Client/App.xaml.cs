@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Windows;
 using Ankor.Core.AnkorSystem;
 
@@ -19,10 +20,9 @@ namespace Ankor.Sample.Animals.Client {
 		
 		protected override void OnStartup(StartupEventArgs e) {
 			var builder = new AnkorClientSystem.SocketBuilder();
-			builder.ServerHostName = "localhost";
-			builder.ServerPort = 8081;
+			builder.ServerAddress = new Uri("//localhost:8081");
 			//builder.SystemName = "wpfTestClient";// + System.IO.Path.GetRandomFileName();
-			Ankor = builder.Build();
+			Ankor = builder.StartAnkor();
 
 			//Resources.Add("ankor", Ankor);
 			//Resources.Add("root", Ankor.RefModel.Root);
