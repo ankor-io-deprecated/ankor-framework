@@ -3,6 +3,7 @@ package at.irian.ankor.el;
 import at.irian.ankor.base.BeanResolver;
 import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.session.ModelSession;
+import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
 
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
@@ -21,9 +22,11 @@ public class AnkorELSupport implements ELSupport {
 
     private final ExpressionFactory expressionFactory;
     private final ModelSession modelSession;
+    private final BeanMetadataProvider metadataProvider;
     private final BeanResolverELResolver beanResolverELResolver;
 
-    public AnkorELSupport(ModelSession modelSession, BeanResolver beanResolver) {
+    public AnkorELSupport(ModelSession modelSession, BeanMetadataProvider metadataProvider, BeanResolver beanResolver) {
+        this.metadataProvider = metadataProvider;
         this.expressionFactory = ExpressionFactory.newInstance();
         this.modelSession = modelSession;
         this.beanResolverELResolver = new BeanResolverELResolver(beanResolver);
@@ -37,6 +40,9 @@ public class AnkorELSupport implements ELSupport {
     public ELContext getELContextFor(RefFactory refFactory) {
         ModelSessionELResolver modelSessionELResolver = new ModelSessionELResolver(modelSession,
                                                                                    refFactory);
-        return new StandardELContext(modelSessionELResolver, beanResolverELResolver);
+        VirtualPropertyELResolver virtualPropertyELResolver = new VirtualPropertyELResolver(metadataProvider);
+        return new StandardELContext(virtualPropertyELResolver,
+                                     modelSessionELResolver,
+                                     beanResolverELResolver);
     }
 }

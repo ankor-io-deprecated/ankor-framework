@@ -55,15 +55,34 @@ public class AnnotationBeanMetadataProvider implements BeanMetadataProvider {
 
     private BeanMetadata createBeanTypeInfo(Class<?> type) {
         BeanMetadata beanMetadata = BeanMetadata.EMPTY_BEAN_METADATA;
-        //beanMetadata = scanType(beanMetadata, type);
+        beanMetadata = scanClass(beanMetadata, type);
         beanMetadata = scanFields(beanMetadata, type);
         beanMetadata = scanMethods(beanMetadata, type);
         return beanMetadata;
     }
 
-//    private BeanMetadata scanType(BeanMetadata beanMetadata, Class<?> type) {
-//        return beanMetadata;
-//    }
+    private BeanMetadata scanClass(BeanMetadata beanMetadata, Class<?> type) {
+
+        VirtualProperty virtualPropertyAnnotation = type.getAnnotation(VirtualProperty.class);
+        if (virtualPropertyAnnotation != null) {
+            beanMetadata = addVirtualPropertyMetadata(beanMetadata, virtualPropertyAnnotation);
+        }
+
+        VirtualProperties virtualPropertiesAnnotation = type.getAnnotation(VirtualProperties.class);
+        for (VirtualProperty vpa : virtualPropertiesAnnotation.value()) {
+            beanMetadata = addVirtualPropertyMetadata(beanMetadata, vpa);
+        }
+
+        return beanMetadata;
+    }
+
+    private BeanMetadata addVirtualPropertyMetadata(BeanMetadata beanMetadata,
+                                                    VirtualProperty virtualPropertyAnnotation) {
+        String propertyName = virtualPropertyAnnotation.name();
+        Class<?> type = virtualPropertyAnnotation.type();
+        beanMetadata = beanMetadata.withPropertyMetadata(propertyName, new VirtualMetadata(true, type));
+        return beanMetadata;
+    }
 
     private BeanMetadata scanFields(BeanMetadata beanMetadata, Class<?> type) {
 
