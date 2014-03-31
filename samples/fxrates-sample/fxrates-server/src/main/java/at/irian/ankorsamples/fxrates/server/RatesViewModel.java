@@ -1,7 +1,7 @@
 package at.irian.ankorsamples.fxrates.server;
 
 import at.irian.ankor.annotation.AnkorWatched;
-import at.irian.ankor.messaging.AnkorIgnore;
+import at.irian.ankor.serialization.AnkorIgnore;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.viewmodel.ViewModelBase;

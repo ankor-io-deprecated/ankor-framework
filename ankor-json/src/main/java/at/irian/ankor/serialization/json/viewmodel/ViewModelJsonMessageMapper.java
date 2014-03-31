@@ -1,12 +1,12 @@
-package at.irian.ankor.messaging.json.viewmodel;
+package at.irian.ankor.serialization.json.viewmodel;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.base.Wrapper;
 import at.irian.ankor.big.json.AnkorSerializerModifier;
 import at.irian.ankor.change.Change;
-import at.irian.ankor.messaging.MessageMapper;
-import at.irian.ankor.messaging.json.common.ActionDeserializer;
-import at.irian.ankor.messaging.json.common.ChangeDeserializer;
+import at.irian.ankor.serialization.MessageMapper;
+import at.irian.ankor.serialization.json.common.ActionDeserializer;
+import at.irian.ankor.serialization.json.common.ChangeDeserializer;
 import at.irian.ankor.ref.TypedRef;
 import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;

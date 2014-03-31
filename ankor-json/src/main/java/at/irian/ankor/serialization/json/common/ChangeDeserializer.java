@@ -1,4 +1,4 @@
-package at.irian.ankor.messaging.json.common;
+package at.irian.ankor.serialization.json.common;
 
 import at.irian.ankor.change.Change;
 import at.irian.ankor.change.ChangeType;

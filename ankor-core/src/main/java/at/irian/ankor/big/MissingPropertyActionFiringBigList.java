@@ -2,7 +2,7 @@ package at.irian.ankor.big;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.delay.FloodControl;
-import at.irian.ankor.messaging.AnkorIgnore;
+import at.irian.ankor.serialization.AnkorIgnore;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.event.MissingPropertyActionEventListener;
 

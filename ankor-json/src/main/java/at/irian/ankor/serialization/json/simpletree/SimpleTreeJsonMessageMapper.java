@@ -1,10 +1,10 @@
-package at.irian.ankor.messaging.json.simpletree;
+package at.irian.ankor.serialization.json.simpletree;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.change.Change;
-import at.irian.ankor.messaging.MessageMapper;
-import at.irian.ankor.messaging.json.common.ActionDeserializer;
-import at.irian.ankor.messaging.json.common.ChangeDeserializer;
+import at.irian.ankor.serialization.MessageMapper;
+import at.irian.ankor.serialization.json.common.ActionDeserializer;
+import at.irian.ankor.serialization.json.common.ChangeDeserializer;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;

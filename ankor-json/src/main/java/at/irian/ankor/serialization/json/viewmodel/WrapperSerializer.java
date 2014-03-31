@@ -1,4 +1,4 @@
-package at.irian.ankor.messaging.json.viewmodel;
+package at.irian.ankor.serialization.json.viewmodel;
 
 import at.irian.ankor.base.Wrapper;
 import com.fasterxml.jackson.core.JsonGenerator;

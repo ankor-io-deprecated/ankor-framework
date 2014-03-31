@@ -9,7 +9,7 @@
         </encoder>
     </appender>
 
-    <logger name="at.irian.ankor.messaging" level="INFO" />
+    <logger name="at.irian.ankor.serialization" level="INFO" />
     <logger name="at.irian.ankor.servlet" level="INFO" />
     <!--<logger name="at.irian.ankor.akka" level="DEBUG" />-->
 

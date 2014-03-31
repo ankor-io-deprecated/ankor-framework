@@ -1,4 +1,4 @@
-package at.irian.ankor.messaging.modify;
+package at.irian.ankor.serialization.modify;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.change.Change;

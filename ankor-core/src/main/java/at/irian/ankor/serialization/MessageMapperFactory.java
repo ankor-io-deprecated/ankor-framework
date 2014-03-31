@@ -1,4 +1,4 @@
-package at.irian.ankor.messaging;
+package at.irian.ankor.serialization;
 
 import at.irian.ankor.system.AnkorSystem;
 import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
@@ -19,7 +19,7 @@ public class MessageMapperFactory<T> {
 
     @SuppressWarnings("unchecked")
     public MessageMapper<T> createMessageMapper() {
-        String messageMapperType = ankorSystem.getConfig().getString("at.irian.ankor.messaging.MessageMapper");
+        String messageMapperType = ankorSystem.getConfig().getString("at.irian.ankor.serialization.MessageMapper");
 
         Class<MessageMapper> type;
         try {

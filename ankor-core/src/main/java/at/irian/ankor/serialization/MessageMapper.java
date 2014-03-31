@@ -1,4 +1,4 @@
-package at.irian.ankor.messaging;
+package at.irian.ankor.serialization;
 
 /**
  * A MessageMapper is responsible of serializing and deserializing messages for the transport layer.

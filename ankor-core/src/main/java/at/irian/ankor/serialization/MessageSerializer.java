@@ -1,4 +1,4 @@
-package at.irian.ankor.messaging;
+package at.irian.ankor.serialization;
 
 /**
  * @param <T>  type of serialized message

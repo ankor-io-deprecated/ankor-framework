@@ -3,7 +3,7 @@ package at.irian.ankor.switching.connector.local;
 import at.irian.ankor.action.Action;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.event.source.ModelAddressSource;
-import at.irian.ankor.messaging.modify.Modifier;
+import at.irian.ankor.serialization.modify.Modifier;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;

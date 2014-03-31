@@ -3,8 +3,8 @@ package at.irian.ankor.switching.connector.socket;
 import at.irian.ankor.switching.Switchboard;
 import at.irian.ankor.switching.connector.Connector;
 import at.irian.ankor.switching.connector.ConnectorRegistry;
-import at.irian.ankor.messaging.MessageMapper;
-import at.irian.ankor.messaging.MessageMapperFactory;
+import at.irian.ankor.serialization.MessageMapper;
+import at.irian.ankor.serialization.MessageMapperFactory;
 import at.irian.ankor.path.el.SimpleELPathSyntax;
 import at.irian.ankor.system.AnkorSystem;
 

@@ -1,4 +1,4 @@
-package at.irian.ankor.messaging;
+package at.irian.ankor.serialization;
 
 import com.fasterxml.jackson.annotation.JacksonAnnotationsInside;
 import com.fasterxml.jackson.annotation.JsonIgnore;

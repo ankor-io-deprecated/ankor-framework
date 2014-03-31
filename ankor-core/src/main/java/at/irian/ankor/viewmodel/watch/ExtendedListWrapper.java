@@ -1,6 +1,6 @@
 package at.irian.ankor.viewmodel.watch;
 
-import at.irian.ankor.messaging.AnkorIgnore;
+import at.irian.ankor.serialization.AnkorIgnore;
 
 import java.util.List;
 

@@ -3,7 +3,7 @@ package at.irian.ankorsamples.todosample.viewmodel;
 import at.irian.ankor.annotation.ActionListener;
 import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.annotation.Param;
-import at.irian.ankor.messaging.AnkorIgnore;
+import at.irian.ankor.serialization.AnkorIgnore;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.CollectionRef;
 import at.irian.ankor.ref.Ref;
