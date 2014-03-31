@@ -28,7 +28,9 @@
 - (void)process:(ANKChangeEvent*)event {
     if ([event.changedProperty.path rangeOfString:self.ref.path].location != NSNotFound ||
         [self.ref.path rangeOfString:event.changedProperty.path].location != NSNotFound) {
-        [self.target performSelector:self.changeListener withObject:self.ref.value];
+        SEL selector = NSSelectorFromString(@"changeListener");
+        IMP listener = [self methodForSelector:selector];
+        listener(self, selector, self.ref.value);
     }
 }
 
