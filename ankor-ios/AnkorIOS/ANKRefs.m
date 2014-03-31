@@ -14,6 +14,13 @@
 
 @implementation ANKRefs
 
++(id)observe:(NSString*)refPath listener:(void (^)(id))listener {
+    ANKRefContext* refContext = [ANKRefContext instance];
+    ANKRefChangeListener* changeListener = [[ANKRefChangeListener alloc]initWith:[ANKRefs ref:refPath] changeListener:listener];
+    [[refContext.modelContext eventListeners]add:changeListener];
+    return self;
+}
+
 +(id)observe:(NSString*)refPath target:(id)target listener:(SEL)listener {
     ANKRefContext* refContext = [ANKRefContext instance];
     ANKRefChangeListener* changeListener = [[ANKRefChangeListener alloc]initWith:[ANKRefs ref:refPath] target:target changeListener:listener];

@@ -1,6 +1,6 @@
 package at.irian.ankor.change;
 
-import at.irian.ankor.messaging.AnkorIgnore;
+import at.irian.ankor.serialization.AnkorIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.Collection;

@@ -1,7 +1,7 @@
 package at.irian.ankor.switching.connector.websocket;
 
 
-import at.irian.ankor.messaging.MessageDeserializer;
+import at.irian.ankor.serialization.MessageDeserializer;
 import at.irian.ankor.path.el.SimpleELPathSyntax;
 import at.irian.ankor.system.AnkorSystem;
 import org.slf4j.Logger;

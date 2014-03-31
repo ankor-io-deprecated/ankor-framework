@@ -1,6 +1,6 @@
 package at.irian.ankor.big;
 
-import at.irian.ankor.messaging.AnkorIgnore;
+import at.irian.ankor.serialization.AnkorIgnore;
 
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;

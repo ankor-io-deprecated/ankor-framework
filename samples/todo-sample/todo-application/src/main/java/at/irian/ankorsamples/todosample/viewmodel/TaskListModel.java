@@ -3,7 +3,7 @@ package at.irian.ankorsamples.todosample.viewmodel;
 import at.irian.ankor.annotation.ActionListener;
 import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.annotation.Param;
-import at.irian.ankor.messaging.AnkorIgnore;
+import at.irian.ankor.serialization.AnkorIgnore;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.CollectionRef;
 import at.irian.ankor.ref.Ref;
@@ -56,10 +56,16 @@ public class TaskListModel {
 
     @ChangeListener(pattern = {
             "root.model.tasks.(*).title",
+            "root.model.tasks.(*).editing",
             "root.model.tasks.(*).completed"})
     public void saveTask(Ref ref) {
-        Task model = ref.getValue();
-        taskRepository.saveTask(model);
+        TaskModel model = ref.getValue();
+        if (!model.isEditing() && model.getTitle().equals("")) {
+            int i = tasks.indexOf(model);
+            deleteTask(i);
+        } else {
+            taskRepository.saveTask(model);
+        }
     }
 
     @ChangeListener(pattern = "root.model.filter")

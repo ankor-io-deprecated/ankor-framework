@@ -13,7 +13,6 @@
         <module>ankor-proxy</module>
         <module>ankor-el</module>
         <module>ankor-json</module>
-        <module>ankor-netty</module>
         <module>ankor-actor</module>
         <module>ankor-socket-connector</module>
         <module>ankor-websocket-connector</module>

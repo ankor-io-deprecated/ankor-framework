@@ -1,6 +1,6 @@
 package at.irian.ankor.switching.connector.local;
 
-import at.irian.ankor.messaging.modify.Modifier;
+import at.irian.ankor.serialization.modify.Modifier;
 import at.irian.ankor.session.ModelSessionManager;
 import at.irian.ankor.switching.Switchboard;
 import at.irian.ankor.switching.connector.Connector;

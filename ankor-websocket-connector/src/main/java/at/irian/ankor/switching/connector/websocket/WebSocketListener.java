@@ -2,7 +2,7 @@ package at.irian.ankor.switching.connector.websocket;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.change.Change;
-import at.irian.ankor.messaging.MessageDeserializer;
+import at.irian.ankor.serialization.MessageDeserializer;
 import at.irian.ankor.path.PathSyntax;
 import at.irian.ankor.switching.Switchboard;
 import at.irian.ankor.switching.msg.ActionEventMessage;

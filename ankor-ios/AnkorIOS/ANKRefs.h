@@ -11,6 +11,8 @@
 
 @interface ANKRefs : NSObject
 
++(id)observe:(NSString*)refPath listener:(void (^)(id))listener;
+
 +(id)observe:(NSString*)refPath target:(id)target listener:(SEL)listener;
 
 +(void)fireAction:(NSString*)refPath name:(NSString*)name params:(NSDictionary*)params;

@@ -6,7 +6,7 @@ import at.irian.ankor.change.Change;
  * @author Manfred Geiler
  */
 public class ChangeEventMessage implements EventMessage {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ChangeMessage.class);
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ChangeEventMessage.class);
 
     private String property;
     private Change change;

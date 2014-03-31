@@ -16,11 +16,11 @@ import at.irian.ankor.event.*;
 import at.irian.ankor.event.dispatch.AkkaSessionBoundEventDispatcherFactory;
 import at.irian.ankor.event.dispatch.EventDispatcherFactory;
 import at.irian.ankor.event.dispatch.SynchronizedSimpleEventDispatcherFactory;
-import at.irian.ankor.messaging.json.simpletree.SimpleTreeJsonMessageMapper;
-import at.irian.ankor.messaging.json.viewmodel.ViewModelJsonMessageMapper;
-import at.irian.ankor.messaging.modify.CoerceTypeModifier;
-import at.irian.ankor.messaging.modify.Modifier;
-import at.irian.ankor.messaging.modify.PassThroughModifier;
+import at.irian.ankor.serialization.json.simpletree.SimpleTreeJsonMessageMapper;
+import at.irian.ankor.serialization.json.viewmodel.ViewModelJsonMessageMapper;
+import at.irian.ankor.serialization.modify.CoerceTypeModifier;
+import at.irian.ankor.serialization.modify.Modifier;
+import at.irian.ankor.serialization.modify.PassThroughModifier;
 import at.irian.ankor.monitor.AnkorSystemMonitor;
 import at.irian.ankor.monitor.akka.AkkaAnkorSystemMonitor;
 import at.irian.ankor.monitor.stats.AnkorSystemStats;
@@ -50,7 +50,7 @@ import java.util.*;
 public class AnkorSystemBuilder {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnkorSystemBuilder.class);
 
-    private static final String MESSAGE_MAPPER_CONFIG_KEY = "at.irian.ankor.messaging.MessageMapper";
+    private static final String MESSAGE_MAPPER_CONFIG_KEY = "at.irian.ankor.serialization.MessageMapper";
 
     private String systemName;
     private Map<String, Object> configValues;

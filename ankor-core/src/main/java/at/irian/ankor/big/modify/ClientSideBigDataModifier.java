@@ -1,8 +1,8 @@
 package at.irian.ankor.big.modify;
 
 import at.irian.ankor.change.Change;
-import at.irian.ankor.messaging.modify.AbstractModifier;
-import at.irian.ankor.messaging.modify.Modifier;
+import at.irian.ankor.serialization.modify.AbstractModifier;
+import at.irian.ankor.serialization.modify.Modifier;
 import at.irian.ankor.ref.Ref;
 
 /**

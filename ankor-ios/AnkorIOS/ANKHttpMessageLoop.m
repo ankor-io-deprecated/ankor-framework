@@ -31,7 +31,7 @@
 static dispatch_once_t once;
 static NSOperationQueue *connectionQueue;
 
-- (id)initWith:(id <ANKMessageListener>)listener messageFactory:(ANKMessageFactory *)factory senderId:(NSString *)sId url:(NSString*)sUrl
+- (id) initWith: (id <ANKMessageListener>)listener messageFactory:(ANKMessageFactory*) factory url:(NSString*)sUrl
     connectProperty:(NSString*)connectProperty params:(NSDictionary*)connectParams {
     messageListener = listener;
     messageFactory = factory;

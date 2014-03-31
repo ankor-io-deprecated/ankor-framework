@@ -1,6 +1,6 @@
 package at.irian.ankor.switching.connector.socket;
 
-import at.irian.ankor.messaging.MessageSerializer;
+import at.irian.ankor.serialization.MessageSerializer;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;

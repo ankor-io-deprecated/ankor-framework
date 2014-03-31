@@ -6,7 +6,7 @@ import at.irian.ankor.action.ActionEventListener;
 import at.irian.ankor.switching.Switchboard;
 import at.irian.ankor.switching.msg.ActionEventMessage;
 import at.irian.ankor.switching.connector.local.LocalModelAddress;
-import at.irian.ankor.messaging.modify.Modifier;
+import at.irian.ankor.serialization.modify.Modifier;
 import at.irian.ankor.switching.routing.ModelAddress;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.session.ModelSession;

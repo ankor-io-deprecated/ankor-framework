@@ -31,30 +31,12 @@
 		E24D76841884283B00257B9B /* ANKWebSocketMessageLoop.m in Sources */ = {isa = PBXBuildFile; fileRef = E24D76831884283B00257B9B /* ANKWebSocketMessageLoop.m */; };
 		E2B72F79184F29D2007F21F7 /* protocol.txt in Resources */ = {isa = PBXBuildFile; fileRef = E2B72F78184F29D2007F21F7 /* protocol.txt */; };
 		E2B72F80184F4C31007F21F7 /* ANKChange.m in Sources */ = {isa = PBXBuildFile; fileRef = E2B72F7F184F4C31007F21F7 /* ANKChange.m */; };
-		E2B72F86184F98A3007F21F7 /* ANKChange.h in Sources */ = {isa = PBXBuildFile; fileRef = E2B72F7E184F4C31007F21F7 /* ANKChange.h */; };
 		E2B72F92184F9B7F007F21F7 /* ANKRefContextFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = E2B72F91184F9B7F007F21F7 /* ANKRefContextFactory.m */; };
 		E2B72F99184F9BD7007F21F7 /* ANKModelContext.m in Sources */ = {isa = PBXBuildFile; fileRef = E2B72F98184F9BD7007F21F7 /* ANKModelContext.m */; };
 		E2B9FBE018D31DC400B6A970 /* ANKConnectMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = E2B9FBDF18D31DC400B6A970 /* ANKConnectMessage.m */; };
 		E2CF2B66187D988D004E46F6 /* ANKChangeEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = E2CF2B65187D988D004E46F6 /* ANKChangeEvent.m */; };
 		E2CF2B6A187DF343004E46F6 /* ANKEventListeners.m in Sources */ = {isa = PBXBuildFile; fileRef = E2CF2B69187DF343004E46F6 /* ANKEventListeners.m */; };
 		E2CF2B7C187EB06B004E46F6 /* ANKRemoteMessageListener.m in Sources */ = {isa = PBXBuildFile; fileRef = E2CF2B7B187EB06B004E46F6 /* ANKRemoteMessageListener.m */; };
-		E2CF2B7F187EBEA6004E46F6 /* ANKEventListeners.h in Sources */ = {isa = PBXBuildFile; fileRef = E2CF2B68187DF343004E46F6 /* ANKEventListeners.h */; };
-		E2CF2B80187EBEA6004E46F6 /* ANKEventListener.h in Sources */ = {isa = PBXBuildFile; fileRef = E2CF2B6B187DF354004E46F6 /* ANKEventListener.h */; };
-		E2CF2B81187EBEA6004E46F6 /* ANKModelEvent.h in Sources */ = {isa = PBXBuildFile; fileRef = E2CF2B79187EA46B004E46F6 /* ANKModelEvent.h */; };
-		E2CF2B82187EBEA6004E46F6 /* ANKModelContext.h in Sources */ = {isa = PBXBuildFile; fileRef = E2B72F97184F9BD7007F21F7 /* ANKModelContext.h */; };
-		E2CF2B83187EBEA6004E46F6 /* ANKChangeEvent.h in Sources */ = {isa = PBXBuildFile; fileRef = E2CF2B64187D988D004E46F6 /* ANKChangeEvent.h */; };
-		E2CF2B84187EBEA6004E46F6 /* ANKChangeEventListener.h in Sources */ = {isa = PBXBuildFile; fileRef = E2CF2B75187DFD10004E46F6 /* ANKChangeEventListener.h */; };
-		E2CF2B86187EBEA6004E46F6 /* ANKRefContextFactory.h in Sources */ = {isa = PBXBuildFile; fileRef = E2B72F90184F9B7F007F21F7 /* ANKRefContextFactory.h */; };
-		E2CF2B88187EBEA6004E46F6 /* ANKMessageSerialization.h in Sources */ = {isa = PBXBuildFile; fileRef = E24756F5184E877500D75019 /* ANKMessageSerialization.h */; };
-		E2CF2B89187EBEA6004E46F6 /* ANKMessageLoop.h in Sources */ = {isa = PBXBuildFile; fileRef = E2475700184E878A00D75019 /* ANKMessageLoop.h */; };
-		E2CF2B8A187EBEA6004E46F6 /* ANKHttpMessageLoop.h in Sources */ = {isa = PBXBuildFile; fileRef = E24756F2184E877500D75019 /* ANKHttpMessageLoop.h */; };
-		E2CF2B8B187EBEA6004E46F6 /* ANKRemoteMessageListener.h in Sources */ = {isa = PBXBuildFile; fileRef = E2CF2B7A187EB06B004E46F6 /* ANKRemoteMessageListener.h */; };
-		E2CF2B8C187EBEA6004E46F6 /* ANKMessageListener.h in Sources */ = {isa = PBXBuildFile; fileRef = E2CF2B7D187EB1CE004E46F6 /* ANKMessageListener.h */; };
-		E2CF2B8D187EBEA6004E46F6 /* ANKMessageBus.h in Sources */ = {isa = PBXBuildFile; fileRef = E24756F4184E877500D75019 /* ANKMessageBus.h */; };
-		E2CF2B8E187EBEA6004E46F6 /* ANKMessageFactory.h in Sources */ = {isa = PBXBuildFile; fileRef = E24756FE184E878A00D75019 /* ANKMessageFactory.h */; };
-		E2CF2B8F187EBEA6004E46F6 /* ANKActionMessage.h in Sources */ = {isa = PBXBuildFile; fileRef = E24756F0184E877500D75019 /* ANKActionMessage.h */; };
-		E2CF2B90187EBEA6004E46F6 /* ANKChangeMessage.h in Sources */ = {isa = PBXBuildFile; fileRef = E24756FA184E878A00D75019 /* ANKChangeMessage.h */; };
-		E2CF2B91187EBEA6004E46F6 /* ANKMessage.h in Sources */ = {isa = PBXBuildFile; fileRef = E24756FC184E878A00D75019 /* ANKMessage.h */; };
 		E2D7B6C2187EEFEA0027646C /* ANKRefFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = E2D7B6C1187EEFEA0027646C /* ANKRefFactory.m */; };
 		E2D7B6C5187EF07A0027646C /* ANKRefContext.m in Sources */ = {isa = PBXBuildFile; fileRef = E2D7B6C4187EF07A0027646C /* ANKRefContext.m */; };
 		E2D7B6C8187EF1080027646C /* ANKRef.m in Sources */ = {isa = PBXBuildFile; fileRef = E2D7B6C7187EF1080027646C /* ANKRef.m */; };
@@ -439,7 +421,7 @@
 		E24756B5184E858A00D75019 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0500;
+				LastUpgradeCheck = 0510;
 				ORGANIZATIONNAME = "Thomas Spiegl";
 			};
 			buildConfigurationList = E24756B8184E858A00D75019 /* Build configuration list for PBXProject "AnkorIOS" */;
@@ -477,30 +459,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E2CF2B7F187EBEA6004E46F6 /* ANKEventListeners.h in Sources */,
-				E2CF2B80187EBEA6004E46F6 /* ANKEventListener.h in Sources */,
-				E2CF2B81187EBEA6004E46F6 /* ANKModelEvent.h in Sources */,
-				E2CF2B82187EBEA6004E46F6 /* ANKModelContext.h in Sources */,
-				E2CF2B83187EBEA6004E46F6 /* ANKChangeEvent.h in Sources */,
-				E2CF2B84187EBEA6004E46F6 /* ANKChangeEventListener.h in Sources */,
-				E2CF2B86187EBEA6004E46F6 /* ANKRefContextFactory.h in Sources */,
 				E2D7B6C2187EEFEA0027646C /* ANKRefFactory.m in Sources */,
-				E2CF2B88187EBEA6004E46F6 /* ANKMessageSerialization.h in Sources */,
-				E2CF2B89187EBEA6004E46F6 /* ANKMessageLoop.h in Sources */,
-				E2CF2B8A187EBEA6004E46F6 /* ANKHttpMessageLoop.h in Sources */,
-				E2CF2B8B187EBEA6004E46F6 /* ANKRemoteMessageListener.h in Sources */,
-				E2CF2B8C187EBEA6004E46F6 /* ANKMessageListener.h in Sources */,
 				E24D766B188402AD00257B9B /* ANKSystem.m in Sources */,
-				E2CF2B8D187EBEA6004E46F6 /* ANKMessageBus.h in Sources */,
 				E24D76841884283B00257B9B /* ANKWebSocketMessageLoop.m in Sources */,
 				E2D7B6C5187EF07A0027646C /* ANKRefContext.m in Sources */,
-				E2CF2B8E187EBEA6004E46F6 /* ANKMessageFactory.h in Sources */,
-				E2CF2B8F187EBEA6004E46F6 /* ANKActionMessage.h in Sources */,
 				E24D767B1884276B00257B9B /* SRWebSocket.m in Sources */,
-				E2CF2B90187EBEA6004E46F6 /* ANKChangeMessage.h in Sources */,
-				E2CF2B91187EBEA6004E46F6 /* ANKMessage.h in Sources */,
 				E2D7B6DA187F652B0027646C /* ANKRefs.m in Sources */,
-				E2B72F86184F98A3007F21F7 /* ANKChange.h in Sources */,
 				E2D7B6E4187FF3150027646C /* ANKRemoteEventListener.m in Sources */,
 				E2475701184E878A00D75019 /* ANKChangeMessage.m in Sources */,
 				E2CF2B7C187EB06B004E46F6 /* ANKRemoteMessageListener.m in Sources */,
@@ -558,7 +522,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -596,7 +559,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -651,7 +613,6 @@
 		E24756E4184E858A00D75019 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -672,7 +633,6 @@
 		E24756E5184E858A00D75019 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",

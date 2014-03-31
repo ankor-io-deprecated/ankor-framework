@@ -28,7 +28,12 @@
     [super viewDidLoad];
     self.toDoItems = [[NSMutableArray alloc] init];
     
-    [ANKRefs observe:@"root.model.tasks" target:self listener:@selector(tasksChanged:)];
+    //[ANKRefs observe:@"root.model.tasks" target:self listener:@selector(tasksChanged:)];
+    [ANKRefs observe:@"root.model.tasks" listener:^(id value) {
+        [[self toDoItems]removeAllObjects];
+        [[self toDoItems]addObjectsFromArray:value];
+        [self.tableView reloadData];
+    }];
 }
 
 - (void)tasksChanged:(id) value {

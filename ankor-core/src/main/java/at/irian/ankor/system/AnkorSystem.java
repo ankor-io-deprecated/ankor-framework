@@ -2,7 +2,7 @@ package at.irian.ankor.system;
 
 import at.irian.ankor.application.Application;
 import at.irian.ankor.delay.Scheduler;
-import at.irian.ankor.messaging.modify.Modifier;
+import at.irian.ankor.serialization.modify.Modifier;
 import at.irian.ankor.monitor.AnkorSystemMonitor;
 import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.session.ModelSessionFactory;

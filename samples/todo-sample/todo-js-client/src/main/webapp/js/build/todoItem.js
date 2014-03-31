@@ -7,28 +7,21 @@
 /*jshint newcap: false */
 
 define([
-  "react"
-], function (React) {
+  "react",
+  "build/keys"
+], function (React, KEYS) {
   'use strict';
 
-  var ESCAPE_KEY = 27;
-  var ENTER_KEY = 13;
-
   return React.createClass({
-    handleSubmit: function () {
-      var ref = this.props.modelRef.appendPath("editing");
-      ref.setValue(false);
-    },
-
-    handleEdit: function () {
-      this.props.modelRef.appendPath("editing").setValue(true);
+    setEditing: function (value) {
+      this.props.modelRef.appendPath("editing").setValue(value);
     },
 
     handleKeyDown: function (event) {
       var ref = this.props.modelRef.appendPath("editing");
-      if (event.which === ESCAPE_KEY) {
+      if (event.which === KEYS.ESCAPE_KEY) {
         ref.setValue(false);
-      } else if (event.which === ENTER_KEY) {
+      } else if (event.which === KEYS.ENTER_KEY) {
         ref.setValue(false);
       }
     },
@@ -40,6 +33,14 @@ define([
     onToggle: function () {
       var ref = this.props.modelRef.appendPath("completed");
       ref.setValue(!this.props.todo.completed);
+    },
+    
+    componentDidUpdate: function (c) {
+      if (c.todo.editing === true) {
+        var node = this.refs.editField.getDOMNode();
+        node.focus();
+        node.setSelectionRange(node.value.length, node.value.length);
+      }
     },
 
     render: function () {
@@ -57,7 +58,7 @@ define([
             checked:  this.props.todo.completed,
             onChange:  this.onToggle}
             ),
-            React.DOM.label( {onDoubleClick:this.handleEdit}, 
+            React.DOM.label( {onDoubleClick:this.setEditing.bind(this, true)}, 
               this.props.todo.title
             ),
             React.DOM.button(
@@ -69,7 +70,7 @@ define([
           {ref:  "editField",
           className:  "edit",
           value:  this.props.todo.title,
-          onBlur:  this.handleSubmit,
+          onBlur:  this.setEditing.bind(this, false),
           onChange:  this.handleChange,
           onKeyDown:  this.handleKeyDown}
           )

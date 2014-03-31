@@ -1,7 +1,7 @@
 package at.irian.ankor.switching.connector.websocket;
 
-import at.irian.ankor.messaging.MessageMapperFactory;
-import at.irian.ankor.messaging.MessageSerializer;
+import at.irian.ankor.serialization.MessageMapperFactory;
+import at.irian.ankor.serialization.MessageSerializer;
 import at.irian.ankor.switching.Switchboard;
 import at.irian.ankor.switching.connector.HandlerScopeContext;
 import at.irian.ankor.switching.routing.ModelAddress;

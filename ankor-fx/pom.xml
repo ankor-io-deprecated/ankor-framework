@@ -14,6 +14,8 @@
     <properties>
         <javafx.version>2.2.21</javafx.version>
         <javafx.runtime.lib.jar>${java.home}/lib/jfxrt.jar</javafx.runtime.lib.jar>
+        <!-- As of Java 8, the jfxrt.jar is located in the 'ext' folder: -->
+        <!--<javafx.runtime.lib.jar>${java.home}/lib/ext/jfxrt.jar</javafx.runtime.lib.jar>-->
     </properties>
 
     <dependencies>

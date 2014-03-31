@@ -2,7 +2,7 @@ package at.irian.ankorsamples.animals.viewmodel;
 
 import at.irian.ankor.annotation.ActionListener;
 import at.irian.ankor.annotation.Param;
-import at.irian.ankor.messaging.AnkorIgnore;
+import at.irian.ankor.serialization.AnkorIgnore;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.TypedRef;
