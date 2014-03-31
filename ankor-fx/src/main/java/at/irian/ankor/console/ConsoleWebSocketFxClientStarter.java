@@ -1,5 +1,6 @@
 package at.irian.ankor.console;
 
+import at.irian.ankor.system.AnkorClient;
 import at.irian.ankor.system.WebSocketFxClient;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -20,7 +21,7 @@ public class ConsoleWebSocketFxClientStarter extends javafx.application.Applicat
     }
 
 
-    private WebSocketFxClient client;
+    private AnkorClient client;
 
     @Override
     public void start(Stage stage) throws Exception {

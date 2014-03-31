@@ -3,7 +3,7 @@ package at.irian.ankorsamples.fxrates.client;
 import at.irian.ankor.action.Action;
 import at.irian.ankor.fx.binding.fxref.FxRefs;
 import at.irian.ankor.system.AnkorClient;
-import at.irian.ankor.system.SocketFxClient;
+import at.irian.ankor.system.SocketFxClientBuilder;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -27,7 +27,9 @@ public class RatesSocketFxClientStarter extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        ankorClient = SocketFxClient.create(APPLICATION_NAME, MODEL_NAME, getParameters());
+        ankorClient = new SocketFxClientBuilder().withApplicationName(APPLICATION_NAME)
+                                                 .withModelName(MODEL_NAME)
+                                                 .build();
         ankorClient.start();
 
         stage.setTitle("Ankor Rates JavaFX Sample");

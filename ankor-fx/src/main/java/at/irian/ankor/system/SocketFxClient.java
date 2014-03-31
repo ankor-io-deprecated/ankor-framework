@@ -1,6 +1,5 @@
 package at.irian.ankor.system;
 
-import at.irian.ankor.application.CollaborationSingleRootApplication;
 import at.irian.ankor.event.dispatch.JavaFxEventDispatcherFactory;
 import at.irian.ankor.fx.binding.fxref.FxRefContext;
 import at.irian.ankor.fx.binding.fxref.FxRefContextFactoryProvider;
@@ -8,11 +7,9 @@ import at.irian.ankor.fx.binding.fxref.FxRefs;
 import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.session.SingletonModelSessionManager;
 import at.irian.ankor.switching.routing.FixedSocketRoutingLogic;
-import javafx.application.Application;
 
 import java.net.URI;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -21,72 +18,35 @@ import java.util.Map;
 public class SocketFxClient implements AnkorClient {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SocketFxClient.class);
 
-    private static final String DEFAULT_SERVER_ADDRESS = "//localhost:8080";
-    private static final String DEFAULT_CLIENT_ADDRESS = "//localhost:9090";
-
     private final String applicationName;
-    private final String applicationInstanceId;
+    private Map<String, Object> connectParams;
     private final String modelName;
     private final String clientAddress;
     private final String serverAddress;
     private final AnkorSystem ankorSystem;
 
-    public SocketFxClient(String applicationName,
-                          String applicationInstanceId,
-                          String modelName,
-                          String clientAddress,
-                          String serverAddress,
-                          AnkorSystem ankorSystem) {
+    SocketFxClient(String applicationName,
+                   String modelName, Map<String, Object> connectParams,
+                   String clientAddress,
+                   String serverAddress,
+                   AnkorSystem ankorSystem) {
         this.applicationName = applicationName;
-        this.applicationInstanceId = applicationInstanceId;
+        this.connectParams = connectParams != null ? connectParams : Collections.<String, Object>emptyMap();
         this.modelName = modelName;
         this.clientAddress = clientAddress;
         this.serverAddress = serverAddress;
         this.ankorSystem = ankorSystem;
     }
 
-
-    public static AnkorClient create(String applicationName,
-                                     String modelName) {
-        return create(applicationName, modelName, null, DEFAULT_CLIENT_ADDRESS, DEFAULT_SERVER_ADDRESS);
-    }
-
     public static AnkorClient create(String applicationName,
                                      String modelName,
-                                     Application.Parameters parameters) {
-        Map<String,String> params = parameters.getNamed();
-
-        String serverAddress = params.get("server");
-        if (serverAddress == null) {
-            serverAddress = DEFAULT_SERVER_ADDRESS;
-        }
-
-        String clientAddress = params.get("client");
-        if (clientAddress == null) {
-            clientAddress = DEFAULT_CLIENT_ADDRESS;
-        }
-
-        String appInstanceId = params.get("appInstanceId");
-
-        return create(applicationName, modelName, appInstanceId, clientAddress, serverAddress);
-    }
-
-    public static AnkorClient create(String applicationName,
-                                     String modelName,
-                                     String applicationInstanceId,
-                                     String clientAddress) {
-        return create(applicationName, modelName, applicationInstanceId, clientAddress, DEFAULT_SERVER_ADDRESS);
-    }
-
-    public static AnkorClient create(String applicationName,
-                                     String modelName,
-                                     String applicationInstanceId,
+                                     Map<String, Object> connectParams,
                                      String clientAddress,
                                      String serverAddress) {
         AnkorSystem ankorSystem = createAnkorSystem(applicationName, clientAddress, serverAddress);
         return new SocketFxClient(applicationName,
-                                  applicationInstanceId,
                                   modelName,
+                                  connectParams,
                                   clientAddress,
                                   serverAddress,
                                   ankorSystem);
@@ -129,15 +89,6 @@ public class SocketFxClient implements AnkorClient {
 
         LOG.info("Opening connection from {} to server {} ...", clientAddress, serverAddress);
         // Send the "connect" message to the server
-        Map<String, Object> connectParams;
-        if (applicationInstanceId != null) {
-            connectParams = new HashMap<>();
-            connectParams.put(CollaborationSingleRootApplication.MODEL_INSTANCE_ID_PARAM,
-                              applicationInstanceId);
-        } else {
-            connectParams = Collections.emptyMap();
-        }
-
         refContext.openModelConnection(modelName, connectParams);
     }
 

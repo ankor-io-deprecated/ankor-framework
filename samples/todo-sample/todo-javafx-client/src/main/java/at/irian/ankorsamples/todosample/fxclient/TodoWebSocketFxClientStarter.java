@@ -1,5 +1,6 @@
 package at.irian.ankorsamples.todosample.fxclient;
 
+import at.irian.ankor.system.AnkorClient;
 import at.irian.ankor.system.WebSocketEndpointListener;
 import at.irian.ankor.system.WebSocketFxClient;
 import javafx.application.HostServices;
@@ -20,7 +21,7 @@ public class TodoWebSocketFxClientStarter extends javafx.application.Application
     // used to open the browser
     private static HostServices services;
 
-    private WebSocketFxClient client;
+    private AnkorClient client;
 
     private EndpointListener endpointListener;
 

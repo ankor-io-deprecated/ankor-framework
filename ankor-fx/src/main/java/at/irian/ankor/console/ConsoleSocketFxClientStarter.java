@@ -1,7 +1,7 @@
 package at.irian.ankor.console;
 
 import at.irian.ankor.system.AnkorClient;
-import at.irian.ankor.system.SocketFxClient;
+import at.irian.ankor.system.SocketFxClientBuilder;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
@@ -25,8 +25,11 @@ public class ConsoleSocketFxClientStarter extends javafx.application.Application
 
     @Override
     public void start(Stage stage) throws Exception {
-        client = SocketFxClient.create("Console FX Client", ConsoleApplication.MODEL_NAME,
-                                       null, "//localhost:9000", "//localhost:8080");
+        client = new SocketFxClientBuilder().withApplicationName("Console FX Client")
+                                            .withModelName(ConsoleApplication.MODEL_NAME)
+                                            .withClientAddress("//localhost:9000")
+                                            .withServerAddress("//localhost:8080")
+                                            .build();
         client.start();
 
         stage.setTitle("Ankor JavaFX Console");

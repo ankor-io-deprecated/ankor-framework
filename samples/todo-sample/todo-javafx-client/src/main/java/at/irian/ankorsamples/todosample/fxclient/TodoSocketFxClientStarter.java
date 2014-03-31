@@ -1,7 +1,7 @@
 package at.irian.ankorsamples.todosample.fxclient;
 
 import at.irian.ankor.system.AnkorClient;
-import at.irian.ankor.system.SocketFxClient;
+import at.irian.ankor.system.SocketFxClientBuilder;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -24,7 +24,9 @@ public class TodoSocketFxClientStarter extends Application {
     private AnkorClient ankorClient;
 
     protected AnkorClient createAnkorClient() {
-        return SocketFxClient.create(APPLICATION_NAME, MODEL_NAME, getParameters());
+        return new SocketFxClientBuilder().withApplicationName(APPLICATION_NAME)
+                                          .withModelName(MODEL_NAME)
+                                          .build();
     }
 
     @Override
