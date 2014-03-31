@@ -14,6 +14,7 @@ import java.beans.Introspector;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -55,19 +56,19 @@ public class AnnotationBeanMetadataProvider implements BeanMetadataProvider {
 
     private BeanMetadata createBeanTypeInfo(Class<?> type) {
         BeanMetadata beanMetadata = BeanMetadata.EMPTY_BEAN_METADATA;
-        //beanMetadata = scanType(beanMetadata, type);
         beanMetadata = scanFields(beanMetadata, type);
         beanMetadata = scanMethods(beanMetadata, type);
         return beanMetadata;
     }
 
-//    private BeanMetadata scanType(BeanMetadata beanMetadata, Class<?> type) {
-//        return beanMetadata;
-//    }
-
     private BeanMetadata scanFields(BeanMetadata beanMetadata, Class<?> type) {
 
         for (Field field : type.getDeclaredFields()) {
+
+            if ((field.getModifiers() & Modifier.PUBLIC) != 0) {
+                beanMetadata = beanMetadata.withProperty(field.getName());
+            }
+
             AnkorWatched watchedAnnotation = field.getAnnotation(AnkorWatched.class);
             if (watchedAnnotation != null) {
                 beanMetadata = addWatchedMetadata(beanMetadata, field.getName(), field, watchedAnnotation);
@@ -81,6 +82,11 @@ public class AnnotationBeanMetadataProvider implements BeanMetadataProvider {
             AnkorBigMap bigMapAnnotation = field.getAnnotation(AnkorBigMap.class);
             if (bigMapAnnotation != null) {
                 beanMetadata = addBigMapMetadata(beanMetadata, field.getName(), bigMapAnnotation);
+            }
+
+            Virtual virtualAnnotation = field.getAnnotation(Virtual.class);
+            if (virtualAnnotation != null) {
+                beanMetadata = beanMetadata.withVirtualProperty(field.getName());
             }
         }
 
@@ -97,7 +103,7 @@ public class AnnotationBeanMetadataProvider implements BeanMetadataProvider {
                                             AnkorWatched watchedAnnotation) {
         WatchedPropertyMetadata metadata = new WatchedPropertyMetadata(watchedAnnotation.diffThreshold(),
                                                                        field);
-        beanMetadata = beanMetadata.withPropertyMetadata(propertyName, metadata);
+        beanMetadata = beanMetadata.withGenericPropertyMetadata(propertyName, metadata);
         return beanMetadata;
     }
 
@@ -111,7 +117,7 @@ public class AnnotationBeanMetadataProvider implements BeanMetadataProvider {
                                                        missingElementSubstitute.equals(AnkorBigList.Null.class)
                                                        ? null
                                                        : missingElementSubstitute);
-        beanMetadata = beanMetadata.withPropertyMetadata(propertyName, metadata);
+        beanMetadata = beanMetadata.withGenericPropertyMetadata(propertyName, metadata);
         return beanMetadata;
     }
 
@@ -124,7 +130,7 @@ public class AnnotationBeanMetadataProvider implements BeanMetadataProvider {
                                                      missingValueSubstitute.equals(AnkorBigMap.Null.class)
                                                      ? null
                                                      : missingValueSubstitute);
-        beanMetadata = beanMetadata.withPropertyMetadata(propertyName, metadata);
+        beanMetadata = beanMetadata.withGenericPropertyMetadata(propertyName, metadata);
         return beanMetadata;
     }
 
@@ -210,6 +216,11 @@ public class AnnotationBeanMetadataProvider implements BeanMetadataProvider {
             AnkorFloodControl floodControlAnnotation = method.getAnnotation(AnkorFloodControl.class);
             if (floodControlAnnotation != null) {
                 beanMetadata = beanMetadata.withMethodMetadata(method, new FloodControlMetadata(floodControlAnnotation.delayMillis()));
+            }
+
+            Virtual virtualAnnotation = method.getAnnotation(Virtual.class);
+            if (virtualAnnotation != null) {
+                beanMetadata = beanMetadata.withVirtualProperty(getPropertyNameFromMethod(method));
             }
         }
 

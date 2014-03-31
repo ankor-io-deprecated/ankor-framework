@@ -1,8 +1,9 @@
 package at.irian.ankorsamples.animals.viewmodel;
 
 import at.irian.ankor.annotation.ActionListener;
-import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.annotation.AnkorBigMap;
+import at.irian.ankor.annotation.ChangeListener;
+import at.irian.ankor.annotation.Virtual;
 import at.irian.ankor.i18n.ResourceBundleMap;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
@@ -25,9 +26,6 @@ public class ModelRoot {
     private final Ref serverStatusRef;
     private final Ref localeRef;
     private final ContentPane contentPane;
-
-    private String userName = "";
-    private String serverStatus = "";
 
     @JsonInclude(JsonInclude.Include.ALWAYS)
     private Locale locale = null;
@@ -55,20 +53,14 @@ public class ModelRoot {
         localeRef.setValue(Locale.ENGLISH);
     }
 
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
+    @Virtual
     public String getServerStatus() {
-        return serverStatus;
+        return "";
     }
 
-    public void setServerStatus(String serverStatus) {
-        this.serverStatus = serverStatus;
+    @Virtual
+    public String getUserName() {
+        return "";
     }
 
     public ContentPane getContentPane() {

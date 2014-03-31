@@ -37,6 +37,7 @@ public class AnkorELSupport implements ELSupport {
     public ELContext getELContextFor(RefFactory refFactory) {
         ModelSessionELResolver modelSessionELResolver = new ModelSessionELResolver(modelSession,
                                                                                    refFactory);
-        return new StandardELContext(modelSessionELResolver, beanResolverELResolver);
+        return new StandardELContext(modelSessionELResolver,
+                                     beanResolverELResolver);
     }
 }

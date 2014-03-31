@@ -169,4 +169,14 @@ public class MockELRef implements Ref {
     public <T> TypedRef<T> toTypedRef() {
         return (TypedRef<T>)this;
     }
+
+    @Override
+    public boolean isVirtual() {
+        return false;
+    }
+
+    @Override
+    public boolean isReadOnly() {
+        return false;
+    }
 }
