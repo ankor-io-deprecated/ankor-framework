@@ -5,9 +5,9 @@
 		  http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
          version="2.5">
 
-    <listener>
-        <listener-class>at.irian.ankorsamples.todosample.servlet.TodoSampleServletContextListener</listener-class>
-    </listener>
+    <!--<listener>-->
+        <!--<listener-class>at.irian.ankorsamples.todosample.servlet.TodoSampleServletContextListener</listener-class>-->
+    <!--</listener>-->
 
     <!--<servlet>-->
         <!--<servlet-name>AnkorServlet</servlet-name>-->
