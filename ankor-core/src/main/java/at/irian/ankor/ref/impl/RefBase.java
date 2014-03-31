@@ -15,6 +15,9 @@ import at.irian.ankor.event.source.Source;
 import at.irian.ankor.path.PathSyntax;
 import at.irian.ankor.ref.*;
 import at.irian.ankor.session.ModelSession;
+import at.irian.ankor.viewmodel.metadata.BeanMetadata;
+import at.irian.ankor.viewmodel.metadata.PropertyMetadata;
+import at.irian.ankor.viewmodel.metadata.VirtualMetadata;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -27,6 +30,7 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RefBase.class);
 
     private final RefContextImplementor refContext;
+    private transient Boolean virtual;
 
     protected RefBase(RefContextImplementor refContext) {
         this.refContext = refContext;
@@ -92,6 +96,12 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
 
         ModelSession modelSession = context().modelSession();
 
+        if (isVirtual()) {
+            LOG.warn("Cannot set virtual property {}", this);
+            fireChangeEvent(source, change, modelSession.getEventDispatcher());
+            return;
+        }
+
         if (change.getType() == ChangeType.value) {
             // Handle the given value change and delay all events that might happen during
             // the actual applying of the changed value to the model. Technically speaking we buffer
@@ -103,25 +113,7 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
             // carry the very same change info as we are currently applying to the model. We suppress the
             // dispatching of these duplicate events because we fire an equal event for this change anyway
             // later down below.
-            for (ModelEvent modelEvent : bufferedEvents) {
-                if (modelEvent instanceof ChangeEvent) {
-                    Ref changedProperty = ((ChangeEvent) modelEvent).getChangedProperty();
-                    if (changedProperty.equals(this)) {
-                        Change nestedChange = ((ChangeEvent) modelEvent).getChange();
-                        if (nestedChange.getType() == ChangeType.value) {
-                            Object v1 = change.getValue();
-                            Object v2 = nestedChange.getValue();
-                            if (ObjectUtils.nullSafeEquals(v1, v2)) {
-                                // found exactly this change
-                                // do ignore, because we fire it anyway down below
-                                LOG.debug("Suppressing nested change for {}: {}", changedProperty, change);
-                                continue;
-                            }
-                        }
-                    }
-                }
-                modelSession.getEventDispatcher().dispatch(modelEvent);
-            }
+            dispatchOrSuppressBufferedEvents(change, modelSession, bufferedEvents);
 
         } else {
             // Handle the given change normally without delaying any events
@@ -129,10 +121,13 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
         }
 
         // fire change event
-        ChangeEvent changeEvent = new ChangeEvent(source, this, change);
-        modelSession.getEventDispatcher().dispatch(changeEvent);
+        fireChangeEvent(source, change, modelSession.getEventDispatcher());
     }
 
+    private void fireChangeEvent(Source source, Change change, EventDispatcher eventDispatcher) {
+        ChangeEvent changeEvent = new ChangeEvent(source, this, change);
+        eventDispatcher.dispatch(changeEvent);
+    }
 
     private void handleChange(Change change) {
         ChangeType changeType = change.getType();
@@ -170,6 +165,30 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
             modelSession.setEventDispatcher(originalEventDispatcher);
         }
         return bufferingEventDispatcher.getBufferedEvents();
+    }
+
+    private void dispatchOrSuppressBufferedEvents(Change change,
+                                                  ModelSession modelSession,
+                                                  List<ModelEvent> bufferedEvents) {
+        for (ModelEvent modelEvent : bufferedEvents) {
+            if (modelEvent instanceof ChangeEvent) {
+                Ref changedProperty = ((ChangeEvent) modelEvent).getChangedProperty();
+                if (changedProperty.equals(this)) {
+                    Change nestedChange = ((ChangeEvent) modelEvent).getChange();
+                    if (nestedChange.getType() == ChangeType.value) {
+                        Object v1 = change.getValue();
+                        Object v2 = nestedChange.getValue();
+                        if (ObjectUtils.nullSafeEquals(v1, v2)) {
+                            // found exactly this change
+                            // do ignore, because we fire it anyway down below
+                            LOG.debug("Suppressing nested change for {}: {}", changedProperty, change);
+                            continue;
+                        }
+                    }
+                }
+            }
+            modelSession.getEventDispatcher().dispatch(modelEvent);
+        }
     }
 
 
@@ -373,8 +392,7 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
     @Override
     public void signal(Source source, Change change) {
         LOG.trace("{} signal {}", this, change);
-        ChangeEvent changeEvent = new ChangeEvent(source, this, change);
-        context().modelSession().getEventDispatcher().dispatch(changeEvent);
+        fireChangeEvent(source, change, context().modelSession().getEventDispatcher());
     }
 
     @SuppressWarnings("unchecked")
@@ -519,4 +537,31 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
     public <T> TypedRef<T> toTypedRef() {
         return (TypedRef<T>)this;
     }
+
+    @Override
+    public boolean isVirtual() {
+        if (virtual == null) {
+            virtual = calcVirtual();
+        }
+        return virtual;
+    }
+
+    private boolean calcVirtual() {
+        if (isRoot()) {
+            // model root is not supported (yet)
+            return false;
+        } else {
+            Object parentBean = parent().getValue();
+            BeanMetadata beanMetadata = refContext.metadataProvider().getMetadata(parentBean);
+            PropertyMetadata propertyMetadata = beanMetadata.getPropertyMetadata(propertyName());
+            if (propertyMetadata != null) {
+                VirtualMetadata virtualMetadata = propertyMetadata.getGenericMetadata(VirtualMetadata.class);
+                if (virtualMetadata != null) {
+                    return virtualMetadata.isVirtual();
+                }
+            }
+            return false;
+        }
+    }
+
 }

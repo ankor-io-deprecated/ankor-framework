@@ -126,4 +126,8 @@ public interface TypedRef<T> {
 
     void signalValueChange();
 
+    /**
+     * @return true, if this Ref is virtual and there is no real value behind this Ref
+     */
+    boolean isVirtual();
 }

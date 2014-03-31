@@ -69,8 +69,10 @@ public class AnnotationBeanMetadataProvider implements BeanMetadataProvider {
         }
 
         VirtualProperties virtualPropertiesAnnotation = type.getAnnotation(VirtualProperties.class);
-        for (VirtualProperty vpa : virtualPropertiesAnnotation.value()) {
-            beanMetadata = addVirtualPropertyMetadata(beanMetadata, vpa);
+        if (virtualPropertiesAnnotation != null) {
+            for (VirtualProperty vpa : virtualPropertiesAnnotation.value()) {
+                beanMetadata = addVirtualPropertyMetadata(beanMetadata, vpa);
+            }
         }
 
         return beanMetadata;
