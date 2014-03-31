@@ -174,4 +174,9 @@ public class MockELRef implements Ref {
     public boolean isVirtual() {
         return false;
     }
+
+    @Override
+    public boolean isReadOnly() {
+        return false;
+    }
 }

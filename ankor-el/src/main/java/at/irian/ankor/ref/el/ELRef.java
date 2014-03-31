@@ -111,4 +111,9 @@ public class ELRef extends RefBase {
         return expression().hashCode();
     }
 
+    @Override
+    public boolean isReadOnly() {
+        return ve.isReadOnly(elRefContext().createELContext());
+    }
+
 }
