@@ -42,7 +42,7 @@ class FxRefContextFactory implements RefContextFactory {
 
     @Override
     public RefContext createRefContextFor(ModelSession modelSession) {
-        ELSupport elSupport = new AnkorELSupport(modelSession, metadataProvider, beanResolver);
+        ELSupport elSupport = new AnkorELSupport(modelSession, beanResolver);
         return DefaultFxRefContext.create(elSupport,
                                           modelSession,
                                           viewModelPostProcessors,

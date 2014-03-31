@@ -1,5 +1,6 @@
 package at.irian.ankor.viewmodel.metadata;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,15 +11,33 @@ public class PropertyMetadata {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(PropertyMetadata.class);
 
     private final String propertyName;
+    private final Class<?> propertyType;
+    private final boolean readOnly;
+    private final boolean virtual;
     private final Map<Class<?>, Object> genericMetadataMap;
 
-    public PropertyMetadata(String propertyName) {
-        this(propertyName, null);
+    protected PropertyMetadata(String propertyName,
+                               Class<?> propertyType,
+                               boolean readOnly,
+                               boolean virtual,
+                               Map<Class<?>, Object> genericMetadataMap) {
+        this.propertyName = propertyName;
+        this.propertyType = propertyType;
+        this.readOnly = readOnly;
+        this.virtual = virtual;
+        this.genericMetadataMap = genericMetadataMap;
     }
 
-    protected PropertyMetadata(String propertyName, Map<Class<?>, Object> genericMetadataMap) {
-        this.propertyName = propertyName;
-        this.genericMetadataMap = genericMetadataMap;
+    public PropertyMetadata withPropertyType(Class<?> propertyType) {
+        return new PropertyMetadata(propertyName, propertyType, readOnly, virtual, genericMetadataMap);
+    }
+
+    public PropertyMetadata withReadOnly(boolean readOnly) {
+        return new PropertyMetadata(propertyName, propertyType, readOnly, virtual, genericMetadataMap);
+    }
+
+    public PropertyMetadata withVirtual(boolean virtual) {
+        return new PropertyMetadata(propertyName, propertyType, readOnly, virtual, genericMetadataMap);
     }
 
     public <T> PropertyMetadata withGenericMetadata(Class<T> metadataType, T metadata) {
@@ -27,12 +46,23 @@ public class PropertyMetadata {
             newMap.putAll(genericMetadataMap);
         }
         newMap.put(metadataType, metadata);
-        return new PropertyMetadata(propertyName, newMap);
+        return new PropertyMetadata(propertyName, propertyType, readOnly, virtual, newMap);
     }
-
 
     public String getPropertyName() {
         return propertyName;
+    }
+
+    public Class<?> getPropertyType() {
+        return propertyType;
+    }
+
+    public boolean isReadOnly() {
+        return readOnly;
+    }
+
+    public boolean isVirtual() {
+        return virtual;
     }
 
     @SuppressWarnings("unchecked")
@@ -42,7 +72,7 @@ public class PropertyMetadata {
 
 
     public static PropertyMetadata emptyPropertyMetadata(String propertyName) {
-        return new PropertyMetadata(propertyName);
+        return new PropertyMetadata(propertyName, Object.class, false, false, Collections.<Class<?>, Object>emptyMap());
     }
 
 }

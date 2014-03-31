@@ -1,6 +1,9 @@
 package at.irian.ankorsamples.animals.viewmodel;
 
-import at.irian.ankor.annotation.*;
+import at.irian.ankor.annotation.ActionListener;
+import at.irian.ankor.annotation.AnkorBigMap;
+import at.irian.ankor.annotation.ChangeListener;
+import at.irian.ankor.annotation.Virtual;
 import at.irian.ankor.i18n.ResourceBundleMap;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
@@ -15,9 +18,6 @@ import java.util.Map;
  * @author Thomas Spiegl
  */
 @SuppressWarnings("UnusedDeclaration")
-@VirtualProperties({
-        @VirtualProperty(name = "serverStatus", type = String.class)
-})
 public class ModelRoot {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelRoot.class);
 
@@ -26,8 +26,6 @@ public class ModelRoot {
     private final Ref serverStatusRef;
     private final Ref localeRef;
     private final ContentPane contentPane;
-
-    private String userName = "";
 
     @JsonInclude(JsonInclude.Include.ALWAYS)
     private Locale locale = null;
@@ -55,12 +53,14 @@ public class ModelRoot {
         localeRef.setValue(Locale.ENGLISH);
     }
 
-    public String getUserName() {
-        return userName;
+    @Virtual
+    public String getServerStatus() {
+        return "";
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    @Virtual
+    public String getUserName() {
+        return "";
     }
 
     public ContentPane getContentPane() {

@@ -8,9 +8,7 @@ import java.lang.annotation.Target;
 /**
  * @author Manfred Geiler
  */
-@Target({ElementType.TYPE})
+@Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface VirtualProperty {
-    String name() default "";
-    Class<?> type() default Object.class;
+public @interface Virtual {
 }

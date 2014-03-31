@@ -54,25 +54,63 @@ public class BeanMetadata {
                                 propertyMetadataMap, methodMetadataMap);
     }
 
-    public BeanMetadata withPropertyMetadata(String propertyName, Object metadata) {
-        Map<String, PropertyMetadata> map = new HashMap<String, PropertyMetadata>();
-        if (this.propertyMetadataMap != null) {
-            map.putAll(this.propertyMetadataMap);
-        }
-
-        PropertyMetadata md = map.get(propertyName);
-        if (md == null) {
-            md = new PropertyMetadata(propertyName);
-        }
-
+    public BeanMetadata withProperty(String propertyName) {
         //noinspection unchecked
-        md = md.withGenericMetadata((Class<Object>) metadata.getClass(), metadata);
-
-        map.put(propertyName, md);
-
-        map = Collections.unmodifiableMap(map);
-
+        Map<String, PropertyMetadata> map
+                = addToPropertyMetadataMap(propertyMetadataMap,
+                                           propertyName,
+                                           getPropertyMetadata(propertyName));
         return new BeanMetadata(changeListeners, actionListeners, map, methodMetadataMap);
+    }
+
+    public BeanMetadata withReadOnlyProperty(String propertyName) {
+        //noinspection unchecked
+        Map<String, PropertyMetadata> map
+                = addToPropertyMetadataMap(propertyMetadataMap,
+                                           propertyName,
+                                           getPropertyMetadata(propertyName).withReadOnly(true));
+        return new BeanMetadata(changeListeners, actionListeners, map, methodMetadataMap);
+    }
+
+    public BeanMetadata withVirtualProperty(String propertyName) {
+        //noinspection unchecked
+        Map<String, PropertyMetadata> map
+                = addToPropertyMetadataMap(propertyMetadataMap,
+                                           propertyName,
+                                           getPropertyMetadata(propertyName).withVirtual(true));
+        return new BeanMetadata(changeListeners, actionListeners, map, methodMetadataMap);
+    }
+
+    public BeanMetadata withTypedProperty(String propertyName, Class<?> type) {
+        //noinspection unchecked
+        Map<String, PropertyMetadata> map
+                = addToPropertyMetadataMap(propertyMetadataMap,
+                                           propertyName,
+                                           getPropertyMetadata(propertyName).withPropertyType(type));
+        return new BeanMetadata(changeListeners, actionListeners, map, methodMetadataMap);
+    }
+
+    public BeanMetadata withGenericPropertyMetadata(String propertyName, Object genericMetadata) {
+        //noinspection unchecked
+        Map<String, PropertyMetadata> map
+                = addToPropertyMetadataMap(propertyMetadataMap,
+                                           propertyName,
+                                           getPropertyMetadata(propertyName)
+                                                   .withGenericMetadata((Class<Object>) genericMetadata.getClass(),
+                                                                        genericMetadata));
+        return new BeanMetadata(changeListeners, actionListeners, map, methodMetadataMap);
+    }
+
+    private static Map<String, PropertyMetadata> addToPropertyMetadataMap(Map<String, PropertyMetadata> propertyMetadataMap,
+                                                                          String propertyName,
+                                                                          PropertyMetadata propertyMetadata) {
+        Map<String, PropertyMetadata> map = new HashMap<String, PropertyMetadata>();
+        if (propertyMetadataMap != null) {
+            map.putAll(propertyMetadataMap);
+        }
+        map.put(propertyName, propertyMetadata);
+        map = Collections.unmodifiableMap(map);
+        return map;
     }
 
     public BeanMetadata withMethodMetadata(Method method, Object metadata) {

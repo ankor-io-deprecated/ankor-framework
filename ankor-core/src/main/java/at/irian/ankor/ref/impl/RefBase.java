@@ -17,7 +17,6 @@ import at.irian.ankor.ref.*;
 import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.viewmodel.metadata.BeanMetadata;
 import at.irian.ankor.viewmodel.metadata.PropertyMetadata;
-import at.irian.ankor.viewmodel.metadata.VirtualMetadata;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -554,13 +553,7 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
             Object parentBean = parent().getValue();
             BeanMetadata beanMetadata = refContext.metadataProvider().getMetadata(parentBean);
             PropertyMetadata propertyMetadata = beanMetadata.getPropertyMetadata(propertyName());
-            if (propertyMetadata != null) {
-                VirtualMetadata virtualMetadata = propertyMetadata.getGenericMetadata(VirtualMetadata.class);
-                if (virtualMetadata != null) {
-                    return virtualMetadata.isVirtual();
-                }
-            }
-            return false;
+            return propertyMetadata != null && propertyMetadata.isVirtual();
         }
     }
 
