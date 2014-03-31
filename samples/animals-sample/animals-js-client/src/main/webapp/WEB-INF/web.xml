@@ -9,14 +9,14 @@
         <listener-class>at.irian.ankorsamples.animals.servlet.AnimalsSampleServletContextListener</listener-class>
     </listener>
 
-    <servlet>
-        <servlet-name>AnkorServlet</servlet-name>
-        <servlet-class>at.irian.ankor.servlet.polling.AnkorServlet</servlet-class>
-    </servlet>
+    <!--<servlet>-->
+        <!--<servlet-name>AnkorServlet</servlet-name>-->
+        <!--<servlet-class>at.irian.ankor.servlet.polling.AnkorServlet</servlet-class>-->
+    <!--</servlet>-->
 
-    <servlet-mapping>
-        <servlet-name>AnkorServlet</servlet-name>
-        <url-pattern>/ankor</url-pattern>
-    </servlet-mapping>
+    <!--<servlet-mapping>-->
+        <!--<servlet-name>AnkorServlet</servlet-name>-->
+        <!--<url-pattern>/ankor</url-pattern>-->
+    <!--</servlet-mapping>-->
 
 </web-app>

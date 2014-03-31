@@ -4,13 +4,9 @@ import at.irian.ankor.action.Action;
 import at.irian.ankor.base.Wrapper;
 import at.irian.ankor.big.json.AnkorSerializerModifier;
 import at.irian.ankor.change.Change;
-import at.irian.ankor.messaging.Message;
-import at.irian.ankor.messaging.MessageArrayDeserializer;
-import at.irian.ankor.messaging.MessageArraySerializer;
 import at.irian.ankor.messaging.MessageMapper;
 import at.irian.ankor.messaging.json.common.ActionDeserializer;
 import at.irian.ankor.messaging.json.common.ChangeDeserializer;
-import at.irian.ankor.messaging.json.common.MessageDeserializer;
 import at.irian.ankor.ref.TypedRef;
 import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -24,19 +20,14 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 /**
  * MessageMapper that can map server-side strongly typed(!) view model objects to json and vice versa.
  *
  * @author Manfred Geiler
  */
-public class ViewModelJsonMessageMapper implements MessageMapper<String>,
-                                                   MessageArraySerializer<String>,
-                                                   MessageArrayDeserializer<String> {
+public class ViewModelJsonMessageMapper implements MessageMapper<String> {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ViewModelJsonMessageMapper.class);
-
-    private static final Class<? extends Message[]> MESSAGE_ARRAY_TYPE = (new Message[0]).getClass();
 
     private final ObjectMapper mapper;
 
@@ -49,7 +40,6 @@ public class ViewModelJsonMessageMapper implements MessageMapper<String>,
                                                new Version(1, 0, 0, null, null, null));
 
         // custom serializers/deserializers
-        module.addDeserializer(Message.class, new MessageDeserializer());
         module.addDeserializer(Action.class, new ActionDeserializer());
         module.addDeserializer(Change.class, new ChangeDeserializer());
         module.addSerializer(Wrapper.class, new WrapperSerializer());
@@ -101,22 +91,4 @@ public class ViewModelJsonMessageMapper implements MessageMapper<String>,
         }
     }
 
-
-    @Override
-    public String serializeArray(Message[] messages) {
-        try {
-            return mapper.writeValueAsString(messages);
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Cannot serialize " + Arrays.toString(messages), e);
-        }
-    }
-
-    @Override
-    public Message[] deserializeArray(String serializedMessages) {
-        try {
-            return mapper.readValue(serializedMessages, MESSAGE_ARRAY_TYPE);
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Cannot deserialize " + serializedMessages, e);
-        }
-    }
 }
