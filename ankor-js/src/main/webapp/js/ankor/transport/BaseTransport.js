@@ -7,7 +7,6 @@ define([
 ], function(Message, Path, BaseEvent, ChangeEvent, ActionEvent) {
     var BaseTransport = function() {
         this.outgoingMessages = [];
-        this.messageCounter = 0;
     };
 
     BaseTransport.prototype.init = function(ankorSystem) {
@@ -16,8 +15,7 @@ define([
     };
 
     BaseTransport.prototype.sendEvent = function(event) {
-        var messageId = this.ankorSystem.senderId + "#" + this.messageCounter++;
-        var message = new Message(this.ankorSystem.senderId, this.ankorSystem.modelId, messageId, event);
+        var message = new Message(event);
         this.sendMessage(message);
     };
 
@@ -53,15 +51,12 @@ define([
             event = new BaseEvent(path, "ankorRemoteEvent");
         }
 
-        return new Message(parsedJson.senderId, parsedJson.modelId, parsedJson.messageId, event);
+        return new Message(event);
     };
 
     BaseTransport.prototype.encodeMessage = function(message) {
         var event = message.event;
         var jsonMessage = {
-            //senderId: message.senderId, TODO remove senderId
-            //modelId: message.modelId,   TODO remove modelId
-            //messageId: message.messageId, TODO remove messageId
             property: event.path.toString()
         };
         if (event instanceof ActionEvent) {
@@ -76,7 +71,8 @@ define([
                 key: event.key,
                 value: event.value
             };
-        } else if (message.connectParams) {
+        }
+        else if (message.connectParams) {
             jsonMessage.connectParams = message.connectParams;
         }
         return jsonMessage;

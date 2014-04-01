@@ -14,10 +14,8 @@ define([
         this._isReady = false;
 
         // Sends pending messages after the connection has been established
-        // will assign the server created id to the pending messages
         this._sendPendingMessages = function () {
             for (var i = 0, message; (message = this.outgoingMessages[i]); i++) {
-                message.senderId = this.ankorSystem.senderId;
                 this._sendMessageInner(message);
             }
             this.outgoingMessages = [];
@@ -45,7 +43,7 @@ define([
                 path = 'wss://' + path;
             }
 
-            return path
+            return path;
         };
 
         var webSocket = function (host) {
