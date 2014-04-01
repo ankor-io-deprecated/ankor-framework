@@ -9,7 +9,7 @@ The server side method will be called as soon as we fire an action for Ref `root
 
 As `params` we pass a map containing an element with key 'title'.
 
-Open `AppDelegate.m` within `TodoList` folder in Xcode and uncomment the the line as shown here:
+Open `AppDelegate.m` within `TodoList` folder in Xcode and uncomment the line as shown here:
 
     :::objectivec
     - (IBAction)unwindToList:(UIStoryboardSegue *)segue
