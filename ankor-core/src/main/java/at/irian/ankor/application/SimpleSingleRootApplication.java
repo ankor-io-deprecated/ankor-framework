@@ -3,6 +3,7 @@ package at.irian.ankor.application;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -24,6 +25,11 @@ public abstract class SimpleSingleRootApplication extends BaseApplication {
     @Override
     public boolean supportsModel(String modelName) {
         return this.modelName.equals(modelName);
+    }
+
+    @Override
+    public Set<String> getKnownModelNames() {
+        return Collections.singleton(this.modelName);
     }
 
     @Override

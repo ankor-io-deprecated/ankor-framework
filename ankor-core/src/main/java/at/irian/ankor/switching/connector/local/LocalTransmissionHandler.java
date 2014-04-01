@@ -3,11 +3,13 @@ package at.irian.ankor.switching.connector.local;
 import at.irian.ankor.action.Action;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.event.source.ModelAddressSource;
-import at.irian.ankor.serialization.modify.Modifier;
+import at.irian.ankor.event.source.Source;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
+import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.ref.impl.RefImplementor;
+import at.irian.ankor.serialization.modify.Modifier;
 import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.session.ModelSessionManager;
 import at.irian.ankor.switching.connector.HandlerScopeContext;
@@ -16,6 +18,10 @@ import at.irian.ankor.switching.msg.ActionEventMessage;
 import at.irian.ankor.switching.msg.ChangeEventMessage;
 import at.irian.ankor.switching.msg.EventMessage;
 import at.irian.ankor.switching.routing.ModelAddress;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Delivers received EventMessages to the according local ModelSessions.
@@ -56,9 +62,12 @@ public class LocalTransmissionHandler implements TransmissionHandler<LocalModelA
                 @Override
                 public void run() {
                     RefContext refContext = modelSession.getRefContext();
-                    Ref actionProperty = refContext.refFactory().ref(((ActionEventMessage) msg).getProperty());
+                    RefFactory refFactory = refContext.refFactory();
+                    Ref actionProperty = refFactory.ref(((ActionEventMessage) msg).getProperty());
                     Action action = modifier.modifyAfterReceive(((ActionEventMessage) msg).getAction(), actionProperty);
-                    ModelAddressSource source = new ModelAddressSource(sender, LocalTransmissionHandler.this);
+                    Map<Ref, Object> state = createStateFrom(refFactory, ((ActionEventMessage) msg).getState());
+                    applyStateToModelSession(state);
+                    Source source = new ModelAddressSource(sender, LocalTransmissionHandler.this);
                     ((RefImplementor) actionProperty).fire(source, action);
                 }
 
@@ -73,9 +82,12 @@ public class LocalTransmissionHandler implements TransmissionHandler<LocalModelA
                 @Override
                 public void run() {
                     RefContext refContext = modelSession.getRefContext();
-                    Ref changedProperty = refContext.refFactory().ref(((ChangeEventMessage) msg).getProperty());
+                    RefFactory refFactory = refContext.refFactory();
+                    Ref changedProperty = refFactory.ref(((ChangeEventMessage) msg).getProperty());
                     Change change = modifier.modifyAfterReceive(((ChangeEventMessage) msg).getChange(), changedProperty);
-                    ModelAddressSource source = new ModelAddressSource(sender, LocalTransmissionHandler.this);
+                    Map<Ref, Object> state = createStateFrom(refFactory, ((ChangeEventMessage) msg).getState());
+                    applyStateToModelSession(state);
+                    Source source = new ModelAddressSource(sender, LocalTransmissionHandler.this);
                     ((RefImplementor)changedProperty).apply(source, change);
                 }
 
@@ -89,6 +101,25 @@ public class LocalTransmissionHandler implements TransmissionHandler<LocalModelA
 
             throw new IllegalArgumentException("Unsupported message type " + msg.getClass().getName());
 
+        }
+    }
+
+    private Map<Ref, Object> createStateFrom(RefFactory refFactory, Map<String, Object> state) {
+        if (state == null || state.isEmpty()) {
+            return Collections.emptyMap();
+        } else {
+            Map<Ref, Object> result = new HashMap<Ref, Object>();
+            for (Map.Entry<String, Object> entry : state.entrySet()) {
+                result.put(refFactory.ref(entry.getKey()), entry.getValue());
+
+            }
+            return result;
+        }
+    }
+
+    private void applyStateToModelSession(Map<Ref, Object> state) {
+        for (Map.Entry<Ref, Object> entry : state.entrySet()) {
+            ((RefImplementor)entry.getKey()).internalSetValue(entry.getValue());
         }
     }
 

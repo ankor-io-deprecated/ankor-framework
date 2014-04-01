@@ -1,5 +1,8 @@
 package at.irian.ankor.system;
 
+import at.irian.ankor.state.SimpleStateDefinition;
+import at.irian.ankor.state.StateDefinition;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,6 +22,7 @@ public class SocketFxClientBuilder {
     private Map<String, Object> connectParams = new HashMap<>();
     private String clientAddress = DEFAULT_CLIENT_ADDRESS;
     private String serverAddress = DEFAULT_SERVER_ADDRESS;
+    private StateDefinition stateDefinition = SimpleStateDefinition.create();
 
     public SocketFxClientBuilder withApplicationName(String applicationName) {
         this.applicationName = applicationName;
@@ -45,9 +49,15 @@ public class SocketFxClientBuilder {
         return this;
     }
 
+    public SocketFxClientBuilder withStatePath(String p) {
+        this.stateDefinition = this.stateDefinition.withPath(p);
+        return this;
+    }
+
     public AnkorClient build() {
         return SocketFxClient.create(applicationName,
                                      modelName,
+                                     stateDefinition,
                                      connectParams,
                                      clientAddress,
                                      serverAddress);

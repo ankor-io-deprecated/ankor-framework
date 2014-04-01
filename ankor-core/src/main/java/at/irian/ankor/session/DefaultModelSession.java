@@ -21,7 +21,7 @@ import java.util.UUID;
 class DefaultModelSession implements ModelSession, DispatchThreadAware {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelSession.class);
 
-    private final String id;
+    private String id; // todo  make final
     private final EventListeners eventListeners;
     private final Application application;
     private RefContext refContext;
@@ -45,9 +45,10 @@ class DefaultModelSession implements ModelSession, DispatchThreadAware {
     public static ModelSession create(EventDispatcherFactory eventDispatcherFactory,
                                       EventListeners defaultEventListeners,
                                       RefContextFactory refContextFactory,
-                                      Application application) {
+                                      Application application,
+                                      String modelSessionId) {
         EventListeners eventListeners = new ArrayListEventListeners(defaultEventListeners);
-        DefaultModelSession modelSession = new DefaultModelSession(createModelSessionId(),
+        DefaultModelSession modelSession = new DefaultModelSession(modelSessionId,
                                                                    eventListeners,
                                                                    application);
         modelSession.refContext = refContextFactory.createRefContextFor(modelSession); // ugly, but we have to init it this way, because we have a bi-directional relation here
@@ -55,8 +56,21 @@ class DefaultModelSession implements ModelSession, DispatchThreadAware {
         return modelSession;
     }
 
+    public static ModelSession create(EventDispatcherFactory eventDispatcherFactory,
+                                      EventListeners defaultEventListeners,
+                                      RefContextFactory refContextFactory,
+                                      Application application) {
+        return create(eventDispatcherFactory, defaultEventListeners, refContextFactory, application,
+                      createModelSessionId());
+    }
+
     protected static String createModelSessionId() {
         return UUID.randomUUID().toString();
+    }
+
+    //todo  hack
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getId() {
@@ -150,4 +164,22 @@ class DefaultModelSession implements ModelSession, DispatchThreadAware {
     public Map<String, Object> getModels() {
         return Collections.unmodifiableMap(modelRootMap);
     }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DefaultModelSession that = (DefaultModelSession) o;
+
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
+
 }

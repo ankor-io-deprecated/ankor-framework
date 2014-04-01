@@ -11,6 +11,7 @@
         <module>todo-sample</module>
         <module>animals-sample</module>
         <module>fxrates-sample</module>
+        <module>stateless-todo-sample</module>
     </modules>
 
     <distributionManagement>

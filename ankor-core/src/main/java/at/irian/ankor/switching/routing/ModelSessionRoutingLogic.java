@@ -75,7 +75,7 @@ public class ModelSessionRoutingLogic implements RoutingLogic {
             }
         }
 
-        ModelAddress receiver = new LocalModelAddress(modelSession.getId(), modelName);
+        ModelAddress receiver = new LocalModelAddress(modelSession, modelName);
 
         if (receiver.equals(sender)) {
             throw new IllegalArgumentException("ModelSession must not connect to itself: " + modelSession);

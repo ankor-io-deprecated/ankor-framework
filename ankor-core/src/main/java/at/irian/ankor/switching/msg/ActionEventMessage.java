@@ -2,6 +2,8 @@ package at.irian.ankor.switching.msg;
 
 import at.irian.ankor.action.Action;
 
+import java.util.Map;
+
 /**
  * @author Manfred Geiler
  */
@@ -10,11 +12,12 @@ public class ActionEventMessage implements EventMessage {
 
     private String property;
     private Action action;
+    private Map<String, Object> state;
 
-    public ActionEventMessage(String property, Action action) {
-        super();
+    public ActionEventMessage(String property, Action action, Map<String, Object> state) {
         this.property = property;
         this.action = action;
+        this.state = state;
     }
 
     public String getProperty() {
@@ -23,6 +26,10 @@ public class ActionEventMessage implements EventMessage {
 
     public Action getAction() {
         return action;
+    }
+
+    public Map<String, Object> getState() {
+        return state;
     }
 
     @SuppressWarnings("RedundantIfStatement")
@@ -59,8 +66,7 @@ public class ActionEventMessage implements EventMessage {
         return "ActionEventMessage{" +
                "property='" + property + '\'' +
                ", action=" + action +
-               "}";
+               ", state=" + state +
+               '}';
     }
-
-
 }

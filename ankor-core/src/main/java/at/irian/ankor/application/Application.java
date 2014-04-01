@@ -3,6 +3,7 @@ package at.irian.ankor.application;
 import at.irian.ankor.ref.RefContext;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Manfred Geiler
@@ -18,7 +19,10 @@ public interface Application {
      * @param modelName  name of model
      * @return true, if this Application supports models with the given name
      */
+    @Deprecated  // todo use getKnownModelNames() instead
     boolean supportsModel(String modelName);
+
+    Set<String> getKnownModelNames();
 
     /**
      * Lookup a model by one or more (application specific) connect parameters.

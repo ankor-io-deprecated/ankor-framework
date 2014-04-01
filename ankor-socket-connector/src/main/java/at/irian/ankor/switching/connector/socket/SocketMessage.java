@@ -25,6 +25,9 @@ public class SocketMessage {
     private Change change;
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    private Map<String,Object> state;
+
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Map<String,Object> connectParams;
 
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
@@ -40,12 +43,14 @@ public class SocketMessage {
                           String property,
                           Action action,
                           Change change,
+                          Map<String, Object> state,
                           Map<String, Object> connectParams,
                           boolean close) {
         this.senderId = senderId;
         this.property = property;
         this.action = action;
         this.change = change;
+        this.state = state;
         this.connectParams = connectParams;
         this.close = close;
     }
@@ -66,6 +71,10 @@ public class SocketMessage {
         return change;
     }
 
+    public Map<String, Object> getState() {
+        return state;
+    }
+
     public Map<String, Object> getConnectParams() {
         return connectParams;
     }
@@ -74,22 +83,22 @@ public class SocketMessage {
         return close;
     }
 
-    public static SocketMessage createActionMsg(String senderAddress, String property, Action action) {
-        return new SocketMessage(senderAddress, property, action, null, null, false);
+    public static SocketMessage createActionMsg(String senderAddress, String property, Action action, Map<String, Object> state) {
+        return new SocketMessage(senderAddress, property, action, null, state, null, false);
     }
 
-    public static SocketMessage createChangeMsg(String senderAddress, String property, Change change) {
-        return new SocketMessage(senderAddress, property, null, change, null, false);
+    public static SocketMessage createChangeMsg(String senderAddress, String property, Change change,Map<String, Object> state) {
+        return new SocketMessage(senderAddress, property, null, change, state, null, false);
     }
 
     public static SocketMessage createConnectMsg(String senderAddress,
                                                  String modelName,
                                                  Map<String, Object> connectParameters) {
-        return new SocketMessage(senderAddress, modelName, null, null, connectParameters, false);
+        return new SocketMessage(senderAddress, modelName, null, null, null, connectParameters, false);
     }
 
     public static SocketMessage createCloseMsg(String senderAddress, String modelName) {
-        return new SocketMessage(senderAddress, modelName, null, null, null, true);
+        return new SocketMessage(senderAddress, modelName, null, null, null, null, true);
     }
 
     @Override
@@ -99,6 +108,7 @@ public class SocketMessage {
                ", property='" + property + '\'' +
                ", action=" + action +
                ", change=" + change +
+               ", state=" + state +
                ", connectParams=" + connectParams +
                ", close=" + close +
                '}';

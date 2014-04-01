@@ -4,7 +4,9 @@ import at.irian.ankor.application.Application;
 import at.irian.ankor.monitor.stats.AnkorSystemStats;
 import at.irian.ankor.ref.RefContext;
 
+import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Manfred Geiler
@@ -29,6 +31,11 @@ public class ConsoleApplication implements Application {
     @Override
     public boolean supportsModel(String modelName) {
         return MODEL_NAME.equals(modelName);
+    }
+
+    @Override
+    public Set<String> getKnownModelNames() {
+        return Collections.singleton(MODEL_NAME);
     }
 
     @Override

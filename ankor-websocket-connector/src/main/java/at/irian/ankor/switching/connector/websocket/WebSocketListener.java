@@ -68,13 +68,13 @@ public class WebSocketListener {
     private void handleIncomingActionEventMessage(WebSocketMessage socketMessage) {
         Action action = socketMessage.getAction();
         WebSocketModelAddress sender = getAddress(socketMessage);
-        switchboard.send(sender, new ActionEventMessage(socketMessage.getProperty(), action));
+        switchboard.send(sender, new ActionEventMessage(socketMessage.getProperty(), action, null /*todo: state*/));
     }
 
     private void handleIncomingChangeEventMessage(WebSocketMessage socketMessage) {
         Change change = socketMessage.getChange();
         WebSocketModelAddress sender = getAddress(socketMessage);
-        switchboard.send(sender, new ChangeEventMessage(socketMessage.getProperty(), change));
+        switchboard.send(sender, new ChangeEventMessage(socketMessage.getProperty(), change, null /*todo: state*/));
     }
 
     private void handleIncomingCloseMessage(WebSocketMessage socketMessage) {
