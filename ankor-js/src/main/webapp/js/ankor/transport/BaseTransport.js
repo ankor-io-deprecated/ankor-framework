@@ -7,11 +7,16 @@ define([
 ], function(Message, Path, BaseEvent, ChangeEvent, ActionEvent) {
     var BaseTransport = function() {
         this.outgoingMessages = [];
+        this.connected = false;
     };
+
+    BaseTransport.prototype.onConnectionChange = function(connected) {};
 
     BaseTransport.prototype.init = function(ankorSystem) {
         this.ankorSystem = ankorSystem;
         this.utils = ankorSystem.utils;
+
+        if (this.onConnectionChange) this.onConnectionChange(this.connected);
     };
 
     BaseTransport.prototype.sendEvent = function(event) {
