@@ -53,11 +53,21 @@ define([
                     console.log("Ankor HttpPollingTransport Error", err);
                 }
                 this.outgoingMessages = this.inFlight.concat(this.outgoingMessages);
+
+                if (this.connected) {
+                    this.connected = false;
+                    if (this.onConnectionChange) this.onConnectionChange(this.connected);
+                }
             }
             else {
                 for (var i = 0, parsedMessage; (parsedMessage = parsedMessages[i]); i++) {
                     var message = this.decodeMessage(parsedMessage);
                     this.receiveMessage(message);
+                }
+
+                if (!this.connected) {
+                    this.connected = true;
+                    if (this.onConnectionChange) this.onConnectionChange(this.connected);
                 }
             }
             this.inFlight = null;
