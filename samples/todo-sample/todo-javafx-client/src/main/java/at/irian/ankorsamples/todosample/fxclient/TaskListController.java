@@ -131,11 +131,13 @@ public class TaskListController implements Initializable {
 
     @FXML
     public void openIRIAN(ActionEvent actionEvent) {
+        // todo/hack  we must not fetch services via static reference!
         TodoWebSocketFxClientStarter.getServices().showDocument("http://www.irian.at");
     }
 
     @FXML
     public void openTodoMVC(ActionEvent actionEvent) {
+        // todo/hack  we must not fetch services via static reference!
         TodoWebSocketFxClientStarter.getServices().showDocument("http://todomvc.com/");
     }
 
