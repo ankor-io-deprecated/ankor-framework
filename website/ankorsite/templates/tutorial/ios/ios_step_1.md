@@ -49,5 +49,5 @@ Now start the application again (just hit the run button) and take a look at the
 
 `didReceiveMessage` The server sent back the model data to the client
 
-You are now connected. But still there are no tasks in the list.
-To see how adding a new task works, follow the next step.
+You are now connected. The next step explains how to bind the tasks list to the model.
+

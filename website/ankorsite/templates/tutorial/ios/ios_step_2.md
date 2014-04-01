@@ -71,5 +71,6 @@ As an alternative we may also use Objective-C Blocks to register our Change List
         }];
     }
 
-Still yet we are not able to add tasks. The next section will explain how to add a new task.
+You are now able to display tasks, but still the list is empty.
+To see how adding a new task works, follow the next step.
 
