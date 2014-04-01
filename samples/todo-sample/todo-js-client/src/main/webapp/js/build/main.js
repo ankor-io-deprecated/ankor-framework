@@ -33,6 +33,17 @@ define([
   render = _.throttle(render, 10);
 
   rootRef.addTreeChangeListener(render);
-  rootRef.fire("init");
+
+  ankorSystem.transport.onConnectionChange = function(connected) {
+      var style = {
+          color: connected ? "green" : "red"
+      };
+      var label = connected ? "ok" : "closed";
+
+      React.renderComponent(
+        React.DOM.p( {style:style}, "Server Connection: ", label),
+        document.getElementById('connectionstatus')
+      )
+  };
 });
 
