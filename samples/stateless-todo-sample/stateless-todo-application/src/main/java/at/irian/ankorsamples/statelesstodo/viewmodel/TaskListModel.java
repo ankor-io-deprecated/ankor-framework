@@ -3,16 +3,15 @@ package at.irian.ankorsamples.statelesstodo.viewmodel;
 import at.irian.ankor.annotation.ActionListener;
 import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.annotation.Param;
-import at.irian.ankor.annotation.Virtual;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.CollectionRef;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.state.State;
 import at.irian.ankorsamples.statelesstodo.domain.Filter;
 import at.irian.ankorsamples.statelesstodo.domain.Task;
 import at.irian.ankorsamples.statelesstodo.domain.TaskRepository;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @SuppressWarnings("UnusedDeclaration")
@@ -22,6 +21,9 @@ public class TaskListModel {
     private final TaskRepository taskRepository;
     private final Ref modelRef;
 
+    private List<Task> tasks = new ArrayList<>();
+
+    @State
     private Filter filter = Filter.all;
 
     private Boolean footerVisibility = false;
@@ -31,7 +33,7 @@ public class TaskListModel {
     private Boolean clearButtonVisibility = false;
     private Integer itemsComplete = 0;
     private String itemsCompleteText;
-    
+
     private Boolean filterAllSelected = true;
     private Boolean filterActiveSelected = false;
     private Boolean filterCompletedSelected = false;
@@ -182,9 +184,12 @@ public class TaskListModel {
         this.itemsLeft = itemsLeft;
     }
 
-    @Virtual
     public List<Task> getTasks() {
-        return Collections.emptyList();
+        return tasks;
+    }
+
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
     }
 
     public String getFilter() {

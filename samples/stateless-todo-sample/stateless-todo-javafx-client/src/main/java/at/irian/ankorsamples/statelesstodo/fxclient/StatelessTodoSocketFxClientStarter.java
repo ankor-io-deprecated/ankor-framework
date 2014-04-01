@@ -27,16 +27,6 @@ public class StatelessTodoSocketFxClientStarter extends Application {
         return new SocketFxClientBuilder().withApplicationName(APPLICATION_NAME)
                                           .withModelName(MODEL_NAME)
                                           .withStatePath("root.model.filter")
-                                          .withStatePath("root.model.footerVisibility")
-                                          .withStatePath("root.model.itemsLeft")
-                                          .withStatePath("root.model.itemsLeftText")
-                                          .withStatePath("root.model.clearButtonVisibility")
-                                          .withStatePath("root.model.itemsComplete")
-                                          .withStatePath("root.model.itemsCompleteText")
-                                          .withStatePath("root.model.filterAllSelected")
-                                          .withStatePath("root.model.filterActiveSelected")
-                                          .withStatePath("root.model.filterCompletedSelected")
-                                          .withStatePath("root.model.toggleAll")
                                           .build();
     }
 
