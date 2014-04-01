@@ -6,7 +6,6 @@ import at.irian.ankor.fx.binding.fxref.FxRefContextFactoryProvider;
 import at.irian.ankor.fx.binding.fxref.FxRefs;
 import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.session.SingletonModelSessionManager;
-import at.irian.ankor.state.StateDefinition;
 import at.irian.ankor.switching.routing.FixedSocketRoutingLogic;
 
 import java.net.URI;
@@ -41,11 +40,10 @@ public class SocketFxClient implements AnkorClient {
 
     public static AnkorClient create(String applicationName,
                                      String modelName,
-                                     StateDefinition stateDefinition,
                                      Map<String, Object> connectParams,
                                      String clientAddress,
                                      String serverAddress) {
-        AnkorSystem ankorSystem = createAnkorSystem(applicationName, stateDefinition, clientAddress, serverAddress);
+        AnkorSystem ankorSystem = createAnkorSystem(applicationName, clientAddress, serverAddress);
         return new SocketFxClient(applicationName,
                                   modelName,
                                   connectParams,
@@ -56,18 +54,17 @@ public class SocketFxClient implements AnkorClient {
 
 
     private static AnkorSystem createAnkorSystem(String applicationName,
-                                                 StateDefinition stateDefinition,
                                                  String clientAddress,
                                                  String serverAddress) {
         LOG.debug("Creating FxClient Ankor system '{}' ...", applicationName);
         AnkorSystem ankorSystem = new AnkorSystemBuilder()
                 .withName(applicationName)
                 .withConfigValue("at.irian.ankor.switching.connector.socket.SocketConnector.enabled", true)
-                .withConfigValue("at.irian.ankor.switching.connector.socket.SocketConnector.localAddress", clientAddress)
+                .withConfigValue("at.irian.ankor.switching.connector.socket.SocketConnector.localAddress",
+                                 clientAddress)
                 .withDispatcherFactory(new JavaFxEventDispatcherFactory())
                 .withRefContextFactoryProvider(new FxRefContextFactoryProvider())
                 .withOpenHandler(new FixedSocketRoutingLogic(URI.create(serverAddress)))
-                .withStateDefinition(stateDefinition)
                 .createClient();
         LOG.debug("FxClient Ankor system '{}' created", ankorSystem.getSystemName());
         return ankorSystem;

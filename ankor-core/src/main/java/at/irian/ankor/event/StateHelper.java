@@ -2,7 +2,7 @@ package at.irian.ankor.event;
 
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefFactory;
-import at.irian.ankor.state.StateDefinition;
+import at.irian.ankor.state.SendStateDefinition;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,9 +19,9 @@ public class StateHelper {
         this.refFactory = refFactory;
     }
 
-    public Map<String, Object> createState(StateDefinition stateDefinition) {
-        Map<String, Object> result = new HashMap<String, Object>(stateDefinition.getPaths().size());
-        for (String p : stateDefinition.getPaths()) {
+    public Map<String, Object> createState(SendStateDefinition sendStateDefinition) {
+        Map<String, Object> result = new HashMap<String, Object>(sendStateDefinition.getPaths().size());
+        for (String p : sendStateDefinition.getPaths()) {
             Ref ref = refFactory.ref(p);
             if (ref.isValid()) {
                 result.put(p, ref.getValue());

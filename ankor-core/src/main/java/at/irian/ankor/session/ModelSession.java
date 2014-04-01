@@ -3,6 +3,8 @@ package at.irian.ankor.session;
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.event.dispatch.EventDispatcher;
 import at.irian.ankor.ref.RefContext;
+import at.irian.ankor.state.SendStateDefinition;
+import at.irian.ankor.state.StateHolderDefinition;
 
 import java.util.Map;
 
@@ -87,4 +89,8 @@ public interface ModelSession {
      */
     Map<String,Object> getModels();
 
+    StateHolderDefinition getStateHolderDefinition();
+
+    SendStateDefinition getSendStateDefinition();
+    void setSendStateDefinition(SendStateDefinition sendStateDefinition);
 }

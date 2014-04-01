@@ -12,6 +12,7 @@ import at.irian.ankor.ref.impl.RefImplementor;
 import at.irian.ankor.serialization.modify.Modifier;
 import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.session.ModelSessionManager;
+import at.irian.ankor.state.SimpleSendStateDefinition;
 import at.irian.ankor.switching.connector.HandlerScopeContext;
 import at.irian.ankor.switching.connector.TransmissionHandler;
 import at.irian.ankor.switching.msg.ActionEventMessage;
@@ -19,9 +20,8 @@ import at.irian.ankor.switching.msg.ChangeEventMessage;
 import at.irian.ankor.switching.msg.EventMessage;
 import at.irian.ankor.switching.routing.ModelAddress;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Delivers received EventMessages to the according local ModelSessions.
@@ -65,8 +65,8 @@ public class LocalTransmissionHandler implements TransmissionHandler<LocalModelA
                     RefFactory refFactory = refContext.refFactory();
                     Ref actionProperty = refFactory.ref(((ActionEventMessage) msg).getProperty());
                     Action action = modifier.modifyAfterReceive(((ActionEventMessage) msg).getAction(), actionProperty);
-                    Map<Ref, Object> state = createStateFrom(refFactory, ((ActionEventMessage) msg).getState());
-                    applyStateToModelSession(state);
+                    applyStateToModelSession(refFactory, ((ActionEventMessage) msg).getStateValues());
+                    updateSendStateDefinition(modelSession, ((ActionEventMessage) msg).getStateHolderProperties());
                     Source source = new ModelAddressSource(sender, LocalTransmissionHandler.this);
                     ((RefImplementor) actionProperty).fire(source, action);
                 }
@@ -85,8 +85,8 @@ public class LocalTransmissionHandler implements TransmissionHandler<LocalModelA
                     RefFactory refFactory = refContext.refFactory();
                     Ref changedProperty = refFactory.ref(((ChangeEventMessage) msg).getProperty());
                     Change change = modifier.modifyAfterReceive(((ChangeEventMessage) msg).getChange(), changedProperty);
-                    Map<Ref, Object> state = createStateFrom(refFactory, ((ChangeEventMessage) msg).getState());
-                    applyStateToModelSession(state);
+                    applyStateToModelSession(refFactory, ((ChangeEventMessage) msg).getStateValues());
+                    updateSendStateDefinition(modelSession, ((ChangeEventMessage) msg).getStateHolderProperties());
                     Source source = new ModelAddressSource(sender, LocalTransmissionHandler.this);
                     ((RefImplementor)changedProperty).apply(source, change);
                 }
@@ -104,23 +104,18 @@ public class LocalTransmissionHandler implements TransmissionHandler<LocalModelA
         }
     }
 
-    private Map<Ref, Object> createStateFrom(RefFactory refFactory, Map<String, Object> state) {
-        if (state == null || state.isEmpty()) {
-            return Collections.emptyMap();
-        } else {
-            Map<Ref, Object> result = new HashMap<Ref, Object>();
-            for (Map.Entry<String, Object> entry : state.entrySet()) {
-                result.put(refFactory.ref(entry.getKey()), entry.getValue());
-
+    private void applyStateToModelSession(RefFactory refFactory, Map<String, Object> stateValues) {
+        if (stateValues != null) {
+            for (Map.Entry<String, Object> entry : stateValues.entrySet()) {
+                //todo we should only allow this if a ref is marked as @StateHolder
+                Ref ref = refFactory.ref(entry.getKey());
+                ((RefImplementor) ref).internalSetValue(entry.getValue());
             }
-            return result;
         }
     }
 
-    private void applyStateToModelSession(Map<Ref, Object> state) {
-        for (Map.Entry<Ref, Object> entry : state.entrySet()) {
-            ((RefImplementor)entry.getKey()).internalSetValue(entry.getValue());
-        }
+    private void updateSendStateDefinition(ModelSession modelSession, Set<String> stateHolderProperties) {
+        modelSession.setSendStateDefinition(SimpleSendStateDefinition.of(stateHolderProperties));
     }
 
 }

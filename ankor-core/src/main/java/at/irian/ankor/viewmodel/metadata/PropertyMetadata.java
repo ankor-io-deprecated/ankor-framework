@@ -14,30 +14,37 @@ public class PropertyMetadata {
     private final Class<?> propertyType;
     private final boolean readOnly;
     private final boolean virtual;
+    private final boolean stateHolder;
     private final Map<Class<?>, Object> genericMetadataMap;
 
     protected PropertyMetadata(String propertyName,
                                Class<?> propertyType,
                                boolean readOnly,
                                boolean virtual,
+                               boolean stateHolder,
                                Map<Class<?>, Object> genericMetadataMap) {
         this.propertyName = propertyName;
         this.propertyType = propertyType;
         this.readOnly = readOnly;
         this.virtual = virtual;
+        this.stateHolder = stateHolder;
         this.genericMetadataMap = genericMetadataMap;
     }
 
     public PropertyMetadata withPropertyType(Class<?> propertyType) {
-        return new PropertyMetadata(propertyName, propertyType, readOnly, virtual, genericMetadataMap);
+        return new PropertyMetadata(propertyName, propertyType, readOnly, virtual, stateHolder, genericMetadataMap);
     }
 
     public PropertyMetadata withReadOnly(boolean readOnly) {
-        return new PropertyMetadata(propertyName, propertyType, readOnly, virtual, genericMetadataMap);
+        return new PropertyMetadata(propertyName, propertyType, readOnly, virtual, stateHolder, genericMetadataMap);
     }
 
     public PropertyMetadata withVirtual(boolean virtual) {
-        return new PropertyMetadata(propertyName, propertyType, readOnly, virtual, genericMetadataMap);
+        return new PropertyMetadata(propertyName, propertyType, readOnly, virtual, stateHolder, genericMetadataMap);
+    }
+
+    public PropertyMetadata withStateHolder(boolean stateHolder) {
+        return new PropertyMetadata(propertyName, propertyType, readOnly, virtual, stateHolder, genericMetadataMap);
     }
 
     public <T> PropertyMetadata withGenericMetadata(Class<T> metadataType, T metadata) {
@@ -46,7 +53,7 @@ public class PropertyMetadata {
             newMap.putAll(genericMetadataMap);
         }
         newMap.put(metadataType, metadata);
-        return new PropertyMetadata(propertyName, propertyType, readOnly, virtual, newMap);
+        return new PropertyMetadata(propertyName, propertyType, readOnly, virtual, stateHolder, newMap);
     }
 
     public String getPropertyName() {
@@ -57,12 +64,19 @@ public class PropertyMetadata {
         return propertyType;
     }
 
+    /**
+     * todo  needed?
+     */
     public boolean isReadOnly() {
         return readOnly;
     }
 
     public boolean isVirtual() {
         return virtual;
+    }
+
+    public boolean isStateHolder() {
+        return stateHolder;
     }
 
     @SuppressWarnings("unchecked")
@@ -72,7 +86,7 @@ public class PropertyMetadata {
 
 
     public static PropertyMetadata emptyPropertyMetadata(String propertyName) {
-        return new PropertyMetadata(propertyName, Object.class, false, false, Collections.<Class<?>, Object>emptyMap());
+        return new PropertyMetadata(propertyName, Object.class, false, false, false, Collections.<Class<?>, Object>emptyMap());
     }
 
 }

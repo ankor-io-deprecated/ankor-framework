@@ -26,7 +26,6 @@ public class StatelessTodoSocketFxClientStarter extends Application {
     protected AnkorClient createAnkorClient() {
         return new SocketFxClientBuilder().withApplicationName(APPLICATION_NAME)
                                           .withModelName(MODEL_NAME)
-                                          .withStatePath("root.model.filter")
                                           .build();
     }
 

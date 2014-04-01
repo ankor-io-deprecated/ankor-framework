@@ -29,8 +29,7 @@ import at.irian.ankor.serialization.modify.CoerceTypeModifier;
 import at.irian.ankor.serialization.modify.Modifier;
 import at.irian.ankor.serialization.modify.PassThroughModifier;
 import at.irian.ankor.session.*;
-import at.irian.ankor.state.SimpleStateDefinition;
-import at.irian.ankor.state.StateDefinition;
+import at.irian.ankor.state.StateHolderViewModelPostProcessor;
 import at.irian.ankor.switching.AkkaConsistentHashingSwitchboard;
 import at.irian.ankor.switching.DefaultSwitchboard;
 import at.irian.ankor.switching.Switchboard;
@@ -74,7 +73,6 @@ public class AnkorSystemBuilder {
     private ActorSystem actorSystem;
     private AnkorSystemMonitor monitor;
     private AnkorSystemStats stats;
-    private StateDefinition stateDefinition;
     private boolean stateless;
 
     public AnkorSystemBuilder() {
@@ -92,7 +90,6 @@ public class AnkorSystemBuilder {
         this.actorSystem = null;
         this.monitor = null;
         this.stats = null;
-        this.stateDefinition = SimpleStateDefinition.create();
         this.stateless = false;
     }
 
@@ -164,16 +161,6 @@ public class AnkorSystemBuilder {
         return this;
     }
 
-    public AnkorSystemBuilder withStatePath(String path) {
-        this.stateDefinition = this.stateDefinition.withPath(path);
-        return this;
-    }
-
-    public AnkorSystemBuilder withStateDefinition(StateDefinition stateDefinition) {
-        this.stateDefinition = stateDefinition;
-        return this;
-    }
-
     public AnkorSystemBuilder withStateless(boolean stateless) {
         this.stateless = stateless;
         return this;
@@ -203,8 +190,8 @@ public class AnkorSystemBuilder {
         Modifier bigDataModifier = new ServerSideBigDataModifier(defaultModifier);
         Modifier modifier = new CoerceTypeModifier(bigDataModifier);
 
-        EventListeners defaultEventListeners = createDefaultEventListeners(switchboard, modifier,
-                                                                           getStateDefinition());
+        EventListeners defaultEventListeners = createDefaultEventListeners(switchboard, modifier
+        );
 
         ModelSessionFactory modelSessionFactory = getModelSessionFactory(eventDispatcherFactory,
                                                                          defaultEventListeners,
@@ -258,8 +245,8 @@ public class AnkorSystemBuilder {
         Modifier defaultModifier = getDefaultModifier();
         Modifier modifier = new ClientSideBigDataModifier(defaultModifier);
 
-        EventListeners defaultEventListeners = createDefaultEventListeners(switchboard, modifier,
-                                                                           getStateDefinition());
+        EventListeners defaultEventListeners = createDefaultEventListeners(switchboard, modifier
+        );
 
         ModelSessionFactory modelSessionFactory = getModelSessionFactory(getEventDispatcherFactory(),
                                                                          defaultEventListeners,
@@ -312,17 +299,15 @@ public class AnkorSystemBuilder {
         return new PassThroughModifier();
     }
 
-    private EventListeners createDefaultEventListeners(Switchboard switchboard,
-                                                       Modifier modifier,
-                                                       StateDefinition stateDefinition) {
+    private EventListeners createDefaultEventListeners(Switchboard switchboard, Modifier modifier) {
 
         EventListeners eventListeners = new ArrayListEventListeners();
 
         // action event listener for sending action events to remote partner
-        eventListeners.add(new RemoteNotifyActionEventListener(switchboard, modifier, stateDefinition));
+        eventListeners.add(new RemoteNotifyActionEventListener(switchboard, modifier));
 
         // global change event listener for sending change events to remote partner
-        eventListeners.add(new RemoteNotifyChangeEventListener(switchboard, modifier, stateDefinition));
+        eventListeners.add(new RemoteNotifyChangeEventListener(switchboard, modifier));
 
         // global change event listener for cleaning up obsolete model session listeners
         eventListeners.add(new ListenerCleanupChangeEventListener());
@@ -342,6 +327,7 @@ public class AnkorSystemBuilder {
         list.add(new ActionListenersPostProcessor());
         list.add(new ChangeListenersPostProcessor());
         list.add(new WatchedViewModelPostProcessor());
+        list.add(new StateHolderViewModelPostProcessor());
         return list;
     }
 
@@ -511,10 +497,6 @@ public class AnkorSystemBuilder {
             stats = new AnkorSystemStats();
         }
         return stats;
-    }
-
-    private StateDefinition getStateDefinition() {
-        return stateDefinition;
     }
 
     private ModelSessionManager getServerModelSessionManager(ModelSessionFactory modelSessionFactory,

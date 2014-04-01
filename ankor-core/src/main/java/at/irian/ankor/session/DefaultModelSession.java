@@ -8,6 +8,10 @@ import at.irian.ankor.event.dispatch.EventDispatcher;
 import at.irian.ankor.event.dispatch.EventDispatcherFactory;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefContextFactory;
+import at.irian.ankor.state.DefaultStateHolderDefinition;
+import at.irian.ankor.state.SendStateDefinition;
+import at.irian.ankor.state.SimpleSendStateDefinition;
+import at.irian.ankor.state.StateHolderDefinition;
 import com.google.common.collect.ImmutableMap;
 
 import java.util.Collections;
@@ -26,8 +30,12 @@ class DefaultModelSession implements ModelSession, DispatchThreadAware {
     private final Application application;
     private RefContext refContext;
     private EventDispatcher eventDispatcher;
+
+    // todo  do we really have to define these fields "volatile"?
     private volatile Map<String, Object> modelRootMap;
     private volatile Map<String, Object> attributes;
+    private volatile StateHolderDefinition stateHolderDefinition = new DefaultStateHolderDefinition();
+    private volatile SendStateDefinition sendStateDefinition = SimpleSendStateDefinition.empty();
 
     private volatile Thread dispatchThread;
 
@@ -181,5 +189,16 @@ class DefaultModelSession implements ModelSession, DispatchThreadAware {
         return id.hashCode();
     }
 
+    @Override
+    public StateHolderDefinition getStateHolderDefinition() {
+        return stateHolderDefinition;
+    }
 
+    public SendStateDefinition getSendStateDefinition() {
+        return sendStateDefinition;
+    }
+
+    public void setSendStateDefinition(SendStateDefinition sendStateDefinition) {
+        this.sendStateDefinition = sendStateDefinition;
+    }
 }

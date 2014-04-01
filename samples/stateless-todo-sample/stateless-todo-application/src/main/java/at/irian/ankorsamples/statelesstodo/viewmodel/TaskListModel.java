@@ -6,7 +6,7 @@ import at.irian.ankor.annotation.Param;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.CollectionRef;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.state.State;
+import at.irian.ankor.state.StateHolder;
 import at.irian.ankorsamples.statelesstodo.domain.Filter;
 import at.irian.ankorsamples.statelesstodo.domain.Task;
 import at.irian.ankorsamples.statelesstodo.domain.TaskRepository;
@@ -23,7 +23,7 @@ public class TaskListModel {
 
     private List<Task> tasks = new ArrayList<>();
 
-    @State
+    @StateHolder
     private Filter filter = Filter.all;
 
     private Boolean footerVisibility = false;
@@ -44,7 +44,7 @@ public class TaskListModel {
         AnkorPatterns.initViewModel(this, modelRef);
         this.modelRef = modelRef;
         this.taskRepository = taskRepository;
-        
+
         this.itemsLeftText = itemsLeftText(itemsLeft);
         this.itemsCompleteText = itemsCompleteText(itemsComplete);
     }

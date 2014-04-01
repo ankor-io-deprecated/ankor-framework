@@ -45,7 +45,8 @@ public class LocalConnectionHandler implements ConnectionHandler<LocalModelAddre
         Map<String, Object> state = null; // todo
         switchboard.send(receiver, new ChangeEventMessage(modelName,
                                                           Change.valueChange(modelRoot),
-                                                          state), sender);
+                                                          state,
+                                                          modelSession.getStateHolderDefinition().getPaths()), sender);
     }
 
     @Override

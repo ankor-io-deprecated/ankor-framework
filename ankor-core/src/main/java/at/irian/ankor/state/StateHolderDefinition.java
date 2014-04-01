@@ -5,10 +5,11 @@ import java.util.Set;
 /**
  * @author Manfred Geiler
  */
-public interface StateDefinition {
+public interface StateHolderDefinition {
 
     Set<String> getPaths();
 
-    StateDefinition withPath(String path);
+    Class<?> getTypeOf(String path);
 
+    void add(String path, Class<?> type);
 }

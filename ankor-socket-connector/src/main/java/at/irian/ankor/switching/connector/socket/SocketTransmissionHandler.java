@@ -54,12 +54,14 @@ public class SocketTransmissionHandler implements TransmissionHandler<SocketMode
             socketMessage = SocketMessage.createActionMsg(localAddress.toString(),
                                                           ((ActionEventMessage) message).getProperty(),
                                                           ((ActionEventMessage) message).getAction(),
-                                                          ((ActionEventMessage) message).getState());
+                                                          ((ActionEventMessage) message).getStateValues(),
+                                                          ((ActionEventMessage) message).getStateHolderProperties());
         } else if (message instanceof ChangeEventMessage) {
             socketMessage = SocketMessage.createChangeMsg(localAddress.toString(),
                                                           ((ChangeEventMessage) message).getProperty(),
                                                           ((ChangeEventMessage) message).getChange(),
-                                                          ((ChangeEventMessage) message).getState());
+                                                          ((ChangeEventMessage) message).getStateValues(),
+                                                          ((ChangeEventMessage) message).getStateHolderProperties());
         } else {
             throw new IllegalArgumentException("Unsupported message type " + message.getClass().getName());
         }
