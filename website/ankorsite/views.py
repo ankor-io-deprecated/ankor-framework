@@ -28,6 +28,7 @@ def get_titles(type):
             titles[x] = line.replace('### ', '')
         except Exception:
             print("Tutorials needs to start with '### '")
+    print "TITLES ", titles
     return titles
 
 type_names = {
