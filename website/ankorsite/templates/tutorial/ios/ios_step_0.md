@@ -19,7 +19,7 @@ Please make sure that all software components are installed properly.
         <div class="tab-pane active" id="tab1">
             <p>Install Git, download from <a href="http://git-scm.com/download">the Git site</a>.</p>
         </div>
-        <div class="tab-pane active" id="tab2">
+        <div class="tab-pane" id="tab2">
             <p>Install Xcode 5.1 via osx App Store.</p>
         </div>
     </div>
