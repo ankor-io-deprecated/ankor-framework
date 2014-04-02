@@ -113,13 +113,8 @@ a:hover code {
     margin-bottom: 0;
 }
 
-img {
-    width: 100%;
-}
-
 p > img {
   max-width: 764px;
-  width: 100%;
 }
 
 .foreground {

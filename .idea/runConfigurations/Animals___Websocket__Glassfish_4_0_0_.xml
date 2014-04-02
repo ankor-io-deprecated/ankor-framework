@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Animals - Websocket (Glassfish 4.0.0)" type="GlassfishConfiguration" factoryName="Local" APPLICATION_SERVER_NAME="Glassfish 4.0.0" ALTERNATIVE_JRE_ENABLED="false" ALTERNATIVE_JRE_PATH="">
+  <configuration default="false" name="Animals - Websocket (Glassfish 4.0.0)" type="GlassfishConfiguration" factoryName="Local" APPLICATION_SERVER_NAME="Glassfish 4.0.0">
     <option name="UPDATING_POLICY" value="restart-server" />
     <deployment>
       <artifact name="animals-js-client:war exploded">
