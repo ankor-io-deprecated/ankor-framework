@@ -5,8 +5,20 @@
 {% block content %}
 
 {% load staticfiles %}
-<p><a href="{% static 'javadoc/apidocs/index.html' %}">Api Docs</a></p>
 
+<h2>Documentation</h2>
 
+<h3>API</h3>
+
+<p><a href="{% static 'javadoc/apidocs-0.1/index.html' %}">Ankor 0.1 Api</a></p>
+
+    <h3>Slides</h3>
+
+    <iframe src="http://www.slideshare.net/slideshow/embed_code/33032491" width="427" height="356" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:1px solid #CCC; border-width:1px 1px 0; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe> <div style="margin-bottom:5px"> <strong> <a href="https://de.slideshare.net/manolitto/java-land-2014-ankor-presentation" title="JavaLand 2014 - Ankor.io Presentation" target="_blank">JavaLand 2014 - Ankor.io Presentation</a> </strong> from <strong><a href="http://www.slideshare.net/manolitto" target="_blank">manolitto</a></strong> </div>
+
+{% load markdownlib %}
+{% autoescape off %}
+{{ content|markdown:"codehilite" }}
+{% endautoescape %}
 
 {% endblock %}
