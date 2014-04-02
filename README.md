@@ -1,6 +1,6 @@
 ankor-framework
 ===============
 
-The Ankor Project
+The Ankor Framework Project
 http://www.ankor.io
 
