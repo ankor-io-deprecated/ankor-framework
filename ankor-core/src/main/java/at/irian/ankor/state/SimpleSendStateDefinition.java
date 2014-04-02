@@ -25,10 +25,9 @@ public class SimpleSendStateDefinition implements SendStateDefinition {
         return new SimpleSendStateDefinition(paths != null ? ImmutableSet.copyOf(paths) : ImmutableSet.<String>of());
     }
 
-    @Override
-    public SimpleSendStateDefinition withPath(String path) {
-        return new SimpleSendStateDefinition(ImmutableSet.<String>builder().addAll(paths).add(path).build());
-    }
+//    public SimpleSendStateDefinition withPath(String path) {
+//        return new SimpleSendStateDefinition(ImmutableSet.<String>builder().addAll(paths).add(path).build());
+//    }
 
     @Override
     public Set<String> getPaths() {
