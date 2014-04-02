@@ -132,11 +132,22 @@ def tutorials(request, type, step):
 
 def documentation(request):
     template = loader.get_template('documentation.html')
-    content = File(open(SITE_ROOT + '/templates/documentation.md', 'r')).read()
+    context = RequestContext(request, {
+        'activeMenu': 'documentation',
+        'activeMenuText': 'Documentation'
+    })
+    return HttpResponse(template.render(context))
+
+
+def manual(request, version):
+    template = loader.get_template('manual.html')
+    with open(SITE_ROOT + '/static/manual/manual-' + version + '.md', 'r') as f:
+        mdcontent = File(f).read()
     context = RequestContext(request, {
         'activeMenu': 'documentation',
         'activeMenuText': 'Documentation',
-        'content': content
+        'version': version,
+        'mdcontent': mdcontent
     })
     return HttpResponse(template.render(context))
 
