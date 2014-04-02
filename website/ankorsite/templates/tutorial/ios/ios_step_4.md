@@ -1,6 +1,6 @@
 ### Complete Tasks
 
-Every Task has a completed boolean property. We may set this property on client side and
+A Task has a boolean property completed. We may set this property on client side and
 notify the server about the Change.
 
 #### Mark Task as completed
@@ -8,9 +8,10 @@ notify the server about the Change.
 As soon as a row item in the tasks lists gets clicked, we want to flip the tasks completed state
 and send a Change Event to the server.
 
-Here is how it works. Again, just uncomment the line `AppDelegate.m`.
+Here is how it works. Again, just uncomment the line in `AppDelegate.m`.
 
     :::objectivec
+    // Row selected Event Listener
     - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         ...
@@ -18,9 +19,10 @@ Here is how it works. Again, just uncomment the line `AppDelegate.m`.
         [self.tableView reloadData];
     }
 
+
 #### Remove completed Tasks Action Listener
 
-To remove completed tasks from the list, we just have to fire the `clearTasks` action.
+To remove completed tasks from the list, we just have to fire the action `clearTasks`.
 
     :::objectivec
     - (IBAction)removeClicked:(id)sender {

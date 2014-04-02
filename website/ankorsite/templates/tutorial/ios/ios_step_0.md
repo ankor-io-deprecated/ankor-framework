@@ -1,8 +1,7 @@
 ### iOS Client
 
-In this tutorial we'll be enhancing a simple iOS application. We'll explain how to connect to the Ankor Todo Sample
-and bind your UI components to the todo model. While Ankor is generally independent of the transport layer,
-in this tutorial we'll be using WebSockets.
+In this tutorial you will learn how to enhance an existing iOS client and connect to the Ankor Todo Sample.
+While Ankor is generally independent of the transport layer, in this tutorial we'll be using WebSockets.
 
 Checkout [iOS Apps tutorial][1] for detailed information this app.
 
@@ -51,9 +50,11 @@ Now you got a maven project based on these modules:
     ankor-ios      : Ankor iOS Framework Xcode Project
     todo-ios       : iOS Todo Sample Xcode Project
 
+
+
 #### Open Xcode Project
 
-Open the TodoList Xcode Project in `todo-ios` folder. Now you see the todo list project which includes the
+Open the TodoList Xcode Project in `todo-ios` folder. The TodoLList project includes and links the
 AnkorIOS Framework project.
 
 ![ios-step-0-1](/static/images/tutorial/ios-step-0-2.png)
