@@ -11,9 +11,7 @@ public class WebSocketFxClientBuilder {
     private String applicationName;
     private String modelName;
     private Map<String, Object> connectParams = new HashMap<>();
-    private String host;
-    private int port;
-    private String path;
+    private String serverPath;
     private WebSocketEndpointListener endpointListener;
 
     public WebSocketFxClientBuilder withApplicationName(String applicationName) {
@@ -31,10 +29,8 @@ public class WebSocketFxClientBuilder {
         return this;
     }
 
-    public WebSocketFxClientBuilder withServer(String host, int port, String path) {
-        this.host = host;
-        this.port = port;
-        this.path = path;
+    public WebSocketFxClientBuilder withServer(String path) {
+        this.serverPath = path;
         return this;
     }
 
@@ -44,6 +40,6 @@ public class WebSocketFxClientBuilder {
     }
 
     public WebSocketFxClient build() {
-        return new WebSocketFxClient(applicationName, modelName, connectParams, host, port, path, endpointListener);
+        return new WebSocketFxClient(applicationName, modelName, connectParams, serverPath, endpointListener);
     }
 }

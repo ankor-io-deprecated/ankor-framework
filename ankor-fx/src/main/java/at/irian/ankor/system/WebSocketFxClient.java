@@ -28,8 +28,6 @@ public class WebSocketFxClient implements AnkorClient {
     private final String applicationName;
     private final String modelName;
     private final Map<String, Object> connectParams;
-    private final String host;
-    private final int port;
     private final String serverPath;
     private final long heartbeatIntervalMillis;
     private final long reconnectIntervalMillis;
@@ -42,23 +40,15 @@ public class WebSocketFxClient implements AnkorClient {
     public WebSocketFxClient(String applicationName,
                              String modelName,
                              Map<String, Object> connectParams,
-                             String host,
-                             int port,
                              String serverPath,
                              WebSocketEndpointListener endpointListener) {
         if (applicationName == null) { throw new NullPointerException("applicationName"); }
         if (modelName == null) { throw new NullPointerException("modelName"); }
         if (connectParams == null) { throw new NullPointerException("connectParams"); }
-        if (host == null) { throw new NullPointerException("host"); }
         if (serverPath == null) { throw new NullPointerException("serverPath"); }
         this.applicationName = applicationName;
         this.modelName = modelName;
         this.connectParams = connectParams;
-        this.host = host;
-        this.port = port;
-        if (serverPath.startsWith("/")) {
-            serverPath = serverPath.substring(1);
-        }
         if (serverPath.endsWith("/")) {
             serverPath = serverPath.substring(0, serverPath.length() - 1);
         }
@@ -210,7 +200,7 @@ public class WebSocketFxClient implements AnkorClient {
 
         private void internalConnect() {
             latch = new CountDownLatch(1);
-            String uri = String.format("ws://%s:%d/%s/%s", host, port, serverPath, clientId);
+            String uri = String.format("%s/%s", serverPath, clientId);
             LOG.info("Connecting to " + uri);
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             //noinspection TryWithIdenticalCatches

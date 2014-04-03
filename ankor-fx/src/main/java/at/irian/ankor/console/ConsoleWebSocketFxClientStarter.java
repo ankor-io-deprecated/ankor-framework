@@ -28,7 +28,7 @@ public class ConsoleWebSocketFxClientStarter extends javafx.application.Applicat
         client = WebSocketFxClient.builder()
                                   .withApplicationName("Console FX Client")
                                   .withModelName(ConsoleApplication.MODEL_NAME)
-                                  .withServer("localhost", 8080, "/websocket/ankor")
+                                  .withServer("ws://localhost:8080/websocket/ankor")
                                   .build();
         client.start();
 
