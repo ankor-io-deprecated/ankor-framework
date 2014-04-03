@@ -28,9 +28,9 @@ namespace Ankor.Sample.Todo.Client {
 		public MainWindow() {
 			RootRef = App.Ankor.RefModel.RootRef;			
 
-			App.Ankor.Connect();
+			//App.Ankor.Connect();
 
-			Thread.Sleep(200);
+			//Thread.Sleep(200);
 			// wait for init to complete, make this somehow nicer, but the list box data binding fails if no model is here.
 			// maybe we need the auto create deep path on .net because of this
 			
@@ -56,7 +56,7 @@ namespace Ankor.Sample.Todo.Client {
 		}
 
 		private void RemoveTaskClick(object sender, RoutedEventArgs e) {
-			DynaRef currentItemRef = (DynaRef)((FrameworkElement)sender).Tag;
+			IRef currentItemRef = (IRef)((FrameworkElement)sender).Tag;
 
 			var clickedItemIndex = int.Parse(currentItemRef.PropertyName);
 			if (clickedItemIndex >= 0) {

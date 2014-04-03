@@ -25,7 +25,7 @@ namespace Ankor.Core.AnkorSystem {
 			return this;
 		}
 
-		public abstract AnkorClientSystem StartAnkor();
+		public abstract AnkorClientSystem	Build();
 
 		protected internal AnkorClientSystemBuilder() {
 			ConnectionParams = new Dictionary<string, object>();
@@ -44,15 +44,12 @@ namespace Ankor.Core.AnkorSystem {
 				ClientAddress = new Uri("//localhost:9090");
 			}
 
-			public override AnkorClientSystem StartAnkor() {
+			public override AnkorClientSystem Build() {
 
 				IMessenger messenger = new ClientSocketMessageLoop(ServerAddress, ClientAddress, new JsonMessageMapper());
-				messenger.Start();
 
 				return new AnkorClientSystem(messenger, this);
-
 			}
-
 		}
 
 		public class WebSocketBuilder : AnkorClientSystemBuilder {
@@ -61,14 +58,12 @@ namespace Ankor.Core.AnkorSystem {
 				ServerAddress = new Uri("ws://localhost:8080/websocket/ankor");
 			}
 
-			public override AnkorClientSystem StartAnkor() {
+			public override AnkorClientSystem Build() {
 				WebSocketMessenger messenger = new WebSocketMessenger(ServerAddress.ToString(), new JsonMessageMapper());
-				messenger.Start();
 
 				return new AnkorClientSystem(messenger, this);
 			}
 		}
-
 
 		private readonly IMessenger messenger;
 		private readonly IInternalModel internalModel;
@@ -94,6 +89,7 @@ namespace Ankor.Core.AnkorSystem {
 		private void WireUp() {
 
 			messenger.OnMessage += OnServerMessage;
+			messenger.OnReconnect += OnReconnect;
 
 			internalModel.EventRegistry.Add(new ActionEventListener(SendActionToRemote));
 			internalModel.EventRegistry.Add(new ChangeEventListener(SendChangeToRemote));
@@ -143,6 +139,11 @@ namespace Ankor.Core.AnkorSystem {
 		}
 
 		public void Connect() {
+			messenger.Start();
+			messenger.Send(CommMessage.CreateConnectMsg(builder.ModelName, builder.ConnectionParams));
+		}
+
+		public void OnReconnect() {
 			messenger.Send(CommMessage.CreateConnectMsg(builder.ModelName, builder.ConnectionParams));
 		}
 	}

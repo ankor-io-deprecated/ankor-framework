@@ -22,7 +22,7 @@ namespace Ankor.Sample.Animals.Client {
 			var builder = new AnkorClientSystem.SocketBuilder();
 			builder.ServerAddress = new Uri("//localhost:8081");
 			//builder.SystemName = "wpfTestClient";// + System.IO.Path.GetRandomFileName();
-			Ankor = builder.StartAnkor();
+			Ankor = builder.Build();
 
 			//Resources.Add("ankor", Ankor);
 			//Resources.Add("root", Ankor.RefModel.Root);

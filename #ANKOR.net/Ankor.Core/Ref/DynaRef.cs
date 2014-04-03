@@ -12,37 +12,10 @@ using Ankor.Core.Messaging.Json;
 
 namespace Ankor.Core.Ref {
 
-	/// <summary>
-	/// It is very important for data binding to work that the same ref is always the equal instance
-	/// </summary>
-	public class DynaRefFactory {
 
-		private static readonly IDictionary<IInternalModel, IDictionary<string, DynaRef>> refRepository
-			= new Dictionary<IInternalModel, IDictionary<string, DynaRef>>();
-
-		internal static DynaRef CreateRef(IInternalModel jModel, string path) {
-			IDictionary<string, DynaRef> refs;
-			lock (refRepository) {
-				if (!refRepository.TryGetValue(jModel, out refs)) {
-					refs = new Dictionary<string, DynaRef>();
-					refRepository[jModel] = refs;
-				}
-			}
-			lock (refs) {
-				if (refs.ContainsKey(path)) {
-					return refs[path];
-				}
-				DynaRef dr = new DynaRef(jModel, path);
-				refs[path] = dr;
-				return dr;
-			}
-		}
-	}
-
-	public class DynaRef : DynamicObject, INotifyPropertyChanged, IDisposable, IEquatable<DynaRef>, IEnumerable<DynaRef>, IEnumerable<KeyValuePair<string, DynaRef>> {
+	internal class DynaRef : DynamicObject, IRef, IEquatable<DynaRef> {
 		private readonly IInternalModel model;
 		private readonly string path;
-		
 
 		internal protected DynaRef(IInternalModel model, string path) {
 			this.model = model;
@@ -50,9 +23,19 @@ namespace Ankor.Core.Ref {
 		}
 
 		internal static DynaRef CreateRef(IInternalModel jModel, string path) {
-			// use reffactory providing same instances OR override equals etc
-			//return DynaRefFactory.CreateRef(jModel, path);
 			return new DynaRef(jModel, path);
+		}
+
+		public string Path {
+			get { return this.path; }
+		}
+
+		public dynamic Dynamic {
+			get { return this; }
+		}
+
+		public string PropertyName {
+			get { return PathSyntax.GetPropertyName(path); }
 		}
 
 		public object Value {
@@ -156,27 +139,35 @@ namespace Ankor.Core.Ref {
 			return val is IList;
 		}
 
-		public string Path {
-			get { return this.path; }
-		}
-
-		public dynamic Dynamic {
-			get { return this; }
-		}
-
-		public string PropertyName {
-			get { return PathSyntax.GetPropertyName(path); }
-		}
-
 		#region EQUALITY
-		public bool Equals(DynaRef other) {
+
+
+		public static bool operator ==(DynaRef left, DynaRef right) {
+			return Equals(left, right);
+		}
+
+		public static bool operator !=(DynaRef left, DynaRef right) {
+			return !Equals(left, right);
+		}
+
+		public bool Equals(IRef other) {
 			if (ReferenceEquals(null, other)) {
 				return false;
 			}
 			if (ReferenceEquals(this, other)) {
 				return true;
 			}
-			return model.Equals(other.model) && string.Equals(path, other.path);
+			if (other is DynaRef) {
+				if (!model.Equals(((DynaRef)other).model )) {
+					return false;
+				}
+			}
+			//return model.Equals(other.Model) && string.Equals(path, other.Path);
+			return string.Equals(path, other.Path);
+		}
+
+		public bool Equals(DynaRef other) {
+			return this.Equals((IRef)other);
 		}
 
 		public override bool Equals(object obj) {
@@ -202,13 +193,13 @@ namespace Ankor.Core.Ref {
 		IEnumerator IEnumerable.GetEnumerator() {
 			//if (model.IsArray(path)) {
 			if (IsList()) {
-				return ((IEnumerable<DynaRef>)this).GetEnumerator();
+				return ((IEnumerable<IRef>)this).GetEnumerator();
 			} else {
-				return ((IEnumerable<KeyValuePair<string, DynaRef>>)this).GetEnumerator();
+				return ((IEnumerable<KeyValuePair<string, IRef>>)this).GetEnumerator();
 			}
 		}
 
-		public IEnumerator<DynaRef> GetEnumerator() {
+		public IEnumerator<IRef> GetEnumerator() {
 			//return model.GetRefEnumerator(path);
 			var list = this.Value as IList;
 			if (list != null) {
@@ -219,17 +210,10 @@ namespace Ankor.Core.Ref {
 			throw new ArgumentException("cannot enumerate on non array ref '" + path + "'");
 		}
 
-		IEnumerator<KeyValuePair<string, DynaRef>> IEnumerable<KeyValuePair<string, DynaRef>>.GetEnumerator() {
-			return ((IEnumerable<KeyValuePair<string, DynaRef>>) this.InternalGetValue()).GetEnumerator();
+		IEnumerator<KeyValuePair<string, IRef>> IEnumerable<KeyValuePair<string, IRef>>.GetEnumerator() {
+			return ((IEnumerable<KeyValuePair<string, IRef>>)this.InternalGetValue()).GetEnumerator();
 		}
 
-		public static bool operator ==(DynaRef left, DynaRef right) {
-			return Equals(left, right);
-		}
-
-		public static bool operator !=(DynaRef left, DynaRef right) {
-			return !Equals(left, right);
-		}
 
 		/// <summary>
 		/// Do set the value on this ref w.o. any event notifications.
@@ -271,7 +255,7 @@ namespace Ankor.Core.Ref {
 			return result != null;
 		}
 
-		public DynaRef this[string subpath] {
+		public IRef this[string subpath] {
 			get { return AppendPath(subpath); }			
 		}
 
@@ -287,19 +271,35 @@ namespace Ankor.Core.Ref {
 			//WriteDebug("TryGetIndex " + string.Join(",", indexes));
 		}
 
-		public DynaRef AppendPath(string subPath) {
+		public IRef AppendPath(string subPath) {
 			return DynaRef.CreateRef(model, MakeAbsolutePath(subPath));
 		}
 
-		public DynaRef AppendIndex(int index) {
+		public IRef AppendIndex(int index) {
 			return CreateRef(model, PathSyntax.AddArrayIndex(path, index));
+		}
+
+		private bool IsAncestorOf(IRef property) {
+			return PathSyntax.IsAncestor(this.path, property.Path);
+		}
+
+		public bool IsDescendantOf(IRef property) {
+			return PathSyntax.IsDescendant(this.path, property.Path);
+		}
+
+		private string MakeRelativePath(string absolutePath) {
+			return PathSyntax.MakeRelativePath(path, absolutePath);
+		}
+
+		private string MakeAbsolutePath(string subPath) {
+			return PathSyntax.MakeAbsolutePath(path, subPath);
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged {
 			add {
 				model.EventRegistry.Add(value, new ChangeEventListener(e => {
 					PropertyChangedEventArgs args = null;
-					if (this == e.Property || this.IsDescendantOf(e.Property)) {
+					if (this.Equals(e.Property) || this.IsDescendantOf(e.Property)) {
 						args = new PropertyChangedEventArgs("Value");  // my Value changed or a parent of me changed
 					} else if (this.IsAncestorOf(e.Property)) {
 						// change is somewhere deeper below me, need this for manual pattern matching handlers
@@ -319,14 +319,6 @@ namespace Ankor.Core.Ref {
 			remove {
 				model.EventRegistry.RemoveByKey(value);
 			}
-		}
-
-		private bool IsAncestorOf(DynaRef property) {
-			return PathSyntax.IsAncestor(this.path, property.path);
-		}
-
-		public bool IsDescendantOf(DynaRef property) {
-			return PathSyntax.IsDescendant(this.path, property.path);
 		}
 
 		//private void OnModelPropertyChanged(object sender, PropertyChangedEventArgs e) {
@@ -361,22 +353,12 @@ namespace Ankor.Core.Ref {
 			remove { throw new NotImplementedException(); }
 		}
 
-		private string MakeRelativePath(string absolutePath) {
-			return PathSyntax.MakeRelativePath(path, absolutePath);
-		}
-
-		private string MakeAbsolutePath(string subPath) {
-			return PathSyntax.MakeAbsolutePath(path, subPath);
-		}
-
 		public void Dispose() {
 			// jModel.PropertyChanged -= OnModelPropertyChanged;
 			// TODO remove the listeners
 		}
 
 		public void Fire(AAction aAction) {
-			//jModel.FireActionFromInternal(path, aAction);
-			//jModel.Dispatcher.Dispatch(new ActionEvent(this, aAction));
 			Fire(aAction, new LocalSource());
 		}
 		public void Fire(string actionName) {
@@ -385,19 +367,7 @@ namespace Ankor.Core.Ref {
 
 		public void Fire(AAction action, IEventSource remoteSource) {
 			model.Dispatcher.Dispatch(new ActionEvent(new LocalSource(), this, action));
-
 		}
-
-		//private void OnModelAction(object sender, ActionEventArgs e) {
-		//  if (e.Path == path) {
-		//    OnActionReceived(e);
-		//  }
-		//}
-
-		//public void OnActionReceived(ActionEventArgs e) {
-		//  ActionReceivedEventHandler handler = ActionReceived;
-		//  if (handler != null) handler(this, e);
-		//}
 
 		#region DEBUG_OVERRIDES		
 
@@ -550,6 +520,5 @@ namespace Ankor.Core.Ref {
 
 
 	}
-
 	
 }

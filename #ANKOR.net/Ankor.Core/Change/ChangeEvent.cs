@@ -3,10 +3,10 @@ using Ankor.Core.Ref;
 
 namespace Ankor.Core.Change {
 	public class ChangeEvent : ModelEvent, IModelEvent {
-		public DynaRef Property { get; private set; }
+		public IRef Property { get; private set; }
 		public Change Change { get; private set; }
 
-		public ChangeEvent(IEventSource source, DynaRef property, Change change) : base(source) {
+		public ChangeEvent(IEventSource source, IRef property, Change change) : base(source) {
 			Change = change;
 			Property = property;
 		}

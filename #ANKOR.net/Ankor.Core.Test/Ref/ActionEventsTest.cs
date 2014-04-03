@@ -86,7 +86,7 @@ namespace Ankor.Core.Test.Ref {
 			}));
 
 			// fire FROM remote source
-			DynaRef.CreateRef(jModel, "root.n1.n2").Fire(new AAction("funnyAction"), new RemoteSource());
+			((DynaRef)dModel.RootRef.AppendPath("n1.n2")).Fire(new AAction("funnyAction"), new RemoteSource());
 
 //			jModel.FireActionFromRemote("root.n1.n2", new AAction("funnyAction"));
 
