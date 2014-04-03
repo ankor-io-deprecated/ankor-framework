@@ -29,9 +29,12 @@ public class TodoServerApplication extends CollaborationSingleRootApplication {
         if (taskListId != null) {
             Object model = models.get(taskListId);
             if (model == null) {
-                model = new ModelRoot(rootRef, new TaskRepository());
                 synchronized (models) {
-                    models.put(taskListId, model);
+                    model = models.get(taskListId);
+                    if (model == null) {
+                        model = new ModelRoot(rootRef, new TaskRepository());
+                        models.put(taskListId, model);
+                    }
                 }
             }
             return model;
