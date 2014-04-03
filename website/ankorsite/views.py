@@ -140,8 +140,8 @@ def documentation(request):
 
 
 def manual(request, version):
-    template = loader.get_template('manual.html')
-    with open(SITE_ROOT + '/static/manual/manual-' + version + '.md', 'r') as f:
+    template = loader.get_template('manual/manual.html')
+    with open(SITE_ROOT + '/templates/manual/manual-' + version + '.md', 'r') as f:
         mdcontent = File(f).read()
     context = RequestContext(request, {
         'activeMenu': 'documentation',
