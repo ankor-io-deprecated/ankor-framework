@@ -8,7 +8,16 @@ notify the server about the Change.
 As soon as a row item in the tasks lists gets clicked, we want to flip the tasks completed state
 and send a Change Event to the server.
 
-Here is how it works. Again, just uncomment the line in `AppDelegate.m`.
+It is very handy to change a value on the client.
+
+    :::objectivec
+    [ANKRefs changeValue:@"root.model.someValue" value:@"new-value"];
+
+This line will fire a Change Event and send it to the server.
+* `changeValue` refers to the model property
+* `value` new value we want to set
+
+Lets go back to our example. Again, just uncomment the line in `AppDelegate.m`.
 
     :::objectivec
     // Row selected Event Listener
