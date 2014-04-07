@@ -3,6 +3,7 @@ package at.irian.ankor.event;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.change.ChangeEventListener;
+import at.irian.ankor.state.SendStateDefinition;
 import at.irian.ankor.switching.msg.ChangeEventMessage;
 import at.irian.ankor.switching.connector.local.LocalModelAddress;
 import at.irian.ankor.serialization.modify.Modifier;
@@ -10,6 +11,9 @@ import at.irian.ankor.switching.Switchboard;
 import at.irian.ankor.switching.routing.ModelAddress;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.session.ModelSession;
+
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Global ChangeEventListener that relays locally happened {@link ChangeEvent ChangeEvents} to all remote systems
@@ -23,7 +27,8 @@ public class RemoteNotifyChangeEventListener extends ChangeEventListener {
     private final Switchboard switchboard;
     private final Modifier preSendModifier;
 
-    public RemoteNotifyChangeEventListener(Switchboard switchboard, Modifier preSendModifier) {
+    public RemoteNotifyChangeEventListener(Switchboard switchboard,
+                                           Modifier preSendModifier) {
         super(null); //global listener
         this.switchboard = switchboard;
         this.preSendModifier = preSendModifier;
@@ -42,9 +47,12 @@ public class RemoteNotifyChangeEventListener extends ChangeEventListener {
             Ref changedProperty = event.getChangedProperty();
             Change modifiedChange = preSendModifier.modifyBeforeSend(change, changedProperty);
             ModelSession modelSession = changedProperty.context().modelSession();
-            ModelAddress sender = new LocalModelAddress(modelSession.getId(), changedProperty.root().propertyName());
+            ModelAddress sender = new LocalModelAddress(modelSession, changedProperty.root().propertyName());
+            SendStateDefinition sendStateDefinition = modelSession.getSendStateDefinition();
+            Map<String, Object> state = new StateHelper(changedProperty.context().refFactory()).createState(sendStateDefinition);
+            Set<String> stateHolderProperties = modelSession.getStateHolderDefinition().getPaths();
             switchboard.send(sender,
-                             new ChangeEventMessage(changedProperty.path(), modifiedChange));
+                             new ChangeEventMessage(changedProperty.path(), modifiedChange, state, stateHolderProperties));
         }
     }
 

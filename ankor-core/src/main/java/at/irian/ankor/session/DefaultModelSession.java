@@ -8,6 +8,10 @@ import at.irian.ankor.event.dispatch.EventDispatcher;
 import at.irian.ankor.event.dispatch.EventDispatcherFactory;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefContextFactory;
+import at.irian.ankor.state.DefaultStateHolderDefinition;
+import at.irian.ankor.state.SendStateDefinition;
+import at.irian.ankor.state.SimpleSendStateDefinition;
+import at.irian.ankor.state.StateHolderDefinition;
 import com.google.common.collect.ImmutableMap;
 
 import java.util.Collections;
@@ -21,13 +25,17 @@ import java.util.UUID;
 class DefaultModelSession implements ModelSession, DispatchThreadAware {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelSession.class);
 
-    private final String id;
+    private String id; // todo  make final
     private final EventListeners eventListeners;
     private final Application application;
     private RefContext refContext;
     private EventDispatcher eventDispatcher;
+
+    // todo  do we really have to define these fields "volatile"?
     private volatile Map<String, Object> modelRootMap;
     private volatile Map<String, Object> attributes;
+    private volatile StateHolderDefinition stateHolderDefinition = new DefaultStateHolderDefinition();
+    private volatile SendStateDefinition sendStateDefinition = SimpleSendStateDefinition.empty();
 
     private volatile Thread dispatchThread;
 
@@ -45,9 +53,10 @@ class DefaultModelSession implements ModelSession, DispatchThreadAware {
     public static ModelSession create(EventDispatcherFactory eventDispatcherFactory,
                                       EventListeners defaultEventListeners,
                                       RefContextFactory refContextFactory,
-                                      Application application) {
+                                      Application application,
+                                      String modelSessionId) {
         EventListeners eventListeners = new ArrayListEventListeners(defaultEventListeners);
-        DefaultModelSession modelSession = new DefaultModelSession(createModelSessionId(),
+        DefaultModelSession modelSession = new DefaultModelSession(modelSessionId,
                                                                    eventListeners,
                                                                    application);
         modelSession.refContext = refContextFactory.createRefContextFor(modelSession); // ugly, but we have to init it this way, because we have a bi-directional relation here
@@ -55,8 +64,21 @@ class DefaultModelSession implements ModelSession, DispatchThreadAware {
         return modelSession;
     }
 
+    public static ModelSession create(EventDispatcherFactory eventDispatcherFactory,
+                                      EventListeners defaultEventListeners,
+                                      RefContextFactory refContextFactory,
+                                      Application application) {
+        return create(eventDispatcherFactory, defaultEventListeners, refContextFactory, application,
+                      createModelSessionId());
+    }
+
     protected static String createModelSessionId() {
         return UUID.randomUUID().toString();
+    }
+
+    //todo  hack
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getId() {
@@ -149,5 +171,34 @@ class DefaultModelSession implements ModelSession, DispatchThreadAware {
     @Override
     public Map<String, Object> getModels() {
         return Collections.unmodifiableMap(modelRootMap);
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DefaultModelSession that = (DefaultModelSession) o;
+
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
+    @Override
+    public StateHolderDefinition getStateHolderDefinition() {
+        return stateHolderDefinition;
+    }
+
+    public SendStateDefinition getSendStateDefinition() {
+        return sendStateDefinition;
+    }
+
+    public void setSendStateDefinition(SendStateDefinition sendStateDefinition) {
+        this.sendStateDefinition = sendStateDefinition;
     }
 }

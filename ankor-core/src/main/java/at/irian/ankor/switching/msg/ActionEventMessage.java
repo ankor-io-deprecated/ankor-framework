@@ -2,6 +2,9 @@ package at.irian.ankor.switching.msg;
 
 import at.irian.ankor.action.Action;
 
+import java.util.Map;
+import java.util.Set;
+
 /**
  * @author Manfred Geiler
  */
@@ -10,11 +13,17 @@ public class ActionEventMessage implements EventMessage {
 
     private String property;
     private Action action;
+    private Map<String, Object> stateValues;
+    private Set<String> stateHolderProperties;
 
-    public ActionEventMessage(String property, Action action) {
-        super();
+    public ActionEventMessage(String property,
+                              Action action,
+                              Map<String, Object> stateValues,
+                              Set<String> stateHolderProperties) {
         this.property = property;
         this.action = action;
+        this.stateValues = stateValues;
+        this.stateHolderProperties = stateHolderProperties;
     }
 
     public String getProperty() {
@@ -25,33 +34,12 @@ public class ActionEventMessage implements EventMessage {
         return action;
     }
 
-    @SuppressWarnings("RedundantIfStatement")
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        ActionEventMessage that = (ActionEventMessage) o;
-
-        if (action != null ? !action.equals(that.action) : that.action != null) {
-            return false;
-        }
-        if (property != null ? !property.equals(that.property) : that.property != null) {
-            return false;
-        }
-
-        return true;
+    public Map<String, Object> getStateValues() {
+        return stateValues;
     }
 
-    @Override
-    public int hashCode() {
-        int result = property != null ? property.hashCode() : 0;
-        result = 31 * result + (action != null ? action.hashCode() : 0);
-        return result;
+    public Set<String> getStateHolderProperties() {
+        return stateHolderProperties;
     }
 
     @Override
@@ -59,8 +47,8 @@ public class ActionEventMessage implements EventMessage {
         return "ActionEventMessage{" +
                "property='" + property + '\'' +
                ", action=" + action +
-               "}";
+               ", stateValues=" + stateValues +
+               ", stateHolderProperties=" + stateHolderProperties +
+               '}';
     }
-
-
 }

@@ -134,13 +134,19 @@ public class SocketListener {
     private void handleIncomingActionEventMessage(SocketMessage socketMessage) {
         Action action = socketMessage.getAction();
         SocketModelAddress sender = getSenderFrom(socketMessage);
-        switchboard.send(sender, new ActionEventMessage(socketMessage.getProperty(), action));
+        switchboard.send(sender, new ActionEventMessage(socketMessage.getProperty(),
+                                                        action,
+                                                        socketMessage.getStateValues(),
+                                                        socketMessage.getStateProps()));
     }
 
     private void handleIncomingChangeEventMessage(SocketMessage socketMessage) {
         Change change = socketMessage.getChange();
         SocketModelAddress sender = getSenderFrom(socketMessage);
-        switchboard.send(sender, new ChangeEventMessage(socketMessage.getProperty(), change));
+        switchboard.send(sender, new ChangeEventMessage(socketMessage.getProperty(),
+                                                        change,
+                                                        socketMessage.getStateValues(),
+                                                        socketMessage.getStateProps()));
     }
 
     private void handleIncomingCloseMessage(SocketMessage socketMessage) {

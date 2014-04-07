@@ -81,6 +81,15 @@ public class BeanMetadata {
         return new BeanMetadata(changeListeners, actionListeners, map, methodMetadataMap);
     }
 
+    public BeanMetadata withStateHolderProperty(String propertyName) {
+        //noinspection unchecked
+        Map<String, PropertyMetadata> map
+                = addToPropertyMetadataMap(propertyMetadataMap,
+                                           propertyName,
+                                           getPropertyMetadata(propertyName).withStateHolder(true));
+        return new BeanMetadata(changeListeners, actionListeners, map, methodMetadataMap);
+    }
+
     public BeanMetadata withTypedProperty(String propertyName, Class<?> type) {
         //noinspection unchecked
         Map<String, PropertyMetadata> map

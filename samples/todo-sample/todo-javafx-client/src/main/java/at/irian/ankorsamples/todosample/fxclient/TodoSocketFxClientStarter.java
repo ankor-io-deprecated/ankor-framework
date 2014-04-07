@@ -3,6 +3,7 @@ package at.irian.ankorsamples.todosample.fxclient;
 import at.irian.ankor.system.AnkorClient;
 import at.irian.ankor.system.SocketFxClientBuilder;
 import javafx.application.Application;
+import javafx.application.HostServices;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
@@ -21,6 +22,9 @@ public class TodoSocketFxClientStarter extends Application {
         launch(args);
     }
 
+    // used to open the browser
+    private static HostServices services;
+
     private AnkorClient ankorClient;
 
     protected AnkorClient createAnkorClient() {
@@ -33,6 +37,8 @@ public class TodoSocketFxClientStarter extends Application {
     public void start(Stage stage) throws Exception {
         ankorClient = createAnkorClient();
         ankorClient.start();
+
+        services = getHostServices();
 
         stage.setTitle("Ankor JavaFX Todo Sample");
         Pane myPane = FXMLLoader.load(getClass().getClassLoader().getResource("tasks.fxml"));
@@ -48,4 +54,7 @@ public class TodoSocketFxClientStarter extends Application {
         super.stop();
     }
 
+    public static HostServices getServices() {
+        return services;
+    }
 }

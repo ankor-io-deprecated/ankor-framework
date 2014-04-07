@@ -10,7 +10,7 @@ import at.irian.ankor.viewmodel.proxy.CglibProxyBeanFactory;
 public class SocketStandaloneServer {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SocketStandaloneServer.class);
 
-    private final Application application;
+    protected final Application application;
     private Thread thread;
     private volatile boolean running;
 

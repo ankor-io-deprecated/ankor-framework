@@ -40,10 +40,13 @@ public class LocalConnectionHandler implements ConnectionHandler<LocalModelAddre
             throw new IllegalStateException("ModelSession with id " + modelSessionId + " not found - propably timed out");
         }
 
-        // send an inital change event for the model root back to the sender
+        // send an initial change event for the model root back to the sender
         Object modelRoot = modelSession.getModelRoot(modelName);
-        switchboard.send(receiver, new ChangeEventMessage(modelName, Change.valueChange(modelRoot)), sender
-        );
+        Map<String, Object> state = null; // todo
+        switchboard.send(receiver, new ChangeEventMessage(modelName,
+                                                          Change.valueChange(modelRoot),
+                                                          state,
+                                                          modelSession.getStateHolderDefinition().getPaths()), sender);
     }
 
     @Override

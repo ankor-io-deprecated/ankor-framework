@@ -16,11 +16,6 @@ import at.irian.ankor.event.*;
 import at.irian.ankor.event.dispatch.AkkaSessionBoundEventDispatcherFactory;
 import at.irian.ankor.event.dispatch.EventDispatcherFactory;
 import at.irian.ankor.event.dispatch.SynchronizedSimpleEventDispatcherFactory;
-import at.irian.ankor.serialization.json.simpletree.SimpleTreeJsonMessageMapper;
-import at.irian.ankor.serialization.json.viewmodel.ViewModelJsonMessageMapper;
-import at.irian.ankor.serialization.modify.CoerceTypeModifier;
-import at.irian.ankor.serialization.modify.Modifier;
-import at.irian.ankor.serialization.modify.PassThroughModifier;
 import at.irian.ankor.monitor.AnkorSystemMonitor;
 import at.irian.ankor.monitor.akka.AkkaAnkorSystemMonitor;
 import at.irian.ankor.monitor.stats.AnkorSystemStats;
@@ -28,8 +23,17 @@ import at.irian.ankor.monitor.stats.StatsAnkorSystemMonitor;
 import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.ref.RefContextFactoryProvider;
 import at.irian.ankor.ref.el.ELRefContextFactoryProvider;
+import at.irian.ankor.serialization.json.simpletree.SimpleTreeJsonMessageMapper;
+import at.irian.ankor.serialization.json.viewmodel.ViewModelJsonMessageMapper;
+import at.irian.ankor.serialization.modify.CoerceTypeModifier;
+import at.irian.ankor.serialization.modify.Modifier;
+import at.irian.ankor.serialization.modify.PassThroughModifier;
 import at.irian.ankor.session.*;
-import at.irian.ankor.switching.*;
+import at.irian.ankor.state.StateHolderViewModelPostProcessor;
+import at.irian.ankor.switching.AkkaConsistentHashingSwitchboard;
+import at.irian.ankor.switching.DefaultSwitchboard;
+import at.irian.ankor.switching.Switchboard;
+import at.irian.ankor.switching.SwitchboardImplementor;
 import at.irian.ankor.switching.routing.ModelSessionRoutingLogic;
 import at.irian.ankor.switching.routing.RoutingLogic;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
@@ -69,6 +73,7 @@ public class AnkorSystemBuilder {
     private ActorSystem actorSystem;
     private AnkorSystemMonitor monitor;
     private AnkorSystemStats stats;
+    private boolean stateless;
 
     public AnkorSystemBuilder() {
         this.systemName = null;
@@ -85,6 +90,7 @@ public class AnkorSystemBuilder {
         this.actorSystem = null;
         this.monitor = null;
         this.stats = null;
+        this.stateless = false;
     }
 
     public AnkorSystemBuilder withName(String name) {
@@ -155,6 +161,11 @@ public class AnkorSystemBuilder {
         return this;
     }
 
+    public AnkorSystemBuilder withStateless(boolean stateless) {
+        this.stateless = stateless;
+        return this;
+    }
+
 
     public AnkorSystem createServer() {
 
@@ -179,14 +190,16 @@ public class AnkorSystemBuilder {
         Modifier bigDataModifier = new ServerSideBigDataModifier(defaultModifier);
         Modifier modifier = new CoerceTypeModifier(bigDataModifier);
 
-        EventListeners defaultEventListeners = createDefaultEventListeners(switchboard, modifier);
+        EventListeners defaultEventListeners = createDefaultEventListeners(switchboard, modifier
+        );
 
         ModelSessionFactory modelSessionFactory = getModelSessionFactory(eventDispatcherFactory,
                                                                          defaultEventListeners,
                                                                          refContextFactory,
                                                                          application);
 
-        ModelSessionManager modelSessionManager = DefaultModelSessionManager.create();
+        ModelSessionManager modelSessionManager = getServerModelSessionManager(modelSessionFactory,
+                                                                               application);
 
         if (!configValues.containsKey(MESSAGE_MAPPER_CONFIG_KEY)) {
             configValues.put(MESSAGE_MAPPER_CONFIG_KEY, ViewModelJsonMessageMapper.class.getName());
@@ -232,7 +245,8 @@ public class AnkorSystemBuilder {
         Modifier defaultModifier = getDefaultModifier();
         Modifier modifier = new ClientSideBigDataModifier(defaultModifier);
 
-        EventListeners defaultEventListeners = createDefaultEventListeners(switchboard, modifier);
+        EventListeners defaultEventListeners = createDefaultEventListeners(switchboard, modifier
+        );
 
         ModelSessionFactory modelSessionFactory = getModelSessionFactory(getEventDispatcherFactory(),
                                                                          defaultEventListeners,
@@ -313,6 +327,7 @@ public class AnkorSystemBuilder {
         list.add(new ActionListenersPostProcessor());
         list.add(new ChangeListenersPostProcessor());
         list.add(new WatchedViewModelPostProcessor());
+        list.add(new StateHolderViewModelPostProcessor());
         return list;
     }
 
@@ -483,5 +498,15 @@ public class AnkorSystemBuilder {
         }
         return stats;
     }
+
+    private ModelSessionManager getServerModelSessionManager(ModelSessionFactory modelSessionFactory,
+                                                             Application application) {
+        if (stateless) {
+            return new StatelessModelSessionManager(modelSessionFactory, application);
+        } else {
+            return DefaultModelSessionManager.create();
+        }
+    }
+
 
 }

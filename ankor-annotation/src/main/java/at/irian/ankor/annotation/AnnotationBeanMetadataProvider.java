@@ -6,6 +6,7 @@ import at.irian.ankor.delay.FloodControlMetadata;
 import at.irian.ankor.ref.TypedRef;
 import at.irian.ankor.ref.match.RefMatcherFactory;
 import at.irian.ankor.ref.match.pattern.AntlrRefMatcherFactory;
+import at.irian.ankor.state.StateHolder;
 import at.irian.ankor.viewmodel.factory.InitMethodMetadata;
 import at.irian.ankor.viewmodel.metadata.*;
 import at.irian.ankor.viewmodel.watch.WatchedPropertyMetadata;
@@ -14,7 +15,6 @@ import java.beans.Introspector;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -65,9 +65,7 @@ public class AnnotationBeanMetadataProvider implements BeanMetadataProvider {
 
         for (Field field : type.getDeclaredFields()) {
 
-            if ((field.getModifiers() & Modifier.PUBLIC) != 0) {
-                beanMetadata = beanMetadata.withProperty(field.getName());
-            }
+            beanMetadata = beanMetadata.withTypedProperty(field.getName(), field.getType());
 
             AnkorWatched watchedAnnotation = field.getAnnotation(AnkorWatched.class);
             if (watchedAnnotation != null) {
@@ -87,6 +85,11 @@ public class AnnotationBeanMetadataProvider implements BeanMetadataProvider {
             Virtual virtualAnnotation = field.getAnnotation(Virtual.class);
             if (virtualAnnotation != null) {
                 beanMetadata = beanMetadata.withVirtualProperty(field.getName());
+            }
+
+            StateHolder stateHolderAnnotation = field.getAnnotation(StateHolder.class);
+            if (stateHolderAnnotation != null) {
+                beanMetadata = beanMetadata.withStateHolderProperty(field.getName());
             }
         }
 
@@ -198,6 +201,10 @@ public class AnnotationBeanMetadataProvider implements BeanMetadataProvider {
                 beanMetadata = beanMetadata.withMethodMetadata(method, signalMetadata);
             }
 
+            if (isSetter(method) || isGetter(method)) {
+                beanMetadata = beanMetadata.withTypedProperty(getPropertyNameFromMethod(method), method.getReturnType());
+            }
+
             AnkorBigList bigListAnnotation = method.getAnnotation(AnkorBigList.class);
             if (bigListAnnotation != null) {
                 beanMetadata = addBigListMetadata(beanMetadata, getPropertyNameFromMethod(method), bigListAnnotation);
@@ -241,11 +248,11 @@ public class AnnotationBeanMetadataProvider implements BeanMetadataProvider {
                && method.getReturnType().equals(Void.TYPE);
     }
 
-//    private boolean isGetter(Method method) {
-//        return (method.getName().startsWith("get") || method.getName().startsWith("is"))
-//               && method.getParameterTypes().length == 0
-//               && !method.getReturnType().equals(Void.TYPE);
-//    }
+    private boolean isGetter(Method method) {
+        return (method.getName().startsWith("get") || method.getName().startsWith("is"))
+               && method.getParameterTypes().length == 0
+               && !method.getReturnType().equals(Void.TYPE);
+    }
 
     private String getPropertyNameFromMethod(Method method) {
         String methodName = method.getName();

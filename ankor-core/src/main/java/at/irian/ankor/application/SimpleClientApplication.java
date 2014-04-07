@@ -2,7 +2,9 @@ package at.irian.ankor.application;
 
 import at.irian.ankor.ref.RefContext;
 
+import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Manfred Geiler
@@ -19,6 +21,11 @@ public class SimpleClientApplication implements Application {
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public Set<String> getKnownModelNames() {
+        return Collections.emptySet();
     }
 
     @Override

@@ -2,6 +2,9 @@ package at.irian.ankor.switching.msg;
 
 import at.irian.ankor.change.Change;
 
+import java.util.Map;
+import java.util.Set;
+
 /**
  * @author Manfred Geiler
  */
@@ -10,11 +13,17 @@ public class ChangeEventMessage implements EventMessage {
 
     private String property;
     private Change change;
+    private Map<String, Object> stateValues;
+    private Set<String> stateHolderProperties;
 
-    public ChangeEventMessage(String property, Change change) {
-        super();
+    public ChangeEventMessage(String property,
+                              Change change,
+                              Map<String, Object> stateValues,
+                              Set<String> stateHolderProperties) {
         this.property = property;
         this.change = change;
+        this.stateValues = stateValues;
+        this.stateHolderProperties = stateHolderProperties;
     }
 
     public String getProperty() {
@@ -25,33 +34,12 @@ public class ChangeEventMessage implements EventMessage {
         return change;
     }
 
-    @SuppressWarnings("RedundantIfStatement")
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        ChangeEventMessage that = (ChangeEventMessage) o;
-
-        if (!change.equals(that.change)) {
-            return false;
-        }
-        if (!property.equals(that.property)) {
-            return false;
-        }
-
-        return true;
+    public Map<String, Object> getStateValues() {
+        return stateValues;
     }
 
-    @Override
-    public int hashCode() {
-        int result = property.hashCode();
-        result = 31 * result + change.hashCode();
-        return result;
+    public Set<String> getStateHolderProperties() {
+        return stateHolderProperties;
     }
 
     @Override
@@ -59,7 +47,8 @@ public class ChangeEventMessage implements EventMessage {
         return "ChangeEventMessage{" +
                "property='" + property + '\'' +
                ", change=" + change +
-               "}";
+               ", stateValues=" + stateValues +
+               ", stateHolderProperties=" + stateHolderProperties +
+               '}';
     }
-
 }

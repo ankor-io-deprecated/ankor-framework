@@ -53,12 +53,15 @@ public class SocketFxClient implements AnkorClient {
     }
 
 
-    private static AnkorSystem createAnkorSystem(String applicationName, String clientAddress, String serverAddress) {
+    private static AnkorSystem createAnkorSystem(String applicationName,
+                                                 String clientAddress,
+                                                 String serverAddress) {
         LOG.debug("Creating FxClient Ankor system '{}' ...", applicationName);
         AnkorSystem ankorSystem = new AnkorSystemBuilder()
                 .withName(applicationName)
                 .withConfigValue("at.irian.ankor.switching.connector.socket.SocketConnector.enabled", true)
-                .withConfigValue("at.irian.ankor.switching.connector.socket.SocketConnector.localAddress", clientAddress)
+                .withConfigValue("at.irian.ankor.switching.connector.socket.SocketConnector.localAddress",
+                                 clientAddress)
                 .withDispatcherFactory(new JavaFxEventDispatcherFactory())
                 .withRefContextFactoryProvider(new FxRefContextFactoryProvider())
                 .withOpenHandler(new FixedSocketRoutingLogic(URI.create(serverAddress)))
