@@ -21,7 +21,11 @@ namespace Ankor.Sample.Todo.Client {
 			//var builder = InitWithSocket();
 
 			try {
-				Ankor = builder.StartAnkor();
+				Ankor = builder.Build();
+
+				App.Ankor.Connect();
+
+				Thread.Sleep(400);
 
 				base.OnStartup(e);
 			} catch (Exception ex) {

@@ -76,8 +76,8 @@ namespace Ankor.Core.Test.Ref {
 		public void ReadDeepList() {
 			IList list = dModel.Root.n1.dList.Value;
 			list.Should().HaveCount(1);
-			DynaRef dict0 = (DynaRef) list[0];
-			dict0.Should().BeOfType<DynaRef>();
+			IRef dict0 = (IRef) list[0];
+			dict0.Should().BeOfType<IRef>();
 			dict0.AppendPath("n1").Value.Should().Be("v1");
 
 			dynamic dynDict = list[0];
@@ -86,7 +86,7 @@ namespace Ankor.Core.Test.Ref {
 
 		[Test]
 		public void EnumerateOnListRef() {
-			IEnumerable<DynaRef> refs = dModel.Root.n1.n2.nList;
+			IEnumerable<IRef> refs = dModel.Root.n1.n2.nList;
 			refs.Should().HaveCount(4);
 
 			refs.First().Value.Should().Be(1L);
@@ -108,7 +108,7 @@ namespace Ankor.Core.Test.Ref {
 		[ExpectedException(typeof(ArgumentException))]
 		public void EnumerateOnWrongRefFails() {
 			// this is not an array ref node, cannot enumerate this way
-			IEnumerable<DynaRef> refs = dModel.Root.n1;
+			IEnumerable<IRef> refs = dModel.Root.n1;
 			var elem = refs.First();
 		}
 
@@ -137,7 +137,7 @@ namespace Ankor.Core.Test.Ref {
 		public void EnumerateOnDictionaryRef() {
 			// it is possible to enumerate over array ref nodes, so it should be for maps too?! (for the sake of consinstency)
 			// but enumeration would not mean casting to IDictionary, but IEnumerable<KeyValuePair<TKey, TValue>>
-			IEnumerable<KeyValuePair<string, DynaRef>> refs = dModel.Root.n1.map;
+			IEnumerable<KeyValuePair<string, IRef>> refs = dModel.Root.n1.map;
 
 			foreach (var keyValuePair in refs) {
 				
@@ -157,9 +157,9 @@ namespace Ankor.Core.Test.Ref {
 
 		[Test]
 		public void ReadAsDictionary() {
-			IDictionary<string, DynaRef> dict = dModel.Root.n1.n2.Value;
+			IDictionary<string, IRef> dict = dModel.Root.n1.n2.Value;
 			dict.Should().HaveCount(3);
-			dict["nList"].Should().BeOfType<DynaRef>();
+			dict["nList"].Should().BeOfType<IRef>();
 			Console.WriteLine(string.Join(", ", dict.Keys));			
 			dict.Keys.Should().BeEquivalentTo(new [] {"nList", "sList", "emptyList"});
 

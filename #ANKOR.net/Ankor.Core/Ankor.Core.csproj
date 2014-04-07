@@ -75,6 +75,7 @@
     <Compile Include="Messaging\Json\JsonMessageMapper.cs" />
     <Compile Include="Messaging\ActionMessage.cs" />
     <Compile Include="Messaging\ChangeMessage.cs" />
+    <Compile Include="Ref\IRef.cs" />
     <Compile Include="Ref\Json\JsonModel.cs" />
     <Compile Include="Messaging\Message.cs" />
     <Compile Include="Messaging\MessageFactory.cs" />

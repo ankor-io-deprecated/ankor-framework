@@ -12,6 +12,8 @@ namespace Ankor.Core.Messaging.Comm {
 
 		event MessageHandler OnMessage;
 
+		event System.Action OnReconnect;
+
 		void Start();
 
 		void Send(CommMessage message);

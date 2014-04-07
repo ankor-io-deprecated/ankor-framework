@@ -4,9 +4,9 @@ using Ankor.Core.Ref;
 namespace Ankor.Core.Action {
 	public class ActionEvent : ModelEvent {
 		public AAction Action {get; private set; }
-		public DynaRef Property { get; private set; }
+		public IRef Property { get; private set; }
 
-		public ActionEvent(IEventSource source, DynaRef property, AAction aAction) : base(source) {
+		public ActionEvent(IEventSource source, IRef property, AAction aAction) : base(source) {
 			Property = property;
 			Action = aAction;
 		}

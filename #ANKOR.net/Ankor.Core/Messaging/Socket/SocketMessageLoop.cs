@@ -20,6 +20,7 @@ namespace Ankor.Core.Messaging.Socket {
 		private bool run = true;
 
 		public event MessageHandler OnMessage;
+		public event System.Action OnReconnect;
 
 		protected SocketMessageLoop(Uri localHost, MessageMapper<string> messageMapper) {
 			this.MessageMapper = messageMapper;

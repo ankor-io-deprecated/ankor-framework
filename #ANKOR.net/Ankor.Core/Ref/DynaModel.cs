@@ -6,7 +6,7 @@ namespace Ankor.Core.Ref {
 		dynamic Root { get; }
 		dynamic DRef { get; }
 
-		DynaRef RootRef { get; }
+		IRef RootRef { get; }
 		
 	}
 
@@ -17,7 +17,7 @@ namespace Ankor.Core.Ref {
 
 		public dynamic DRef { get; private set; }
 
-		public DynaRef RootRef { get; private set; }
+		public IRef RootRef { get; private set; }
 
 		public DynaModel(IInternalModel jModel) {
 			this.jModel = jModel;

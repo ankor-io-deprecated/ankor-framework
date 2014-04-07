@@ -64,13 +64,13 @@ namespace Ankor.Core.Test.Ref {
 
 		[Test]
 		public void SaveSubRefStatic() {
-			DynaRef n2 = dModel.RootRef.AppendPath("n1.n2");
+			IRef n2 = dModel.RootRef.AppendPath("n1.n2");
 			Assert.AreEqual("david", n2.AppendPath("n3.username").Value);
 		}
 
 		[Test]
 		public void ChangeValueStatic() {
-			DynaRef v1Ref = dModel.RootRef.AppendPath("v1");
+			IRef v1Ref = dModel.RootRef.AppendPath("v1");
 			Assert.AreEqual("schlumpf", v1Ref.Value);
 			v1Ref.Value = "hias";
 			Assert.AreEqual("hias", v1Ref.Value);
@@ -116,7 +116,7 @@ namespace Ankor.Core.Test.Ref {
 		}
 
 		[Test]
-		public void SetDynaRefToDynaRefShouldExecuteValue() {
+		public void SetIRefToIRefShouldExecuteValue() {
 			dModel.Root.v1 = dModel.Root.n1.n2.n3.username;
 
 			Assert.AreEqual("david", dModel.Root.v1.Value);
@@ -149,7 +149,7 @@ namespace Ankor.Core.Test.Ref {
 
 			// this can/should work just on "Value"
 
-			DynaRef v1Ref = dModel.RootRef.AppendPath("v1");
+			IRef v1Ref = dModel.RootRef.AppendPath("v1");
 			string changedPropName = null;
 			v1Ref.PropertyChanged += (sender, args) => changedPropName = args.PropertyName;
 			v1Ref.Value = "erwin";
@@ -170,7 +170,7 @@ namespace Ankor.Core.Test.Ref {
 		[Test]
 		public void ChangeNotificationOnRootWorks() {
 
-			DynaRef v1Ref = dModel.RootRef.AppendPath("v1");
+			IRef v1Ref = dModel.RootRef.AppendPath("v1");
 			string changedPropName = null;
 			dModel.RootRef.PropertyChanged += (sender, args) => changedPropName = args.PropertyName;
 			v1Ref.Value = "erwin";
@@ -200,7 +200,7 @@ namespace Ankor.Core.Test.Ref {
 
 		[Test]
 		public void FireNoChangeNotificationForResetSameValue() {
-			DynaRef v1Ref = dModel.RootRef.AppendPath("v1");
+			IRef v1Ref = dModel.RootRef.AppendPath("v1");
 			string changedPropName = null;
 			v1Ref.PropertyChanged += (sender, args) => changedPropName = args.PropertyName;
 			v1Ref.Value = "schlumpf";
@@ -234,11 +234,11 @@ namespace Ankor.Core.Test.Ref {
 
 		[Test]
 		public void ChangeNotificationBetweenRefsWorks() {
-			DynaRef ref1 = dModel.RootRef.AppendPath("v1");
+			IRef ref1 = dModel.RootRef.AppendPath("v1");
 			string changedPropName = null;
 			dModel.RootRef.PropertyChanged += (sender, args) => changedPropName = args.PropertyName;
 
-			DynaRef ref2 = dModel.RootRef.AppendPath("v1");
+			IRef ref2 = dModel.RootRef.AppendPath("v1");
 
 			ref2.Value = "erwin";
 			Assert.AreEqual("v1", changedPropName);

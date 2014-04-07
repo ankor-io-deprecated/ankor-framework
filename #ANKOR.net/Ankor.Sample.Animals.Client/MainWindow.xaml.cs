@@ -12,8 +12,8 @@ namespace Ankor.Sample.Animals.Client {
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
 	public partial class MainWindow : Window {
-		public DynaRef RootRef {get; private set;}
-		private readonly DynaRef panelsRef;
+		public IRef RootRef {get; private set;}
+		private readonly IRef panelsRef;
 
 		public MainWindow() {
 			RootRef = App.Ankor.RefModel.RootRef;
