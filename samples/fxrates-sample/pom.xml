@@ -4,12 +4,12 @@
     <parent>
         <groupId>at.irian.ankorsamples</groupId>
         <artifactId>ankor-samples</artifactId>
-        <version>0.2-SNAPSHOT</version>
+        <version>0.3-SNAPSHOT</version>
     </parent>
 
     <artifactId>fxrates-sample</artifactId>
     <packaging>pom</packaging>
-    <version>0.2-SNAPSHOT</version>
+    <version>0.3-SNAPSHOT</version>
     <name>FX Rates Sample - Project</name>
 
     <modules>
