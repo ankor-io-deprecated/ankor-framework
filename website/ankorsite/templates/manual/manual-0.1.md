@@ -30,7 +30,11 @@ Ankor does not re-invent the wheel. Therefore:
 * Ankor is **not** a code generation tool.
 
     We believe that you as the developer are the master of your code. Ankor helps to develop your presentation
-    model in a natural and descriptive way. There is no need to generate code or use templates.
+    model in a natural and descriptive way. There is no need to generate or precompile code or use templates.
 
     (Well: depending on your client technology you might actually be forced to use code generation and templating,
     but this is out of scope for Ankor)
+
+## Further reading
+
+Please have a look at our [tutorials](/tutorials).
