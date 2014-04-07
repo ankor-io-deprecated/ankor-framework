@@ -13,6 +13,7 @@ classes/
 target/
 overlays/
 *.versionsBackup
+*.releaseBackup
 node_modules/
 node-ankor/demo/lib/dojo
 node-ankor/demo/lib/dijit
