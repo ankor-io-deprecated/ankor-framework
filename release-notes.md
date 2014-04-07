@@ -2,19 +2,19 @@
 
 ## New Features
 
-* Javascript: "React" library support - see Javascript todosample
 * Monitoring
 * Console application
 * New event dispatchers: AkkaConsistentHashingEventDispatcher, AkkaSessionBoundEventDispatcher
 * @AutoSignal/Cglib proxy feature: calling setter directly (instead of Ref.setValue) triggers change event (see Animal sample)
+* Javascript: todosample integration with "React"
 
 ## Improvements
 
 * Messaging replaced by pluggable Connector architecture (see Switchboard)
 * Viewmodel metadata and pluggable annotation support
-* Simplified JavaFx Client setup and startup
+* Simplified JavaFX Client setup and startup
 * Simplified Server setup and startup (Ankor Application interface replaces ModelRootFactory)
-* WebScocket: automatic reconnect
+* WebSocket: automatic reconnect
 * iOS Client: improvements and automatic reconnect
 
 ## Migration
