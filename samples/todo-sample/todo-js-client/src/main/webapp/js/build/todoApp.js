@@ -51,16 +51,18 @@ define([
       var tasksRef = this.props.modelRef.appendPath("tasks");
       var tasks = this.props.model.tasks;
 
-      var todoItems = tasks.map(function (todo, i) {
-        return (
-          TodoItem(
-          {key:todo.id,
-          todo:todo,
-          modelRef:tasksRef.appendIndex(i),
-          onDestroy:this.destroy.bind(this, i)}
-          )
-          );
-      }, this);
+      if (tasks != null) {
+        var todoItems = tasks.map(function (todo, i) {
+          return (
+            TodoItem(
+            {key:todo.id,
+            todo:todo,
+            modelRef:tasksRef.appendIndex(i),
+            onDestroy:this.destroy.bind(this, i)}
+            )
+            );
+        }, this);
+      }
 
       if (this.props.model.footerVisibility) {
         footer =
