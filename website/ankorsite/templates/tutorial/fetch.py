@@ -2,7 +2,8 @@ import urllib2
 
 num_per_type = {
 	"fx": 7, 
-	"server": 8
+	"server": 8,
+    "ios": 4
 }
 
 print("fetching READMEs from github...")
