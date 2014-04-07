@@ -134,7 +134,8 @@ def documentation(request):
     template = loader.get_template('documentation.html')
     context = RequestContext(request, {
         'activeMenu': 'documentation',
-        'activeMenuText': 'Documentation'
+        'activeMenuText': 'Documentation',
+        'releaseVersions': ['0.2']
     })
     return HttpResponse(template.render(context))
 

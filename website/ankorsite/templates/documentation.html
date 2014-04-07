@@ -8,11 +8,14 @@
 
     <h2>Ankor Documentation</h2>
 
-    <h3>Ankor 0.2</h3>
+    {% for v in releaseVersions %}
+    <h3>Ankor {{ v }}</h3>
     <ul>
-        <li><a href="manual/0.2">Ankor Manual</a></li>
-        <li><a href="{% static 'javadoc/apidocs-0.2/index.html' %}">Ankor API</a></li>
+        <li><a href="manual/{{ v }}">Ankor Manual</a></li>
+        <li><a href="{% static 'javadoc/apidocs-'%}{{ v }}/index.html">Ankor API</a></li>
+        <li><a href="http://github.com/ankor-io/ankor-framework/blob/ankor-{{ v|safe }}/release-notes.md">Release Notes</a></li>
     </ul>
+    {% endfor %}
 
     <h3>Ankor 0.1</h3>
     <ul>
