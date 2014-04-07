@@ -2,6 +2,7 @@
 
 ## New Features
 
+* Stateless application support (see stateless-todo-sample)
 
 ## Improvements
 
