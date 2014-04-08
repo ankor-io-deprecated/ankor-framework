@@ -77,7 +77,6 @@ Simply setting the property will not trigger any changes in the UI though.
 
     // Ankor will not notice this
     this.itemsLeft = itemsLeft;
-    this.itemsLeftText = itemsLeftText(itemsLeft);
 
 ##### Using Refs to set properties
 
@@ -92,12 +91,11 @@ Since we already have a `Ref` for to `"root.model"` we can simply "append" `"ite
     :::java
     int itemsLeft = taskRepository.fetchActiveTasks().size();
     modelRef.appendPath("itemsLeft").setValue(itemsLeft);
-    modelRef.appendPath("itemsLeftText").setValue(itemsLeftText(itemsLeft));
 
 This will send a change event to the client and trigger any events there.
 It will also update the local variable, so that `(this.itemsLeft == itemsLeft)` evaluates to `true`.
 
 After you restart the server, you can add todos to the list and watch how the number gets updated.
 
-[1]: http://ankor.io/static/javadoc/apidocs/at/irian/ankor/action/Action.html
-[2]: http://ankor.io/static/javadoc/apidocs/at/irian/ankor/annotation/ActionListener.html
+[1]: http://ankor.io/static/javadoc/apidocs-0.2/at/irian/ankor/action/Action.html
+[2]: http://ankor.io/static/javadoc/apidocs-0.2/at/irian/ankor/annotation/ActionListener.html

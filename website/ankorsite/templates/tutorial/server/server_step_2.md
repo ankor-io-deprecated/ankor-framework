@@ -14,7 +14,7 @@ Obviously this property would only "pollute" the domain object.
 It shouldn't be persisted in a database either.
 However, it fits quite naturally into the view model.
 
-View models don't need to extend domain object necessarily.
+View models don't need to extend domain objects necessarily.
 They also contain the overall state of the application, including its title, labels and so on.
 
 #### The Structure of an Ankor Server
@@ -79,6 +79,6 @@ Ideally your IDE can do that for you.
     }
 
 
-[1]: https://github.com/ankor-io/ankor-todo-tutorial/blob/server-step-2/todo-application/src/main/java/io/ankor/tutorial/model/Task.java
-[2]: http://ankor.io/static/javadoc/apidocs/at/irian/ankor/ref/Ref.html
-[3]: https://github.com/ankor-io/ankor-todo-tutorial/blob/server-step-2/todo-application/src/main/java/io/ankor/tutorial/model/TaskRepository.java
+[1]: https://github.com/ankor-io/ankor-todo-tutorial/blob/server-step-2/todo-server/src/main/java/io/ankor/tutorial/model/Task.java
+[2]: http://ankor.io/static/javadoc/apidocs-0.2/at/irian/ankor/ref/Ref.html
+[3]: https://github.com/ankor-io/ankor-todo-tutorial/blob/server-step-2/todo-server/src/main/java/io/ankor/tutorial/model/TaskRepository.java

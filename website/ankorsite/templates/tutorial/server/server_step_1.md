@@ -14,9 +14,9 @@ After the process completes point your browser to [`http://localhost:8080/test.h
 The page should look something like this:
 
     :::text
-    Up and Running!
+    Server is up and running!
+    Connecting to ws://localhost:8080/websocket/ankor/6684908722527325 ...
     WebSocket connection established
-    UUID received: 9b1ac725-5bdd-46d2-9b9e-e5a283ae057b
 
 #### Connecting a client
 
@@ -26,7 +26,7 @@ Just make sure they connect to `ws://localhost:8080/websockets/ankor`.
 Otherwise you can use the JavaScript client provided by this servlet.
 Simply point your browser to `http://localhost:8080/`.
 As of now you will only see a blank page and the servlet will throw an `NotImplementedException`.
-Will will fix this in the next step.
+We will fix this in the next step.
 
 [1]: https://glassfish.java.net/
 [2]: http://www.websocket.org/

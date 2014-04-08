@@ -6,10 +6,12 @@ num_per_type = {
     "ios": 4
 }
 
+repository_name = "ankor-todo-tutorial-0.2"
+
 print("fetching READMEs from github...")
 
 def fetch_and_write(type, step):
-	md = urllib2.urlopen("https://raw.github.com/ankor-io/ankor-todo-tutorial/" + type + "-step-" + str(step) + "/README.md").read()
+	md = urllib2.urlopen("https://raw.github.com/ankor-io/" + repository_name + "/" + type + "-step-" + str(step) + "/README.md").read()
 	f = open(type + "/" + type + "_step_" + str(step) + ".md", "w")
 	f.write(md)
 	print("completed " + type + " " + str(step))

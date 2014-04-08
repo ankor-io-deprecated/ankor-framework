@@ -97,7 +97,7 @@ For changing collections we can use a [`CollectionRef`][1] which is a subtype of
 It has methods for manipulating the underlying collection.
 Doing so will only send changes to the client.
 
-#### Implementing the the delete action
+#### Implementing the delete action
 
 Now that we know about `CollectionRef`s we can also implement the `deleteTask` method:
 
@@ -113,4 +113,4 @@ Now that we know about `CollectionRef`s we can also implement the `deleteTask` m
         tasksRef().delete(index);
     }
 
-[1]: http://ankor.io/static/javadoc/apidocs/at/irian/ankor/ref/CollectionRef.html
+[1]: http://ankor.io/static/javadoc/apidocs-0.2/at/irian/ankor/ref/CollectionRef.html

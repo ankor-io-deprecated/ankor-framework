@@ -28,9 +28,10 @@ Please make sure that all software components are installed properly.
             <pre>java -version</pre>
         </div>
         <div class="tab-pane" id="tab2">
-            <p>Maven 3.0.5 or higher, download from <a href="http://maven.apache.org/download.cgi">here</a>.</p>
+            <p>Maven 3.0.5, download from <a href="http://maven.apache.org/download.cgi">here</a>.</p>
             <p>Make sure that<p></p>
             <ul>
+                <li>your are actually using Maven 3.0.x because there is an <a href="https://java.net/jira/browse/GLASSFISH-20802">issue</a> with the Glassfish plugin when using Maven 3.1.x</li>
                 <li>MAVEN_HOME exists in your user variables (JDK installation directory)</li>
                 <li>and that %MAVEN_HOME%\bin is in your Path environment variable</li>
             </ul>
@@ -48,7 +49,7 @@ Please make sure that all software components are installed properly.
 Clone the git repository from:
 
     :::bash
-    git clone https://github.com/ankor-io/ankor-todo-tutorial.git
+    git clone https://github.com/ankor-io/ankor-todo-tutorial-0.2.git
 
 The folder ankor-todo is empty. To get the first tutorial step, checkout branch `server-step-0`.
 This is how you may switch between tutorial steps later.
@@ -59,13 +60,13 @@ This is how you may switch between tutorial steps later.
 
 Now you got a maven project based on these modules:
 
-    todo-application   : Todo Sample - Application
-    todo-javafx-client : Todo Sample - JavaFX Client
-    todo-servlet       : Todo Sample - Servlet
+    todo-fx      : Todo Sample - JavaFX Client
+    todo-server  : Todo Sample - Server
+    todo-servlet : Todo Sample - Servlet
 
-The `todo-application` project contains the view model and its associated behaviour.
-The `todo-javafx-client` contains a minimal JavaFX client to test your setup.
+The `todo-server` project contains the view model and its associated behaviour.
 The `todo-servlet` project contains an endpoint that will expose the view model to clients via WebSocket.
+The `todo-fx` contains a minimal JavaFX client to test your setup.
 
 [1]: http://www.oracle.com/technetwork/articles/java/jsr356-1937161.html
 [2]: https://glassfish.java.net/
