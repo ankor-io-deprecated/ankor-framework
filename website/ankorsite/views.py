@@ -6,6 +6,8 @@ from django.core.files import File
 
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 
+ANKOR_STABLE_VERSION = "0.2.0"
+ANKOR_LATEST_VERSION = "0.2.0"
 
 def path_to_steps(type, step):
     return open(SITE_ROOT + '/templates/tutorial/' + type + '/' + type + '_step_' + step + '.md', 'r')
@@ -63,13 +65,16 @@ def index(request):
 
 
 def download(request):
-    content = File(open(SITE_ROOT + '/templates/download.md', 'r')).read()
-    
+    with open(SITE_ROOT + '/templates/download.md', 'r') as f:
+        mdcontent = File(f).read()
+    mdcontent = mdcontent.replace("$VERSION", ANKOR_STABLE_VERSION)
     template = loader.get_template('download.html')
     context = RequestContext(request, {
         'activeMenu': 'download',
         'activeMenuText': 'Download',
-        'content': content
+        'stableVersion': ANKOR_STABLE_VERSION,
+        'latestVersion': ANKOR_LATEST_VERSION,
+        'mdcontent': mdcontent
     })
     return HttpResponse(template.render(context))
 
@@ -135,7 +140,9 @@ def documentation(request):
     context = RequestContext(request, {
         'activeMenu': 'documentation',
         'activeMenuText': 'Documentation',
-        'releaseVersions': ['0.2']
+        'releaseVersions': ['0.2'],
+        'stableVersion': ANKOR_STABLE_VERSION,
+        'latestVersion': ANKOR_LATEST_VERSION
     })
     return HttpResponse(template.render(context))
 

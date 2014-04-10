@@ -5,6 +5,7 @@
 3. Run 'mvn javadoc:aggregate' (and rename 'website/ankorsite/static/javadoc/apidocs-VERSION' folder matching release version)
 4. check that there is a valid 'website/ankorsite/templates/manual/manual-VERSION.md' file
 5. add the new version to 'releaseVersions' in function 'documentation' in 'website/ankorsite/views.py'
+5. update ANKOR_STABLE_VERSION and ANKOR_LATEST_VERSION in 'website/ankorsite/views.py'
 6. make sure that caching is enabled in 'website/ankorsite/settings.py'
 7. run 'mvn release:prepare'
 8. run 'mvn release:perform'
