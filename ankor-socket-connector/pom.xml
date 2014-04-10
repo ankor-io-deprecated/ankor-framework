@@ -10,6 +10,7 @@
     <artifactId>ankor-socket-connector</artifactId>
     <packaging>jar</packaging>
     <name>Ankor - Socket Connector</name>
+    <description>Messaging via simple socket connections (only for testing, not meant for production).</description>
 
     <dependencies>
 

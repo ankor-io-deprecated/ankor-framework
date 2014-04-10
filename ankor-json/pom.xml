@@ -10,6 +10,7 @@
     <artifactId>ankor-json</artifactId>
     <packaging>jar</packaging>
     <name>Ankor - JSON Support</name>
+    <description>Json serialization/deserialization support using Jackson as underlying implementation.</description>
 
     <dependencies>
 

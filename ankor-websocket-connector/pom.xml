@@ -10,6 +10,7 @@
     <artifactId>ankor-websocket-connector</artifactId>
     <packaging>jar</packaging>
     <name>Ankor - WebSocket Connector</name>
+    <description>Messaging via WebSocket (preferred default messaging implementation for Ankor).</description>
 
     <dependencies>
 

@@ -10,6 +10,7 @@
     <artifactId>ankor-proxy</artifactId>
     <packaging>jar</packaging>
     <name>Ankor - Proxy Support</name>
+    <description>Proxy support for automatic change event firing on setter calls.</description>
 
     <dependencies>
 

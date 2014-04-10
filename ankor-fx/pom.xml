@@ -10,6 +10,7 @@
     <artifactId>ankor-fx</artifactId>
     <packaging>jar</packaging>
     <name>Ankor - JavaFX Support</name>
+    <description>Java FX client support.</description>
 
     <profiles>
         <profile>

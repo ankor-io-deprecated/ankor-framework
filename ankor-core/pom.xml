@@ -10,6 +10,7 @@
     <artifactId>ankor-core</artifactId>
     <packaging>jar</packaging>
     <name>Ankor - Core</name>
+    <description>Core Module, needed in every Ankor server and (Java based) client application.</description>
 
     <dependencies>
 

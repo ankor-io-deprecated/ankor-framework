@@ -10,6 +10,7 @@
     <artifactId>ankor-annotation</artifactId>
     <packaging>jar</packaging>
     <name>Ankor - Annotation Support</name>
+    <description>Annotation support for providing model metadata by means of Java annotations.</description>
 
     <dependencies>
 
