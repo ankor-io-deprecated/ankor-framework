@@ -4,12 +4,12 @@
     <parent>
         <groupId>at.irian.ankorsamples</groupId>
         <artifactId>ankor-samples</artifactId>
-        <version>0.2-SNAPSHOT</version>
+        <version>0.2.0</version>
     </parent>
 
     <artifactId>fxrates-sample</artifactId>
     <packaging>pom</packaging>
-    <version>0.2-SNAPSHOT</version>
+    <version>0.2.0</version>
     <name>FX Rates Sample - Project</name>
 
     <modules>
@@ -19,7 +19,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <ankor.version>0.2-SNAPSHOT</ankor.version>
+        <ankor.version>0.2.0</ankor.version>
     </properties>
 
     <dependencyManagement>
