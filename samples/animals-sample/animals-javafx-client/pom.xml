@@ -4,7 +4,7 @@
     <parent>
         <groupId>at.irian.ankorsamples</groupId>
         <artifactId>animals-sample</artifactId>
-        <version>0.2-SNAPSHOT</version>
+        <version>0.2.0</version>
     </parent>
 
     <artifactId>animals-javafx-client</artifactId>
