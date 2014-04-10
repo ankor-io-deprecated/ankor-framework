@@ -134,7 +134,8 @@ def documentation(request):
     template = loader.get_template('documentation.html')
     context = RequestContext(request, {
         'activeMenu': 'documentation',
-        'activeMenuText': 'Documentation'
+        'activeMenuText': 'Documentation',
+        'releaseVersions': ['0.2']
     })
     return HttpResponse(template.render(context))
 
@@ -151,6 +152,17 @@ def manual(request, version):
     })
     return HttpResponse(template.render(context))
 
+def spidoc(request, version):
+    template = loader.get_template('spidoc/spidoc.html')
+    with open(SITE_ROOT + '/templates/spidoc/spidoc-' + version + '.md', 'r') as f:
+        mdcontent = File(f).read()
+    context = RequestContext(request, {
+        'activeMenu': 'documentation',
+        'activeMenuText': 'Documentation',
+        'version': version,
+        'mdcontent': mdcontent
+    })
+    return HttpResponse(template.render(context))
 
 def contribute(request):
     template = loader.get_template('contribute.html')

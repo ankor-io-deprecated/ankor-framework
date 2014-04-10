@@ -1,7 +1,3 @@
-ankor-framework
-===============
+# Ankor Framework
 
-The Ankor Framework Project
-http://www.ankor.io
-
-Refer to the [Ankor Documentation](docs/index.md) for further information.
+Please refer to the [Ankor Website](http://www.ankor.io) for further information.

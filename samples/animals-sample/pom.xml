@@ -21,7 +21,7 @@
 
     <properties>
         <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-        <ankor.version>0.2-SNAPSHOT</ankor.version>
+        <ankor.version>0.3-SNAPSHOT</ankor.version>
     </properties>
 
     <dependencyManagement>
