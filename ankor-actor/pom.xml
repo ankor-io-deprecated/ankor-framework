@@ -10,6 +10,7 @@
     <artifactId>ankor-actor</artifactId>
     <packaging>jar</packaging>
     <name>Ankor - Akka Actor Support</name>
+    <description>Actor support using Akka as dispatcher for message and event handling on the server side.</description>
 
     <dependencies>
 

@@ -10,5 +10,6 @@
     <artifactId>ankor-js</artifactId>
     <packaging>war</packaging>
     <name>Ankor - Javascript Support</name>
+    <description>Javascript client support overlay war for Ankor based web-server.</description>
 
 </project>

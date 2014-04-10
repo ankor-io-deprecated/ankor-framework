@@ -10,6 +10,7 @@
     <artifactId>ankor-service</artifactId>
     <packaging>jar</packaging>
     <name>Ankor - Service</name>
+    <description>AnkorSystem builder and helper classes for starting up Ankor servers and clients.</description>
 
     <profiles>
         <profile>
@@ -57,6 +58,7 @@
             <artifactId>ankor-socket-connector</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
@@ -64,6 +66,7 @@
             <artifactId>ankor-websocket-connector</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
@@ -78,6 +81,7 @@
             <artifactId>ankor-proxy</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
@@ -85,6 +89,7 @@
             <artifactId>ankor-actor</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
@@ -107,6 +112,8 @@
             <artifactId>tyrus-client</artifactId>
             <version>1.2.1</version>
         </dependency>
+
+        <!-- todo  do we need all these websocket dependencies here?! -->
 
         <dependency>
             <groupId>org.glassfish.tyrus</groupId>

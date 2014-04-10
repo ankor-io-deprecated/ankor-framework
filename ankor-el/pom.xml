@@ -10,6 +10,7 @@
     <artifactId>ankor-el</artifactId>
     <packaging>jar</packaging>
     <name>Ankor - EL Support</name>
+    <description>Java Unified Expression Language (JSR-245) support for Ref path syntax.</description>
 
     <dependencies>
 
