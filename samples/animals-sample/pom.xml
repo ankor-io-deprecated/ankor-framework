@@ -4,12 +4,12 @@
     <parent>
         <groupId>at.irian.ankorsamples</groupId>
         <artifactId>ankor-samples</artifactId>
-        <version>0.2.0</version>
+        <version>0.3-SNAPSHOT</version>
     </parent>
 
     <artifactId>animals-sample</artifactId>
     <packaging>pom</packaging>
-    <version>0.2.0</version>
+    <version>0.3-SNAPSHOT</version>
     <name>Animals Sample - Project</name>
 
     <modules>
@@ -21,7 +21,7 @@
 
     <properties>
         <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-        <ankor.version>0.2.0</ankor.version>
+        <ankor.version>0.3-SNAPSHOT</ankor.version>
     </properties>
 
     <dependencyManagement>
