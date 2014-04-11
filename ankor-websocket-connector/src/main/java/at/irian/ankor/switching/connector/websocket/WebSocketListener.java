@@ -41,7 +41,7 @@ public class WebSocketListener {
 
     public void onWebSocketMessage(String message) {
         if (!isHeartbeat(message)) {
-            LOG.info("MessageHandler received {}, length = {}", message, message.length());
+            LOG.debug("Received serialized message {}", message);
             try {
                 WebSocketMessage socketMessage = messageDeserializer.deserialize(message, WebSocketMessage.class);
                 if (socketMessage.getAction() != null) {
