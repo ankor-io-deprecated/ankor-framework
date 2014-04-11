@@ -10,11 +10,16 @@ Inside `initialize` we have to take care of two things:
     :::java
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        Ref rootRef = App.refFactory().ref("root");
+        Ref rootRef = refFactory().ref("root");
         rootRef.fire(new Action("init"));
     }
 
 The first statement will return a `Ref`, the second one will send an `Action` to the server.
+
+<div class="alert alert-info">
+    <strong>Note:</strong>
+    Make sure you import the static method <code>refFactory</code>.
+</div>
 
 ##### References
 
