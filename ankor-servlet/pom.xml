@@ -35,6 +35,20 @@
         </dependency>
 
         <dependency>
+            <groupId>at.irian.ankor</groupId>
+            <artifactId>ankor-actor</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>at.irian.ankor</groupId>
+            <artifactId>ankor-proxy</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>3.0.1</version>
