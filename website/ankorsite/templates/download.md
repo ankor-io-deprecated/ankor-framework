@@ -53,6 +53,6 @@ For a concrete example see the [`pom.xml`][3] file of the Ankor todo sample Java
 <br/>
 <br/>
 
-[1]: https://github.com/ankor-io/ankor-todo-tutorial/blob/master/todo-application/pom.xml
-[2]: https://github.com/ankor-io/ankor-todo-tutorial/blob/master/todo-servlet/pom.xml
-[3]: https://github.com/ankor-io/ankor-todo-tutorial/blob/master/todo-fx/pom.xml
+[1]: https://github.com/ankor-io/ankor-todo-tutorial/blob/server-complete/todo-server/pom.xml
+[2]: https://github.com/ankor-io/ankor-todo-tutorial/blob/server-complete/todo-servlet/pom.xml
+[3]: https://github.com/ankor-io/ankor-todo-tutorial/blob/fx-complete/todo-fx/pom.xml
