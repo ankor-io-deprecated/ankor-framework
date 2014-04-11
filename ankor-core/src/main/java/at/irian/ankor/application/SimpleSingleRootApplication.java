@@ -67,6 +67,8 @@ public abstract class SimpleSingleRootApplication extends BaseApplication {
 
     public abstract Object createModel(Ref rootRef, Map<String, Object> connectParameters);
 
-    public void releaseModel(Object model) {}
+    public void releaseModel(Object model) {
+        
+    }
 
 }

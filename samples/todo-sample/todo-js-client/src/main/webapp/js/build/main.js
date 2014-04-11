@@ -33,12 +33,9 @@ define([
   var ankorSystem = new AnkorSystem({
     debug: true,
     senderId: null,
-    modelId: "collaborationTest",
+    modelId: "root",
     transport: new WebSocketTransport("/websocket/ankor", {
-      "connectProperty": "root",
-      "connectParams" : {
-        "todoListId" : "collaborationTest"
-      }
+      "connectProperty": "root"
     }),
     utils: new BaseUtils()
   });
