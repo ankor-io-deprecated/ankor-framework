@@ -9,7 +9,7 @@ between a client and a server. Ankor's goal is to do this in a transparent way, 
 not even have to bother with the server-client communication at all.
 
 Our mission statement:
-> Bind your view to the model on the client-side, add behaviour to the model on the server-side
+> Bind your UI to the client-side view model, implement behaviour on the server-side
 > - and let Ankor do the rest.
 
 ## What Ankor is **not**
