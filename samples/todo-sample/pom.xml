@@ -9,7 +9,6 @@
 
     <artifactId>todo-sample</artifactId>
     <packaging>pom</packaging>
-    <version>0.3-SNAPSHOT</version>
     <name>Todo Sample - Project</name>
 
     <modules>

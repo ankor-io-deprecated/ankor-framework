@@ -24,12 +24,11 @@
             <scope>compile</scope>
         </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>at.irian.ankorsamples</groupId>-->
-            <!--<artifactId>fxrates-server</artifactId>-->
-            <!--<version>${project.version}</version>-->
-            <!--<scope>compile</scope>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>at.irian.ankor</groupId>
+            <artifactId>ankor-service</artifactId>
+            <scope>compile</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>

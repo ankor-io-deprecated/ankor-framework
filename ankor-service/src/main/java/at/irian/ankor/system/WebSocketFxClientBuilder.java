@@ -10,7 +10,7 @@ public class WebSocketFxClientBuilder {
 
     private String applicationName;
     private String modelName;
-    private Map<String, Object> connectParams = new HashMap<>();
+    private Map<String, Object> connectParams = new HashMap<String, Object>();
     private String serverPath;
     private WebSocketEndpointListener endpointListener;
 

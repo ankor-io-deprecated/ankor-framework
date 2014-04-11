@@ -16,7 +16,7 @@ public class SocketFxClientBuilder {
 
     private String applicationName = DEFAULT_APPLICATION_NAME;
     private String modelName = DEFAULT_MODEL_NAME;
-    private Map<String, Object> connectParams = new HashMap<>();
+    private Map<String, Object> connectParams = new HashMap<String, Object>();
     private String clientAddress = DEFAULT_CLIENT_ADDRESS;
     private String serverAddress = DEFAULT_SERVER_ADDRESS;
 
