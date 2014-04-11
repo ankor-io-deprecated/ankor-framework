@@ -44,7 +44,7 @@ public class SocketStandaloneServer {
                 .withApplication(application)
                 .withActorSystemEnabled()
                 .withBeanMetadataProvider(beanMetadataProvider)
-                .withBeanFactory(new CglibProxyBeanFactory(beanMetadataProvider))
+                //.withBeanFactory(new CglibProxyBeanFactory(beanMetadataProvider))
                 .withConfigValue("at.irian.ankor.switching.connector.socket.SocketConnector.enabled", true)
                 .createServer();
     }

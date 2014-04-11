@@ -67,6 +67,12 @@
 
             <dependency>
                 <groupId>at.irian.ankor</groupId>
+                <artifactId>ankor-actor</artifactId>
+                <version>${ankor.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>at.irian.ankor</groupId>
                 <artifactId>ankor-js</artifactId>
                 <version>${ankor.version}</version>
                 <type>war</type>
