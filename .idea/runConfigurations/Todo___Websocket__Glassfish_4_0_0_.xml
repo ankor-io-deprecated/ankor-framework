@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Todo - Websocket (Glassfish 4.0.0)" type="GlassfishConfiguration" factoryName="Local" APPLICATION_SERVER_NAME="Glassfish 4.0.0" ALTERNATIVE_JRE_ENABLED="true" ALTERNATIVE_JRE_PATH="/Library/Java/JavaVirtualMachines/jdk1.7.0_11.jdk/Contents/Home">
+  <configuration default="false" name="Todo - Websocket (Glassfish 4.0.0)" type="GlassfishConfiguration" factoryName="Local" APPLICATION_SERVER_NAME="Glassfish 4.0.0" ALTERNATIVE_JRE_ENABLED="false" ALTERNATIVE_JRE_PATH="/Library/Java/JavaVirtualMachines/jdk1.7.0_11.jdk/Contents/Home">
     <option name="COMMON_VM_ARGUMENTS" value="-Xmx2G" />
     <option name="UPDATING_POLICY" value="restart-server" />
     <deployment>
