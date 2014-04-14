@@ -140,7 +140,7 @@ def documentation(request):
     context = RequestContext(request, {
         'activeMenu': 'documentation',
         'activeMenuText': 'Documentation',
-        'releaseVersions': ['0.2'],
+        'releaseVersions': ['0.3','0.2'],
         'stableVersion': ANKOR_STABLE_VERSION,
         'latestVersion': ANKOR_LATEST_VERSION
     })
