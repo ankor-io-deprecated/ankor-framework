@@ -46,6 +46,10 @@ public abstract class WebSocketServerEndpoint extends WebSocketEndpoint implemen
     }
 
     protected AnkorSystem createAnkorSystem() {
+        return createAnkorSystemBuilder().createServer();
+    }
+
+    protected AnkorSystemBuilder createAnkorSystemBuilder() {
         AnnotationBeanMetadataProvider beanMetadataProvider = new AnnotationBeanMetadataProvider();
         Application application = createApplication();
         return new AnkorSystemBuilder()
@@ -55,8 +59,7 @@ public abstract class WebSocketServerEndpoint extends WebSocketEndpoint implemen
                 .withBeanMetadataProvider(beanMetadataProvider)
                 .withBeanFactory(new CglibProxyBeanFactory(beanMetadataProvider))
                 .withConfigValue("at.irian.ankor.switching.connector.socket.SocketConnector.enabled", false)
-                .withConfigValue("at.irian.ankor.switching.connector.websocket.WebSocketConnector.enabled", true)
-                .createServer();
+                .withConfigValue("at.irian.ankor.switching.connector.websocket.WebSocketConnector.enabled", true);
     }
 
     @Override

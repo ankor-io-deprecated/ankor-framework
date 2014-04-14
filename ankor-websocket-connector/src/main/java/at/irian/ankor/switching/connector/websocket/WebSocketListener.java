@@ -70,8 +70,8 @@ public class WebSocketListener {
         WebSocketModelAddress sender = getAddress(socketMessage);
         switchboard.send(sender, new ActionEventMessage(socketMessage.getProperty(),
                                                         action,
-                                                        null /*todo: stateValues*/,
-                                                        null /*todo: stateHolderProperties*/));
+                                                        socketMessage.getStateValues(),
+                                                        socketMessage.getStateProps()));
     }
 
     private void handleIncomingChangeEventMessage(WebSocketMessage socketMessage) {
@@ -79,8 +79,8 @@ public class WebSocketListener {
         WebSocketModelAddress sender = getAddress(socketMessage);
         switchboard.send(sender, new ChangeEventMessage(socketMessage.getProperty(),
                                                         change,
-                                                        null /*todo: stateValues*/,
-                                                        null /*todo: stateHolderProperties*/));
+                                                        socketMessage.getStateValues(),
+                                                        socketMessage.getStateProps()));
     }
 
     private void handleIncomingCloseMessage(WebSocketMessage socketMessage) {
