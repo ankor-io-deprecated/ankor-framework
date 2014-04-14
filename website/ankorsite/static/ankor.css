@@ -48,7 +48,7 @@ section.row li {
     right: 15px;
     top: 15px;
     font-size: 250px;
-    color: #dbdbdb;
+    color: #54b4eb;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -83,7 +83,7 @@ code {
     background-color: rgba(0, 0, 0, 0.05);
     border-color: rgba(0, 0, 0, 0.1);
     word-wrap: break-word;
-    
+
     border-bottom: 3px solid rgba(0, 0, 0, 0.05);
 }
 
