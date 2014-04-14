@@ -55,7 +55,7 @@ public class StatelessTodoWebSocketFxClientStarter extends javafx.application.Ap
                                   .withApplicationName("Todo FX Client")
                                   .withModelName("root")
                                   .withConnectParam("todoListId", "collaborationTest")
-                                  .withServer("ws://localhost:8080/websocket/ankorstateless")
+                                  .withServer("ws://localhost:8080/stateless/websocket/ankorstateless")
                                   .withEndpointListener(endpointListener)
                                   .build();
     }

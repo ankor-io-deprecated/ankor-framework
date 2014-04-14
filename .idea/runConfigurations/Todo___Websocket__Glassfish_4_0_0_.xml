@@ -3,6 +3,9 @@
     <option name="COMMON_VM_ARGUMENTS" value="-Xmx2G" />
     <option name="UPDATING_POLICY" value="restart-server" />
     <deployment>
+      <artifact name="stateless-todo-js-client:war exploded">
+        <settings />
+      </artifact>
       <artifact name="todo-js-client:war exploded">
         <settings />
       </artifact>
@@ -69,7 +72,12 @@
       </SHUTDOWN>
     </ConfigurationWrapper>
     <method>
-      <option name="BuildArtifacts" enabled="true" />
+      <option name="BuildArtifacts" enabled="true">
+        <artifact name="stateless-todo-js-client:war exploded" />
+      </option>
+      <option name="BuildArtifacts" enabled="true">
+        <artifact name="todo-js-client:war exploded" />
+      </option>
     </method>
   </configuration>
 </component>
