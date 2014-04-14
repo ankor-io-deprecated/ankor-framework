@@ -31,7 +31,6 @@ typedef enum {
     NSDictionary* connParams;
 
     SRWebSocket *_webSocket;
-    
     ANKWebSocketState _state;
 }
 
@@ -43,7 +42,7 @@ typedef enum {
 #pragma mark - ANKMessageLoop
 
 - (id)initWith:(id <ANKMessageListener>)listener messageFactory:(ANKMessageFactory *)factory url:(NSString*)sUrl
-    connectProperty:(NSString*)connectProperty params:(NSDictionary*)connectParams {
+connectProperty:(NSString*)connectProperty params:(NSDictionary*)connectParams {
     messageListener = listener;
     messageFactory = factory;
     messages = [[NSMutableArray alloc] init];

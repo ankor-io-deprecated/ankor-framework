@@ -18,5 +18,6 @@
 @property (readonly) NSString* modelId2;
 @property NSDictionary* root;
 @property (readonly) ANKEventListeners* eventListeners;
+@property NSArray* stateProps;
 
 @end

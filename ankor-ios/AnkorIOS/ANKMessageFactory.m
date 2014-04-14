@@ -14,16 +14,16 @@
 
 @implementation ANKMessageFactory
 
--(ANKChangeMessage*)createValueChangeMessage:(NSString *)property value:(NSString *)value {
-    return [[ANKChangeMessage alloc] initWith:property type:ct_value key:Nil value:value];
+-(ANKChangeMessage*)createValueChangeMessage:(NSString *)property value:(NSString *)value stateValues:(NSDictionary *)stateValues {
+    return [[ANKChangeMessage alloc] initWith:property type:ct_value key:Nil value:value stateProps:nil stateValues:stateValues];
 }
 
--(ANKActionMessage *)createActionMessage:(NSString *)property action:(NSString *)action {
-    return [self createActionMessage:property action:action params:nil];
+-(ANKActionMessage *)createActionMessage:(NSString *)property action:(NSString *)action stateValues:(NSDictionary *)stateValues {
+    return [self createActionMessage:property action:action params:nil stateValues:stateValues];
 }
 
--(ANKActionMessage *)createActionMessage:(NSString *)property action:(NSString *)action params:(NSDictionary *)params {
-    return [[ANKActionMessage alloc] initWith:property action:action params:params];
+-(ANKActionMessage *)createActionMessage:(NSString *)property action:(NSString *)action params:(NSDictionary *)params stateValues:(NSDictionary *)stateValues {
+    return [[ANKActionMessage alloc] initWith:property action:action params:params stateProps:nil stateValues:stateValues];
 }
 
 -(ANKConnectMessage *)createConnectMessage:(NSString *)property {

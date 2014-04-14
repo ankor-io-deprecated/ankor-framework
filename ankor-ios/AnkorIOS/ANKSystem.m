@@ -44,7 +44,7 @@
         _messageLoop = [[ANKHttpMessageLoop alloc] initWith:messageListener messageFactory:messageFactory url:url connectProperty:connectProperty params:connectParams];
     }
     
-    ANKRemoteEventListener* remoteEventListener = [[ANKRemoteEventListener alloc]initWith:messageFactory messageLoop:_messageLoop];
+    ANKRemoteEventListener* remoteEventListener = [[ANKRemoteEventListener alloc]initWith:messageFactory messageLoop:_messageLoop refContext:_refContext];
     [[modelContext eventListeners]add:remoteEventListener];
     return self;
 }

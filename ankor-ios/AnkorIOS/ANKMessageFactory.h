@@ -13,9 +13,9 @@
 
 @interface ANKMessageFactory : NSObject
 
--(ANKChangeMessage*)createValueChangeMessage:(NSString *)property value:(NSString *)value;
--(ANKActionMessage *)createActionMessage:(NSString *)property action:(NSString *)action;
--(ANKActionMessage *)createActionMessage:(NSString *)property action:(NSString *)action params:(NSDictionary *)params;
+-(ANKChangeMessage*)createValueChangeMessage:(NSString *)property value:(NSString *)value stateValues:(NSDictionary *)stateValues;
+-(ANKActionMessage *)createActionMessage:(NSString *)property action:(NSString *)action stateValues:(NSDictionary *)stateValues;
+-(ANKActionMessage *)createActionMessage:(NSString *)property action:(NSString *)action params:(NSDictionary *)params stateValues:(NSDictionary *)stateValues;
 -(ANKConnectMessage *)createConnectMessage:(NSString *)property;
 -(ANKConnectMessage *)createConnectMessage:(NSString *)property params:(NSDictionary *)params;
 

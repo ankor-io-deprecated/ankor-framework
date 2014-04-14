@@ -14,6 +14,6 @@
 
 @interface ANKRemoteEventListener : NSObject <ANKChangeEventListener, ANKActionEventListener>
 
--(id)initWith:(ANKMessageFactory*)messageFactory messageLoop:(id <ANKMessageLoop>)messageLoop;
+-(id)initWith:(ANKMessageFactory*)messageFactory messageLoop:(id <ANKMessageLoop>)messageLoop refContext:(ANKRefContext*) refContext;
 
 @end
