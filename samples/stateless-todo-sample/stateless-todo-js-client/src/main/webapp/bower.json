@@ -1,0 +1,24 @@
+{
+  "name": "todo-js-client",
+  "version": "0.2-SNAPSHOT",
+  "authors": [
+    "Florian Klampfer <f.klampfer@gmail.com>"
+  ],
+  "license": "MIT",
+  "homepage": "http://www.ankor.io",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "todomvc-common": "~0.1.7",
+    "director": "~1.2.0",
+    "react": "~0.10.0",
+    "requirejs": "~2.1.11",
+    "underscore": "~1.6.0"
+  }
+}

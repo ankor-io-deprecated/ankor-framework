@@ -15,6 +15,7 @@
         <module>stateless-todo-application</module>
         <module>stateless-todo-socket-server</module>
         <module>stateless-todo-javafx-client</module>
+        <module>stateless-todo-js-client</module>
     </modules>
 
     <properties>
