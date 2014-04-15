@@ -29,8 +29,8 @@ public class ConsoleApplication implements Application {
     }
 
     @Override
-    public boolean supportsModel(String modelName) {
-        return MODEL_NAME.equals(modelName);
+    public boolean isStateless() {
+        return false;
     }
 
     @Override

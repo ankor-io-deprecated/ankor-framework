@@ -8,7 +8,7 @@ import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.session.SingletonModelSessionManager;
 import at.irian.ankor.switching.connector.websocket.WebSocketEndpoint;
 import at.irian.ankor.switching.connector.websocket.WebSocketModelAddress;
-import at.irian.ankor.switching.routing.FixedWebSocketRoutingLogic;
+import at.irian.ankor.switching.routing.ClientWebSocketRoutingLogic;
 
 import javax.websocket.*;
 import java.io.IOException;
@@ -78,7 +78,7 @@ public class WebSocketFxClient implements AnkorClient {
                 .withConfigValue("at.irian.ankor.switching.connector.websocket.WebSocketConnector.enabled", true)
                 .withDispatcherFactory(new JavaFxEventDispatcherFactory())
                 .withRefContextFactoryProvider(new FxRefContextFactoryProvider())
-                .withOpenHandler(new FixedWebSocketRoutingLogic(clientId))
+                .withRoutingLogic(new ClientWebSocketRoutingLogic(clientId))
                 .createClient();
         LOG.debug("FxClient Ankor system '{}' created", applicationName);
         return ankorSystem;

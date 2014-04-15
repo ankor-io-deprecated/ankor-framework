@@ -7,7 +7,7 @@ import at.irian.ankor.monitor.nop.NopRoutingTableMonitor;
 import at.irian.ankor.switching.connector.ConnectorRegistry;
 import at.irian.ankor.switching.connector.DefaultConnectorRegistry;
 import at.irian.ankor.switching.msg.EventMessage;
-import at.irian.ankor.switching.routing.ConcurrentRoutingTable;
+import at.irian.ankor.switching.routing.DefaultRoutingTable;
 import at.irian.ankor.switching.routing.ModelAddress;
 import at.irian.ankor.switching.routing.RoutingLogic;
 import at.irian.ankor.switching.routing.RoutingTable;
@@ -24,27 +24,24 @@ public class AkkaAddressBoundSwitchboard implements SwitchboardImplementor {
     private final ActorSystem actorSystem;
     private final SwitchboardMonitor monitor;
     private final ConnectorRegistry connectorRegistry;
-    private final RoutingTable routingTable;
     private final Map<String, ActorRef> actors;
     private RoutingLogic routingLogic;
 
     protected AkkaAddressBoundSwitchboard(ActorSystem actorSystem,
                                           SwitchboardMonitor monitor,
-                                          ConnectorRegistry connectorRegistry,
-                                          RoutingTable routingTable) {
+                                          ConnectorRegistry connectorRegistry) {
         this.actorSystem = actorSystem;
         this.monitor = monitor;
         this.connectorRegistry = connectorRegistry;
-        this.routingTable = routingTable;
         this.actors = new ConcurrentHashMap<String, ActorRef>();
     }
 
     public static SwitchboardImplementor create(ActorSystem actorSystem, SwitchboardMonitor monitor) {
 
-        RoutingTable routingTable = new ConcurrentRoutingTable(new NopRoutingTableMonitor());
+        RoutingTable routingTable = new DefaultRoutingTable(new NopRoutingTableMonitor());
         ConnectorRegistry connectorRegistry = DefaultConnectorRegistry.createForConcurrency(20);  //todo  configure
 
-        return new AkkaAddressBoundSwitchboard(actorSystem, monitor, connectorRegistry, routingTable);
+        return new AkkaAddressBoundSwitchboard(actorSystem, monitor, connectorRegistry);
     }
 
     @Override
@@ -135,7 +132,7 @@ public class AkkaAddressBoundSwitchboard implements SwitchboardImplementor {
 
     @Override
     public void stop() {
-        for (ModelAddress p : routingTable.getAllConnectedAddresses()) {
+        for (ModelAddress p : routingLogic.getAllConnectedRoutees()) {
             closeAllConnections(p);
         }
 
@@ -154,7 +151,6 @@ public class AkkaAddressBoundSwitchboard implements SwitchboardImplementor {
                         throw new IllegalStateException("No routingLogic");
                     }
                     actor = actorSystem.actorOf(AkkaAddressBoundSwitchboardActor.props(actorSystem.settings().config(),
-                                                                                       routingTable,
                                                                                        connectorRegistry,
                                                                                        monitor,
                                                                                        routingLogic,

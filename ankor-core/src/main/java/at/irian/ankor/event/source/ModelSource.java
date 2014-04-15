@@ -1,7 +1,7 @@
 package at.irian.ankor.event.source;
 
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.switching.connector.local.LocalModelAddress;
+import at.irian.ankor.switching.connector.local.StatefulSessionModelAddress;
 
 /**
  * Local source of a model event.
@@ -11,7 +11,7 @@ import at.irian.ankor.switching.connector.local.LocalModelAddress;
 public class ModelSource extends ModelAddressSource {
 
     public ModelSource(String modelSessionId, String modelName, Object origination) {
-        super(new LocalModelAddress(modelSessionId, modelName), origination);
+        super(new StatefulSessionModelAddress(modelSessionId, modelName), origination);
     }
 
     public static ModelSource createFrom(Ref modelProperty, Object origination) {
@@ -21,7 +21,7 @@ public class ModelSource extends ModelAddressSource {
     }
 
     public String getModelSessionId() {
-        return ((LocalModelAddress)getModelAddress()).getModelSessionId();
+        return ((StatefulSessionModelAddress)getModelAddress()).getModelSessionId();
     }
 
     @Override

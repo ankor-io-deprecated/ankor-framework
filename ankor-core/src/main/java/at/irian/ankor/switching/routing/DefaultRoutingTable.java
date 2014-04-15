@@ -13,14 +13,14 @@ import java.util.concurrent.locks.ReentrantLock;
  * A thread-safe AND concurrent-modification-safe RoutingTable.
  * @author Manfred Geiler
  */
-public class ConcurrentRoutingTable implements RoutingTable {
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RoutingTable.class);
+public class DefaultRoutingTable implements RoutingTable {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RoutingTable.class);
 
     private volatile ImmutableSetMultimap<ModelAddress, ModelAddress> connections = ImmutableSetMultimap.of();
     private final Lock writeLock = new ReentrantLock();
     private final RoutingTableMonitor monitor;
 
-    public ConcurrentRoutingTable(RoutingTableMonitor monitor) {
+    public DefaultRoutingTable(RoutingTableMonitor monitor) {
         this.monitor = monitor;
     }
 

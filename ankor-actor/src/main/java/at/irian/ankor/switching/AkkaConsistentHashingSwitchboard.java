@@ -8,7 +8,7 @@ import at.irian.ankor.monitor.SwitchboardMonitor;
 import at.irian.ankor.switching.connector.ConnectorRegistry;
 import at.irian.ankor.switching.connector.DefaultConnectorRegistry;
 import at.irian.ankor.switching.msg.EventMessage;
-import at.irian.ankor.switching.routing.ConcurrentRoutingTable;
+import at.irian.ankor.switching.routing.DefaultRoutingTable;
 import at.irian.ankor.switching.routing.ModelAddress;
 import at.irian.ankor.switching.routing.RoutingLogic;
 import at.irian.ankor.switching.routing.RoutingTable;
@@ -39,10 +39,9 @@ public class AkkaConsistentHashingSwitchboard implements SwitchboardImplementor 
         Config config = actorSystem.settings().config();
         int nrOfInstances = config.getInt("at.irian.ankor.switching.AkkaConsistentHashingSwitchboardActor.poolSize");
 
-        RoutingTable routingTable = new ConcurrentRoutingTable(new NopRoutingTableMonitor());
+        RoutingTable routingTable = new DefaultRoutingTable(new NopRoutingTableMonitor());
         ConnectorRegistry connectorRegistry = DefaultConnectorRegistry.createForConcurrency(nrOfInstances);
         ActorRef switchboardRouterActor = actorSystem.actorOf(AkkaConsistentHashingSwitchboardActor.props(config,
-                                                                                                          routingTable,
                                                                                                           connectorRegistry,
                                                                                                           monitor),
                                                               AkkaConsistentHashingSwitchboardActor.name());

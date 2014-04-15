@@ -10,7 +10,6 @@ import at.irian.ankor.switching.connector.SimpleHandlerScopeContext;
 import at.irian.ankor.switching.msg.EventMessage;
 import at.irian.ankor.switching.routing.ModelAddress;
 import at.irian.ankor.switching.routing.RoutingLogic;
-import at.irian.ankor.switching.routing.RoutingTable;
 import com.typesafe.config.Config;
 
 import java.util.Map;
@@ -22,13 +21,11 @@ public class AkkaAddressBoundSwitchboardActor extends UntypedActor {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AkkaAddressBoundSwitchboardActor.class);
 
     public static Props props(@SuppressWarnings("UnusedParameters") Config config,
-                              RoutingTable routingTable,
                               ConnectorMapping connectorMapping,
                               SwitchboardMonitor monitor,
                               RoutingLogic routingLogic,
                               Switchboard mainSwitchboard) {
         return Props.create(AkkaAddressBoundSwitchboardActor.class,
-                            routingTable,
                             connectorMapping,
                             monitor,
                             routingLogic,
@@ -43,14 +40,13 @@ public class AkkaAddressBoundSwitchboardActor extends UntypedActor {
     private final Switchboard mainSwitchboard;
     private final MySwitchboard mySwitchboard;
 
-    public AkkaAddressBoundSwitchboardActor(RoutingTable routingTable,
-                                            ConnectorMapping connectorMapping,
+    public AkkaAddressBoundSwitchboardActor(ConnectorMapping connectorMapping,
                                             SwitchboardMonitor monitor,
                                             RoutingLogic routingLogic,
                                             Switchboard mainSwitchboard) {
         this.mainSwitchboard = mainSwitchboard;
         HandlerScopeContext handlerScopeContext = new SimpleHandlerScopeContext();
-        this.mySwitchboard = new MySwitchboard(routingTable, connectorMapping, handlerScopeContext, monitor);
+        this.mySwitchboard = new MySwitchboard(connectorMapping, handlerScopeContext, monitor);
         this.mySwitchboard.setRoutingLogic(routingLogic);
         this.mySwitchboard.start();  // todo  do with StartMsg?
     }
@@ -236,11 +232,10 @@ public class AkkaAddressBoundSwitchboardActor extends UntypedActor {
 
 
     private class MySwitchboard extends AbstractSwitchboard {
-        private MySwitchboard(RoutingTable routingTable,
-                              ConnectorMapping connectorMapping,
+        private MySwitchboard(ConnectorMapping connectorMapping,
                               HandlerScopeContext handlerScopeContext,
                               SwitchboardMonitor monitor) {
-            super(routingTable, connectorMapping, handlerScopeContext, monitor);
+            super(connectorMapping, handlerScopeContext, monitor);
         }
 
         @Override

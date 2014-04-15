@@ -2,7 +2,7 @@ package at.irian.ankor.monitor.stats;
 
 import at.irian.ankor.monitor.SwitchboardMonitor;
 import at.irian.ankor.switching.Switchboard;
-import at.irian.ankor.switching.connector.local.LocalModelAddress;
+import at.irian.ankor.switching.connector.local.StatefulSessionModelAddress;
 import at.irian.ankor.switching.msg.EventMessage;
 import at.irian.ankor.switching.routing.ModelAddress;
 
@@ -23,7 +23,7 @@ public class StatsSwitchboardMonitor implements SwitchboardMonitor {
     @Override
     public void monitor_openConnection(Switchboard sb, ModelAddress sender, Map<String, Object> connectParameters) {
         // Switchboard just received a connect request and is looking for a routee
-        if (sender instanceof LocalModelAddress) {
+        if (sender instanceof StatefulSessionModelAddress) {
             // connect request came from local model session
         } else {
             // connect request came from external connector
@@ -34,7 +34,7 @@ public class StatsSwitchboardMonitor implements SwitchboardMonitor {
     @Override
     public void monitor_send(Switchboard sb, ModelAddress sender, EventMessage message) {
         // Switchboard just received an EventMessage and is routing it to the right receiver
-        if (sender instanceof LocalModelAddress) {
+        if (sender instanceof StatefulSessionModelAddress) {
             // EventMessage came from local model session
         } else {
             // EventMessage came from external connector
@@ -45,7 +45,7 @@ public class StatsSwitchboardMonitor implements SwitchboardMonitor {
     @Override
     public void monitor_send(Switchboard sb, ModelAddress sender, EventMessage message, ModelAddress receiver) {
         // Switchboard is routing an EventMessage to a specific receiver
-        if (receiver instanceof LocalModelAddress) {
+        if (receiver instanceof StatefulSessionModelAddress) {
             // ... to another local model
         } else {
             // ... to an external receiver

@@ -8,7 +8,7 @@ import at.irian.ankor.serialization.modify.Modifier;
 import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.state.SendStateDefinition;
 import at.irian.ankor.switching.Switchboard;
-import at.irian.ankor.switching.connector.local.LocalModelAddress;
+import at.irian.ankor.switching.connector.local.SessionModelAddressBinding;
 import at.irian.ankor.switching.msg.ActionEventMessage;
 import at.irian.ankor.switching.routing.ModelAddress;
 
@@ -26,12 +26,14 @@ public class RemoteNotifyActionEventListener extends ActionEventListener {
 
     private final Switchboard switchboard;
     private final Modifier preSendModifier;
+    private final SessionModelAddressBinding sessionModelAddressBinding;
 
     public RemoteNotifyActionEventListener(Switchboard switchboard,
                                            Modifier preSendModifier) {
         super(null); //global listener
         this.switchboard = switchboard;
         this.preSendModifier = preSendModifier;
+        this.sessionModelAddressBinding = new SessionModelAddressBinding();
     }
 
     @Override
@@ -47,7 +49,8 @@ public class RemoteNotifyActionEventListener extends ActionEventListener {
             Ref actionProperty = event.getActionProperty();
             Action modifiedAction = preSendModifier.modifyBeforeSend(action, actionProperty);
             ModelSession modelSession = actionProperty.context().modelSession();
-            ModelAddress sender = new LocalModelAddress(modelSession, actionProperty.root().propertyName());
+            String modelName = actionProperty.root().propertyName();
+            ModelAddress sender = sessionModelAddressBinding.getAssociatedModelAddress(modelSession, modelName);
             SendStateDefinition sendStateDefinition = modelSession.getSendStateDefinition();
             Map<String, Object> state = new StateHelper(actionProperty.context().refFactory()).createState(sendStateDefinition);
             Set<String> stateHolderProperties = modelSession.getStateHolderDefinition().getPaths();

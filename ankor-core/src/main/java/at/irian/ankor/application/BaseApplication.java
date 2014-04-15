@@ -16,4 +16,9 @@ public abstract class BaseApplication implements Application {
     public String getName() {
         return name;
     }
+
+    @Override
+    public boolean isStateless() {
+        return false;
+    }
 }

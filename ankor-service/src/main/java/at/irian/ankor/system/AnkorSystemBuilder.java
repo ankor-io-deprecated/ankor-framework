@@ -34,7 +34,8 @@ import at.irian.ankor.switching.AkkaConsistentHashingSwitchboard;
 import at.irian.ankor.switching.DefaultSwitchboard;
 import at.irian.ankor.switching.Switchboard;
 import at.irian.ankor.switching.SwitchboardImplementor;
-import at.irian.ankor.switching.routing.ModelSessionRoutingLogic;
+import at.irian.ankor.switching.connector.local.SessionModelAddressBinding;
+import at.irian.ankor.switching.routing.DefaultServerRoutingLogic;
 import at.irian.ankor.switching.routing.RoutingLogic;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
 import at.irian.ankor.viewmodel.factory.BeanFactory;
@@ -73,7 +74,6 @@ public class AnkorSystemBuilder {
     private ActorSystem actorSystem;
     private AnkorSystemMonitor monitor;
     private AnkorSystemStats stats;
-    private boolean stateless;
 
     public AnkorSystemBuilder() {
         this.systemName = null;
@@ -90,7 +90,6 @@ public class AnkorSystemBuilder {
         this.actorSystem = null;
         this.monitor = null;
         this.stats = null;
-        this.stateless = false;
     }
 
     public AnkorSystemBuilder withName(String name) {
@@ -145,7 +144,7 @@ public class AnkorSystemBuilder {
         return this;
     }
 
-    public AnkorSystemBuilder withOpenHandler(RoutingLogic routingLogic) {
+    public AnkorSystemBuilder withRoutingLogic(RoutingLogic routingLogic) {
         this.routingLogic = routingLogic;
         return this;
     }
@@ -162,7 +161,6 @@ public class AnkorSystemBuilder {
     }
 
     public AnkorSystemBuilder withStateless(boolean stateless) {
-        this.stateless = stateless;
         return this;
     }
 
@@ -190,8 +188,7 @@ public class AnkorSystemBuilder {
         Modifier bigDataModifier = new ServerSideBigDataModifier(defaultModifier);
         Modifier modifier = new CoerceTypeModifier(bigDataModifier);
 
-        EventListeners defaultEventListeners = createDefaultEventListeners(switchboard, modifier
-        );
+        EventListeners defaultEventListeners = createDefaultEventListeners(switchboard, modifier);
 
         ModelSessionFactory modelSessionFactory = getModelSessionFactory(eventDispatcherFactory,
                                                                          defaultEventListeners,
@@ -245,8 +242,7 @@ public class AnkorSystemBuilder {
         Modifier defaultModifier = getDefaultModifier();
         Modifier modifier = new ClientSideBigDataModifier(defaultModifier);
 
-        EventListeners defaultEventListeners = createDefaultEventListeners(switchboard, modifier
-        );
+        EventListeners defaultEventListeners = createDefaultEventListeners(switchboard, modifier);
 
         ModelSessionFactory modelSessionFactory = getModelSessionFactory(getEventDispatcherFactory(),
                                                                          defaultEventListeners,
@@ -303,11 +299,13 @@ public class AnkorSystemBuilder {
 
         EventListeners eventListeners = new ArrayListEventListeners();
 
+        SessionModelAddressBinding sessionModelAddressBinding = new SessionModelAddressBinding();
+
         // action event listener for sending action events to remote partner
         eventListeners.add(new RemoteNotifyActionEventListener(switchboard, modifier));
 
         // global change event listener for sending change events to remote partner
-        eventListeners.add(new RemoteNotifyChangeEventListener(switchboard, modifier));
+        eventListeners.add(new RemoteNotifyChangeEventListener(switchboard, modifier, sessionModelAddressBinding));
 
         // global change event listener for cleaning up obsolete model session listeners
         eventListeners.add(new ListenerCleanupChangeEventListener());
@@ -454,7 +452,7 @@ public class AnkorSystemBuilder {
                                                ModelSessionManager modelSessionManager,
                                                Application userApplication) {
         if (routingLogic == null) {
-            routingLogic = new ModelSessionRoutingLogic(modelSessionFactory, modelSessionManager)
+            routingLogic = new DefaultServerRoutingLogic(modelSessionFactory, modelSessionManager)
                     .withApplication(new ConsoleApplication(getStats()))
                     .withApplication(userApplication);
         }
@@ -501,11 +499,7 @@ public class AnkorSystemBuilder {
 
     private ModelSessionManager getServerModelSessionManager(ModelSessionFactory modelSessionFactory,
                                                              Application application) {
-        if (stateless) {
-            return new StatelessModelSessionManager(modelSessionFactory, application);
-        } else {
-            return DefaultModelSessionManager.create();
-        }
+        return DefaultModelSessionManager.create();
     }
 
 

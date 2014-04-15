@@ -25,6 +25,18 @@
         </dependency>
 
         <dependency>
+            <groupId>at.irian.ankor</groupId>
+            <artifactId>ankor-socket-connector</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>at.irian.ankor</groupId>
+            <artifactId>ankor-websocket-connector</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
             <groupId>at.irian.ankorsamples</groupId>
             <artifactId>animals-application</artifactId>
             <version>${project.version}</version>

@@ -29,4 +29,9 @@ public class StatelessTodoServerApplication extends CollaborationSingleRootAppli
     public Object lookupModel(Map<String, Object> connectParameters) {
         return null;
     }
+
+    @Override
+    public boolean isStateless() {
+        return true;
+    }
 }

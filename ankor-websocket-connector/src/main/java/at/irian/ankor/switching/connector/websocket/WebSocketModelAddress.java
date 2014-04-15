@@ -9,6 +9,7 @@ import java.io.Serializable;
  */
 public class WebSocketModelAddress implements ModelAddress, Serializable {
 
+    @Deprecated
     private final String path;
     private final String clientId;
     private final String modelName;
@@ -32,6 +33,7 @@ public class WebSocketModelAddress implements ModelAddress, Serializable {
         return clientId;
     }
 
+    @Deprecated
     public String getPath() {
         return path;
     }

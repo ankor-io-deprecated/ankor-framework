@@ -8,19 +8,19 @@ import java.io.Serializable;
 /**
  * @author Manfred Geiler
  */
-public class LocalModelAddress implements ModelAddress, Serializable {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(LocalModelAddress.class);
+public class StatefulSessionModelAddress implements ModelAddress, Serializable {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(StatefulSessionModelAddress.class);
 
     private final String modelSessionId;
     private final String modelName;
     private final int hashCode;
     private final String consistentHashKey;
 
-    public LocalModelAddress(ModelSession modelSession, String modelName) {
+    public StatefulSessionModelAddress(ModelSession modelSession, String modelName) {
         this(modelSession.getId(), modelName);
     }
 
-    public LocalModelAddress(String modelSessionId, String modelName) {
+    public StatefulSessionModelAddress(String modelSessionId, String modelName) {
         this.modelSessionId = modelSessionId;
         this.modelName = modelName;
         this.hashCode = 31 * modelSessionId.hashCode() + modelName.hashCode();
@@ -45,7 +45,7 @@ public class LocalModelAddress implements ModelAddress, Serializable {
             return false;
         }
 
-        LocalModelAddress that = (LocalModelAddress) o;
+        StatefulSessionModelAddress that = (StatefulSessionModelAddress) o;
 
         return modelName.equals(that.modelName) && modelSessionId.equals(that.modelSessionId);
     }
@@ -62,7 +62,7 @@ public class LocalModelAddress implements ModelAddress, Serializable {
 
     @Override
     public String toString() {
-        return "LocalModelAddress{" +
+        return "StatefulSessionModelAddress{" +
                "modelSessionId='" + modelSessionId + '\'' +
                ", modelName='" + modelName + '\'' +
                '}';

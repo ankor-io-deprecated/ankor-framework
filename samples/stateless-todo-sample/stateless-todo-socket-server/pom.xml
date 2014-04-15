@@ -19,7 +19,19 @@
         <dependency>
             <groupId>at.irian.ankor</groupId>
             <artifactId>ankor-socket-connector</artifactId>
-            <scope>compile</scope>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>at.irian.ankor</groupId>
+            <artifactId>ankor-proxy</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>at.irian.ankor</groupId>
+            <artifactId>ankor-actor</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
         <dependency>

@@ -23,11 +23,6 @@ public abstract class SimpleSingleRootApplication extends BaseApplication {
     }
 
     @Override
-    public boolean supportsModel(String modelName) {
-        return this.modelName.equals(modelName);
-    }
-
-    @Override
     public Set<String> getKnownModelNames() {
         return Collections.singleton(this.modelName);
     }

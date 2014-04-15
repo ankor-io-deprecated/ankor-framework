@@ -10,7 +10,7 @@ import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.RefFactory;
 import at.irian.ankor.ref.impl.RefContextImplementor;
 import at.irian.ankor.switching.Switchboard;
-import at.irian.ankor.switching.connector.local.LocalModelAddress;
+import at.irian.ankor.switching.connector.local.StatefulSessionModelAddress;
 import at.irian.ankor.viewmodel.ViewModelPostProcessor;
 import at.irian.ankor.viewmodel.factory.BeanFactory;
 import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
@@ -123,11 +123,11 @@ public class ELRefContext implements RefContext, RefContextImplementor {
 
     @Override
     public void openModelConnection(String modelName, Map<String, Object> connectParameters) {
-        switchboard.openConnection(new LocalModelAddress(modelSession, modelName), connectParameters);
+        switchboard.openConnection(new StatefulSessionModelAddress(modelSession, modelName), connectParameters);
     }
 
     @Override
     public void closeModelConnection(String modelName) {
-        switchboard.closeAllConnections(new LocalModelAddress(modelSession, modelName));
+        switchboard.closeAllConnections(new StatefulSessionModelAddress(modelSession, modelName));
     }
 }

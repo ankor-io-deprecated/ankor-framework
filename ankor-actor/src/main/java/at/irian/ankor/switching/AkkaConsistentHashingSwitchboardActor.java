@@ -22,11 +22,10 @@ public class AkkaConsistentHashingSwitchboardActor extends UntypedActor {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AkkaConsistentHashingSwitchboardActor.class);
 
     public static Props props(@SuppressWarnings("UnusedParameters") Config config,
-                              RoutingTable routingTable,
                               ConnectorMapping connectorMapping,
                               SwitchboardMonitor monitor) {
         int nrOfInstances = config.getInt("at.irian.ankor.switching.AkkaConsistentHashingSwitchboardActor.poolSize");
-        return Props.create(AkkaConsistentHashingSwitchboardActor.class, routingTable, connectorMapping, monitor)
+        return Props.create(AkkaConsistentHashingSwitchboardActor.class, connectorMapping, monitor)
                     .withDispatcher("ankor.switchboard-dispatcher")
                     .withRouter(new ConsistentHashingRouter(nrOfInstances));
     }
@@ -37,11 +36,10 @@ public class AkkaConsistentHashingSwitchboardActor extends UntypedActor {
 
     private final MySwitchboard mySwitchboard;
 
-    public AkkaConsistentHashingSwitchboardActor(RoutingTable routingTable,
-                                                 ConnectorMapping connectorMapping,
+    public AkkaConsistentHashingSwitchboardActor(ConnectorMapping connectorMapping,
                                                  SwitchboardMonitor monitor) {
         HandlerScopeContext handlerScopeContext = new SimpleHandlerScopeContext();
-        this.mySwitchboard = new MySwitchboard(routingTable, connectorMapping, handlerScopeContext, monitor);
+        this.mySwitchboard = new MySwitchboard(connectorMapping, handlerScopeContext, monitor);
     }
 
     @Override
@@ -282,11 +280,10 @@ public class AkkaConsistentHashingSwitchboardActor extends UntypedActor {
 
 
     private class MySwitchboard extends AbstractSwitchboard {
-        private MySwitchboard(RoutingTable routingTable,
-                              ConnectorMapping connectorMapping,
+        private MySwitchboard(ConnectorMapping connectorMapping,
                               HandlerScopeContext handlerScopeContext,
                               SwitchboardMonitor monitor) {
-            super(routingTable, connectorMapping, handlerScopeContext, monitor);
+            super(connectorMapping, handlerScopeContext, monitor);
         }
 
         @Override

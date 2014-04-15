@@ -6,7 +6,7 @@ import at.irian.ankor.fx.binding.fxref.FxRefContextFactoryProvider;
 import at.irian.ankor.fx.binding.fxref.FxRefs;
 import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.session.SingletonModelSessionManager;
-import at.irian.ankor.switching.routing.FixedSocketRoutingLogic;
+import at.irian.ankor.switching.routing.ClientSocketRoutingLogic;
 
 import java.net.URI;
 import java.util.Collections;
@@ -64,7 +64,7 @@ public class SocketFxClient implements AnkorClient {
                                  clientAddress)
                 .withDispatcherFactory(new JavaFxEventDispatcherFactory())
                 .withRefContextFactoryProvider(new FxRefContextFactoryProvider())
-                .withOpenHandler(new FixedSocketRoutingLogic(URI.create(serverAddress)))
+                .withRoutingLogic(new ClientSocketRoutingLogic(URI.create(serverAddress)))
                 .createClient();
         LOG.debug("FxClient Ankor system '{}' created", ankorSystem.getSystemName());
         return ankorSystem;

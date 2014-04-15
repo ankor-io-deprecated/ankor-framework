@@ -14,21 +14,21 @@ import java.util.Map;
 /**
  * @author Manfred Geiler
  */
-public class LocalConnectionHandler implements ConnectionHandler<LocalModelAddress> {
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(LocalConnectionHandler.class);
+public class StatefulSessionConnectionHandler implements ConnectionHandler<StatefulSessionModelAddress> {
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(StatefulSessionConnectionHandler.class);
 
     private final ModelSessionManager modelSessionManager;
     private final Switchboard switchboard;
 
-    public LocalConnectionHandler(ModelSessionManager modelSessionManager,
-                                  Switchboard switchboard) {
+    public StatefulSessionConnectionHandler(ModelSessionManager modelSessionManager,
+                                            Switchboard switchboard) {
         this.modelSessionManager = modelSessionManager;
         this.switchboard = switchboard;
     }
 
     @Override
     public void openConnection(ModelAddress sender,
-                               LocalModelAddress receiver,
+                               StatefulSessionModelAddress receiver,
                                Map<String, Object> connectParameters,
                                HandlerScopeContext context) {
         LOG.debug("open connection from {} to {}", sender, receiver);
@@ -51,7 +51,7 @@ public class LocalConnectionHandler implements ConnectionHandler<LocalModelAddre
 
     @Override
     public void closeConnection(ModelAddress sender,
-                                LocalModelAddress receiver,
+                                StatefulSessionModelAddress receiver,
                                 boolean lastRoute,
                                 HandlerScopeContext context) {
         if (lastRoute) {

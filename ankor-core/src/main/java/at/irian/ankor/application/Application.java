@@ -15,12 +15,7 @@ public interface Application {
      */
     String getName();
 
-    /**
-     * @param modelName  name of model
-     * @return true, if this Application supports models with the given name
-     */
-    @Deprecated  // todo use getKnownModelNames() instead
-    boolean supportsModel(String modelName);
+    boolean isStateless();
 
     Set<String> getKnownModelNames();
 

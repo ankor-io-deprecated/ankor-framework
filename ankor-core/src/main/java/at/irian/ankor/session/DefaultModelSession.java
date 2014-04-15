@@ -76,11 +76,6 @@ class DefaultModelSession implements ModelSession, DispatchThreadAware {
         return UUID.randomUUID().toString();
     }
 
-    //todo  hack
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public String getId() {
         return id;
     }
@@ -200,5 +195,10 @@ class DefaultModelSession implements ModelSession, DispatchThreadAware {
 
     public void setSendStateDefinition(SendStateDefinition sendStateDefinition) {
         this.sendStateDefinition = sendStateDefinition;
+    }
+
+    @Override
+    public Application getApplication() {
+        return application;
     }
 }
