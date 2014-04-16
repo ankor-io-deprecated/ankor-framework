@@ -1,8 +1,7 @@
 package at.irian.ankorsamples.statelesstodo.domain;
 
-import java.util.UUID;
+public class Task implements Comparable<Task>, Cloneable {
 
-public class Task {
     private String id;
     private String title;
     private boolean completed = false;
@@ -13,15 +12,10 @@ public class Task {
     @SuppressWarnings("UnusedDeclaration")
     public Task() {}
 
-    public Task(String title) {
-        this.id = UUID.randomUUID().toString();
+    public Task(String id, String title, boolean completed) {
+        this.id = id;
         this.title = title;
-    }
-
-    public Task(Task t) {
-        this.id = t.id;
-        this.title = t.title;
-        this.completed = t.completed;
+        this.completed = completed;
     }
 
     public String getTitle() {
@@ -68,5 +62,19 @@ public class Task {
         result = 31 * result + (title != null ? title.hashCode() : 0);
         result = 31 * result + (completed ? 1 : 0);
         return result;
+    }
+
+    @Override
+    public int compareTo(Task other) {
+        return this.getTitle().compareTo(other.getTitle());
+    }
+
+    @Override
+    public Task clone() {
+        try {
+            return (Task) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new IllegalStateException("clone not supported by super?", e);
+        }
     }
 }

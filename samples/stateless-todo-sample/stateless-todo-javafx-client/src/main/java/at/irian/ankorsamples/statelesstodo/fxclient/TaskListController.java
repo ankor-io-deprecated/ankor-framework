@@ -95,7 +95,7 @@ public class TaskListController implements Initializable {
         int numTasks = tasksRef.<List>getValue().size();
         for (int index = 0; index < numTasks; index++) {
             FxRef itemRef = tasksRef.appendIndex(index);
-            TaskPane node = new TaskPane(itemRef, index);
+            TaskPane node = new TaskPane(itemRef);
             tasksList.getChildren().add(node);
         }
     }

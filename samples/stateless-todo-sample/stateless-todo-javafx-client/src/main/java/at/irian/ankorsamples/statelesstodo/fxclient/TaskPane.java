@@ -28,7 +28,6 @@ public class TaskPane extends AnchorPane {
     private static Logger LOG = LoggerFactory.getLogger(TaskPane.class);
 
     private FxRef itemRef;
-    private int index;
 
     @FXML public ToggleButton completedButton;
     @FXML public Button deleteButton;
@@ -36,9 +35,8 @@ public class TaskPane extends AnchorPane {
 
     private SimpleStringProperty cursorPositionFix = new SimpleStringProperty();
 
-    public TaskPane(FxRef itemRef, int index) {
+    public TaskPane(FxRef itemRef) {
         this.itemRef = itemRef;
-        this.index = index;
 
         loadFXML();
         addEventListeners();
@@ -122,7 +120,8 @@ public class TaskPane extends AnchorPane {
     @FXML
     public void delete(ActionEvent actionEvent) {
         Map<String, Object> params = new HashMap<>();
-        params.put("index", index);
+        Map item = itemRef.getValue();
+        params.put("id", item.get("id"));
         itemRef.root().appendPath("model").fire(new Action("deleteTask", params));
     }
 }

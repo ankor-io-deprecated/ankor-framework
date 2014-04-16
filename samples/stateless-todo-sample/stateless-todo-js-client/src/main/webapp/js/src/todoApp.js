@@ -36,8 +36,8 @@ define([
       this.props.modelRef.fire("toggleAll", {toggleAll: !this.props.model.toggleAll});
     },
 
-    destroy: function (i) {
-      this.props.modelRef.fire("deleteTask", {index: i});
+    destroy: function (taskId) {
+      this.props.modelRef.fire("deleteTask", {id: taskId});
     },
 
     clearCompleted: function () {
@@ -57,7 +57,7 @@ define([
           key={todo.id}
           todo={todo}
           modelRef={tasksRef.appendIndex(i)}
-          onDestroy={this.destroy.bind(this, i)}
+          onDestroy={this.destroy.bind(this, todo.id)}
           />
           );
       }, this);
