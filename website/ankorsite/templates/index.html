@@ -43,7 +43,8 @@
 }</pre>
                 <p>
                     MVVM is an event-driven UI programming pattern originated from Microsoft. Using Ankor you are able
-                    to implement all the behavior on server side, whereas the state (model data) "lives" on client side.
+                    to implement all the behavior on server side, whereas the state can be
+                    managed on the client and/or server side.
                 </p>
             </div>
             <div class="col-lg-4">
@@ -54,8 +55,8 @@
 Ref nameRef = rootRef
     .appendPath("person.firstName");
 
-textCtrl.textProperty().bind(nameRef)
-    .<String>fxProperty());</pre>
+textCtrl.textProperty().bind(
+    nameRef.fxProperty());</pre>
                 </div>
                 <p>
                     As a developer you just bind view model properties to your UI controls. The binding typically works both ways
