@@ -30,7 +30,7 @@
 
     <profiles>
         <profile>
-            <id>17</id>
+            <id>java17</id>
             <activation>
                 <jdk>1.7</jdk>
             </activation>
