@@ -34,20 +34,8 @@
 
         <dependency>
             <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-service</artifactId>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-actor</artifactId>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-socket-connector</artifactId>
-            <scope>runtime</scope>
+            <artifactId>ankor-bundle-socket-server</artifactId>
+            <type>pom</type>
         </dependency>
 
         <dependency>

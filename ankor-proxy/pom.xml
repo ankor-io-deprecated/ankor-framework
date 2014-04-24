@@ -37,20 +37,12 @@
             <scope>compile</scope>
         </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>at.irian.ankor</groupId>-->
-            <!--<artifactId>ankor-annotation</artifactId>-->
-            <!--<version>${project.version}</version>-->
-            <!--<scope>compile</scope>-->
-        <!--</dependency>-->
-
         <dependency>
             <groupId>cglib</groupId>
             <artifactId>cglib-nodep</artifactId>
             <version>2.2</version>
             <scope>compile</scope>
         </dependency>
-
 
     </dependencies>
 
