@@ -1,0 +1,156 @@
+<!--
+  ~ Copyright (C) 2013-2014  Irian Solutions  (http://www.irian.at)
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>at.irian.ankor</groupId>
+        <artifactId>ankor-project</artifactId>
+        <version>0.3-SNAPSHOT</version>
+    </parent>
+    <artifactId>ankor-bom</artifactId>
+    <packaging>pom</packaging>
+    <name>Ankor - Bill of Materials</name>
+    <description>Predefined Ankor module dependencies.</description>
+    <url>https://github.com/ankor-io</url>
+    <organization>
+        <name>Ankor Developers Team</name>
+        <url>https://github.com/orgs/ankor-io/teams/ankor-developers</url>
+    </organization>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <issueManagement>
+        <system>Github Issues</system>
+        <url>https://github.com/ankor-io/ankor-framework/issues</url>
+    </issueManagement>
+    <scm>
+        <connection>scm:git:git://github.com/ankor-io/ankor-framework</connection>
+        <developerConnection>scm:git:git://github.com/ankor-io/ankor-framework</developerConnection>
+        <url>https://github.com/ankor-io/ankor-framework</url>
+    </scm>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>at.irian.ankor</groupId>
+                <artifactId>ankor-actor</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>at.irian.ankor</groupId>
+                <artifactId>ankor-annotation</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>at.irian.ankor</groupId>
+                <artifactId>ankor-console-client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>at.irian.ankor</groupId>
+                <artifactId>ankor-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>at.irian.ankor</groupId>
+                <artifactId>ankor-el</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>at.irian.ankor</groupId>
+                <artifactId>ankor-fx</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>at.irian.ankor</groupId>
+                <artifactId>ankor-js</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>at.irian.ankor</groupId>
+                <artifactId>ankor-js</artifactId>
+                <type>war</type>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>at.irian.ankor</groupId>
+                <artifactId>ankor-json</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>at.irian.ankor</groupId>
+                <artifactId>ankor-proxy</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>at.irian.ankor</groupId>
+                <artifactId>ankor-service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>at.irian.ankor</groupId>
+                <artifactId>ankor-servlet</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>at.irian.ankor</groupId>
+                <artifactId>ankor-socket-connector</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>at.irian.ankor</groupId>
+                <artifactId>ankor-websocket-connector</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>at.irian.ankor</groupId>
+                <artifactId>ankor-bundle-server-viewmodel</artifactId>
+                <version>${project.version}</version>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>at.irian.ankor</groupId>
+                <artifactId>ankor-bundle-socket-fx-client</artifactId>
+                <version>${project.version}</version>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>at.irian.ankor</groupId>
+                <artifactId>ankor-bundle-socket-server</artifactId>
+                <version>${project.version}</version>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>at.irian.ankor</groupId>
+                <artifactId>ankor-bundle-websocket-fx-client</artifactId>
+                <version>${project.version}</version>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>at.irian.ankor</groupId>
+                <artifactId>ankor-bundle-websocket-server</artifactId>
+                <version>${project.version}</version>
+                <type>pom</type>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+</project>

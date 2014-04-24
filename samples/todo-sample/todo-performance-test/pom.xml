@@ -14,12 +14,6 @@
     <dependencies>
 
         <dependency>
-            <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-servlet</artifactId>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
             <groupId>at.irian.ankorsamples</groupId>
             <artifactId>todo-application</artifactId>
             <version>${project.version}</version>

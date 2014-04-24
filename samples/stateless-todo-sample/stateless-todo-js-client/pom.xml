@@ -32,26 +32,14 @@
 
         <dependency>
             <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-servlet</artifactId>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-websocket-connector</artifactId>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-js</artifactId>
-            <type>war</type>
-            <scope>runtime</scope>
+            <artifactId>ankor-bundle-websocket-server</artifactId>
+            <type>pom</type>
         </dependency>
 
         <dependency>
             <groupId>at.irian.ankorsamples</groupId>
             <artifactId>stateless-todo-application</artifactId>
+            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
 
@@ -65,6 +53,14 @@
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>3.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.websocket</groupId>
+            <artifactId>javax.websocket-api</artifactId>
+            <version>1.0</version>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>
