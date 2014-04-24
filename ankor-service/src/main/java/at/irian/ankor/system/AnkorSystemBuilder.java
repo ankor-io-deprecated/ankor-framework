@@ -34,6 +34,7 @@ import at.irian.ankor.switching.AkkaConsistentHashingSwitchboard;
 import at.irian.ankor.switching.DefaultSwitchboard;
 import at.irian.ankor.switching.Switchboard;
 import at.irian.ankor.switching.SwitchboardImplementor;
+import at.irian.ankor.switching.connector.ConnectorLoader;
 import at.irian.ankor.switching.connector.local.SessionModelAddressBinding;
 import at.irian.ankor.switching.routing.DefaultServerRoutingLogic;
 import at.irian.ankor.switching.routing.RoutingLogic;
@@ -74,6 +75,7 @@ public class AnkorSystemBuilder {
     private ActorSystem actorSystem;
     private AnkorSystemMonitor monitor;
     private AnkorSystemStats stats;
+    private ConnectorLoader connectorLoader;
 
     public AnkorSystemBuilder() {
         this.systemName = null;
@@ -90,6 +92,7 @@ public class AnkorSystemBuilder {
         this.actorSystem = null;
         this.monitor = null;
         this.stats = null;
+        this.connectorLoader = null;
     }
 
     public AnkorSystemBuilder withName(String name) {
@@ -164,6 +167,10 @@ public class AnkorSystemBuilder {
         return this;
     }
 
+    public AnkorSystemBuilder withConnectorLoader(ConnectorLoader connectorLoader) {
+        this.connectorLoader = connectorLoader;
+        return this;
+    }
 
     public AnkorSystem createServer() {
 
@@ -215,7 +222,8 @@ public class AnkorSystemBuilder {
                                modifier,
                                beanMetadataProvider,
                                scheduler,
-                               getMonitor());
+                               getMonitor(),
+                               getConnectorLoader());
     }
 
     public AnkorSystem createClient() {
@@ -274,7 +282,8 @@ public class AnkorSystemBuilder {
                                modifier,
                                beanMetadataProvider,
                                scheduler,
-                               getMonitor());
+                               getMonitor(),
+                               getConnectorLoader());
     }
 
     private BeanFactory getBeanFactory() {
@@ -502,5 +511,11 @@ public class AnkorSystemBuilder {
         return DefaultModelSessionManager.create();
     }
 
+    private ConnectorLoader getConnectorLoader() {
+        if (connectorLoader == null) {
+            connectorLoader = new ConnectorLoader();
+        }
+        return connectorLoader;
+    }
 
 }
