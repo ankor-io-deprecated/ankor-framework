@@ -7,7 +7,7 @@
       <artifact name="stateless-todo-js-client:war exploded">
         <settings />
       </artifact>
-      <artifact name="todo-js-client:war exploded">
+      <artifact name="todo-websocket-server:war exploded">
         <settings />
       </artifact>
     </deployment>
@@ -75,9 +75,7 @@
     <method>
       <option name="BuildArtifacts" enabled="true">
         <artifact name="stateless-todo-js-client:war exploded" />
-      </option>
-      <option name="BuildArtifacts" enabled="true">
-        <artifact name="todo-js-client:war exploded" />
+        <artifact name="todo-websocket-server:war exploded" />
       </option>
     </method>
   </configuration>
