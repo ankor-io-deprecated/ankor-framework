@@ -46,13 +46,6 @@
 
         <dependency>
             <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-service</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>at.irian.ankor</groupId>
             <artifactId>ankor-fx</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>

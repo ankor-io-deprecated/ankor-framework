@@ -96,12 +96,7 @@
             </dependency>
             <dependency>
                 <groupId>at.irian.ankor</groupId>
-                <artifactId>ankor-service</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>at.irian.ankor</groupId>
-                <artifactId>ankor-servlet</artifactId>
+                <artifactId>ankor-system</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

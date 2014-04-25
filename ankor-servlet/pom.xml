@@ -45,13 +45,6 @@
 
         <dependency>
             <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-service</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>at.irian.ankor</groupId>
             <artifactId>ankor-actor</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>
