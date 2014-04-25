@@ -40,7 +40,7 @@ public class StatelessTodoWebSocketFxClientStarter extends javafx.application.Ap
     // used to open the browser
     private static HostServices services;
 
-    private AnkorClient client;
+    private AnkorClient ankorClient;
 
     private EndpointListener endpointListener;
 
@@ -51,7 +51,7 @@ public class StatelessTodoWebSocketFxClientStarter extends javafx.application.Ap
     public StatelessTodoWebSocketFxClientStarter() throws Exception {
         serverStatus = new Label();
         endpointListener = new EndpointListener();
-        client = WebSocketFxClient.builder()
+        ankorClient = WebSocketFxClient.builder()
                                   .withApplicationName("Todo FX Client")
                                   .withModelName("root")
                                   .withConnectParam("todoListId", "collaborationTest")
@@ -62,7 +62,7 @@ public class StatelessTodoWebSocketFxClientStarter extends javafx.application.Ap
 
     @Override
     public void start(Stage stage) throws Exception {
-        client.start();
+        ankorClient.start();
         services = getHostServices();
 
         stage.setTitle("Ankor JavaFX Stateless Todo Sample");
@@ -83,7 +83,7 @@ public class StatelessTodoWebSocketFxClientStarter extends javafx.application.Ap
 
     @Override
     public void stop() throws Exception {
-        client.stop();
+        ankorClient.stop();
         super.stop();
     }
 

@@ -32,6 +32,13 @@
 
         <dependency>
             <groupId>at.irian.ankor</groupId>
+            <artifactId>ankor-core</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>at.irian.ankor</groupId>
             <artifactId>ankor-system</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
@@ -40,6 +47,13 @@
         <dependency>
             <groupId>at.irian.ankor</groupId>
             <artifactId>ankor-fx</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>at.irian.ankor</groupId>
+            <artifactId>ankor-annotation</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>

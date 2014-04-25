@@ -32,36 +32,11 @@
 
         <dependency>
             <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-bundle-websocket-server</artifactId>
+            <artifactId>ankor-bundle-js-client</artifactId>
+            <version>0.3-SNAPSHOT</version>
             <type>pom</type>
         </dependency>
 
-        <dependency>
-            <groupId>at.irian.ankorsamples</groupId>
-            <artifactId>stateless-todo-application</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.0.1</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.websocket</groupId>
-            <artifactId>javax.websocket-api</artifactId>
-            <version>1.0</version>
-            <scope>provided</scope>
-        </dependency>
-
     </dependencies>
+
 </project>

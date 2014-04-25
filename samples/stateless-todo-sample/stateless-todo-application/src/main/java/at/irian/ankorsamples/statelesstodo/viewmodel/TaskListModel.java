@@ -214,11 +214,11 @@ public class TaskListModel {
      *  Getters & Setters
      * ------------------- */
 
-    public Integer getItemsLeft() {
+    public int getItemsLeft() {
         return itemsLeft;
     }
 
-    public void setItemsLeft(Integer itemsLeft) {
+    public void setItemsLeft(int itemsLeft) {
         this.itemsLeft = itemsLeft;
     }
 
@@ -238,7 +238,7 @@ public class TaskListModel {
         this.filter = Filter.valueOf(filter);
     }
 
-    public Boolean getFooterVisibility() {
+    public boolean getFooterVisibility() {
         return footerVisibility;
     }
 
@@ -246,7 +246,7 @@ public class TaskListModel {
         this.footerVisibility = footerVisibility;
     }
 
-    public Integer getItemsComplete() {
+    public int getItemsComplete() {
         return itemsComplete;
     }
 
@@ -262,7 +262,7 @@ public class TaskListModel {
         this.itemsCompleteText = itemsCompleteText;
     }
 
-    public Boolean getClearButtonVisibility() {
+    public boolean getClearButtonVisibility() {
         return clearButtonVisibility;
     }
 
@@ -270,7 +270,7 @@ public class TaskListModel {
         this.clearButtonVisibility = clearButtonVisibility;
     }
 
-    public Boolean getToggleAll() {
+    public boolean getToggleAll() {
         return toggleAll;
     }
 
@@ -278,7 +278,7 @@ public class TaskListModel {
         this.toggleAll = toggleAll;
     }
 
-    public Boolean getFilterAllSelected() {
+    public boolean getFilterAllSelected() {
         return filterAllSelected;
     }
 
@@ -286,7 +286,7 @@ public class TaskListModel {
         this.filterAllSelected = filterAllSelected;
     }
 
-    public Boolean getFilterActiveSelected() {
+    public boolean getFilterActiveSelected() {
         return filterActiveSelected;
     }
 
@@ -294,7 +294,7 @@ public class TaskListModel {
         this.filterActiveSelected = filterActiveSelected;
     }
 
-    public Boolean getFilterCompletedSelected() {
+    public boolean getFilterCompletedSelected() {
         return filterCompletedSelected;
     }
 
