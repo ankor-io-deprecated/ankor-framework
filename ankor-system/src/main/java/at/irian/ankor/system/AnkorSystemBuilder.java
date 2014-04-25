@@ -51,6 +51,7 @@ import at.irian.ankor.switching.DefaultSwitchboard;
 import at.irian.ankor.switching.Switchboard;
 import at.irian.ankor.switching.SwitchboardImplementor;
 import at.irian.ankor.switching.connector.ConnectorLoader;
+import at.irian.ankor.switching.connector.DefaultConnectorLoader;
 import at.irian.ankor.switching.connector.local.SessionModelAddressBinding;
 import at.irian.ankor.switching.routing.DefaultServerRoutingLogic;
 import at.irian.ankor.switching.routing.RoutingLogic;
@@ -529,7 +530,7 @@ public class AnkorSystemBuilder {
 
     private ConnectorLoader getConnectorLoader() {
         if (connectorLoader == null) {
-            connectorLoader = new ConnectorLoader();
+            connectorLoader = new DefaultConnectorLoader();
         }
         return connectorLoader;
     }
