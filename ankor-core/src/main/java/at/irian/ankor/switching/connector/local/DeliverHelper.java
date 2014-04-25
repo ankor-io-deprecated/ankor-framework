@@ -37,6 +37,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * Helper for actually handling received event messages and firing the according event in the corresponding
+ * model instance.
+ *
  * @author Manfred Geiler
  */
 class DeliverHelper {

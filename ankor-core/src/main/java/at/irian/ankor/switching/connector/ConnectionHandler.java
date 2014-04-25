@@ -5,6 +5,8 @@ import at.irian.ankor.switching.routing.ModelAddress;
 import java.util.Map;
 
 /**
+ * {@link Connector}-specific handler for opening an closing connections between model instances.
+ *
  * @author Manfred Geiler
  */
 public interface ConnectionHandler<P extends ModelAddress> {

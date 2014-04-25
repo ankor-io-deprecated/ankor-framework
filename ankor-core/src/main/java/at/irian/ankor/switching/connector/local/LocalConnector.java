@@ -5,9 +5,12 @@ import at.irian.ankor.switching.connector.ConnectorRegistry;
 import at.irian.ankor.system.AnkorSystem;
 
 /**
+ * Pluggable {@link at.irian.ankor.switching.connector.Connector connector} with handlers for connecting to a
+ * local model instance and for transmitting event messages to local model instances.
+ * This {@link at.irian.ankor.switching.connector.Connector Connector} supports both stateful models and stateless models.
+ *
  * @author Manfred Geiler
  */
-@SuppressWarnings("UnusedDeclaration")  // indirectly called by ServiceLoader
 public class LocalConnector implements Connector {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(LocalConnector.class);
 
