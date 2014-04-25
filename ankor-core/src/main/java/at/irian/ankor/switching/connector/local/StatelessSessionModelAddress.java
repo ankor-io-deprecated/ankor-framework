@@ -25,11 +25,9 @@ public class StatelessSessionModelAddress implements ModelAddress {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(StatelessSessionModelAddress.class);
 
     private final ModelAddress clientAddress;
-    private final int hashCode;
 
     public StatelessSessionModelAddress(ModelAddress clientAddress) {
         this.clientAddress = clientAddress;
-        this.hashCode = clientAddress.hashCode();
     }
 
     @Override
@@ -60,7 +58,7 @@ public class StatelessSessionModelAddress implements ModelAddress {
 
     @Override
     public int hashCode() {
-        return hashCode;
+        return clientAddress.hashCode();
     }
 
     @Override
