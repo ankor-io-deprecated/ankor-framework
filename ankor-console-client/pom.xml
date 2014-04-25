@@ -76,6 +76,13 @@
         </dependency>
 
         <dependency>
+            <groupId>at.irian.ankor</groupId>
+            <artifactId>ankor-json</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.0.7</version>

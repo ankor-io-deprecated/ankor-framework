@@ -18,31 +18,48 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>at.irian.ankor</groupId>
-        <artifactId>ankor-project</artifactId>
+        <groupId>at.irian.ankorsamples</groupId>
+        <artifactId>animals-sample</artifactId>
         <version>0.3-SNAPSHOT</version>
     </parent>
 
-    <artifactId>ankor-socket-connector</artifactId>
-    <packaging>jar</packaging>
-    <name>Ankor - Socket Connector</name>
-    <description>Messaging via simple socket connections (only for testing, not meant for production).</description>
+    <artifactId>animals-websocket-server</artifactId>
+    <packaging>war</packaging>
+    <name>Animals Sample - WebSocket Server</name>
 
     <dependencies>
 
         <dependency>
             <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-core</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
+            <artifactId>ankor-bundle-websocket-server</artifactId>
+            <type>pom</type>
         </dependency>
 
         <dependency>
-            <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-json</artifactId>
-            <version>${project.version}</version>
+            <groupId>at.irian.ankorsamples</groupId>
+            <artifactId>animals-application</artifactId>
             <scope>compile</scope>
-            <optional>true</optional>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>at.irian.ankorsamples</groupId>
+            <artifactId>animals-js-client</artifactId>
+            <type>war</type>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.websocket</groupId>
+            <artifactId>javax.websocket-api</artifactId>
+            <version>1.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
     </dependencies>

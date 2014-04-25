@@ -81,11 +81,6 @@
             <dependency>
                 <groupId>at.irian.ankor</groupId>
                 <artifactId>ankor-js</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>at.irian.ankor</groupId>
-                <artifactId>ankor-js</artifactId>
                 <type>war</type>
                 <version>${project.version}</version>
             </dependency>

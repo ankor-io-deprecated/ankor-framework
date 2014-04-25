@@ -21,7 +21,7 @@
     <artifactId>ankor-samples</artifactId>
     <packaging>pom</packaging>
     <version>0.3-SNAPSHOT</version>
-    <name>Ankor - Samples</name>
+    <name>Ankor Samples</name>
 
     <modules>
         <module>todo-sample</module>

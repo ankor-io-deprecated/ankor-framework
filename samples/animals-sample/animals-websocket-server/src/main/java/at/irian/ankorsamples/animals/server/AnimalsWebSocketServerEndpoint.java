@@ -13,19 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package at.irian.ankorsamples.animals.server;
 
-import at.irian.ankor.system.SocketStandaloneServer;
+import at.irian.ankor.application.Application;
+import at.irian.ankor.system.WebSocketServerEndpoint;
 
 /**
  * @author Manfred Geiler
  */
-public class AnimalsSocketServerStarter {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalsSocketServerStarter.class);
+public class AnimalsWebSocketServerEndpoint extends WebSocketServerEndpoint {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalsWebSocketServerEndpoint.class);
 
-    public static void main(String[] args) {
-        new SocketStandaloneServer(new AnimalsServerApplication()).start();
+    @Override
+    protected Application createApplication() {
+        return new AnimalsServerApplication();
     }
 
+    @Override
+    protected String getPath() {
+        return "/websocket/ankor/{clientId}";
+    }
 }

@@ -23,26 +23,19 @@
         <version>0.3-SNAPSHOT</version>
     </parent>
 
-    <artifactId>ankor-socket-connector</artifactId>
-    <packaging>jar</packaging>
-    <name>Ankor - Socket Connector</name>
-    <description>Messaging via simple socket connections (only for testing, not meant for production).</description>
+    <artifactId>ankor-bundle-js-client</artifactId>
+    <packaging>pom</packaging>
+    <name>Ankor Bundle - JavaScript Client</name>
+    <description>Bundle dependencies (overlay) for a JavaScript Client.</description>
 
     <dependencies>
 
         <dependency>
             <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-core</artifactId>
+            <artifactId>ankor-js</artifactId>
+            <type>war</type>
+            <scope>runtime</scope>
             <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-json</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-            <optional>true</optional>
         </dependency>
 
     </dependencies>

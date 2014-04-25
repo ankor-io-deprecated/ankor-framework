@@ -21,7 +21,7 @@ public class TodoWebSocketFxClientStarter extends javafx.application.Application
     // used to open the browser
     private static HostServices services;
 
-    private AnkorClient client;
+    private AnkorClient ankorClient;
 
     private EndpointListener endpointListener;
 
@@ -29,10 +29,10 @@ public class TodoWebSocketFxClientStarter extends javafx.application.Application
         launch(args);
     }
 
-    public TodoWebSocketFxClientStarter() throws Exception {
+    public TodoWebSocketFxClientStarter() {
         serverStatus = new Label();
         endpointListener = new EndpointListener();
-        client = WebSocketFxClient.builder()
+        ankorClient = WebSocketFxClient.builder()
                 .withApplicationName("Todo FX Client")
                 .withModelName("root")
                 .withConnectParam("todoListId", "collaborationTest")
@@ -43,7 +43,7 @@ public class TodoWebSocketFxClientStarter extends javafx.application.Application
 
     @Override
     public void start(Stage stage) throws Exception {
-        client.start();
+        ankorClient.start();
         services = getHostServices();
 
         stage.setTitle("Ankor JavaFX Todo Sample");
@@ -64,7 +64,7 @@ public class TodoWebSocketFxClientStarter extends javafx.application.Application
 
     @Override
     public void stop() throws Exception {
-        client.stop();
+        ankorClient.stop();
         super.stop();
     }
 

@@ -32,6 +32,7 @@
         <module>animals-socket-server</module>
         <module>animals-javafx-client</module>
         <module>animals-js-client</module>
+        <module>animals-websocket-server</module>
     </modules>
 
     <properties>

@@ -31,21 +31,9 @@
 
         <dependency>
             <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-bundle-websocket-server</artifactId>
+            <artifactId>ankor-bundle-js-client</artifactId>
+            <version>0.3-SNAPSHOT</version>
             <type>pom</type>
-        </dependency>
-
-        <dependency>
-            <groupId>at.irian.ankorsamples</groupId>
-            <artifactId>animals-application</artifactId>
-            <scope>compile</scope>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <scope>runtime</scope>
         </dependency>
 
     </dependencies>
