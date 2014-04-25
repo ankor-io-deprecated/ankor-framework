@@ -33,7 +33,6 @@
         <module>todo-javafx-client</module>
         <module>todo-js-client</module>
         <module>todo-distributed-performance-test</module>
-        <module>todo-http-server</module>
         <module>todo-performance-test</module>
     </modules>
 
