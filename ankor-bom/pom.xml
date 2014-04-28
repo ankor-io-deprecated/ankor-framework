@@ -140,6 +140,12 @@
                 <version>${project.version}</version>
                 <type>pom</type>
             </dependency>
+            <dependency>
+                <groupId>at.irian.ankor</groupId>
+                <artifactId>ankor-bundle-js-client</artifactId>
+                <version>${project.version}</version>
+                <type>pom</type>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>
