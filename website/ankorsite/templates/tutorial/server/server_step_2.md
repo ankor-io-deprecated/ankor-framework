@@ -80,5 +80,5 @@ Ideally your IDE can do that for you.
 
 
 [1]: https://github.com/ankor-io/ankor-todo-tutorial/blob/server-step-2/todo-server/src/main/java/io/ankor/tutorial/model/Task.java
-[2]: http://ankor.io/static/javadoc/apidocs-0.2/at/irian/ankor/ref/Ref.html
+[2]: http://ankor.io/static/javadoc/apidocs-0.3/at/irian/ankor/ref/Ref.html
 [3]: https://github.com/ankor-io/ankor-todo-tutorial/blob/server-step-2/todo-server/src/main/java/io/ankor/tutorial/model/TaskRepository.java

@@ -10,11 +10,16 @@ Inside `initialize` we have to take care of two things:
     :::java
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        Ref rootRef = App.refFactory().ref("root");
+        Ref rootRef = refFactory().ref("root");
         rootRef.fire(new Action("init"));
     }
 
 The first statement will return a `Ref`, the second one will send an `Action` to the server.
+
+<div class="alert alert-info">
+    <strong>Note:</strong>
+    Make sure you import the static method <code>refFactory</code>.
+</div>
 
 ##### References
 
@@ -85,5 +90,5 @@ In this method we will then implement bindings to UI components.
 
 [1]: https://github.com/ankor-io/ankor-todo-tutorial/blob/fx-step-2/todo-fx/src/main/java/io/ankor/tutorial/TaskListController.java
 [2]: https://github.com/ankor-io/ankor-todo-tutorial/blob/fx-step-2/todo-fx/src/main/resources/tasks.fxml
-[3]: http://ankor.io/static/javadoc/apidocs/at/irian/ankor/ref/Ref.html
-[4]: http://ankor.io/static/javadoc/apidocs/at/irian/ankor/action/Action.html
+[3]: http://ankor.io/static/javadoc/apidocs-0.3/at/irian/ankor/ref/Ref.html
+[4]: http://ankor.io/static/javadoc/apidocs-0.3/at/irian/ankor/action/Action.html

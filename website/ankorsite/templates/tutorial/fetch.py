@@ -6,7 +6,7 @@ num_per_type = {
     "ios": 4
 }
 
-repository_name = "ankor-todo-tutorial-0.2"
+repository_name = "ankor-todo-tutorial-SNAPSHOT"
 
 print("fetching READMEs from github...")
 

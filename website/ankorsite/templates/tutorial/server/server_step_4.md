@@ -26,9 +26,7 @@ The API looks similar on other platforms.
 Anyway, the server will receive JSON in this form:
 
     {
-        "senderId": "...",
         "modelId": "...",
-        "messageId": "...",
         "property": "root.model",
         "action": {
             "name": "newTask",
@@ -97,5 +95,5 @@ It will also update the local variable, so that `(this.itemsLeft == itemsLeft)` 
 
 After you restart the server, you can add todos to the list and watch how the number gets updated.
 
-[1]: http://ankor.io/static/javadoc/apidocs-0.2/at/irian/ankor/action/Action.html
-[2]: http://ankor.io/static/javadoc/apidocs-0.2/at/irian/ankor/annotation/ActionListener.html
+[1]: http://ankor.io/static/javadoc/apidocs-0.3/at/irian/ankor/action/Action.html
+[2]: http://ankor.io/static/javadoc/apidocs-0.3/at/irian/ankor/annotation/ActionListener.html
