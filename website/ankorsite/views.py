@@ -35,7 +35,7 @@ def get_titles(type):
 
 type_names = {
     'fx': 'JavaFX Client',
-    'js': 'JavaScript Client',
+    'js': 'HTML5 Client',
     'ios': 'iOS Client',
     'server': 'Ankor Server'
 }
