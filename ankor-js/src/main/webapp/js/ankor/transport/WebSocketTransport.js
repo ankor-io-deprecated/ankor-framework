@@ -11,11 +11,11 @@ define([
         this.socket = null;
         this.reconnecting = false;
 
-        this._heartbeatInterval = options.heartbeatInterval || 5000;
+        this._heartbeatInterval = this.options.heartbeatInterval || 5000;
         this._heartbeatTimer = null;
-        this._reconnectBackoff = options.reconnectBackoff || 250;
+        this._reconnectBackoff = this.options.reconnectBackoff || 250;
         this._reconnectDelay = this.reconnectBackoff;
-        this._reconnectMaxDelay = options.reconnectMaxDelay || 5000;
+        this._reconnectMaxDelay = this.options.reconnectMaxDelay || 5000;
     };
 
     WebSocketTransport.prototype = new BaseTransport();
