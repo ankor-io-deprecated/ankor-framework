@@ -13,14 +13,21 @@ define(function() {
             listeners: {},
             ref: this.ankorSystem.getRef("")
         };
+        this.actionListeners = {
+            children: {},
+            listeners: {},
+            ref: this.ankorSystem.getRef("")
+        };
     };
+
     ListenerRegistry.prototype.addListener = function(type, path, cb) {
         var listeners = null;
         if (type == "propChange") {
             listeners = this._resolveListenersForPath(this.propListeners, path);
-        }
-        else if (type == "treeChange") {
+        } else if (type == "treeChange") {
             listeners = this._resolveListenersForPath(this.treeListeners, path);
+        } else if (type == "action") {
+            listeners = this._resolveListenersForPath(this.actionListeners, path);
         }
 
         var listenerId = "#" + listenerCounter++;
@@ -32,6 +39,7 @@ define(function() {
             }
         };
     };
+
     ListenerRegistry.prototype.triggerListeners = function(path, event) {
         //Trigger treeChangeListeners
         var id, listeners, listener;
@@ -124,6 +132,16 @@ define(function() {
             this.removeInvalidListeners(pathsToCleanup[pathString]);
         }
     };
+
+    ListenerRegistry.prototype.triggerActionListeners = function(path, event) {
+        var id, listeners, listener;
+        listeners = this._resolveListenersForPath(this.actionListeners, path);
+        for (id in listeners.listeners) {
+            listener = listeners.listeners[id];
+            listener(listeners.ref, event);
+        }
+    };
+
     ListenerRegistry.prototype.removeInvalidListeners = function(path) {
         //Removes all listeners that are descendants of the given path that are no longer valid (for a ref that points nowhere)
         var filterObsoleteListeners = function(listeners) {

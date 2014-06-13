@@ -149,6 +149,8 @@ define([
                 //Trigger listeners
                 this.ankorSystem.triggerListeners(this.path, event);
             }
+        } else if (event instanceof ActionEvent) {
+            this.ankorSystem.triggerListeners(this.path, event);
         }
     };
 
@@ -163,6 +165,10 @@ define([
 
     Ref.prototype.addTreeChangeListener = function(cb) {
         return this.ankorSystem.addListener("treeChange", this.path, cb);
+    };
+
+    Ref.prototype.addActionListener = function(cb) {
+        return this.ankorSystem.addListener("action", this.path, cb);
     };
 
     return Ref;
