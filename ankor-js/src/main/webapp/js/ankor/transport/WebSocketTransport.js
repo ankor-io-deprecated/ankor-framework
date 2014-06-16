@@ -166,7 +166,9 @@ define([
 
     WebSocketTransport.prototype._onHeartbeat = function() {
         if (this.socket) {
-            console.log("\u2665-beat");
+            if (this.ankorSystem.debug) {
+                console.log("\u2665-beat");
+            }
             this.socket.send("");
             this._heartbeatTimer = setTimeout(this.utils.hitch(this, "_onHeartbeat"), this._heartbeatInterval);
         }
