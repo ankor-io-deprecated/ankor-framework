@@ -127,7 +127,7 @@ public class DefaultServerRoutingLogic implements RoutingLogic {
             }
         }
          if (application == null) {
-            throw new IllegalArgumentException("Could not find application for model {}" + modelName);
+            throw new IllegalArgumentException("Could not find application for model " + modelName);
         }
         return application;
     }
