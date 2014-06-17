@@ -42,6 +42,7 @@
         <module>ankor-console-client</module>
         <module>ankor-bundle-server-viewmodel</module>
         <module>ankor-bundle-socket-fx-client</module>
+        <module>ankor-bundle-websocket-java-client</module>
         <module>ankor-bundle-socket-server</module>
         <module>ankor-bundle-websocket-fx-client</module>
         <module>ankor-bundle-websocket-server</module>
