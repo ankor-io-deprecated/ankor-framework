@@ -5,6 +5,7 @@ import at.irian.ankor.switching.Switchboard;
 import at.irian.ankor.switching.connector.local.StatefulSessionModelAddress;
 import at.irian.ankor.switching.msg.EventMessage;
 import at.irian.ankor.switching.routing.ModelAddress;
+import at.irian.ankor.switching.routing.ModelAddressQualifier;
 
 import java.util.Map;
 
@@ -55,6 +56,11 @@ public class StatsSwitchboardMonitor implements SwitchboardMonitor {
 
     @Override
     public void monitor_closeAllConnections(Switchboard sb, ModelAddress sender) {
+
+    }
+
+    @Override
+    public void monitor_closeQualifyingConnections(Switchboard sb, ModelAddressQualifier qualifier) {
 
     }
 

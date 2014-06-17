@@ -3,6 +3,8 @@ package at.irian.ankor.switching.connector.websocket;
 
 import at.irian.ankor.serialization.MessageDeserializer;
 import at.irian.ankor.path.el.SimpleELPathSyntax;
+import at.irian.ankor.switching.routing.ModelAddress;
+import at.irian.ankor.switching.routing.ModelAddressQualifier;
 import at.irian.ankor.system.AnkorSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +60,7 @@ public abstract class WebSocketEndpoint extends Endpoint {
             MessageDeserializer<String> messageDeserializer
                     = WebSocketConnector.getSingletonMessageDeserializer(ankorSystem);
             WebSocketListener listener =
-                    new WebSocketListener(getPath(), messageDeserializer, ankorSystem.getSwitchboard(),
+                    new WebSocketListener(messageDeserializer, ankorSystem.getSwitchboard(),
                             SimpleELPathSyntax.getInstance(), clientId);
             session.addMessageHandler(listener.getByteMessageHandler());
             session.addMessageHandler(listener.getStringMessageHandler());
@@ -66,10 +68,23 @@ public abstract class WebSocketEndpoint extends Endpoint {
     }
 
     private void unregisterSession(Session session) {
-        String clientId = getClientId(session);
+        final String clientId = getClientId(session);
         if (clientId != null) {
             AnkorSystem ankorSystem = getAnkorSystem();
             WebSocketConnector.getSessionRegistry(ankorSystem).removeSession(clientId, session);
+
+            ankorSystem.getSwitchboard().closeQualifyingConnections(new ModelAddressQualifier() {
+                @Override
+                public boolean qualifies(ModelAddress modelAddress) {
+                    return modelAddress instanceof WebSocketModelAddress &&
+                           ((WebSocketModelAddress) modelAddress).getClientId().equals(clientId);
+                }
+
+                @Override
+                public String toString() {
+                    return "Qualifier for WebSocketModelAddresses of client " + clientId;
+                }
+            });
         }
     }
 

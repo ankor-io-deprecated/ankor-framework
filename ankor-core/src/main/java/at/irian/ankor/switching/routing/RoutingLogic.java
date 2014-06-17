@@ -22,6 +22,8 @@ public interface RoutingLogic {
 
     Collection<ModelAddress> getAllConnectedRoutees();
 
+    Collection<ModelAddress> getQualifiyingAdresses(ModelAddressQualifier qualifier);
+
     void disconnect(ModelAddress sender, ModelAddress receiver);
 
     void init();

@@ -166,6 +166,11 @@ public class DefaultServerRoutingLogic implements RoutingLogic {
     }
 
     @Override
+    public Collection<ModelAddress> getQualifiyingAdresses(ModelAddressQualifier qualifier) {
+        return routingTable.getQualifiyingAddresses(qualifier);
+    }
+
+    @Override
     public void disconnect(ModelAddress sender, ModelAddress receiver) {
         routingTable.disconnect(sender, receiver);
     }

@@ -7,11 +7,9 @@ import at.irian.ankor.monitor.nop.NopRoutingTableMonitor;
 import at.irian.ankor.switching.connector.ConnectorRegistry;
 import at.irian.ankor.switching.connector.DefaultConnectorRegistry;
 import at.irian.ankor.switching.msg.EventMessage;
-import at.irian.ankor.switching.routing.DefaultRoutingTable;
-import at.irian.ankor.switching.routing.ModelAddress;
-import at.irian.ankor.switching.routing.RoutingLogic;
-import at.irian.ankor.switching.routing.RoutingTable;
+import at.irian.ankor.switching.routing.*;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -38,7 +36,6 @@ public class AkkaAddressBoundSwitchboard implements SwitchboardImplementor {
 
     public static SwitchboardImplementor create(ActorSystem actorSystem, SwitchboardMonitor monitor) {
 
-        RoutingTable routingTable = new DefaultRoutingTable(new NopRoutingTableMonitor());
         ConnectorRegistry connectorRegistry = DefaultConnectorRegistry.createForConcurrency(20);  //todo  configure
 
         return new AkkaAddressBoundSwitchboard(actorSystem, monitor, connectorRegistry);
@@ -108,6 +105,14 @@ public class AkkaAddressBoundSwitchboard implements SwitchboardImplementor {
     public void closeAllConnections(ModelAddress sender) {
         getSwitchboardActorFor(sender).tell(new AkkaAddressBoundSwitchboardActor.CloseFromMsg(sender),
                                             ActorRef.noSender());
+    }
+
+    @Override
+    public void closeQualifyingConnections(ModelAddressQualifier senderQualifier) {
+        Collection<ModelAddress> senders = routingLogic.getQualifiyingAdresses(senderQualifier);
+        for (ModelAddress sender : senders) {
+            closeAllConnections(sender);
+        }
     }
 
     /**

@@ -245,7 +245,7 @@ public class WebSocketFxClient implements AnkorClient {
         }
 
         private void closeModelConnection() {
-            ankorSystem.getSwitchboard().closeAllConnections(new WebSocketModelAddress("WebSocket", clientId, modelName));
+            ankorSystem.getSwitchboard().closeAllConnections(new WebSocketModelAddress(clientId, modelName));
         }
 
         private void openModelConnection() {

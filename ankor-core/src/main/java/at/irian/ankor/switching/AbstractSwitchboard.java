@@ -5,6 +5,7 @@ import at.irian.ankor.switching.connector.ConnectorMapping;
 import at.irian.ankor.switching.connector.HandlerScopeContext;
 import at.irian.ankor.switching.msg.EventMessage;
 import at.irian.ankor.switching.routing.ModelAddress;
+import at.irian.ankor.switching.routing.ModelAddressQualifier;
 import at.irian.ankor.switching.routing.RoutingLogic;
 
 import java.util.Collection;
@@ -98,6 +99,20 @@ public abstract class AbstractSwitchboard implements Switchboard {
         Collection<ModelAddress> receivers = routingLogic.getConnectedRoutees(sender);
         for (ModelAddress receiver : receivers) {
             dispatchableCloseConnection(sender, receiver);
+        }
+    }
+
+    @Override
+    public void closeQualifyingConnections(ModelAddressQualifier senderQualifier) {
+        switchboardMonitor.monitor_closeQualifyingConnections(this, senderQualifier);
+        checkRunningOrStopping();
+
+        Collection<ModelAddress> senders = routingLogic.getQualifiyingAdresses(senderQualifier);
+        for (ModelAddress sender : senders) {
+            Collection<ModelAddress> receivers = routingLogic.getConnectedRoutees(sender);
+            for (ModelAddress receiver : receivers) {
+                dispatchableCloseConnection(sender, receiver);
+            }
         }
     }
 

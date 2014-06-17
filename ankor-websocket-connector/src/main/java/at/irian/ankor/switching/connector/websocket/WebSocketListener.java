@@ -21,18 +21,15 @@ public class WebSocketListener {
 
     private static Logger LOG = LoggerFactory.getLogger(WebSocketListener.class);
 
-    private final String path;
     private final String clientId;
     private final MessageDeserializer<String> messageDeserializer;
     private final Switchboard switchboard;
     private final PathSyntax pathSyntax;
 
-    WebSocketListener(String path,
-                      MessageDeserializer<String> messageDeserializer,
+    WebSocketListener(MessageDeserializer<String> messageDeserializer,
                       Switchboard switchboard,
                       PathSyntax pathSyntax,
                       String clientId) {
-        this.path = path;
         this.messageDeserializer = messageDeserializer;
         this.switchboard = switchboard;
         this.pathSyntax = pathSyntax;
@@ -90,7 +87,7 @@ public class WebSocketListener {
 
     private WebSocketModelAddress getAddress(WebSocketMessage socketMessage) {
         String modelName = pathSyntax.rootOf(socketMessage.getProperty());
-        return new WebSocketModelAddress(path, clientId, modelName);
+        return new WebSocketModelAddress(clientId, modelName);
     }
 
     public static boolean isHeartbeat(String message) {
@@ -98,7 +95,7 @@ public class WebSocketListener {
     }
 
 
-    public  MessageHandler.Whole<ByteBuffer> getByteMessageHandler() {
+    public MessageHandler.Whole<ByteBuffer> getByteMessageHandler() {
         return new MessageHandler.Whole<ByteBuffer>() {
             @Override
             public void onMessage(ByteBuffer message) {

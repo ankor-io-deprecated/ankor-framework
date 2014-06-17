@@ -9,15 +9,12 @@ import java.io.Serializable;
  */
 public class WebSocketModelAddress implements ModelAddress, Serializable {
 
-    @Deprecated
-    private final String path;
     private final String clientId;
     private final String modelName;
     private final int hashCode;
     private String consistentHashKey;
 
-    public WebSocketModelAddress(String path, String clientId, String modelName) {
-        this.path = path;
+    public WebSocketModelAddress(String clientId, String modelName) {
         this.clientId = clientId;
         this.modelName = modelName;
         this.hashCode = 31 * clientId.hashCode() + modelName.hashCode();
@@ -31,11 +28,6 @@ public class WebSocketModelAddress implements ModelAddress, Serializable {
 
     public String getClientId() {
         return clientId;
-    }
-
-    @Deprecated
-    public String getPath() {
-        return path;
     }
 
     @Override

@@ -25,7 +25,7 @@ public class ClientWebSocketRoutingLogic implements RoutingLogic {
 
     @Override
     public ModelAddress connect(ModelAddress sender, Map<String, Object> connectParameters) {
-        ModelAddress receiver = new WebSocketModelAddress("WebSocket", clientId, sender.getModelName());
+        ModelAddress receiver = new WebSocketModelAddress(clientId, sender.getModelName());
         boolean success = routingTable.connect(sender, receiver);
         if (!success) {
             LOG.warn("Already connected: {} and {}", sender, receiver);
@@ -41,6 +41,11 @@ public class ClientWebSocketRoutingLogic implements RoutingLogic {
     @Override
     public Collection<ModelAddress> getAllConnectedRoutees() {
         return routingTable.getAllConnectedAddresses();
+    }
+
+    @Override
+    public Collection<ModelAddress> getQualifiyingAdresses(ModelAddressQualifier qualifier) {
+        return routingTable.getQualifiyingAddresses(qualifier);
     }
 
     @Override

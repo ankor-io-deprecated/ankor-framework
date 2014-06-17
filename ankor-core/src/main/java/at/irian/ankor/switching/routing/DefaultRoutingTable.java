@@ -6,6 +6,8 @@ import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.Multimap;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -131,6 +133,17 @@ public class DefaultRoutingTable implements RoutingTable {
     @Override
     public Collection<ModelAddress> getAllConnectedAddresses() {
         return connections.keySet();
+    }
+
+    @Override
+    public Collection<ModelAddress> getQualifiyingAddresses(ModelAddressQualifier qualifier) {
+        Set<ModelAddress> result = new HashSet<ModelAddress>();
+        for (ModelAddress modelAddress : getAllConnectedAddresses()) {
+            if (qualifier.qualifies(modelAddress)) {
+                result.add(modelAddress);
+            }
+        }
+        return result;
     }
 
     @Override

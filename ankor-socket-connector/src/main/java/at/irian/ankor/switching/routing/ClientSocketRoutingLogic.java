@@ -5,7 +5,9 @@ import at.irian.ankor.switching.connector.socket.SocketModelAddress;
 
 import java.net.URI;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * RoutingLogic that always connects to an external directed SocketModelAddress.
@@ -42,6 +44,11 @@ public class ClientSocketRoutingLogic implements RoutingLogic {
     @Override
     public Collection<ModelAddress> getAllConnectedRoutees() {
         return routingTable.getAllConnectedAddresses();
+    }
+
+    @Override
+    public Collection<ModelAddress> getQualifiyingAdresses(ModelAddressQualifier qualifier) {
+        return routingTable.getQualifiyingAddresses(qualifier);
     }
 
     @Override

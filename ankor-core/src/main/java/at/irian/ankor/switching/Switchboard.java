@@ -2,6 +2,7 @@ package at.irian.ankor.switching;
 
 import at.irian.ankor.switching.msg.EventMessage;
 import at.irian.ankor.switching.routing.ModelAddress;
+import at.irian.ankor.switching.routing.ModelAddressQualifier;
 
 import java.util.Map;
 
@@ -42,6 +43,12 @@ public interface Switchboard {
      * @param sender  ModelAddress that wants to close connections
      */
     void closeAllConnections(ModelAddress sender);
+
+    /**
+     * Close the connections to all currently connected receivers of all qualifying senders.
+     * @param senderQualifier  qualifier
+     */
+    void closeQualifyingConnections(ModelAddressQualifier senderQualifier);
 
     /**
      * Close the connection to a specific receiver.
