@@ -1,15 +1,14 @@
 ### HTML5 Client
 
 In this tutorial we'll be building a simple Ankor application for the browser.
-We'll explain how to use the Ankor API in conjunction with a popular rendering framework called [React][1].
-While we use React in this example, the tutorial is intended to explain how the Ankor JavaScript API works in general.
-This should enable you to integrate Ankor with the JS framework of your choice.
+We'll explain how to use the Ankor API in conjunction with the popular rendering framework [React][1].
+While we use React in this example, the tutorial is intended to give you an overview on the Ankor JavaScript API, so that you can use it with other frameworks as well.
 
 #### The Application
 
 This his how the app will look like when we are done:
 
-![fx-step-0-1](http://ankor.io/static/images/tutorial/js-step-0-1.png)
+![js-step-0-1](http://ankor.io/static/images/tutorial/js-step-0-1.png)
 
 This might look familiar to you. It's the todo app form [TodoMVC](http://todomvc.com/).
 
@@ -49,12 +48,11 @@ Please make sure that all software components are installed properly.
             <p>Install Git, download from <a href="http://git-scm.com/download">the Git site</a>.</p>
         </div>
         <div class="tab-pane" id="tab4">
-            <p>In addition to the usual requirements for developing Ankor applications you will need Node.js and its package manager npm.
-            This is required to pre-compile React components. More on that later.</p>
+            <p>In addition to the usual requirements for Ankor tutorials we will need node.js and its package manager npm.</p>
             <p>Please refer to <a href="http://nodejs.org/">the node web page</a> on how to install node on your system. 
-            Note that node comes bundled with npm.</p>
+            Note that node.js comes bundled with npm.</p>
             <p>When you have node installed run <code>npm install -g react-tools</code>. 
-            This will install the pre-compiler for React on your system.</p>
+            This will install a transformer for React components on your system.</p>
         </div>
     </div>
 </div>
@@ -71,7 +69,7 @@ This is how you may switch between tutorial steps later.
 
     :::bash
     cd ankor-todo
-    git checkout -f fx-step-0
+    git checkout -f js-step-0
 
 Now you got a maven project based on these modules:
 
