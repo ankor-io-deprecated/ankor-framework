@@ -55,7 +55,7 @@
             <groupId>at.irian.ankor</groupId>
             <artifactId>ankor-websocket-connector</artifactId>
             <version>${project.version}</version>
-            <scope>runtime</scope>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>
