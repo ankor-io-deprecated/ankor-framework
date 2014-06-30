@@ -35,7 +35,6 @@ public class TodoWebSocketFxClientStarter extends javafx.application.Application
         ankorClient = WebSocketFxClient.builder()
                 .withApplicationName("Todo FX Client")
                 .withModelName("root")
-                .withConnectParam("todoListId", "collaborationTest")
                 .withServer("ws://localhost:8080/websocket/ankor")
                 .withEndpointListener(endpointListener)
                 .build();

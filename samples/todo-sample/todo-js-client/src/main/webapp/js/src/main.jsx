@@ -10,14 +10,12 @@ define([
   "underscore",
   "react",
   "build/todoApp",
-  "build/ankorSystem",
+  "ankor/AnkorSystem",
+  "ankor/transport/WebSocketTransport",
+  "ankor/utils/BaseUtils",
   'base'
-], function (_, React, TodoApp, ankorSystem) {
+], function (_, React, TodoApp, AnkorSystem, WebSocketTransport, BaseUtils) {
   'use strict';
-
-  window.ankorSystem = ankorSystem; //Make reference to ankor system globally available -> for debugging only
-
-  var rootRef = ankorSystem.getRef("root");
 
   var render = function () {
     React.renderComponent(
@@ -28,10 +26,23 @@ define([
       document.getElementById('todoapp')
     );
   };
-  
+
   // no need to render on every message
   render = _.throttle(render, 10);
 
+  var ankorSystem = new AnkorSystem({
+    debug: true,
+    senderId: null,
+    modelId: "root",
+    transport: new WebSocketTransport("/websocket/ankor", {
+      "connectProperty": "root"
+    }),
+    utils: new BaseUtils()
+  });
+
+  var rootRef = ankorSystem.getRef("root");
+  
+  // this is where the magic happens
   rootRef.addTreeChangeListener(render);
 
   ankorSystem.transport.onConnectionChange = function(connected) {

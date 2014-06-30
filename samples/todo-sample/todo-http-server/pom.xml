@@ -1,0 +1,44 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>at.irian.ankorsamples</groupId>
+        <artifactId>todo-sample</artifactId>
+        <version>0.3-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>todo-http-server</artifactId>
+    <packaging>war</packaging>
+
+    <name>Todo Sample - Http Server</name>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>at.irian.ankor</groupId>
+            <artifactId>ankor-servlet</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>at.irian.ankorsamples</groupId>
+            <artifactId>todo-application</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+
+    </dependencies>
+</project>
