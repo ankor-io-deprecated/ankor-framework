@@ -54,7 +54,6 @@ public class TaskListController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Ref rootRef = FxRefs.refFactory().ref("root");
         FXControllerSupport.init(this, rootRef);
-        rootRef.fire(new Action("init"));
     }
 
     @ChangeListener(pattern = "root")
