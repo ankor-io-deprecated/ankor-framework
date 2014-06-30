@@ -102,7 +102,10 @@ public class TaskListController implements Initializable {
 
     @FXML
     public void newTodo(ActionEvent actionEvent) {
-        if (!initialized) throw new IllegalStateException("Not initialized! (Response from server not received)");
+        if (!initialized) {
+            LOG.error("Not initialized! (Response from server not received)");
+            return;
+        }
 
         if (!newTodo.getText().equals("")) {
 
@@ -116,7 +119,10 @@ public class TaskListController implements Initializable {
 
     @FXML
     public void toggleAll(ActionEvent actionEvent) {
-        if (!initialized) throw new IllegalStateException("Not initialized! (Response from server not received)");
+        if (!initialized) {
+            LOG.error("Not initialized! (Response from server not received)");
+            return;
+        }
 
         LinkedHashMap<String, Object> params = new LinkedHashMap<>();
         params.put("toggleAll", toggleAllButton.selectedProperty().get());
@@ -125,7 +131,11 @@ public class TaskListController implements Initializable {
 
     @FXML
     public void clearTasks(ActionEvent actionEvent) {
-        if (!initialized) throw new IllegalStateException("Not initialized! (Response from server not received)");
+        if (!initialized) {
+            LOG.error("Not initialized! (Response from server not received)");
+            return;
+        }
+        
         modelRef.fire(new Action("clearTasks"));
     }
 
@@ -140,16 +150,31 @@ public class TaskListController implements Initializable {
 
     @FXML
     public void filterAllClicked(ActionEvent actionEvent) {
+        if (!initialized) {
+            LOG.error("Not initialized! (Response from server not received)");
+            return;
+        }
+        
         AnkorPatterns.changeValueLater(modelRef.appendPath("filter"), "all");
     }
 
     @FXML
     public void filterActiveClicked(ActionEvent actionEvent) {
+        if (!initialized) {
+            LOG.error("Not initialized! (Response from server not received)");
+            return;
+        }
+        
         AnkorPatterns.changeValueLater(modelRef.appendPath("filter"), "active");
     }
 
     @FXML
     public void filterCompletedClicked(ActionEvent actionEvent) {
+        if (!initialized) {
+            LOG.error("Not initialized! (Response from server not received)");
+            return;
+        }
+        
         AnkorPatterns.changeValueLater(modelRef.appendPath("filter"), "completed");
     }
 }
