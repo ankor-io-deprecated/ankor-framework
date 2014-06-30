@@ -7,7 +7,7 @@ define([
         debug: true,
         senderId: null,
         modelId: "collaborationTest",
-        transport: new WebSocketTransport("/websocket/ankor", {"connectProperty": "root", "connectParams" : {"todoListId" : "collaborationTest"}}),
+        transport: new WebSocketTransport("/stateless/websocket/ankorstateless", {"connectProperty": "root", "connectParams" : {"todoListId" : "collaborationTest"}}),
         utils: new BaseUtils()
     });
 });
