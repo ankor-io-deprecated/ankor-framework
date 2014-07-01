@@ -174,6 +174,12 @@ public class AnkorSystemBuilder {
         return this;
     }
 
+    public AnkorSystemBuilder withActorSystem(ActorSystem actorSystem) {
+        this.actorSystemEnabled = true;
+        this.actorSystem = actorSystem;
+        return this;
+    }
+
     @SuppressWarnings("UnusedDeclaration")
     public AnkorSystemBuilder withMonitor(AnkorSystemMonitor monitor) {
         this.monitor = monitor;
