@@ -20,22 +20,21 @@ public class MonitorActor extends UntypedActor {
 
     private final AnkorSystemStats stats;
     private final StatsAnkorSystemMonitor statsAnkorSystemMonitor;
-    private final long logInitialDelay;
     private final long logInterval;
-    private Cancellable logStats;
+    private final String logLevel;
+    private Cancellable logStatsSchedule;
 
-    public MonitorActor(long interval, long logInitialDelay, long logInterval, AnkorSystemStats stats) {
+    public MonitorActor(AnkorSystemStats stats, long logInterval, String logLevel) {
         this.stats = stats;
         this.statsAnkorSystemMonitor = new StatsAnkorSystemMonitor(stats);
-        this.logInitialDelay = logInitialDelay;
         this.logInterval = logInterval;
+        this.logLevel = logLevel;
     }
 
-    public static Props props(@SuppressWarnings("UnusedParameters") Config config, AnkorSystemStats stats) {
-        long interval = config.getMilliseconds("at.irian.ankor.monitor.akka.MonitorActor.interval");
-        long logInitialDelay = config.getMilliseconds("at.irian.ankor.monitor.akka.MonitorActor.logInitialDelay");
+    public static Props props(Config config, AnkorSystemStats stats) {
         long logInterval = config.getMilliseconds("at.irian.ankor.monitor.akka.MonitorActor.logInterval");
-        return Props.create(MonitorActor.class, interval, logInitialDelay, logInterval, stats);
+        String logLevel = config.getString("at.irian.ankor.monitor.akka.MonitorActor.logLevel");
+        return Props.create(MonitorActor.class, stats, logInterval, logLevel);
     }
 
     @Override
@@ -43,24 +42,17 @@ public class MonitorActor extends UntypedActor {
         scheduleLogStats();
     }
 
-    private void scheduleLogStats() {
-        this.logStats = getContext().system().scheduler().schedule(
-                Duration.create(logInitialDelay, TimeUnit.MILLISECONDS),
-                Duration.create(logInterval, TimeUnit.MILLISECONDS),
-                getSelf(), "logStats", getContext().dispatcher(), null);
-    }
-
     @Override
     public void preRestart(Throwable reason, Option<Object> message) throws Exception {
-        if (!logStats.isCancelled()) {
-            logStats.cancel();
+        if (!logStatsSchedule.isCancelled()) {
+            logStatsSchedule.cancel();
         }
         scheduleLogStats();
     }
 
     @Override
     public void postStop() {
-        logStats.cancel();
+        logStatsSchedule.cancel();
     }
 
     public static String name() {
@@ -72,10 +64,34 @@ public class MonitorActor extends UntypedActor {
         if (o instanceof MonitorMsg) {
             ((MonitorMsg) o).monitorTo(statsAnkorSystemMonitor);
         } else if ("logStats".equals(o)) {
-            LOG.info(stats.toString());
+            logStats();
         }
     }
 
+    private void scheduleLogStats() {
+        if (logInterval > 0) {
+            this.logStatsSchedule = getContext().system().scheduler().schedule(
+                    Duration.create(logInterval, TimeUnit.MILLISECONDS),
+                    Duration.create(logInterval, TimeUnit.MILLISECONDS),
+                    getSelf(), "logStats", getContext().dispatcher(), null);
+        }
+    }
+
+    private void logStats() {
+        if ("trace".equals(logLevel)) {
+            LOG.trace(stats.toString());
+        } else if ("debug".equals(logLevel)) {
+            LOG.debug(stats.toString());
+        } else if ("info".equals(logLevel)) {
+            LOG.info(stats.toString());
+        } else if ("warn".equals(logLevel)) {
+            LOG.warn(stats.toString());
+        } else if ("error".equals(logLevel)) {
+            LOG.error(stats.toString());
+        } else {
+            throw new IllegalArgumentException("Unknown log level " + logLevel);
+        }
+    }
 
     public static interface MonitorMsg {
        void monitorTo(AnkorSystemMonitor monitor);
