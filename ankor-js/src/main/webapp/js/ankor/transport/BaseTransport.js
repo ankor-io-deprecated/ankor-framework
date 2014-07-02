@@ -36,12 +36,14 @@ define([
 
         this.outgoingMessages.push(message);
         if (this.ankorSystem.debug) {
+            message.event.pathString = message.event.path.toString();
             console.log("OUT", message);
         }
     };
 
     BaseTransport.prototype.receiveMessage = function(message) {
         if (this.ankorSystem.debug) {
+            message.event.pathString = message.event.path.toString();
             console.log("IN", message);
         }
         this.ankorSystem.onIncomingEvent(message.event);
