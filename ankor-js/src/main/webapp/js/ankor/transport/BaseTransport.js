@@ -25,6 +25,15 @@ define([
     };
 
     BaseTransport.prototype.sendMessage = function(message) {
+
+        var stateProps = this.ankorSystem.stateProps;
+        if (stateProps) {
+            message.stateValues = {};
+            for (var i = 0, stateProp; (stateProp = stateProps[i]); i++) {
+                message.stateValues[stateProp] = this.ankorSystem.model.getValue(new Path(stateProp));
+            }
+        }
+
         this.outgoingMessages.push(message);
         if (this.ankorSystem.debug) {
             console.log("OUT", message);
@@ -41,6 +50,7 @@ define([
     BaseTransport.prototype.decodeMessage = function(parsedJson) {
         var event = null;
         var path = new Path(parsedJson.property);
+        
         if (parsedJson.change) {
             event = new ChangeEvent(path, "ankorRemoteEvent", parsedJson.change.type, parsedJson.change.key, parsedJson.change.value);
         }
@@ -55,8 +65,15 @@ define([
         else {
             event = new BaseEvent(path, "ankorRemoteEvent");
         }
+        
+        var message = new Message(event);
+        
+        // unexpected side effects
+        if (parsedJson.stateProps && true /* TODO: Check if message is newer */ ) {
+            this.ankorSystem.stateProps = message.stateProps = parsedJson.stateProps;
+        }
 
-        return new Message(event);
+        return message;
     };
 
     BaseTransport.prototype.encodeMessage = function(message) {
@@ -64,6 +81,11 @@ define([
         var jsonMessage = {
             property: event.path.toString()
         };
+        
+        if (message.stateValues) {
+            jsonMessage.stateValues = message.stateValues;
+        }
+        
         if (event instanceof ActionEvent) {
             jsonMessage.action = {
                 name: event.actionName,

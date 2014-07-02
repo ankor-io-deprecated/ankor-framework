@@ -8,6 +8,9 @@ define([
     "./events/ActionEvent"
 ], function(ListenerRegistry, Model, Path, Ref, BaseEvent, ChangeEvent, ActionEvent) {
     var AnkorSystem = function(options) {
+        if (!options) {
+          throw new Error("AnkorSystem missing options");
+        }
         if (!options.utils) {
             throw new Error("AnkorSystem missing utils");
         }
