@@ -139,7 +139,7 @@ public class TaskListModel {
     @ActionListener
     public void toggleAll(@Param("toggleAll") boolean completed) {
         LOG.info("Setting 'completed' flag of all filtered tasks to {}", completed);
-        List<Task> tasks = taskRepository.queryTasks(filter);
+        List<Task> tasks = taskRepository.queryTasks(Filter.all);
         for (Task task : tasks) {
             task.setCompleted(completed);
             taskRepository.updateTask(task);
@@ -150,7 +150,7 @@ public class TaskListModel {
     @ActionListener
     public void clearTasks() {
         LOG.info("Clear all completed tasks");
-        List<Task> tasks = taskRepository.queryTasks(filter);
+        List<Task> tasks = taskRepository.queryTasks(Filter.all);
         for (Task task : tasks) {
             if (task.isCompleted()) {
                 taskRepository.deleteTask(task.getId());
