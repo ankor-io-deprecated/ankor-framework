@@ -8,6 +8,7 @@ import at.irian.ankor.fx.controller.FXControllerSupport;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
 import javafx.beans.property.Property;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -17,9 +18,7 @@ import javafx.scene.layout.VBox;
 import javafx.util.converter.NumberStringConverter;
 
 import java.net.URL;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 @SuppressWarnings("UnusedParameters")
 public class TaskListController implements Initializable {
@@ -48,7 +47,6 @@ public class TaskListController implements Initializable {
     public Node footerBottom;
     private FxRef modelRef;
     private boolean initialized = false;
-    //private HashMap<Integer, TaskPane> cache = new HashMap<>();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -85,18 +83,68 @@ public class TaskListController implements Initializable {
         renderTasks(modelRef.appendPath("tasks"));
     }
 
+    /**
+     * Render the task list, updating the UI only if the list actually changed.
+     * 
+     * @param tasksRef A @{link FxRef} to the list of tasks.
+     */
     @ChangeListener(pattern = "root.model.(tasks)")
     public void renderTasks(FxRef tasksRef) {
         LOG.info("rendering tasks");
 
-        tasksList.getChildren().clear();
+        // get the list of nodes of the current items
+        ObservableList<Node> children = tasksList.getChildren();
+        children.removeAll(Collections.singleton(null)); // remove null values
+        
+        // since the indices shift with every addition/deletion keep a copy
+        List<Node> childrenCopy = new ArrayList<>(children);
 
-        int numTasks = tasksRef.<List>getValue().size();
-        for (int index = 0; index < numTasks; index++) {
-            FxRef itemRef = tasksRef.appendIndex(index);
-            TaskPane node = new TaskPane(itemRef);
-            tasksList.getChildren().add(node);
+        // the ids of the current items
+        List<String> currentIds = new ArrayList<>(children.size());
+        for (Node n : children) {
+            currentIds.add(((TaskPane) n).getTaskId());
         }
+
+        // the ids of the new items
+        List<String> newIds = new ArrayList<>(children.size());
+        for (int i = 0; i < tasksRef.<List>getValue().size(); i++) {
+            newIds.add(tasksRef.appendIndex(i).appendPath("id").<String>getValue());
+        }
+        
+        // get a set of matches between the ids in the current and the new list
+        Set<Match> matchSet = getMatchSet(currentIds, newIds);
+
+        // update the UI based on these matches
+        for (Match m : matchSet) {
+            m.update(tasksRef, childrenCopy);
+        }
+    }
+
+    /**
+     * Get a set of matches between the ids in the current and the new list
+     * 
+     * @param currentIds a ordered list of ids, representing the current state in the UI
+     * @param newIds a ordered list of ids, representing the new state in the UI
+     * @return A set of matches between the ids in the current and the new list
+     */
+    private Set<Match> getMatchSet(List<String> currentIds, List<String> newIds) {
+        Set<Match> matchList = new LinkedHashSet<>(currentIds.size() + newIds.size());
+
+        for (int i = 0; i < currentIds.size(); i++) {
+            String id = currentIds.get(i);
+            int indexOfId = newIds.indexOf(id);
+            Match m = getMatchByIndex(i, indexOfId);
+            matchList.add(m);
+        }
+
+        for (int i = 0; i < newIds.size(); i++) {
+            String id = newIds.get(i);
+            int indexOfId = currentIds.indexOf(id);
+            Match m = getMatchByIndex(indexOfId, i);
+            matchList.add(m);
+        }
+
+        return matchList;
     }
 
     @FXML
@@ -134,7 +182,7 @@ public class TaskListController implements Initializable {
             LOG.error("Not initialized! (Response from server not received)");
             return;
         }
-        
+
         modelRef.fire(new Action("clearTasks"));
     }
 
@@ -145,7 +193,8 @@ public class TaskListController implements Initializable {
 
     @FXML
     public void openTodoMVC(ActionEvent actionEvent) {
-        throw new UnsupportedOperationException();    }
+        throw new UnsupportedOperationException();
+    }
 
     @FXML
     public void filterAllClicked(ActionEvent actionEvent) {
@@ -153,7 +202,7 @@ public class TaskListController implements Initializable {
             LOG.error("Not initialized! (Response from server not received)");
             return;
         }
-        
+
         AnkorPatterns.changeValueLater(modelRef.appendPath("filter"), "all");
     }
 
@@ -163,7 +212,7 @@ public class TaskListController implements Initializable {
             LOG.error("Not initialized! (Response from server not received)");
             return;
         }
-        
+
         AnkorPatterns.changeValueLater(modelRef.appendPath("filter"), "active");
     }
 
@@ -173,7 +222,173 @@ public class TaskListController implements Initializable {
             LOG.error("Not initialized! (Response from server not received)");
             return;
         }
-        
+
         AnkorPatterns.changeValueLater(modelRef.appendPath("filter"), "completed");
+    }
+
+    /**
+     * Get the correct {@link Match} based on the indices of an item in two lists.
+     * 
+     * @param currentIndex the index of the item in the current list
+     * @param newIndex the index of the item in the new list
+     * @return the correct {@link Match} based on the indices
+     */
+    private Match getMatchByIndex(int currentIndex, int newIndex) {
+        if (currentIndex >= 0 && newIndex >= 0) {
+            if (currentIndex == newIndex) {
+                return new PassThroughMatch(currentIndex);
+            } else {
+                return new MoveMatch(currentIndex, newIndex);
+            }
+        } else if (currentIndex < 0) {
+            return new AddMatch(newIndex);
+        } else if (newIndex < 0) {
+            return new RemoveMatch(currentIndex);
+        }
+
+        throw new RuntimeException("Not possible");
+    }
+
+    /**
+     * Details the relation of a single item between two lists.
+     *
+     * The item can be present only in the current list: {@link RemoveMatch}
+     * The item can be present only in the new list: {@link AddMatch}
+     * The item can have kept its index: {@link PassThroughMatch}
+     * The item can have a different index in both lists: {@link MoveMatch}
+     * 
+     * Should only be created via {@link #getMatchByIndex(int, int)}
+     */
+    private abstract class Match {
+        protected final int currentIndex;
+        protected final int newIndex;
+
+        /**
+         * @param currentIndex The index of the item in the current list, -1 if not present
+         * @param newIndex The index of the item in the new list, -1 if not present
+         */
+        public Match(int currentIndex, int newIndex) {
+            this.currentIndex = currentIndex;
+            this.newIndex = newIndex;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof Match)) return false;
+
+            Match match = (Match) o;
+
+            if (currentIndex != match.currentIndex) return false;
+            if (newIndex != match.newIndex) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = currentIndex;
+            result = 31 * result + newIndex;
+            return result;
+        }
+        
+        /**
+         * Updates the UI.
+         *
+         * Since this will change the indices, a copy of the nodes is required.
+         *
+         * @param tasksRef a {@link FxRef} to the tasks
+         * @param childrenCopy a list of the current nodes in the UI, not effected by previous changes
+         */
+        public abstract void update(FxRef tasksRef, List<Node> childrenCopy);
+    }
+
+    /**
+     * Both items have the same index in both lists
+     */
+    private class PassThroughMatch extends Match {
+        public PassThroughMatch(int index) {
+            super(index, index);
+        }
+
+        @Override
+        public void update(FxRef tasksRef, List<Node> childrenCopy) {
+        }
+    }
+
+    /**
+     * The item is only present in the new list
+     */
+    private class AddMatch extends Match {
+        
+        public AddMatch(int newIndex) {
+            super(-1, newIndex);
+        }
+
+        /**
+         * @return the index of the task to be added
+         */
+        public int getAddIndex() {
+            return newIndex;
+        }
+        
+        @Override
+        public void update(FxRef tasksRef, List<Node> childrenCopy) {
+            tasksList.getChildren().add(getAddIndex(), new TaskPane(tasksRef.appendIndex(getAddIndex())));
+        }
+
+    }
+
+    /**
+     * The item has a different index in the new list
+     */
+    private class MoveMatch extends Match {
+
+        public MoveMatch(int index1, int index2) {
+            super(index1, index2);
+        }
+
+        /**
+         * @return the index in the current list
+         */
+        public int getFromIndex() {
+            return currentIndex;
+        }
+
+        /**
+         * @return the index in the new list
+         */
+        public int getToIndex() {
+            return newIndex;
+        }
+        
+        @Override
+        public void update(FxRef tasksRef, List<Node> childrenCopy) {
+            ((TaskPane) childrenCopy.get(getFromIndex())).updateRef(tasksRef.appendIndex(getToIndex()));
+        }
+
+    }
+
+    /**
+     * The item is not present in the new list
+     */
+    private class RemoveMatch extends Match {
+
+        public RemoveMatch(int currentIndex) {
+            super(currentIndex, -1);
+        }
+
+        /**
+         * @return the index of the task to be removed
+         */
+        public int getRemoveIndex() {
+            return currentIndex;
+        }
+        
+        @Override
+        public void update(FxRef tasksRef, List<Node> childrenCopy) {
+            tasksList.getChildren().remove(childrenCopy.get(getRemoveIndex()));
+        }
+
     }
 }

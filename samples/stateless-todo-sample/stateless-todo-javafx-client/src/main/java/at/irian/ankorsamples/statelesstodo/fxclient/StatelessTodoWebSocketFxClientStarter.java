@@ -54,6 +54,7 @@ public class StatelessTodoWebSocketFxClientStarter extends javafx.application.Ap
         ankorClient = WebSocketFxClient.builder()
                                   .withApplicationName("Todo FX Client")
                                   .withModelName("root")
+                                  // TODO: Fix connect Param
                                   .withConnectParam("todoListId", "collaborationTest")
                                   .withServer("ws://localhost:8080/stateless/websocket/ankorstateless")
                                   .withEndpointListener(endpointListener)

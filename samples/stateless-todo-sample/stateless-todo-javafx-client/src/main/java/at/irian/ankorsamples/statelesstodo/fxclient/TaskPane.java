@@ -2,7 +2,6 @@ package at.irian.ankorsamples.statelesstodo.fxclient;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.fx.binding.fxref.FxRef;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -28,15 +27,15 @@ public class TaskPane extends AnchorPane {
     private static Logger LOG = LoggerFactory.getLogger(TaskPane.class);
 
     private FxRef itemRef;
+    private String id;
 
     @FXML public ToggleButton completedButton;
     @FXML public Button deleteButton;
     @FXML public TextField titleTextField;
-
-    private SimpleStringProperty cursorPositionFix = new SimpleStringProperty();
-
+    
     public TaskPane(FxRef itemRef) {
         this.itemRef = itemRef;
+        this.id = itemRef.appendPath("id").getValue();
 
         loadFXML();
         addEventListeners();
@@ -45,6 +44,7 @@ public class TaskPane extends AnchorPane {
     }
 
     private void loadFXML() {
+        // NOTE: Slow, apparently JavaFX has no caching mechanism for this
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("task.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
@@ -62,15 +62,21 @@ public class TaskPane extends AnchorPane {
     }
 
     private void bindProperties() {
-        titleTextField.textProperty().bindBidirectional(itemRef.appendPath("title").<String>fxProperty());
+        itemRef.appendPath("title").<String>fxProperty().bindBidirectional(titleTextField.textProperty());
         completedButton.selectedProperty().bindBidirectional(itemRef.appendPath("completed").<Boolean>fxProperty());
         titleTextField.editableProperty().bindBidirectional(itemRef.appendPath("editable").<Boolean>fxProperty());
     }
 
     private void unbindProperties() {
-        titleTextField.textProperty().unbindBidirectional(itemRef.appendPath("title").<String>fxProperty());
+        itemRef.appendPath("title").<String>fxProperty().unbindBidirectional(titleTextField.textProperty());
         completedButton.selectedProperty().unbindBidirectional(itemRef.appendPath("completed").<Boolean>fxProperty());
         titleTextField.editableProperty().unbindBidirectional(itemRef.appendPath("editable").<Boolean>fxProperty());
+    }
+    
+    public void updateRef(FxRef itemRef) {
+        unbindProperties();
+        this.itemRef = itemRef;
+        bindProperties();
     }
 
     private void addEventListeners() {
@@ -80,6 +86,7 @@ public class TaskPane extends AnchorPane {
                 if (event.getClickCount() > 1) {
                     titleTextField.setEditable(true);
                     titleTextField.selectAll();
+                    //itemRef.root().appendPath("model.editing").setValue(index);
                 }
             }
         });
@@ -120,8 +127,12 @@ public class TaskPane extends AnchorPane {
     @FXML
     public void delete(ActionEvent actionEvent) {
         Map<String, Object> params = new HashMap<>();
-        Map item = itemRef.getValue();
-        params.put("id", item.get("id"));
+        String taskId = itemRef.appendPath("id").getValue();
+        params.put("id", taskId);
         itemRef.root().appendPath("model").fire(new Action("deleteTask", params));
+    }
+    
+    public String getTaskId() {
+        return id;
     }
 }
