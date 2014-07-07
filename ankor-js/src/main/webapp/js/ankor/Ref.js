@@ -22,7 +22,11 @@ define([
     };
 
     Ref.prototype.parent = function() {
-        return new Ref(this.ankorSystem, this.path.parent())
+        return new Ref(this.ankorSystem, this.path.parent());
+    };
+    
+    Ref.prototype.root = function () {
+        return new Ref(this.ankorSystem, this.path.root());
     };
 
     Ref.prototype.propertyName = function() {
