@@ -316,6 +316,8 @@ public class TaskListController implements Initializable {
         public void update(FxRef tasksRef, List<Node> childrenCopy) {
         }
     }
+    
+    private static Stack<TaskPane> pool = new Stack<>();
 
     /**
      * The item is only present in the new list
@@ -335,7 +337,16 @@ public class TaskListController implements Initializable {
         
         @Override
         public void update(FxRef tasksRef, List<Node> childrenCopy) {
-            tasksList.getChildren().add(getAddIndex(), new TaskPane(getAddIndex(), tasksRef.appendIndex(getAddIndex())));
+            TaskPane tp;
+            
+            if (!pool.isEmpty()) {
+                tp = pool.pop();
+                tp.newRef(getAddIndex(), tasksRef.appendIndex(getAddIndex()));
+            } else {
+                tp = new TaskPane(getAddIndex(), tasksRef.appendIndex(getAddIndex()));
+            }
+            
+            tasksList.getChildren().add(getAddIndex(), tp);
         }
 
     }
@@ -388,7 +399,9 @@ public class TaskListController implements Initializable {
         
         @Override
         public void update(FxRef tasksRef, List<Node> childrenCopy) {
-            tasksList.getChildren().remove(childrenCopy.get(getRemoveIndex()));
+            TaskPane tp = (TaskPane) childrenCopy.get(getRemoveIndex());
+            tasksList.getChildren().remove(tp);
+            pool.push(tp);
         }
 
     }

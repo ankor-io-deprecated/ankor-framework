@@ -42,10 +42,12 @@ public class TaskPane extends AnchorPane {
         setValues();
         bindProperties();
     }
+    
+    private static ClassLoader cachingClassLoader = new CachingClassLoader(FXMLLoader.getDefaultClassLoader());
 
     private void loadFXML() {
-        // NOTE: Slow, apparently JavaFX has no caching mechanism for this
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("task.fxml"));
+        fxmlLoader.setClassLoader(cachingClassLoader);
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
         try {
@@ -65,9 +67,18 @@ public class TaskPane extends AnchorPane {
         itemRef.appendPath("completed").<Boolean>fxProperty().bindBidirectional(completedButton.selectedProperty());
     }
 
-    private void unbindProperties() {
+    public void unbindProperties() {
         itemRef.appendPath("title").<String>fxProperty().unbindBidirectional(titleTextField.textProperty());
         itemRef.appendPath("completed").<Boolean>fxProperty().unbindBidirectional(completedButton.selectedProperty());
+    }
+
+    public void newRef(int index, FxRef itemRef) {
+        unbindProperties();
+        this.itemRef = itemRef;
+        this.id = itemRef.appendPath("id").getValue();
+        this.index = index;
+        setValues();
+        bindProperties();
     }
     
     public void updateRef(int index, FxRef itemRef) {
