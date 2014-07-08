@@ -1,4 +1,4 @@
-package at.irian.ankorsamples.statelesstodo.fxclient;
+package at.irian.ankorsamples.todosample.fxclient.fx;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.fx.binding.fxref.FxRef;

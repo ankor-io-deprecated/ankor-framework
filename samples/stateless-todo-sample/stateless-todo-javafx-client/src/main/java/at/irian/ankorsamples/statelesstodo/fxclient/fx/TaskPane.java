@@ -1,9 +1,8 @@
-package at.irian.ankorsamples.todosample.fxclient;
+package at.irian.ankorsamples.statelesstodo.fxclient.fx;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.fx.binding.fxref.FxRef;
-import at.irian.ankorsamples.todosample.fxclient.util.CachingClassLoader;
-import javafx.beans.property.SimpleStringProperty;
+import at.irian.ankor.pattern.AnkorPatterns;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -17,30 +16,25 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-@SuppressWarnings({"PointlessBooleanExpression", "UnusedDeclaration"})
 public class TaskPane extends AnchorPane {
-    private static Logger LOG = LoggerFactory.getLogger(TaskPane.class);
+    //private static Logger LOG = LoggerFactory.getLogger(TaskPane.class);
 
     private FxRef itemRef;
+    private String id;
     private int index;
 
     @FXML public ToggleButton completedButton;
     @FXML public Button deleteButton;
     @FXML public TextField titleTextField;
-
-    private SimpleStringProperty cursorPositionFix = new SimpleStringProperty();
-
-    public static ClassLoader cachingClassLoader = new CachingClassLoader(FXMLLoader.getDefaultClassLoader());
-
-    public TaskPane(FxRef itemRef, int index) {
+    
+    public TaskPane(int index, FxRef itemRef) {
         this.itemRef = itemRef;
+        this.id = itemRef.appendPath("id").getValue();
         this.index = index;
 
         loadFXML();
@@ -48,6 +42,8 @@ public class TaskPane extends AnchorPane {
         setValues();
         bindProperties();
     }
+    
+    private static ClassLoader cachingClassLoader = new CachingClassLoader(FXMLLoader.getDefaultClassLoader());
 
     private void loadFXML() {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("task.fxml"));
@@ -64,19 +60,32 @@ public class TaskPane extends AnchorPane {
     private void setValues() {
         titleTextField.textProperty().setValue(itemRef.appendPath("title").<String>getValue());
         completedButton.selectedProperty().setValue(itemRef.appendPath("completed").<Boolean>getValue());
-        titleTextField.editableProperty().setValue(itemRef.appendPath("editable").<Boolean>getValue());
     }
-
+    
     private void bindProperties() {
-        titleTextField.textProperty().bindBidirectional(itemRef.appendPath("title").<String>fxProperty());
-        completedButton.selectedProperty().bindBidirectional(itemRef.appendPath("completed").<Boolean>fxProperty());
-        titleTextField.editableProperty().bindBidirectional(itemRef.appendPath("editable").<Boolean>fxProperty());
+        itemRef.appendPath("title").<String>fxProperty().bindBidirectional(titleTextField.textProperty());
+        itemRef.appendPath("completed").<Boolean>fxProperty().bindBidirectional(completedButton.selectedProperty());
     }
 
-    private void unbindProperties() {
-        titleTextField.textProperty().unbindBidirectional(itemRef.appendPath("title").<String>fxProperty());
-        completedButton.selectedProperty().unbindBidirectional(itemRef.appendPath("completed").<Boolean>fxProperty());
-        titleTextField.editableProperty().unbindBidirectional(itemRef.appendPath("editable").<Boolean>fxProperty());
+    public void unbindProperties() {
+        itemRef.appendPath("title").<String>fxProperty().unbindBidirectional(titleTextField.textProperty());
+        itemRef.appendPath("completed").<Boolean>fxProperty().unbindBidirectional(completedButton.selectedProperty());
+    }
+
+    public void newRef(int index, FxRef itemRef) {
+        unbindProperties();
+        this.itemRef = itemRef;
+        this.id = itemRef.appendPath("id").getValue();
+        this.index = index;
+        setValues();
+        bindProperties();
+    }
+    
+    public void updateRef(int index, FxRef itemRef) {
+        unbindProperties();
+        this.itemRef = itemRef;
+        this.index = index;
+        bindProperties();
     }
 
     private void addEventListeners() {
@@ -86,6 +95,7 @@ public class TaskPane extends AnchorPane {
                 if (event.getClickCount() > 1) {
                     titleTextField.setEditable(true);
                     titleTextField.selectAll();
+                    AnkorPatterns.changeValueLater(itemRef.root().appendPath("model.editing"), index);
                 }
             }
         });
@@ -95,23 +105,34 @@ public class TaskPane extends AnchorPane {
             public void handle(KeyEvent keyEvent) {
                 if (keyEvent.getCode() == KeyCode.ENTER) {
                     titleTextField.setEditable(false);
+                    AnkorPatterns.changeValueLater(itemRef.root().appendPath("model.editing"), -1);
                 }
             }
         });
-
+        
         titleTextField.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
-            public void changed(ObservableValue<? extends Boolean> observableValue, Boolean newValue, Boolean oldValue) {
-                if (newValue == false) {       // todo  newValue <--> oldValue !
+            public void changed(ObservableValue<? extends Boolean> observableValue, Boolean oldValue, Boolean isFocused) {
+                if (isFocused) {
+                    // Having a 2-way bind while editing causes the caret position to reset
+                    // Therefore just using a regular bind
+                    titleTextField.textProperty().unbindBidirectional(itemRef.appendPath("title").<String>fxProperty());
+                    itemRef.appendPath("title").<String>fxProperty().bind(titleTextField.textProperty());
+                } else {
                     titleTextField.setEditable(false);
+                    AnkorPatterns.changeValueLater(itemRef.root().appendPath("model.editing"), -1);
+                    
+                    // resetting to 2-way bind
+                    itemRef.appendPath("title").<String>fxProperty().unbind();
+                    titleTextField.textProperty().bindBidirectional(itemRef.appendPath("title").<String>fxProperty());
                 }
             }
         });
 
         completedButton.selectedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
-            public void changed(ObservableValue<? extends Boolean> observableValue, Boolean newValue, Boolean oldValue) {
-                if (newValue == false) {        // todo  newValue <--> oldValue !
+            public void changed(ObservableValue<? extends Boolean> observableValue, Boolean oldValue, Boolean isSelected) {
+                if (isSelected) {
                     titleTextField.getStyleClass().remove("default");
                     titleTextField.getStyleClass().add("strike-through");
                 } else {
@@ -126,7 +147,12 @@ public class TaskPane extends AnchorPane {
     @FXML
     public void delete(ActionEvent actionEvent) {
         Map<String, Object> params = new HashMap<>();
-        params.put("index", index);
+        String taskId = itemRef.appendPath("id").getValue();
+        params.put("id", taskId);
         itemRef.root().appendPath("model").fire(new Action("deleteTask", params));
+    }
+    
+    public String getTaskId() {
+        return id;
     }
 }

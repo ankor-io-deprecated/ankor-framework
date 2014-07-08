@@ -1,4 +1,4 @@
-package at.irian.ankorsamples.todosample.server;
+package at.irian.ankorsamples.todosample.application;
 
 import at.irian.ankor.system.SocketStandaloneServer;
 

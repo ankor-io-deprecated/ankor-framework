@@ -1,4 +1,4 @@
-package at.irian.ankorsamples.statelesstodo.fxclient;
+package at.irian.ankorsamples.todosample.fxclient.fx;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.annotation.ChangeListener;
@@ -298,7 +298,7 @@ public class TaskListController implements Initializable {
          *
          * Since this will change the indices, a copy of the nodes is required.
          *
-         * @param tasksRef a {@link FxRef} to the tasks
+         * @param tasksRef a {@link at.irian.ankor.fx.binding.fxref.FxRef} to the tasks
          * @param childrenCopy a list of the current nodes in the UI, not effected by previous changes
          */
         public abstract void update(FxRef tasksRef, List<Node> childrenCopy);

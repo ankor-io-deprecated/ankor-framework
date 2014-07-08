@@ -1,4 +1,4 @@
-package at.irian.ankorsamples.statelesstodo.server;
+package at.irian.ankorsamples.statelesstodo.application;
 
 import at.irian.ankor.system.SocketStatelessStandaloneServer;
 

@@ -1,4 +1,4 @@
-package at.irian.ankorsamples.todosample.fxclient;
+package at.irian.ankorsamples.todosample.fxclient.starter;
 
 import javax.websocket.*;
 import java.io.IOException;

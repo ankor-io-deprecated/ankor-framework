@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package at.irian.ankorsamples.animals.server;
+package at.irian.ankorsamples.animals.application;
 
 import at.irian.ankor.application.Application;
 import at.irian.ankor.system.WebSocketServerEndpoint;

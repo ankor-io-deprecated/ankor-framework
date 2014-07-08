@@ -1,75 +1,76 @@
 package at.irian.ankorsamples.todosample.domain;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class TaskRepository {
-    private Map<String, Task> tasks = new LinkedHashMap<>();
 
-    public synchronized void saveTask(Task task) {
-        tasks.put(task.getId(), task);
+    private static Map<String, Task> tasks = new ConcurrentHashMap<>();
+
+    public Task insertTask(String title, boolean completed) {
+        String id = createUniqueId();
+        Task task = new Task(id, title, completed);
+        tasks.put(id, task);
+        return task;
     }
 
-    public synchronized Task findTask(String id) {
-        return tasks.get(id);
-    }
-
-    public synchronized List<Task> fetchTasks(Filter filter) {
-        switch (filter) {
-            case all:
-                return fetchAllTasks();
-            case active:
-                return fetchActiveTasks();
-            case completed:
-                return fetchCompletedTasks();
+    public void updateTask(Task task) {
+        String id = task.getId();
+        if (!tasks.containsKey(id)) {
+            throw new IllegalArgumentException("Task with id " + id + " not found");
         }
-        return null;
-    }
-    
-    public synchronized List<Task> fetchAllTasks() {
-        List<Task> res = new ArrayList<Task>(tasks.size());
-        for (Task t : tasks.values()) {
-            res.add(new Task(t));
-        }
-        return res;
+        tasks.put(id, task.clone());
     }
 
-    public synchronized List<Task> fetchActiveTasks() {
-        List<Task> res = new ArrayList<Task>(tasks.size());
+    private String createUniqueId() {
+        return UUID.randomUUID().toString();
+    }
+
+    private Task detach(Task task) {
+        // simulate detaching by returning a clone
+        return task.clone();
+    }
+
+    public Task getTaskById(String id) {
+        Task task = tasks.get(id);
+        if (task == null) {
+            throw new IllegalArgumentException("Task with id " + id + " not found");
+        }
+        return detach(task);
+    }
+
+    public List<Task> queryTasks(Filter filter) {
+        List<Task> resultList = new ArrayList<Task>(tasks.size());
         for (Task t : tasks.values()) {
-            if (!t.isCompleted()) {
-                res.add(new Task(t));
+            if (filter == Filter.all ||
+                filter == Filter.active && !t.isCompleted() ||
+                filter == Filter.completed && t.isCompleted()) {
+                resultList.add(detach(t));
             }
         }
-        return res;
+
+        Collections.sort(resultList);
+
+        return resultList;
     }
 
-    public synchronized List<Task> fetchCompletedTasks() {
-        List<Task> res = new ArrayList<Task>(tasks.size());
+    public int countTasks(Filter filter) {
+        int count = 0;
         for (Task t : tasks.values()) {
-            if (t.isCompleted()) {
-                res.add(new Task(t));
+            if (filter == Filter.all ||
+                filter == Filter.active && !t.isCompleted() ||
+                filter == Filter.completed && t.isCompleted()) {
+                count++;
             }
         }
-        return res;
+        return count;
     }
 
-    public synchronized void clearTasks() {
-        Iterator<Map.Entry<String, Task>> it = tasks.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<String, Task> next = it.next();
-            if (next.getValue().isCompleted()) {
-                it.remove();
-            }
-        }
+    public void deleteTask(String taskId) {
+        tasks.remove(taskId);
     }
 
-    public synchronized void deleteTask(Task task) {
-        tasks.remove(task.getId());
-    }
-
-    public synchronized void toggleAll(boolean toggleAll) {
-        for (Task task : tasks.values()) {
-            task.setCompleted(toggleAll);
-        }
+    public void deleteAllTasks() {
+        tasks.clear();
     }
 }

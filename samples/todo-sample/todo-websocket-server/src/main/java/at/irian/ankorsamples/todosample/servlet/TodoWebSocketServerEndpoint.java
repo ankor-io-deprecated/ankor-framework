@@ -2,7 +2,7 @@ package at.irian.ankorsamples.todosample.servlet;
 
 import at.irian.ankor.application.Application;
 import at.irian.ankor.system.WebSocketServerEndpoint;
-import at.irian.ankorsamples.todosample.server.TodoServerApplication;
+import at.irian.ankorsamples.todosample.application.TodoServerApplication;
 
 /**
  * @author Manfred Geiler

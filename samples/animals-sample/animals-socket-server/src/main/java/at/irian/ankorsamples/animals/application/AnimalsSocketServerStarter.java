@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package at.irian.ankorsamples.animals.server;
+package at.irian.ankorsamples.animals.application;
 
 import at.irian.ankor.system.SocketStandaloneServer;
 

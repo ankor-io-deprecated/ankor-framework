@@ -1,4 +1,4 @@
-package at.irian.ankorsamples.animals.server;
+package at.irian.ankorsamples.animals.application;
 
 import at.irian.ankor.application.CollaborationSingleRootApplication;
 import at.irian.ankor.ref.Ref;

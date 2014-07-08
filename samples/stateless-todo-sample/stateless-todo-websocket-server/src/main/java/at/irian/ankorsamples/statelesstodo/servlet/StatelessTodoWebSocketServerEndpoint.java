@@ -18,11 +18,12 @@ package at.irian.ankorsamples.statelesstodo.servlet;
 
 import at.irian.ankor.application.Application;
 import at.irian.ankor.system.WebSocketStatelessServerEndpoint;
-import at.irian.ankorsamples.statelesstodo.server.StatelessTodoServerApplication;
+import at.irian.ankorsamples.statelesstodo.application.StatelessTodoServerApplication;
 
 /**
  * @author Manfred Geiler
  */
+@SuppressWarnings("unused")
 public class StatelessTodoWebSocketServerEndpoint extends WebSocketStatelessServerEndpoint {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TodoWebSocketServerEndpoint.class);
 

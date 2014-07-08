@@ -116,4 +116,7 @@ public class SocketFxClient implements AnkorClient {
         ankorSystem.stop();
     }
 
+    public static SocketFxClientBuilder builder() {
+        return new SocketFxClientBuilder();
+    }
 }

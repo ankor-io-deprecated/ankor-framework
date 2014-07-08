@@ -1,20 +1,4 @@
-/*
- * Copyright (C) 2013-2014  Irian Solutions  (http://www.irian.at)
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-package at.irian.ankorsamples.statelesstodo.fxclient;
+package at.irian.ankorsamples.todosample.fxclient.starter;
 
 import at.irian.ankor.system.AnkorClient;
 import at.irian.ankor.system.WebSocketEndpointListener;
@@ -31,15 +15,17 @@ import javax.websocket.CloseReason;
 import javax.websocket.EndpointConfig;
 import javax.websocket.Session;
 
-/**
- * @author Manfred Geiler
- */
-public class StatelessTodoWebSocketFxClientStarter extends javafx.application.Application {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(StatelessTodoWebSocketFxClientStarter.class);
+public class TodoWebSocketFxClientStarter extends javafx.application.Application {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TodoWebSocketFxClientStarter.class);
 
+    private static final String APPLICATION_NAME = "Ankor Todo WebSocket FX Client";
+    private static final String MODEL_NAME = "root";
+    private static final String WEB_SOCKET_ADDRESS = "ws://localhost:8080/websocket/ankor";
+    private static final String MODEL_INSTANCE_ID = "collaborationTest";
+    
     // used to open the browser
     private static HostServices services;
-
+    
     private AnkorClient ankorClient;
 
     private EndpointListener endpointListener;
@@ -48,17 +34,16 @@ public class StatelessTodoWebSocketFxClientStarter extends javafx.application.Ap
         launch(args);
     }
 
-    public StatelessTodoWebSocketFxClientStarter() throws Exception {
+    public TodoWebSocketFxClientStarter() {
         serverStatus = new Label();
         endpointListener = new EndpointListener();
         ankorClient = WebSocketFxClient.builder()
-                                  .withApplicationName("Todo FX Client")
-                                  .withModelName("root")
-                                  // TODO: Fix connect Param
-                                  .withConnectParam("todoListId", "collaborationTest")
-                                  .withServer("ws://localhost:8080/stateless/websocket/ankorstateless")
-                                  .withEndpointListener(endpointListener)
-                                  .build();
+                .withApplicationName(APPLICATION_NAME)
+                .withModelName(MODEL_NAME)
+                .withServer(WEB_SOCKET_ADDRESS)
+                .withConnectParam("at.irian.ankor.MODEL_INSTANCE_ID", MODEL_INSTANCE_ID)
+                .withEndpointListener(endpointListener)
+                .build();
     }
 
     @Override
@@ -66,7 +51,7 @@ public class StatelessTodoWebSocketFxClientStarter extends javafx.application.Ap
         ankorClient.start();
         services = getHostServices();
 
-        stage.setTitle("Ankor JavaFX Stateless Todo Sample");
+        stage.setTitle(APPLICATION_NAME);
         Pane myPane = FXMLLoader.load(getClass().getClassLoader().getResource("tasks.fxml"));
 
         Scene myScene = new Scene(myPane);

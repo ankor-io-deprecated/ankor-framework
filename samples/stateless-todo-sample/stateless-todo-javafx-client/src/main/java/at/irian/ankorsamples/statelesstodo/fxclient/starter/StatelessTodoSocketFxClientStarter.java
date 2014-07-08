@@ -1,7 +1,7 @@
-package at.irian.ankorsamples.statelesstodo.fxclient;
+package at.irian.ankorsamples.statelesstodo.fxclient.starter;
 
 import at.irian.ankor.system.AnkorClient;
-import at.irian.ankor.system.SocketFxClientBuilder;
+import at.irian.ankor.system.SocketFxClient;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 public class StatelessTodoSocketFxClientStarter extends Application {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(StatelessTodoSocketFxClientStarter.class);
 
-    protected static final String APPLICATION_NAME = "Stateless Todo Sample FX Client";
+    protected static final String APPLICATION_NAME = "Ankor Stateless Todo Socket FX Client";
     protected static final String MODEL_NAME = "root";
 
     public static void main(String[] args) {
@@ -24,9 +24,10 @@ public class StatelessTodoSocketFxClientStarter extends Application {
     private AnkorClient ankorClient;
 
     protected AnkorClient createAnkorClient() {
-        return new SocketFxClientBuilder().withApplicationName(APPLICATION_NAME)
-                                          .withModelName(MODEL_NAME)
-                                          .build();
+        return SocketFxClient.builder()
+                .withApplicationName(APPLICATION_NAME)
+                .withModelName(MODEL_NAME)
+                .build();
     }
 
     @Override
@@ -34,7 +35,7 @@ public class StatelessTodoSocketFxClientStarter extends Application {
         ankorClient = createAnkorClient();
         ankorClient.start();
 
-        stage.setTitle("Ankor JavaFX Todo Sample");
+        stage.setTitle(APPLICATION_NAME);
         Pane myPane = FXMLLoader.load(getClass().getClassLoader().getResource("tasks.fxml"));
         Scene myScene = new Scene(myPane);
         myScene.getStylesheets().add("style.css");

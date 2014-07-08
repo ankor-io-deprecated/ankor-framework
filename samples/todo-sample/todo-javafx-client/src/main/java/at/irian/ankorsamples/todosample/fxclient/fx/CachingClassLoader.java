@@ -1,4 +1,4 @@
-package at.irian.ankorsamples.statelesstodo.fxclient;
+package at.irian.ankorsamples.todosample.fxclient.fx;
 
 import java.io.IOException;
 import java.net.URL;
