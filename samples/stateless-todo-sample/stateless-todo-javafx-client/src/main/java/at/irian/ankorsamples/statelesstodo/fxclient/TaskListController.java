@@ -106,8 +106,9 @@ public class TaskListController implements Initializable {
         }
 
         // the ids of the new items
-        List<String> newIds = new ArrayList<>(children.size());
-        for (int i = 0; i < tasksRef.<List>getValue().size(); i++) {
+        int newIdsSize = tasksRef.<List>getValue().size();
+        List<String> newIds = new ArrayList<>(newIdsSize);
+        for (int i = 0; i < newIdsSize; i++) {
             newIds.add(tasksRef.appendIndex(i).appendPath("id").<String>getValue());
         }
         
@@ -334,7 +335,7 @@ public class TaskListController implements Initializable {
         
         @Override
         public void update(FxRef tasksRef, List<Node> childrenCopy) {
-            tasksList.getChildren().add(getAddIndex(), new TaskPane(tasksRef.appendIndex(getAddIndex())));
+            tasksList.getChildren().add(getAddIndex(), new TaskPane(getAddIndex(), tasksRef.appendIndex(getAddIndex())));
         }
 
     }
@@ -364,7 +365,7 @@ public class TaskListController implements Initializable {
         
         @Override
         public void update(FxRef tasksRef, List<Node> childrenCopy) {
-            ((TaskPane) childrenCopy.get(getFromIndex())).updateRef(tasksRef.appendIndex(getToIndex()));
+            ((TaskPane) childrenCopy.get(getFromIndex())).updateRef(getToIndex(), tasksRef.appendIndex(getToIndex()));
         }
 
     }

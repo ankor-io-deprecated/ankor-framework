@@ -16,6 +16,10 @@
 
 package at.irian.ankorsamples.statelesstodo.viewmodel;
 
+import at.irian.ankor.pattern.AnkorPatterns;
+import at.irian.ankor.ref.Ref;
+import at.irian.ankorsamples.statelesstodo.domain.Task;
+
 /**
  * @author Manfred Geiler
  */
@@ -25,13 +29,12 @@ public class TaskModel {
     private String id;
     private String title;
     private boolean completed;
-    private boolean editing;
-
-    public TaskModel(String id, String title, boolean completed, boolean editing) {
-        this.id = id;
-        this.title = title;
-        this.completed = completed;
-        this.editing = editing;
+    
+    public TaskModel(Ref taskRef, Task t) {
+        AnkorPatterns.initViewModel(this, taskRef);
+        this.id = t.getId();
+        this.title = t.getTitle();
+        this.completed = t.isCompleted();
     }
 
     public String getId() {
@@ -56,13 +59,5 @@ public class TaskModel {
 
     public void setCompleted(boolean completed) {
         this.completed = completed;
-    }
-
-    public boolean isEditing() {
-        return editing;
-    }
-
-    public void setEditing(boolean editing) {
-        this.editing = editing;
     }
 }

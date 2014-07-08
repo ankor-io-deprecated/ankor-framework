@@ -26,10 +26,13 @@ public class TaskListModel {
 
     @StateHolder
     private Filter filter;
-
+    
+    @StateHolder
+    private int editing;
+    
     // calculated fields
 
-    private List<TaskModel> tasks;  // todo: Map
+    private List<TaskModel> tasks;
 
     private boolean footerVisibility;
     private boolean clearButtonVisibility;
@@ -61,6 +64,8 @@ public class TaskListModel {
         LOG.info("Init calculated fields");
 
         tasks = queryTaskList(filter);
+        
+        editing = -1;
 
         itemsLeft = taskRepository.countTasks(Filter.active);
         itemsComplete = taskRepository.countTasks(Filter.completed);
@@ -78,7 +83,6 @@ public class TaskListModel {
     }
 
     @ChangeListener(pattern = {"root.model.tasks.(*).title",
-                               "root.model.tasks.(*).editing",
                                "root.model.tasks.(*).completed"})
     public void onTaskChanged(Ref ref) {
         LOG.info("Task {} changed", ref.path());
@@ -89,7 +93,7 @@ public class TaskListModel {
         taskRepository.updateTask(task);
         updateTasksList();
     }
-
+    
     @ChangeListener(pattern = "root.model.filter")
     public void onFilterChanged() {
         LOG.info("Filter changed to {}", filter);
@@ -163,16 +167,17 @@ public class TaskListModel {
         modelRef.appendPath("tasks").setValue(queryTaskList(filter));
     }
 
-
     /* ---------------- *
-     *  Business logic
+     *  Business logic  *
      * ---------------- */
 
     private List<TaskModel> queryTaskList(Filter filter) {
         List<Task> tasks = taskRepository.queryTasks(filter);
         ArrayList<TaskModel> taskModelList = new ArrayList<>(tasks.size());
+        int i = 0;
         for (Task task : tasks) {
-            taskModelList.add(new TaskModel(task.getId(), task.getTitle(), task.isCompleted(), false));
+            taskModelList.add(new TaskModel(modelRef.appendPath("tasks").appendIndex(i), task));
+            i++;
         }
         return taskModelList;
     }
@@ -211,8 +216,18 @@ public class TaskListModel {
     }
 
     /* ------------------- *
-     *  Getters & Setters
+     *  Getters & Setters  *
      * ------------------- */
+
+    public String getFilter() {
+        return filter.toString();
+    }
+
+    public void setFilter(String filter) {
+        this.filter = Filter.valueOf(filter);
+        // TODO: Document the importance of keeping the state consistent
+        initCalculatedFields();
+    }
 
     public int getItemsLeft() {
         return itemsLeft;
@@ -228,14 +243,6 @@ public class TaskListModel {
 
     public void setTasks(List<TaskModel> tasks) {
         this.tasks = tasks;
-    }
-
-    public String getFilter() {
-        return filter.toString();
-    }
-
-    public void setFilter(String filter) {
-        this.filter = Filter.valueOf(filter);
     }
 
     public boolean getFooterVisibility() {
@@ -308,5 +315,13 @@ public class TaskListModel {
 
     public void setItemsLeftText(String itemsLeftText) {
         this.itemsLeftText = itemsLeftText;
+    }
+
+    public int getEditing() {
+        return editing;
+    }
+
+    public void setEditing(int editing) {
+        this.editing = editing;
     }
 }

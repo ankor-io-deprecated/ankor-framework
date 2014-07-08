@@ -2,6 +2,7 @@ package at.irian.ankorsamples.statelesstodo.fxclient;
 
 import at.irian.ankor.action.Action;
 import at.irian.ankor.fx.binding.fxref.FxRef;
+import at.irian.ankor.pattern.AnkorPatterns;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -15,27 +16,26 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-@SuppressWarnings({"PointlessBooleanExpression", "UnusedDeclaration"})
 public class TaskPane extends AnchorPane {
-    private static Logger LOG = LoggerFactory.getLogger(TaskPane.class);
+    //private static Logger LOG = LoggerFactory.getLogger(TaskPane.class);
 
     private FxRef itemRef;
     private String id;
+    private int index;
 
     @FXML public ToggleButton completedButton;
     @FXML public Button deleteButton;
     @FXML public TextField titleTextField;
     
-    public TaskPane(FxRef itemRef) {
+    public TaskPane(int index, FxRef itemRef) {
         this.itemRef = itemRef;
         this.id = itemRef.appendPath("id").getValue();
+        this.index = index;
 
         loadFXML();
         addEventListeners();
@@ -58,24 +58,22 @@ public class TaskPane extends AnchorPane {
     private void setValues() {
         titleTextField.textProperty().setValue(itemRef.appendPath("title").<String>getValue());
         completedButton.selectedProperty().setValue(itemRef.appendPath("completed").<Boolean>getValue());
-        titleTextField.editableProperty().setValue(itemRef.appendPath("editable").<Boolean>getValue());
     }
-
+    
     private void bindProperties() {
         itemRef.appendPath("title").<String>fxProperty().bindBidirectional(titleTextField.textProperty());
-        completedButton.selectedProperty().bindBidirectional(itemRef.appendPath("completed").<Boolean>fxProperty());
-        titleTextField.editableProperty().bindBidirectional(itemRef.appendPath("editable").<Boolean>fxProperty());
+        itemRef.appendPath("completed").<Boolean>fxProperty().bindBidirectional(completedButton.selectedProperty());
     }
 
     private void unbindProperties() {
         itemRef.appendPath("title").<String>fxProperty().unbindBidirectional(titleTextField.textProperty());
-        completedButton.selectedProperty().unbindBidirectional(itemRef.appendPath("completed").<Boolean>fxProperty());
-        titleTextField.editableProperty().unbindBidirectional(itemRef.appendPath("editable").<Boolean>fxProperty());
+        itemRef.appendPath("completed").<Boolean>fxProperty().unbindBidirectional(completedButton.selectedProperty());
     }
     
-    public void updateRef(FxRef itemRef) {
+    public void updateRef(int index, FxRef itemRef) {
         unbindProperties();
         this.itemRef = itemRef;
+        this.index = index;
         bindProperties();
     }
 
@@ -86,7 +84,7 @@ public class TaskPane extends AnchorPane {
                 if (event.getClickCount() > 1) {
                     titleTextField.setEditable(true);
                     titleTextField.selectAll();
-                    //itemRef.root().appendPath("model.editing").setValue(index);
+                    AnkorPatterns.changeValueLater(itemRef.root().appendPath("model.editing"), index);
                 }
             }
         });
@@ -96,23 +94,34 @@ public class TaskPane extends AnchorPane {
             public void handle(KeyEvent keyEvent) {
                 if (keyEvent.getCode() == KeyCode.ENTER) {
                     titleTextField.setEditable(false);
+                    AnkorPatterns.changeValueLater(itemRef.root().appendPath("model.editing"), -1);
                 }
             }
         });
-
+        
         titleTextField.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
-            public void changed(ObservableValue<? extends Boolean> observableValue, Boolean newValue, Boolean oldValue) {
-                if (newValue == false) {       // todo  newValue <--> oldValue !
+            public void changed(ObservableValue<? extends Boolean> observableValue, Boolean oldValue, Boolean isFocused) {
+                if (isFocused) {
+                    // Having a 2-way bind while editing causes the caret position to reset
+                    // Therefore just using a regular bind
+                    titleTextField.textProperty().unbindBidirectional(itemRef.appendPath("title").<String>fxProperty());
+                    itemRef.appendPath("title").<String>fxProperty().bind(titleTextField.textProperty());
+                } else {
                     titleTextField.setEditable(false);
+                    AnkorPatterns.changeValueLater(itemRef.root().appendPath("model.editing"), -1);
+                    
+                    // resetting to 2-way bind
+                    itemRef.appendPath("title").<String>fxProperty().unbind();
+                    titleTextField.textProperty().bindBidirectional(itemRef.appendPath("title").<String>fxProperty());
                 }
             }
         });
 
         completedButton.selectedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
-            public void changed(ObservableValue<? extends Boolean> observableValue, Boolean newValue, Boolean oldValue) {
-                if (newValue == false) {        // todo  newValue <--> oldValue !
+            public void changed(ObservableValue<? extends Boolean> observableValue, Boolean oldValue, Boolean isSelected) {
+                if (isSelected) {
                     titleTextField.getStyleClass().remove("default");
                     titleTextField.getStyleClass().add("strike-through");
                 } else {

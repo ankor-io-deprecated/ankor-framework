@@ -10,6 +10,7 @@ import java.util.Map;
 /**
  * @author Manfred Geiler
  */
+// TODO: Make collaborative
 public class TodoServerApplication extends SimpleSingleRootApplication {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnimalsServerApplication.class);
 

@@ -35,7 +35,8 @@ define([
     senderId: null,
     modelId: "root",
     transport: new WebSocketTransport("/stateless/websocket/ankorstateless", {
-      "connectProperty": "root"
+      "connectProperty": "root",
+      "at.irian.ankor.MODEL_INSTANCE_ID": "collabTest"
     }),
     utils: new BaseUtils()
   });

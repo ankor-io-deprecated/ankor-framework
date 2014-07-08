@@ -5,6 +5,7 @@ public class Task implements Comparable<Task>, Cloneable {
     private String id;
     private String title;
     private boolean completed = false;
+    private Long creationDate;
 
     /**
      * Just for deserialization
@@ -16,6 +17,7 @@ public class Task implements Comparable<Task>, Cloneable {
         this.id = id;
         this.title = title;
         this.completed = completed;
+        this.creationDate = System.currentTimeMillis();
     }
 
     public String getTitle() {
@@ -66,7 +68,13 @@ public class Task implements Comparable<Task>, Cloneable {
 
     @Override
     public int compareTo(Task other) {
-        return this.getTitle().compareTo(other.getTitle());
+        if (this.creationDate - other.creationDate > 0) {
+            return 1;
+        } else if (this.creationDate - other.creationDate == 0)  {
+            return 0;
+        } else {
+            return -1;
+        }
     }
 
     @Override
