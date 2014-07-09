@@ -197,5 +197,3 @@ Or you can learn how to build this application on [another platform][tutorials].
 
 [servertutorial]: http://www.ankor.io/tutorials/server
 [tutorials]: http://www.ankor.io/tutorials
-
-

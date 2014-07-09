@@ -98,6 +98,6 @@ A running Ankor server should send an UUID when a connection is established.
 
 If the server appears to be offline you can still [run your own server][2].
 
-[1]: http://ankor.io/static/javadoc/apidocs-0.2/at/irian/ankor/system/WebSocketFxClient.html
+[1]: http://ankor.io/static/javadoc/apidocs-0.3/at/irian/ankor/system/WebSocketFxClient.html
 [2]: http://ankor.io/tutorials/server/1
 [3]: http://docs.oracle.com/javafx/2/api/javafx/application/Application.html

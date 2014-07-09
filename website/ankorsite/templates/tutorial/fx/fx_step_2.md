@@ -90,5 +90,5 @@ In this method we will then implement bindings to UI components.
 
 [1]: https://github.com/ankor-io/ankor-todo-tutorial/blob/fx-step-2/todo-fx/src/main/java/io/ankor/tutorial/TaskListController.java
 [2]: https://github.com/ankor-io/ankor-todo-tutorial/blob/fx-step-2/todo-fx/src/main/resources/tasks.fxml
-[3]: http://ankor.io/static/javadoc/apidocs-0.2/at/irian/ankor/ref/Ref.html
-[4]: http://ankor.io/static/javadoc/apidocs-0.2/at/irian/ankor/action/Action.html
+[3]: http://ankor.io/static/javadoc/apidocs-0.3/at/irian/ankor/ref/Ref.html
+[4]: http://ankor.io/static/javadoc/apidocs-0.3/at/irian/ankor/action/Action.html
