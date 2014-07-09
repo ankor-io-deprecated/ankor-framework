@@ -26,7 +26,7 @@ Open `App.java` and add the following lines:
                     .withApplicationName("Todo FX Client")
                     .withModelName("root")
                     .withConnectParam("todoListId", "collaborationTest")
-                    .withServer("wss://ankor-todo-sample.irian.at/websocket/ankor")
+                    .withServer("ws://localhost:8080/websocket/ankor")
                     .build();
         }
     
@@ -51,12 +51,12 @@ Open `App.java` and add the following lines:
         }
     }
 
-For now we are connecting to an existing Ankor server at `wss://ankor-todo-sample.irian.at/websocket/ankor`.
-This server will be able to understand and process the messages that our todo application is going to send.
-This will give you the experience of an application developer adding a new client platform to an existing Ankor system.
-
-However, if you want to write your own server first you can learn how to do so in the [server tutorial][2].
-If you want to run your own server locally [you can do so as well][2].
+This assumes that you have an Ankor server with WebSocket endpoint running on your local machine at port 8080.
+If you've already done the [Server Tutorial][servertutorial] you can use that one you implemented yourself.
+Otherwise you can use the one provided with this repository.
+You can start it by invoking `mvn install` in the root directory.
+Note that you might run into problems if you have a newer version of Maven installed.
+Maven 3.0.5 is known to work though.
 
 #### Adding JavaFX to the classpath
 
@@ -91,13 +91,6 @@ styled for you. Building an JavaFX app from ground up is outside the scope of th
 
 ![fx-step-1-1](http://ankor.io/static/images/tutorial/fx-step-1-1.png)
 
-If the app doesn't start the test server could be offline.
-You can check the online status via
-[websocket.org](http://www.websocket.org/echo.html) (the WebSocket url is `wss://ankor-todo-sample.irian.at/websocket/ankor`).
-A running Ankor server should send an UUID when a connection is established.
-
-If the server appears to be offline you can still [run your own server][2].
-
 [1]: http://ankor.io/static/javadoc/apidocs-0.3/at/irian/ankor/system/WebSocketFxClient.html
-[2]: http://ankor.io/tutorials/server/1
+[servertutorial]: http://ankor.io/tutorials/server
 [3]: http://docs.oracle.com/javafx/2/api/javafx/application/Application.html
