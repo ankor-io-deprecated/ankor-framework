@@ -30,57 +30,22 @@
     <div class="container">
         <div class="row mt centered">
             <div class="col-lg-4">
-                <h4>View Model</h4>
-                <p>
-                    Implement your view model and all the behavior on server side. Let Ankor synchronize the data and propagate events
-                    across the wire.
-                </p>
-                <pre>{"root": {
-   "person" : {
-        "firstName" : "John",
-        "lastName" : "Doe"
-    }
-}</pre>
-                <p>
-                    MVVM is an event-driven UI programming pattern originated from Microsoft. Using Ankor you are able
-                    to implement all the behavior on server side, whereas the state can be
-                    managed on the client and/or server side.
-                </p>
+                {% load markdownlib %}
+                {% autoescape off %}
+                {{ mdcontent1|markdown:"codehilite" }}
+                {% endautoescape %}
             </div>
             <div class="col-lg-4">
-                <h4>UI Binding support</h4>
-                <p>Bind your View Model properties to UI controls. Ankor comes with binding support for several UI technologies. Here's a JavaFX example:</p>
-                <div class="clodehilite">
-                    <pre>Ref rootRef = FxRefs.refFactory().ref("root");
-Ref nameRef = rootRef
-    .appendPath("person.firstName");
-
-textCtrl.textProperty().bind(
-    nameRef.fxProperty());</pre>
-                </div>
-                <p>
-                    As a developer you just bind view model properties to your UI controls. The binding typically works both ways
-                    UI control to Model and vice versa.
-                </p>
+                {% load markdownlib %}
+                {% autoescape off %}
+                {{ mdcontent2|markdown:"codehilite" }}
+                {% endautoescape %}
             </div>
             <div class="col-lg-4">
-                <h4>Event-driven framework</h4>
-                <p>
-                    React to events asynchronously even on server side. Implement your Action and Change Listeners
-                    in Java. Just annotate your View Model to register Listeners.
-                </p>
-                <div class="clodehilite">
-                    <pre>@ActionListener
-public void addTask(
-    @Param("title") final String title) {...}
-
-@ChangeListener(pattern = ".filter")
-public void filterDidChange() {...}</pre>
-                </div>
-                <p>
-                    "An application based on asynchronous communication implements a loosely coupled design,
-                    much better so than one based purely on synchronous method calls". <a href="http://www.reactivemanifesto.org/" target="_blank">The Reactive Manifesto</a>
-                </p>
+                {% load markdownlib %}
+                {% autoescape off %}
+                {{ mdcontent3|markdown:"codehilite" }}
+                {% endautoescape %}
             </div>
         </div>
     </div>

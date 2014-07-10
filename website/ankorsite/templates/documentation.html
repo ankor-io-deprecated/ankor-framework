@@ -11,16 +11,20 @@
     {% for v in releaseVersions %}
     <h3>Ankor {{ v }}</h3>
     <ul>
-        <li><a href="manual/{{ v }}">Ankor Manual</a></li>
+        <li><a href="/manual/{{ v }}">Ankor Manual</a></li>
         <li><a href="{% static 'javadoc/apidocs-'%}{{ v }}/index.html">Ankor API</a></li>
         <li><a href="spidoc/{{ v }}">Developer Documentation (SPI)</a></li>
         <li><a href="http://github.com/ankor-io/ankor-framework/blob/ankor-{{ v|safe }}/release-notes.md">Release Notes</a></li>
+        
+        {% if v == "0.3" %}
+            <li><a href="/features/stateless">Stateless Feature</a></li>
+        {% endif %}
     </ul>
     {% endfor %}
 
     <h3>Ankor 0.1</h3>
     <ul>
-        <li><a href="manual/0.1">Ankor Manual</a></li>
+        <li><a href="/manual/0.1">Ankor Manual</a></li>
         <li><a href="{% static 'javadoc/apidocs-0.1/index.html' %}">Ankor API</a></li>
     </ul>
 

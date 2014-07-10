@@ -6,8 +6,9 @@ from django.core.files import File
 
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 
-ANKOR_STABLE_VERSION = "0.2.0"
-ANKOR_LATEST_VERSION = "0.2.0"
+ANKOR_STABLE_VERSION = "0.3.0"
+ANKOR_LATEST_VERSION = "0.3.0"
+
 
 def path_to_steps(type, step):
     return open(SITE_ROOT + '/templates/tutorial/' + type + '/' + type + '_step_' + step + '.md', 'r')
@@ -33,6 +34,7 @@ def get_titles(type):
     print "TITLES ", titles
     return titles
 
+
 type_names = {
     'fx': 'JavaFX Client',
     'js': 'HTML5 Client',
@@ -56,10 +58,22 @@ tutorial_titles = {
 
 
 def index(request):
+    with open(SITE_ROOT + '/templates/index_col_1.md', 'r') as f:
+        mdcontent1 = File(f).read()
+        
+    with open(SITE_ROOT + '/templates/index_col_2.md', 'r') as f:
+        mdcontent2 = File(f).read()
+        
+    with open(SITE_ROOT + '/templates/index_col_3.md', 'r') as f:
+        mdcontent3 = File(f).read()
+        
     template = loader.get_template('index.html')
     context = RequestContext(request, {
         'activeMenu': 'home',
         'activeMenuText': 'Home',
+        'mdcontent1': mdcontent1,
+        'mdcontent2': mdcontent2,
+        'mdcontent3': mdcontent3
     })
     return HttpResponse(template.render(context))
 
@@ -140,7 +154,7 @@ def documentation(request):
     context = RequestContext(request, {
         'activeMenu': 'documentation',
         'activeMenuText': 'Documentation',
-        'releaseVersions': ['0.3','0.2'],
+        'releaseVersions': ['0.3', '0.2'],
         'stableVersion': ANKOR_STABLE_VERSION,
         'latestVersion': ANKOR_LATEST_VERSION
     })
@@ -159,6 +173,7 @@ def manual(request, version):
     })
     return HttpResponse(template.render(context))
 
+
 def spidoc(request, version):
     template = loader.get_template('spidoc/spidoc.html')
     with open(SITE_ROOT + '/templates/spidoc/spidoc-' + version + '.md', 'r') as f:
@@ -171,6 +186,7 @@ def spidoc(request, version):
     })
     return HttpResponse(template.render(context))
 
+
 def contribute(request):
     template = loader.get_template('contribute.html')
     context = RequestContext(request, {
@@ -178,3 +194,16 @@ def contribute(request):
         'activeMenuText': 'Contribute'
     })
     return HttpResponse(template.render(context))
+
+
+def stateless(request):
+    template = loader.get_template('spidoc/spidoc.html')
+    with open(SITE_ROOT + '/templates/tutorial/stateless.md', 'r') as f:
+        mdcontent = File(f).read()
+    context = RequestContext(request, {
+        'activeMenu': 'documentation',
+        'activeMenuText': 'Documentation',
+        'mdcontent': mdcontent
+    })
+    return HttpResponse(template.render(context))
+
