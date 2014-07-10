@@ -99,6 +99,10 @@ a:hover code {
 }
 
 p > img {
+    width: 100%;
+}
+
+.tutorial p > img {
   max-width: 764px;
 }
 
@@ -108,6 +112,10 @@ p > img {
     z-index: 2;
     background: #fff;
     overflow-x: hidden;
+}
+
+.foreground .container {
+    padding-bottom: 30px;
 }
 
 #footer, body {
