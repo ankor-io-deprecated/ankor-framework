@@ -222,8 +222,6 @@ public class TaskListModel {
 
     public void setFilter(String filter) {
         this.filter = Filter.valueOf(filter);
-        // TODO: Document the importance of keeping the state consistent
-        initCalculatedFields();
     }
 
     public int getItemsLeft() {
