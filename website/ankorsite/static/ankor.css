@@ -3,6 +3,7 @@ body {
     overflow-x: hidden;
     overflow-y: scroll;
     -webkit-font-smoothing: antialiased;
+    moz-osx-font-smoothing: grayscale;
 }
 
 .container {
