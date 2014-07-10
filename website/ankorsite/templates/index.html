@@ -9,9 +9,13 @@
     <div class="home container">
         <div class="col-md-12">
             <span class="fa fa-anchor hidden-xs hidden-sm"></span>
+
             <h1>Ankor</h1>
+
             <h2>is a new event-driven framework for scalable application development.</h2>
+
             <h3>Ankor is responsive and supports multi-core hardware by design.</h3>
+
             <h3>It has out box support for multiple platforms and technologies.</h3>
             <ul class="lead list-inline">
                 <li><span class="glyphicon glyphicon-ok"></span>&nbsp;JavaFX</li>
@@ -21,32 +25,31 @@
                 <li><span class="glyphicon glyphicon-ok"></span>&nbsp;Android</li>
                 <li><span class="glyphicon glyphicon-ok"></span>&nbsp;JEE</li>
                 <li><span class="glyphicon glyphicon-ok"></span>&nbsp;Spring</li>
-            </ul>            <br/>
+            </ul>
+            <br/>
             <a href="/tutorials" type="button" class="btn btn-success btn-lg">Get started today</a>
         </div>
     </div>
 </section>
 <section class="row">
     <div class="container">
-        <div class="row mt centered">
-            <div class="col-lg-4">
-                {% load markdownlib %}
-                {% autoescape off %}
-                {{ mdcontent1|markdown:"codehilite" }}
-                {% endautoescape %}
-            </div>
-            <div class="col-lg-4">
-                {% load markdownlib %}
-                {% autoescape off %}
-                {{ mdcontent2|markdown:"codehilite" }}
-                {% endautoescape %}
-            </div>
-            <div class="col-lg-4">
-                {% load markdownlib %}
-                {% autoescape off %}
-                {{ mdcontent3|markdown:"codehilite" }}
-                {% endautoescape %}
-            </div>
+        <div class="col-lg-4">
+            {% load markdownlib %}
+            {% autoescape off %}
+            {{ mdcontent1|markdown:"codehilite" }}
+            {% endautoescape %}
+        </div>
+        <div class="col-lg-4">
+            {% load markdownlib %}
+            {% autoescape off %}
+            {{ mdcontent2|markdown:"codehilite" }}
+            {% endautoescape %}
+        </div>
+        <div class="col-lg-4">
+            {% load markdownlib %}
+            {% autoescape off %}
+            {{ mdcontent3|markdown:"codehilite" }}
+            {% endautoescape %}
         </div>
     </div>
 </section>
