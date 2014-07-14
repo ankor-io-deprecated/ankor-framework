@@ -20,7 +20,7 @@
     <parent>
         <groupId>at.irian.ankorsamples</groupId>
         <artifactId>stateless-todo-sample</artifactId>
-        <version>0.3-SNAPSHOT</version>
+        <version>0.3.0</version>
     </parent>
 
     <artifactId>stateless-todo-js-client</artifactId>
@@ -33,7 +33,7 @@
         <dependency>
             <groupId>at.irian.ankor</groupId>
             <artifactId>ankor-bundle-js-client</artifactId>
-            <version>0.3-SNAPSHOT</version>
+            <version>0.3.0</version>
             <type>pom</type>
         </dependency>
 

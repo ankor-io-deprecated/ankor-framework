@@ -19,7 +19,7 @@
     <parent>
         <groupId>at.irian.ankor</groupId>
         <artifactId>ankor-project</artifactId>
-        <version>0.3-SNAPSHOT</version>
+        <version>0.3.0</version>
     </parent>
     <artifactId>ankor-bom</artifactId>
     <packaging>pom</packaging>
@@ -45,7 +45,8 @@
         <connection>scm:git:git://github.com/ankor-io/ankor-framework</connection>
         <developerConnection>scm:git:git://github.com/ankor-io/ankor-framework</developerConnection>
         <url>https://github.com/ankor-io/ankor-framework</url>
-    </scm>
+      <tag>ankor-project-0.3.0</tag>
+  </scm>
     <dependencyManagement>
         <dependencies>
             <dependency>

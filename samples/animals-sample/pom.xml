@@ -20,7 +20,7 @@
     <parent>
         <groupId>at.irian.ankorsamples</groupId>
         <artifactId>ankor-samples</artifactId>
-        <version>0.3-SNAPSHOT</version>
+        <version>0.3.0</version>
     </parent>
 
     <artifactId>animals-sample</artifactId>
@@ -44,7 +44,7 @@
              <dependency>
                 <groupId>at.irian.ankor</groupId>
                 <artifactId>ankor-bom</artifactId>
-                <version>0.3-SNAPSHOT</version>
+                <version>0.3.0</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
