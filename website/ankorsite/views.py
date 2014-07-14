@@ -15,9 +15,9 @@ def path_to_steps(type, step):
 
 
 def get_num_tutorials(type):
-    typePath = SITE_ROOT + '/templates/tutorial/' + type + '/'
-    if os.path.isdir(typePath):
-        return len(os.listdir(typePath))
+    type_path = SITE_ROOT + '/templates/tutorial/' + type + '/'
+    if os.path.isdir(type_path):
+        return len(os.listdir(type_path))
     else:
         return 0
 
@@ -25,8 +25,8 @@ def get_num_tutorials(type):
 def get_titles(type):
     titles = [""] * get_num_tutorials(type)
     for x in range(0, len(titles)):
-        path = path_to_steps(type, str(x))
-        line = path.readline()
+        with path_to_steps(type, str(x)) as f:
+            line = f.readline()
         try:
             titles[x] = line.replace('### ', '')
         except Exception:
@@ -58,15 +58,16 @@ tutorial_titles = {
 
 
 def index(request):
-    with open(SITE_ROOT + '/templates/index_col_1.md', 'r') as f:
-        mdcontent1 = File(f).read()
-        
-    with open(SITE_ROOT + '/templates/index_col_2.md', 'r') as f:
-        mdcontent2 = File(f).read()
-        
-    with open(SITE_ROOT + '/templates/index_col_3.md', 'r') as f:
-        mdcontent3 = File(f).read()
-        
+    try:
+        with open(SITE_ROOT + '/templates/index_col_1.md', 'r') as f:
+            mdcontent1 = File(f).read()
+        with open(SITE_ROOT + '/templates/index_col_2.md', 'r') as f:
+            mdcontent2 = File(f).read()
+        with open(SITE_ROOT + '/templates/index_col_3.md', 'r') as f:
+            mdcontent3 = File(f).read()
+    except IOError:
+        return HttpResponseNotFound()
+
     template = loader.get_template('index.html')
     context = RequestContext(request, {
         'activeMenu': 'home',
@@ -75,12 +76,17 @@ def index(request):
         'mdcontent2': mdcontent2,
         'mdcontent3': mdcontent3
     })
+
     return HttpResponse(template.render(context))
 
 
 def download(request):
-    with open(SITE_ROOT + '/templates/download.md', 'r') as f:
-        mdcontent = File(f).read()
+    try:
+        with open(SITE_ROOT + '/templates/download.md', 'r') as f:
+            mdcontent = File(f).read()
+    except IOError:
+        return HttpResponseNotFound()
+
     mdcontent = mdcontent.replace("$VERSION", ANKOR_STABLE_VERSION)
     template = loader.get_template('download.html')
     context = RequestContext(request, {
@@ -90,26 +96,27 @@ def download(request):
         'latestVersion': ANKOR_LATEST_VERSION,
         'mdcontent': mdcontent
     })
+
     return HttpResponse(template.render(context))
 
 
 def tutorials_overview(request):
     template = loader.get_template('tutorials.html')
+
     context = RequestContext(request, {
         'activeMenu': 'tutorials',
         'activeMenuText': 'Tutorials',
     })
+
     return HttpResponse(template.render(context))
 
 
 def tutorial_helper(request, type, step, template):
     try:
-        path = path_to_steps(type, step)
+        with path_to_steps(type, step) as f:
+            content = File(f).read()
     except IOError:
         return HttpResponseNotFound()
-
-    f = File(path)
-    content = f.read()
 
     step = int(step)
 
@@ -137,6 +144,7 @@ def tutorial_helper(request, type, step, template):
         'nextStep': next_step,
         'content': content
     })
+
     return HttpResponse(template.render(context))
 
 
@@ -151,6 +159,7 @@ def tutorials(request, type, step):
 
 def documentation(request):
     template = loader.get_template('documentation.html')
+
     context = RequestContext(request, {
         'activeMenu': 'documentation',
         'activeMenuText': 'Documentation',
@@ -158,52 +167,73 @@ def documentation(request):
         'stableVersion': ANKOR_STABLE_VERSION,
         'latestVersion': ANKOR_LATEST_VERSION
     })
+
     return HttpResponse(template.render(context))
 
 
 def manual(request, version):
     template = loader.get_template('manual/manual.html')
-    with open(SITE_ROOT + '/templates/manual/manual-' + version + '.md', 'r') as f:
-        mdcontent = File(f).read()
+
+    try:
+        with open(SITE_ROOT + '/templates/manual/manual-' + version + '.md', 'r') as f:
+            mdcontent = File(f).read()
+    except IOError:
+        return HttpResponseNotFound()
+
     context = RequestContext(request, {
         'activeMenu': 'documentation',
         'activeMenuText': 'Documentation',
         'version': version,
         'mdcontent': mdcontent
     })
+
     return HttpResponse(template.render(context))
 
 
 def spidoc(request, version):
     template = loader.get_template('spidoc/spidoc.html')
-    with open(SITE_ROOT + '/templates/spidoc/spidoc-' + version + '.md', 'r') as f:
-        mdcontent = File(f).read()
+
+    try:
+        with open(SITE_ROOT + '/templates/spidoc/spidoc-' + version + '.md', 'r') as f:
+            mdcontent = File(f).read()
+    except IOError:
+        return HttpResponseNotFound()
+
     context = RequestContext(request, {
         'activeMenu': 'documentation',
         'activeMenuText': 'Documentation',
         'version': version,
         'mdcontent': mdcontent
     })
+
     return HttpResponse(template.render(context))
 
 
 def contribute(request):
     template = loader.get_template('contribute.html')
+
     context = RequestContext(request, {
         'activeMenu': 'contribute',
         'activeMenuText': 'Contribute'
     })
+
     return HttpResponse(template.render(context))
 
 
 def stateless(request):
     template = loader.get_template('spidoc/spidoc.html')
-    with open(SITE_ROOT + '/templates/tutorial/stateless.md', 'r') as f:
-        mdcontent = File(f).read()
+
+    try:
+        with open(SITE_ROOT + '/templates/tutorial/stateless.md', 'r') as f:
+            mdcontent = File(f).read()
+    except IOError:
+        return HttpResponseNotFound()
+
     context = RequestContext(request, {
         'activeMenu': 'documentation',
         'activeMenuText': 'Documentation',
         'mdcontent': mdcontent
     })
+
     return HttpResponse(template.render(context))
 
