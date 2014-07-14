@@ -1,5 +1,6 @@
 package at.irian.ankor.session;
 
+import at.irian.ankor.application.Application;
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.event.dispatch.EventDispatcher;
 import at.irian.ankor.ref.RefContext;
@@ -93,4 +94,6 @@ public interface ModelSession {
 
     SendStateDefinition getSendStateDefinition();
     void setSendStateDefinition(SendStateDefinition sendStateDefinition);
+
+    Application getApplication();
 }

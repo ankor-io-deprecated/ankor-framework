@@ -22,7 +22,11 @@ define([
     };
 
     Ref.prototype.parent = function() {
-        return new Ref(this.ankorSystem, this.path.parent())
+        return new Ref(this.ankorSystem, this.path.parent());
+    };
+    
+    Ref.prototype.root = function () {
+        return new Ref(this.ankorSystem, this.path.root());
     };
 
     Ref.prototype.propertyName = function() {
@@ -149,6 +153,8 @@ define([
                 //Trigger listeners
                 this.ankorSystem.triggerListeners(this.path, event);
             }
+        } else if (event instanceof ActionEvent) {
+            this.ankorSystem.triggerListeners(this.path, event);
         }
     };
 
@@ -163,6 +169,10 @@ define([
 
     Ref.prototype.addTreeChangeListener = function(cb) {
         return this.ankorSystem.addListener("treeChange", this.path, cb);
+    };
+
+    Ref.prototype.addActionListener = function(cb) {
+        return this.ankorSystem.addListener("action", this.path, cb);
     };
 
     return Ref;

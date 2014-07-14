@@ -6,6 +6,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * Default implementation of the {@link at.irian.ankor.switching.connector.ConnectorRegistry ConnectorRegistry}
+ * that uses {@link ConcurrentHashMap ConcurrentHashMaps} for storage of the registered handlers.
+ *
  * @author Manfred Geiler
  */
 public class DefaultConnectorRegistry implements ConnectorRegistry {
@@ -33,11 +36,12 @@ public class DefaultConnectorRegistry implements ConnectorRegistry {
 
     public static ConnectorRegistry createForConcurrency(int concurrencyLevel) {
         return new DefaultConnectorRegistry(new ConcurrentHashMap<Class, ConnectionHandler>(INITIAL_CAPACITY,
-                                                                                               LOAD_FACTOR,
-                                                                                               concurrencyLevel),
-                                               new ConcurrentHashMap<Class, TransmissionHandler>(INITIAL_CAPACITY,
-                                                                                                 LOAD_FACTOR,
-                                                                                                 concurrencyLevel));
+                                                                                            LOAD_FACTOR,
+                                                                                            concurrencyLevel),
+                                            new ConcurrentHashMap<Class, TransmissionHandler>(INITIAL_CAPACITY,
+                                                                                              LOAD_FACTOR,
+                                                                                              concurrencyLevel)
+        );
     }
 
     @Override

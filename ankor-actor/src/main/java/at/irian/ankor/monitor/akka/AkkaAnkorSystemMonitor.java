@@ -10,6 +10,7 @@ import at.irian.ankor.session.ModelSession;
 import at.irian.ankor.switching.Switchboard;
 import at.irian.ankor.switching.msg.EventMessage;
 import at.irian.ankor.switching.routing.ModelAddress;
+import at.irian.ankor.switching.routing.ModelAddressQualifier;
 import com.typesafe.config.Config;
 
 import java.util.Map;
@@ -80,6 +81,16 @@ public class AkkaAnkorSystemMonitor implements AnkorSystemMonitor {
                 @Override
                 public void monitorTo(AnkorSystemMonitor monitor) {
                     monitor.switchboard().monitor_closeConnection(sb, sender, receiver);
+                }
+            });
+        }
+
+        @Override
+        public void monitor_closeQualifyingConnections(final Switchboard sb, final ModelAddressQualifier qualifier) {
+            tellActor(new MonitorActor.MonitorMsg() {
+                @Override
+                public void monitorTo(AnkorSystemMonitor monitor) {
+                    monitor.switchboard().monitor_closeQualifyingConnections(sb, qualifier);
                 }
             });
         }

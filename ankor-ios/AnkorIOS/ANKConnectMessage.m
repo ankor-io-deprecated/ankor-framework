@@ -17,7 +17,7 @@
 }
 
 - (id)initWith:(NSString *)property params:(NSDictionary*)params {
-    self = [super initWith:property];
+    self = [super initWith:property stateProps:nil stateValues:nil];
     self.params = params;
     return self;
 }

@@ -3,6 +3,7 @@ body {
     overflow-x: hidden;
     overflow-y: scroll;
     -webkit-font-smoothing: antialiased;
+    moz-osx-font-smoothing: grayscale;
 }
 
 .container {
@@ -11,15 +12,6 @@ body {
 
 section.row {
     padding: 40px 0;
-}
-
-section.row, .foreground {
-    border-bottom: 15px solid rgba(0, 0, 0, 0.05);
-    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.075);
-}
-
-.foreground {
-    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.025);
 }
 
 section.row:last-child {
@@ -48,7 +40,7 @@ section.row li {
     right: 15px;
     top: 15px;
     font-size: 250px;
-    color: #dbdbdb;
+    color: #54b4eb;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -75,16 +67,10 @@ pre {
 }
 
 code {
-    padding-top: 1px;
-    padding-bottom: 1px;
-    position: relative;
-    top: -1px;
     color: rgba(0, 0, 0, 0.75);
     background-color: rgba(0, 0, 0, 0.05);
     border-color: rgba(0, 0, 0, 0.1);
     word-wrap: break-word;
-    
-    border-bottom: 3px solid rgba(0, 0, 0, 0.05);
 }
 
 a code {
@@ -114,6 +100,10 @@ a:hover code {
 }
 
 p > img {
+    width: 100%;
+}
+
+.tutorial p > img {
   max-width: 764px;
 }
 
@@ -123,6 +113,10 @@ p > img {
     z-index: 2;
     background: #fff;
     overflow-x: hidden;
+}
+
+.foreground .container {
+    padding-bottom: 50px;
 }
 
 #footer, body {
@@ -154,13 +148,6 @@ p > img {
 
 }
 
-@media (max-width: 768px) {
-    .navbar .navbar-nav > .active > a {
-        -webkit-box-shadow: none;
-        box-shadow: none;
-    }
-}
-
 @media (max-width: 992px) {
     .affix {
         position: relative;
@@ -178,35 +165,46 @@ p > img {
     display: block;
 }
 
-.breadcrumb {
-    background-color: #f5f5f5;
-    border-radius: 0;
-    border: none;
-    border-bottom: 5px solid rgba(0, 0, 0, 0.05);
-    padding-left: 4px;
-    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.05);
-}
-
-.breadcrumb > li > * {
-    border: none;
-    margin-top: 0;
+.home h2 {
+    font: 400 26px 'Montserrat',sans-serif;
     color: #777;
+    margin-top: 10px;
+    margin-bottom: 15px;
 }
 
-.breadcrumb > li:hover > * {
-    box-shadow: 0 5px 0 rgba(0, 0, 0, 0.025);
+.home h3 {
+    font: 400 20px 'Montserrat',sans-serif;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
-.breadcrumb > li.active > * {
-    box-shadow: 0 5px 0 rgba(0, 0, 0, 0.05);
+blockquote {
+    font-size: 14px;
+    font-style: italic;
+    padding: 5px 10px;
 }
 
-.navbar-toggle {
-    border: none;
-    background-color: rgba(0, 0, 0, 0.05);
-    box-shadow: 0 5px 0 rgba(0, 0, 0, 0.1);
+blockquote footer {
+    font-style: normal;
+    font-size: 14px;
 }
 
-.navbar-toggle:active, .navbar-toggle:focus {
-    box-shadow: 0 5px 0 rgba(0, 0, 0, 0.15);
+.toc {
+    width: 100%;
+    border: 1px solid #ddd;
+    padding: 10px;
+    background: #fefefe;
+    border-radius: 4px;
 }
+
+.toc ul {
+    padding-left: 25px;
+}
+
+@media (min-width: 768px) {
+    .toc {
+        width: 320px;
+        margin-bottom: 30px;
+    }
+}
+

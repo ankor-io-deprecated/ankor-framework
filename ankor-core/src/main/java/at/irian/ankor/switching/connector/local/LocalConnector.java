@@ -1,42 +1,56 @@
 package at.irian.ankor.switching.connector.local;
 
-import at.irian.ankor.serialization.modify.Modifier;
-import at.irian.ankor.session.ModelSessionManager;
-import at.irian.ankor.switching.Switchboard;
 import at.irian.ankor.switching.connector.Connector;
 import at.irian.ankor.switching.connector.ConnectorRegistry;
 import at.irian.ankor.system.AnkorSystem;
 
 /**
+ * Pluggable {@link at.irian.ankor.switching.connector.Connector connector} with handlers for connecting to a
+ * local model instance and for transmitting event messages to local model instances.
+ * This {@link at.irian.ankor.switching.connector.Connector Connector} supports both stateful models and stateless models.
+ *
  * @author Manfred Geiler
  */
-@SuppressWarnings("UnusedDeclaration")  // indirectly called by ServiceLoader
 public class LocalConnector implements Connector {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(LocalConnector.class);
 
-    private ModelSessionManager modelSessionManager;
-    private Switchboard switchboard;
-    private ConnectorRegistry plug;
-    private Modifier modifer;
+    private AnkorSystem system;
 
     @Override
     public void init(AnkorSystem system) {
-        this.modelSessionManager = system.getModelSessionManager();
-        this.switchboard = system.getSwitchboard();
-        this.plug = system.getConnectorPlug();
-        this.modifer = system.getModifier();
+        this.system = system;
     }
 
     @Override
     public void start() {
-        plug.registerTransmissionHandler(LocalModelAddress.class, new LocalTransmissionHandler(modelSessionManager, modifer));
-        plug.registerConnectionHandler(LocalModelAddress.class, new LocalConnectionHandler(modelSessionManager, switchboard));
+        ConnectorRegistry plug = system.getConnectorPlug();
+
+        plug.registerTransmissionHandler(StatefulSessionModelAddress.class,
+                                         new StatefulSessionTransmissionHandler(system.getModelSessionManager(),
+                                                                                system.getModifier()));
+        plug.registerConnectionHandler(StatefulSessionModelAddress.class,
+                                       new StatefulSessionConnectionHandler(system.getModelSessionManager(),
+                                                                            system.getSwitchboard()));
+
+        plug.registerTransmissionHandler(StatelessSessionModelAddress.class,
+                                         new StatelessSessionTransmissionHandler(system.getModelSessionFactory(),
+                                                                                 system.getApplication(),
+                                                                                 system.getModifier()));
+        plug.registerConnectionHandler(StatelessSessionModelAddress.class,
+                                       new StatelessSessionConnectionHandler(system.getModelSessionFactory(),
+                                                                             system.getApplication(),
+                                                                             system.getSwitchboard()));
     }
 
     @Override
     public void stop() {
-        plug.unregisterTransmissionHandler(LocalModelAddress.class);
-        plug.unregisterConnectionHandler(LocalModelAddress.class);
+        ConnectorRegistry plug = system.getConnectorPlug();
+
+        plug.unregisterTransmissionHandler(StatefulSessionModelAddress.class);
+        plug.unregisterConnectionHandler(StatefulSessionModelAddress.class);
+
+        plug.unregisterTransmissionHandler(StatelessSessionModelAddress.class);
+        plug.unregisterConnectionHandler(StatelessSessionModelAddress.class);
     }
 
 }

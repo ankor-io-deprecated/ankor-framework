@@ -54,6 +54,11 @@ public interface RoutingTable {
     Collection<ModelAddress> getAllConnectedAddresses();
 
     /**
+     * @return all addresses that are currently connected and are qualified by the given qualifier
+     */
+    Collection<ModelAddress> getQualifiyingAddresses(ModelAddressQualifier qualifier);
+
+    /**
      * Completely clear the routing table.
      */
     void clear();

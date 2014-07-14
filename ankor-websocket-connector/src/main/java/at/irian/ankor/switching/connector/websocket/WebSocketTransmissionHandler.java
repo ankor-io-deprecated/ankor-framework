@@ -31,11 +31,15 @@ public class WebSocketTransmissionHandler implements TransmissionHandler<WebSock
         if (message instanceof ActionEventMessage) {
             socketMessage = WebSocketMessage.createActionMsg(
                     ((ActionEventMessage) message).getProperty(),
-                    ((ActionEventMessage) message).getAction());
+                    ((ActionEventMessage) message).getAction(),
+                    ((ActionEventMessage) message).getStateValues(),
+                    ((ActionEventMessage) message).getStateHolderProperties());
         } else if (message instanceof ChangeEventMessage) {
             socketMessage = WebSocketMessage.createChangeMsg(
                     ((ChangeEventMessage) message).getProperty(),
-                    ((ChangeEventMessage) message).getChange());
+                    ((ChangeEventMessage) message).getChange(),
+                    ((ChangeEventMessage) message).getStateValues(),
+                    ((ChangeEventMessage) message).getStateHolderProperties());
         } else {
             throw new IllegalArgumentException("Unsupported message type " + message.getClass().getName());
         }

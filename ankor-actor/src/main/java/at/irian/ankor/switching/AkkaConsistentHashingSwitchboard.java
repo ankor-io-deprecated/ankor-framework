@@ -8,12 +8,10 @@ import at.irian.ankor.monitor.SwitchboardMonitor;
 import at.irian.ankor.switching.connector.ConnectorRegistry;
 import at.irian.ankor.switching.connector.DefaultConnectorRegistry;
 import at.irian.ankor.switching.msg.EventMessage;
-import at.irian.ankor.switching.routing.ConcurrentRoutingTable;
-import at.irian.ankor.switching.routing.ModelAddress;
-import at.irian.ankor.switching.routing.RoutingLogic;
-import at.irian.ankor.switching.routing.RoutingTable;
+import at.irian.ankor.switching.routing.*;
 import com.typesafe.config.Config;
 
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -39,10 +37,9 @@ public class AkkaConsistentHashingSwitchboard implements SwitchboardImplementor 
         Config config = actorSystem.settings().config();
         int nrOfInstances = config.getInt("at.irian.ankor.switching.AkkaConsistentHashingSwitchboardActor.poolSize");
 
-        RoutingTable routingTable = new ConcurrentRoutingTable(new NopRoutingTableMonitor());
+        RoutingTable routingTable = new DefaultRoutingTable(new NopRoutingTableMonitor());
         ConnectorRegistry connectorRegistry = DefaultConnectorRegistry.createForConcurrency(nrOfInstances);
         ActorRef switchboardRouterActor = actorSystem.actorOf(AkkaConsistentHashingSwitchboardActor.props(config,
-                                                                                                          routingTable,
                                                                                                           connectorRegistry,
                                                                                                           monitor),
                                                               AkkaConsistentHashingSwitchboardActor.name());
@@ -110,6 +107,14 @@ public class AkkaConsistentHashingSwitchboard implements SwitchboardImplementor 
     @Override
     public void closeAllConnections(ModelAddress sender) {
         switchboardRouterActor.tell(new AkkaConsistentHashingSwitchboardActor.CloseFromMsg(sender), ActorRef.noSender());
+    }
+
+    @Override
+    public void closeQualifyingConnections(ModelAddressQualifier senderQualifier) {
+        Collection<ModelAddress> senders = routingLogic.getQualifiyingAdresses(senderQualifier);
+        for (ModelAddress sender : senders) {
+            closeAllConnections(sender);
+        }
     }
 
     /**

@@ -1,11 +1,10 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Animals - Websocket (Glassfish 4.0.0)" type="GlassfishConfiguration" factoryName="Local" APPLICATION_SERVER_NAME="Glassfish 4.0.0" ALTERNATIVE_JRE_ENABLED="false">
+  <configuration default="false" name="Animals - Websocket (Glassfish 4.0.0)" type="GlassfishConfiguration" factoryName="Local" APPLICATION_SERVER_NAME="Glassfish 4.0.0" ALTERNATIVE_JRE_ENABLED="false" ALTERNATIVE_JRE_PATH="">
+    <option name="OPEN_IN_BROWSER_URL" value="http://localhost:8080/" />
     <option name="UPDATING_POLICY" value="restart-server" />
     <deployment>
-      <artifact name="animals-js-client:war exploded">
-        <settings>
-          <option name="defaultContextRoot" value="false" />
-        </settings>
+      <artifact name="animals-websocket-server:war exploded">
+        <settings />
       </artifact>
     </deployment>
     <server-settings>
@@ -71,7 +70,7 @@
     </ConfigurationWrapper>
     <method>
       <option name="BuildArtifacts" enabled="true">
-        <artifact name="animals-js-client:war exploded" />
+        <artifact name="animals-websocket-server:war exploded" />
       </option>
     </method>
   </configuration>

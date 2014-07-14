@@ -11,7 +11,9 @@
 @interface ANKMessage : NSObject
 
 @property NSString *property;
+@property NSArray *stateProps;
+@property NSDictionary *stateValues;
 
-- (id) initWith: (NSString*)property;
+- (id) initWith: (NSString*)property stateProps:(NSArray*)stateProps stateValues:(NSDictionary*) stateValues;
 
 @end

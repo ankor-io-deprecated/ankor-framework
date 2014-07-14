@@ -29,6 +29,7 @@ ANKRefContext* _refContext;
         ANKChangeMessage* message = (ANKChangeMessage*) msg;
         ANKRef* ref = [_refContext.refFactory ref:message.property];
         ANKChange* change = [[ANKChange alloc]initWith:message.type key:message.key value:message.value];
+        _refContext.modelContext.stateProps = [message stateProps];
         [ref apply:self change:change];
     }
 }

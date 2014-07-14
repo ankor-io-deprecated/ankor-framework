@@ -21,18 +21,15 @@ public class WebSocketListener {
 
     private static Logger LOG = LoggerFactory.getLogger(WebSocketListener.class);
 
-    private final String path;
     private final String clientId;
     private final MessageDeserializer<String> messageDeserializer;
     private final Switchboard switchboard;
     private final PathSyntax pathSyntax;
 
-    WebSocketListener(String path,
-                      MessageDeserializer<String> messageDeserializer,
+    WebSocketListener(MessageDeserializer<String> messageDeserializer,
                       Switchboard switchboard,
                       PathSyntax pathSyntax,
                       String clientId) {
-        this.path = path;
         this.messageDeserializer = messageDeserializer;
         this.switchboard = switchboard;
         this.pathSyntax = pathSyntax;
@@ -41,7 +38,7 @@ public class WebSocketListener {
 
     public void onWebSocketMessage(String message) {
         if (!isHeartbeat(message)) {
-            LOG.info("MessageHandler received {}, length = {}", message, message.length());
+            LOG.debug("Received serialized message {}", message);
             try {
                 WebSocketMessage socketMessage = messageDeserializer.deserialize(message, WebSocketMessage.class);
                 if (socketMessage.getAction() != null) {
@@ -70,8 +67,8 @@ public class WebSocketListener {
         WebSocketModelAddress sender = getAddress(socketMessage);
         switchboard.send(sender, new ActionEventMessage(socketMessage.getProperty(),
                                                         action,
-                                                        null /*todo: stateValues*/,
-                                                        null /*todo: stateHolderProperties*/));
+                                                        socketMessage.getStateValues(),
+                                                        socketMessage.getStateProps()));
     }
 
     private void handleIncomingChangeEventMessage(WebSocketMessage socketMessage) {
@@ -79,8 +76,8 @@ public class WebSocketListener {
         WebSocketModelAddress sender = getAddress(socketMessage);
         switchboard.send(sender, new ChangeEventMessage(socketMessage.getProperty(),
                                                         change,
-                                                        null /*todo: stateValues*/,
-                                                        null /*todo: stateHolderProperties*/));
+                                                        socketMessage.getStateValues(),
+                                                        socketMessage.getStateProps()));
     }
 
     private void handleIncomingCloseMessage(WebSocketMessage socketMessage) {
@@ -90,7 +87,7 @@ public class WebSocketListener {
 
     private WebSocketModelAddress getAddress(WebSocketMessage socketMessage) {
         String modelName = pathSyntax.rootOf(socketMessage.getProperty());
-        return new WebSocketModelAddress(path, clientId, modelName);
+        return new WebSocketModelAddress(clientId, modelName);
     }
 
     public static boolean isHeartbeat(String message) {
@@ -98,7 +95,7 @@ public class WebSocketListener {
     }
 
 
-    public  MessageHandler.Whole<ByteBuffer> getByteMessageHandler() {
+    public MessageHandler.Whole<ByteBuffer> getByteMessageHandler() {
         return new MessageHandler.Whole<ByteBuffer>() {
             @Override
             public void onMessage(ByteBuffer message) {

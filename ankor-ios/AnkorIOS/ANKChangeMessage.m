@@ -10,8 +10,8 @@
 
 @implementation ANKChangeMessage
 
-- (id) initWith:(NSString*)property type:(ANKChangeType)type key:(id)key value:(NSObject*)value {
-    self = [super initWith:property];
+- (id) initWith:(NSString*)property type:(ANKChangeType)type key:(id)key value:(NSObject*)value stateProps:(NSArray*)stateProps stateValues:(NSDictionary*) stateValues {
+    self = [super initWith:property stateProps:stateProps stateValues:stateValues];
     self.type = type;
     self.key = key;
     self.value = value;

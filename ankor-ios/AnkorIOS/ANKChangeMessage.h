@@ -15,6 +15,6 @@
 @property id key;
 @property NSObject *value;
 
-- (id) initWith:(NSString*)property type:(ANKChangeType)type key:(id)key value:(NSObject*)value;
+- (id) initWith:(NSString*)property type:(ANKChangeType)type key:(id)key value:(NSObject*)value stateProps:(NSArray*)stateProps stateValues:(NSDictionary*) stateValues;
 
 @end

@@ -95,9 +95,15 @@ We also provide the creation logic and a factory method for our model:
 
     :::java
     @Override
-    public boolean supportsModel(String modelName) {
+    public Set<String> getKnownModelNames() {
         // our application supports exactly one model named 'root'
-        return "root".equals(modelName);
+        return Collections.singleton("root");
+    }
+
+    @Override
+    public boolean isStateless() {
+        // This application has stateful server sessions
+        return false;
     }
 
     @Override
@@ -175,5 +181,5 @@ Start the servlet again by typing `mvn install` in the root directory.
 When the process has finished point your browser to [`http://localhost:8080`](http://localhost:8080).
 Your dummy text should appear in the footer.
 
-[1]: http://ankor.io/static/javadoc/apidocs-0.2/at/irian/ankor/system/WebSocketServerEndpoint.html
+[1]: http://ankor.io/static/javadoc/apidocs-0.3/at/irian/ankor/system/WebSocketServerEndpoint.html
 [2]: http://docs.oracle.com/javaee/7/api/javax/websocket/Endpoint.html

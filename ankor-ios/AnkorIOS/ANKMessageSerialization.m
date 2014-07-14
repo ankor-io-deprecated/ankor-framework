@@ -14,13 +14,15 @@
 
 static NSString* property   = @"property";
 static NSString* key        = @"key";
-static NSString* _value      = @"value";
+static NSString* _value     = @"value";
 static NSString* change     = @"change";
 static NSString* type       = @"type";
 static NSString* action     = @"action";
 static NSString* params     = @"params";
 static NSString* connectParams = @"connectParams";
 static NSString* name       = @"name";
+static NSString* _stateProps = @"stateProps";
+static NSString* _stateValues = @"stateValues";
 
 static NSString* _insert    = @"insert";
 static NSString* _delete    = @"delete";
@@ -52,6 +54,9 @@ static NSString* _replace   = @"replace";
                 [changeDict setValue:message.key forKey:key];
                 [changeDict setValue:message.value forKey:_value];
                 [dict setValue:changeDict forKey:change];
+                if (message.stateValues) {
+                    [dict setValue:message.stateValues forKey:_stateValues];
+                }
             } else if ([msg isKindOfClass:[ANKActionMessage class]]) {
                 ANKActionMessage *message = (ANKActionMessage*) msg;
                 [dict setValue:message.property forKey:property];
@@ -62,6 +67,9 @@ static NSString* _replace   = @"replace";
                     [dict setValue:actionDict forKey:action];
                 } else {
                     [dict setValue:message.action forKey:action];
+                }
+                if (message.stateValues) {
+                    [dict setValue:message.stateValues forKey:_stateValues];
                 }
             } else if ([msg isKindOfClass:[ANKConnectMessage class]]) {
                 ANKConnectMessage *message = (ANKConnectMessage*) msg;
@@ -83,6 +91,9 @@ static NSString* _replace   = @"replace";
             [changeDict setValue:message.key forKey:key];
             [changeDict setValue:message.value forKey:_value];
             [dict setValue:changeDict forKey:change];
+            if (message.stateValues) {
+                [dict setValue:message.stateValues forKey:_stateValues];
+            }
         } else if ([msg isKindOfClass:[ANKActionMessage class]]) {
             ANKActionMessage *message = (ANKActionMessage*) msg;
             [dict setValue:message.property forKey:property];
@@ -93,6 +104,9 @@ static NSString* _replace   = @"replace";
                 [dict setValue:paramDict forKey:action];
             } else {
                 [dict setValue:message.action forKey:action];
+            }
+            if (message.stateValues) {
+                [dict setValue:message.stateValues forKey:_stateValues];
             }
         } else if ([msg isKindOfClass:[ANKConnectMessage class]]) {
             ANKConnectMessage *message = (ANKConnectMessage*) msg;
@@ -116,7 +130,8 @@ static NSString* _replace   = @"replace";
                 [messages addObject:
                  [[ANKActionMessage alloc]
                   initWith: [dict valueForKey:property]
-                  action:[dict valueForKey:action]]];
+                  action:[dict valueForKey:action]
+                  stateProps:[dict valueForKey:_stateProps] stateValues:nil]];
             } else if ([dict valueForKey:change]) {
                 NSDictionary *changeDict = [dict valueForKey:change];
                 [messages addObject:
@@ -124,7 +139,8 @@ static NSString* _replace   = @"replace";
                   [dict valueForKey:property]
                   type:[self changeTypeFromString:[changeDict valueForKey:type]]
                   key:[changeDict valueForKey:key]
-                  value:[changeDict valueForKey:_value]]];
+                  value:[changeDict valueForKey:_value]
+                  stateProps:[dict valueForKey:_stateProps] stateValues:nil]];
             }
         }
     } else {
@@ -134,7 +150,9 @@ static NSString* _replace   = @"replace";
             [messages addObject:
              [[ANKActionMessage alloc]
               initWith: [dict valueForKey:property]
-              action:[dict valueForKey:action]]];
+              action:[dict valueForKey:action]
+              stateProps:[dict valueForKey:_stateProps] stateValues:nil]
+             ];
         } else if ([dict valueForKey:change]) {
             NSDictionary *changeDict = [dict valueForKey:change];
             id valueObj;
@@ -152,7 +170,7 @@ static NSString* _replace   = @"replace";
               initWith: [dict valueForKey:property]
               type:typeObj
               key:[changeDict valueForKey:key]
-              value:valueObj]];
+              value:valueObj stateProps:[dict valueForKey:_stateProps] stateValues:nil]];
         }
     }
     return messages;

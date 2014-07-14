@@ -4,7 +4,6 @@ import at.irian.ankor.annotation.ActionListener;
 import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.annotation.Param;
 import at.irian.ankor.pattern.AnkorPatterns;
-import at.irian.ankor.ref.CollectionRef;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.state.StateHolder;
 import at.irian.ankorsamples.statelesstodo.domain.Filter;
@@ -18,179 +17,207 @@ import java.util.List;
 public class TaskListModel {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TaskListModel.class);
 
-    private final TaskRepository taskRepository;
-    private final Ref modelRef;
+    // helper fields
 
-    private List<Task> tasks = new ArrayList<>();
+    private final Ref modelRef;
+    private final TaskRepository taskRepository;
+
+    // state fields
 
     @StateHolder
-    private Filter filter = Filter.all;
-
-    private Boolean footerVisibility = false;
-    private Integer itemsLeft = 0;
-    private String itemsLeftText;
-
-    private Boolean clearButtonVisibility = false;
-    private Integer itemsComplete = 0;
-    private String itemsCompleteText;
-
-    private Boolean filterAllSelected = true;
-    private Boolean filterActiveSelected = false;
-    private Boolean filterCompletedSelected = false;
+    private Filter filter;
     
-    private Boolean toggleAll = false;
+    @StateHolder
+    private int editing;
+    
+    // calculated fields
+
+    private List<TaskModel> tasks;
+
+    private boolean footerVisibility;
+    private boolean clearButtonVisibility;
+
+    private int itemsLeft;
+    private int itemsComplete;
+
+    private boolean filterAllSelected;
+    private boolean filterActiveSelected;
+    private boolean filterCompletedSelected;
+    
+    private boolean toggleAll;
+
+    private String itemsLeftText;
+    private String itemsCompleteText;
 
     public TaskListModel(Ref modelRef, TaskRepository taskRepository) {
         AnkorPatterns.initViewModel(this, modelRef);
         this.modelRef = modelRef;
         this.taskRepository = taskRepository;
 
-        this.itemsLeftText = itemsLeftText(itemsLeft);
-        this.itemsCompleteText = itemsCompleteText(itemsComplete);
+        // init state fields
+        filter = Filter.all;
+
+        initCalculatedFields();
     }
 
-    @ChangeListener(pattern = "root.model.tasks.*.completed")
-    public void completedChanged() {
-        updateItemsCount();
-        reloadTasks(filter);
+    private void initCalculatedFields() {
+        LOG.info("Init calculated fields");
+
+        tasks = queryTaskList(filter);
+        
+        editing = -1;
+
+        itemsLeft = taskRepository.countTasks(Filter.active);
+        itemsComplete = taskRepository.countTasks(Filter.completed);
+
+        filterAllSelected = calcAllButtonSelected(filter);
+        filterActiveSelected = calcActiveButtonSelected(filter);
+        filterCompletedSelected = calcCompletedButtonSelected(filter);
+
+        itemsLeftText = calcItemsLeftText(itemsLeft);
+        itemsCompleteText = calcItemsCompleteText(itemsComplete);
+        footerVisibility = calcFooterVisibility(itemsLeft, itemsComplete);
+        clearButtonVisibility = calcClearButtonVisibility(itemsComplete);
+
+        toggleAll = calcToggleAllSelected(itemsLeft);
     }
 
-    @ChangeListener(pattern = {
-            "root.model.tasks.(*).title",
-            "root.model.tasks.(*).editing",
-            "root.model.tasks.(*).completed"})
-    public void saveTask(Ref ref) {
-        Task model = ref.getValue();
-        if (model.getTitle().equals("")) {
-            int i = fetchTaskModels(filter).indexOf(model);
-            deleteTask(i);
-        } else {
-            taskRepository.saveTask(model);
-        }
+    @ChangeListener(pattern = {"root.model.tasks.(*).title",
+                               "root.model.tasks.(*).completed"})
+    public void onTaskChanged(Ref ref) {
+        LOG.info("Task {} changed", ref.path());
+        TaskModel taskModel = ref.getValue();
+        Task task = taskRepository.getTaskById(taskModel.getId());
+        task.setTitle(taskModel.getTitle());
+        task.setCompleted(taskModel.isCompleted());
+        taskRepository.updateTask(task);
+        updateTasksList();
     }
-
+    
     @ChangeListener(pattern = "root.model.filter")
-    public void updateFilterSelected() {
-        modelRef.appendPath("filterAllSelected").setValue(filter.equals(Filter.all));
-        modelRef.appendPath("filterActiveSelected").setValue(filter.equals(Filter.active));
-        modelRef.appendPath("filterCompletedSelected").setValue(filter.equals(Filter.completed));
-        reloadTasks(filter);
-    }
-
-    @ChangeListener(pattern = {
-            "root.model.itemsLeft",
-            "root.model.itemsComplete"})
-    public void updateFooterVisibility() {
-        modelRef.appendPath("footerVisibility").setValue(itemsLeft != 0 || itemsComplete != 0);
+    public void onFilterChanged() {
+        LOG.info("Filter changed to {}", filter);
+        updateTasksList();
+        modelRef.appendPath("filterAllSelected").setValue(calcAllButtonSelected(filter));
+        modelRef.appendPath("filterActiveSelected").setValue(calcActiveButtonSelected(filter));
+        modelRef.appendPath("filterCompletedSelected").setValue(calcCompletedButtonSelected(filter));
     }
 
     @ChangeListener(pattern = "root.model.itemsLeft")
-    public void itemsLeftChanged() {
-        modelRef.appendPath("itemsLeftText").setValue(itemsLeftText(itemsLeft));
-        modelRef.appendPath("toggleAll").setValue(itemsLeft == 0);
+    public void onItemsLeftChanged() {
+        LOG.info("ItemsLeft changed to {}", itemsLeft);
+        modelRef.appendPath("itemsLeftText").setValue(calcItemsLeftText(itemsLeft));
+        modelRef.appendPath("footerVisibility").setValue(calcFooterVisibility(itemsLeft, itemsComplete));
+        modelRef.appendPath("toggleAll").setValue(calcToggleAllSelected(itemsLeft));
     }
 
     @ChangeListener(pattern = "root.model.itemsComplete")
-    public void updateClearButton() {
-        modelRef.appendPath("clearButtonVisibility").setValue(itemsComplete != 0);
-        modelRef.appendPath("itemsCompleteText").setValue(itemsCompleteText(itemsComplete));
+    public void onItemsCompleteChanged() {
+        LOG.info("ItemsComplete changed to {}", itemsComplete);
+        modelRef.appendPath("itemsCompleteText").setValue(calcItemsCompleteText(itemsComplete));
+        modelRef.appendPath("footerVisibility").setValue(calcFooterVisibility(itemsLeft, itemsComplete));
+        modelRef.appendPath("clearButtonVisibility").setValue(calcClearButtonVisibility(itemsComplete));
+    }
+
+    @ChangeListener(pattern = "root.model.tasks")
+    public void onTaskListChanged() {
+        LOG.info("TaskList changed");
+        modelRef.appendPath("itemsLeft").setValue(taskRepository.countTasks(Filter.active));
+        modelRef.appendPath("itemsComplete").setValue(taskRepository.countTasks(Filter.completed));
     }
 
     @ActionListener
-    public void newTask(@Param("title") final String title) {
-        LOG.info("Add new task to task repository");
-
-        Task task = new Task(title);
-        taskRepository.saveTask(task);
-
-        updateItemsCount();
-        reloadTasks(filter);
+    public void newTask(@Param("title") String title) {
+        LOG.info("Add new task with title '{}'", title);
+        taskRepository.insertTask(title, false);
+        updateTasksList();
     }
 
     @ActionListener
-    public void deleteTask(@Param("index") final int index) {
-        LOG.info("Deleting task {}", index);
-
-        Task task = fetchTaskModels(filter).get(index);
-        taskRepository.deleteTask(task);
-
-        updateItemsCount();
-        reloadTasks(filter);
+    public void deleteTask(@Param("id") String taskId) {
+        LOG.info("Delete task {}", taskId);
+        taskRepository.deleteTask(taskId);
+        updateTasksList();
     }
 
     @ActionListener
-    public void toggleAll(@Param("toggleAll") final boolean toggleAll) {
-        LOG.info("Setting completed of all tasks to {}", toggleAll);
-
-        taskRepository.toggleAll(toggleAll);
-        updateItemsCount();
-        reloadTasks(filter);
+    public void toggleAll(@Param("toggleAll") boolean completed) {
+        LOG.info("Setting 'completed' flag of all filtered tasks to {}", completed);
+        List<Task> tasks = taskRepository.queryTasks(Filter.all);
+        for (Task task : tasks) {
+            task.setCompleted(completed);
+            taskRepository.updateTask(task);
+        }
+        updateTasksList();
     }
 
     @ActionListener
     public void clearTasks() {
-        LOG.info("Clearing completed tasks");
-
-        taskRepository.clearTasks();
-        updateItemsCount();
-        reloadTasks(filter);
-    }
-
-    private void updateItemsCount() {
-        modelRef.appendPath("itemsLeft").setValue(taskRepository.fetchActiveTasks().size());
-        modelRef.appendPath("itemsComplete").setValue(taskRepository.fetchCompletedTasks().size());
-    }
-
-    // helper for dealing with list refs
-    private CollectionRef tasksRef() {
-        return modelRef.appendPath("tasks").toCollectionRef();
-    }
-
-    private void reloadTasks(Filter filter) {
-        LOG.info("reloading tasks");
-        tasksRef().setValue(fetchTaskModels(filter));
-    }
-
-    private List<Task> fetchTaskModels(Filter filter) {
-        List<Task> tasks = taskRepository.fetchTasks(filter);
-        List<Task> res = new ArrayList<>(tasks.size());
-
-        for (Task t : tasks) {
-            Task model = new Task(t);
-            res.add(model);
+        LOG.info("Clear all completed tasks");
+        List<Task> tasks = taskRepository.queryTasks(Filter.all);
+        for (Task task : tasks) {
+            if (task.isCompleted()) {
+                taskRepository.deleteTask(task.getId());
+            }
         }
-
-        return res;
+        updateTasksList();
     }
 
-    private String itemsLeftText(int itemsLeft) {
+    private void updateTasksList() {
+        modelRef.appendPath("tasks").setValue(queryTaskList(filter));
+    }
+
+    /* ---------------- *
+     *  Business logic  *
+     * ---------------- */
+
+    private List<TaskModel> queryTaskList(Filter filter) {
+        List<Task> tasks = taskRepository.queryTasks(filter);
+        ArrayList<TaskModel> taskModelList = new ArrayList<>(tasks.size());
+        int i = 0;
+        for (Task task : tasks) {
+            taskModelList.add(new TaskModel(modelRef.appendPath("tasks").appendIndex(i), task));
+            i++;
+        }
+        return taskModelList;
+    }
+
+
+    private boolean calcAllButtonSelected(Filter filter) {
+        return filter == Filter.all;
+    }
+
+    private boolean calcActiveButtonSelected(Filter filter) {
+        return filter == Filter.active;
+    }
+
+    private boolean calcCompletedButtonSelected(Filter filter) {
+        return filter == Filter.completed;
+    }
+
+    private String calcItemsLeftText(int itemsLeft) {
         return (itemsLeft == 1) ? "item left" : "items left";
     }
 
-    private String itemsCompleteText(int itemsComplete) {
+    private String calcItemsCompleteText(int itemsComplete) {
         return String.format("Clear completed (%d)", itemsComplete);
     }
 
-    /*
-     *********************
-     * Getters & Setters *
-     *********************
-     */
-    public Integer getItemsLeft() {
-        return itemsLeft;
+    private boolean calcFooterVisibility(int itemsLeft, int itemsComplete) {
+        return itemsLeft != 0 || itemsComplete != 0;
     }
 
-    public void setItemsLeft(Integer itemsLeft) {
-        this.itemsLeft = itemsLeft;
+    private boolean calcClearButtonVisibility(int itemsComplete) {
+        return itemsComplete != 0;
     }
 
-    public List<Task> getTasks() {
-        return tasks;
+    private boolean calcToggleAllSelected(int itemsLeft) {
+        return itemsLeft == 0;
     }
 
-    public void setTasks(List<Task> tasks) {
-        this.tasks = tasks;
-    }
+    /* ------------------- *
+     *  Getters & Setters  *
+     * ------------------- */
 
     public String getFilter() {
         return filter.toString();
@@ -198,21 +225,38 @@ public class TaskListModel {
 
     public void setFilter(String filter) {
         this.filter = Filter.valueOf(filter);
+        initCalculatedFields();
     }
 
-    public Boolean getFooterVisibility() {
+    public int getItemsLeft() {
+        return itemsLeft;
+    }
+
+    public void setItemsLeft(int itemsLeft) {
+        this.itemsLeft = itemsLeft;
+    }
+
+    public List<TaskModel> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<TaskModel> tasks) {
+        this.tasks = tasks;
+    }
+
+    public boolean getFooterVisibility() {
         return footerVisibility;
     }
 
-    public void setFooterVisibility(Boolean footerVisibility) {
+    public void setFooterVisibility(boolean footerVisibility) {
         this.footerVisibility = footerVisibility;
     }
 
-    public Integer getItemsComplete() {
+    public int getItemsComplete() {
         return itemsComplete;
     }
 
-    public void setItemsComplete(Integer itemsComplete) {
+    public void setItemsComplete(int itemsComplete) {
         this.itemsComplete = itemsComplete;
     }
 
@@ -224,43 +268,43 @@ public class TaskListModel {
         this.itemsCompleteText = itemsCompleteText;
     }
 
-    public Boolean getClearButtonVisibility() {
+    public boolean getClearButtonVisibility() {
         return clearButtonVisibility;
     }
 
-    public void setClearButtonVisibility(Boolean clearButtonVisibility) {
+    public void setClearButtonVisibility(boolean clearButtonVisibility) {
         this.clearButtonVisibility = clearButtonVisibility;
     }
 
-    public Boolean getToggleAll() {
+    public boolean getToggleAll() {
         return toggleAll;
     }
 
-    public void setToggleAll(Boolean toggleAll) {
+    public void setToggleAll(boolean toggleAll) {
         this.toggleAll = toggleAll;
     }
 
-    public Boolean getFilterAllSelected() {
+    public boolean getFilterAllSelected() {
         return filterAllSelected;
     }
 
-    public void setFilterAllSelected(Boolean filterAllSelected) {
+    public void setFilterAllSelected(boolean filterAllSelected) {
         this.filterAllSelected = filterAllSelected;
     }
 
-    public Boolean getFilterActiveSelected() {
+    public boolean getFilterActiveSelected() {
         return filterActiveSelected;
     }
 
-    public void setFilterActiveSelected(Boolean filterActiveSelected) {
+    public void setFilterActiveSelected(boolean filterActiveSelected) {
         this.filterActiveSelected = filterActiveSelected;
     }
 
-    public Boolean getFilterCompletedSelected() {
+    public boolean getFilterCompletedSelected() {
         return filterCompletedSelected;
     }
 
-    public void setFilterCompletedSelected(Boolean filterCompletedSelected) {
+    public void setFilterCompletedSelected(boolean filterCompletedSelected) {
         this.filterCompletedSelected = filterCompletedSelected;
     }
 
@@ -270,5 +314,13 @@ public class TaskListModel {
 
     public void setItemsLeftText(String itemsLeftText) {
         this.itemsLeftText = itemsLeftText;
+    }
+
+    public int getEditing() {
+        return editing;
+    }
+
+    public void setEditing(int editing) {
+        this.editing = editing;
     }
 }

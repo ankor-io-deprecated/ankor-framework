@@ -9,7 +9,7 @@ between a client and a server. Ankor's goal is to do this in a transparent way, 
 not even have to bother with the server-client communication at all.
 
 Our mission statement:
-> Bind your view to the model on the client-side, add behaviour to the model on the server-side
+> Bind your UI to the client-side view model, implement behaviour on the server-side
 > - and let Ankor do the rest.
 
 ## What Ankor is **not**
@@ -59,19 +59,64 @@ TBD
 
 Ankor consists of several modules from which you probably only need some of them. Here is a quick overview:
 
-----------------------------|-----------------------------------------------------------------------------------------
-ankor-actor                 | Actor support using Akka as dispatcher for message and event handling on the server side.
-ankor-annotation            | Annotation support for providing model metadata by means of Java annotations.
-ankor-core                  | Core Module, needed in every Ankor server and (Java based) client application.
-ankor-el                    | Java Unified Expression Language (JSR-245) support for Ref path syntax.
-ankor-fx                    | Java FX client support.
-ankor-js                    | Javascript client support overlay war for Ankor based web-server.
-ankor-json                  | Json serialization/deserialization support using Jackson as underlying implementation.
-ankor-proxy                 | Proxy support for automatic change event firing on setter calls.
-ankor-service               | AnkorSystem builder and helper classes for starting up Ankor servers and clients.
-ankor-servlet               | deprecated
-ankor-socket-connector      | Messaging via simple socket connections (only for testing, not meant for production).
-ankor-websocket-connector   | Messaging via WebSocket (preferred default messaging implementation for Ankor).
+<table class="table">
+    <thead>
+        <tr>
+            <td><strong>Module name</strong></td>
+            <td><strong>Description</strong></td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>ankor-actor</td>
+            <td>Actor support using Akka as dispatcher for message and event handling on the server side.</td>
+        </tr>
+        <tr>
+            <td>ankor-annotation</td>
+            <td>Annotation support for providing model metadata by means of Java annotations.</td>
+        </tr>
+        <tr>
+            <td>ankor-core</td>
+            <td>Core Module, needed in every Ankor server and (Java based) client application.</td>
+        </tr>
+        <tr>
+            <td>ankor-el</td>
+            <td>Java Unified Expression Language (JSR-245) support for Ref path syntax.</td>
+        </tr>
+        <tr>
+            <td>ankor-fx</td>
+            <td>Java FX client support.</td>
+        </tr>
+        <tr>
+            <td>ankor-js</td>
+            <td>Javascript client support overlay war for Ankor based web-server.</td>
+        </tr>
+        <tr>
+            <td>ankor-json</td>
+            <td>Json serialization/deserialization support using Jackson as underlying implementation.</td>
+        </tr>
+        <tr>
+            <td>ankor-proxy</td>
+            <td>Proxy support for automatic change event firing on setter calls.</td>
+        </tr>
+        <tr>
+            <td>ankor-service</td>
+            <td>AnkorSystem builder and helper classes for starting up Ankor servers and clients.</td>
+        </tr>
+        <tr>
+            <td><del>ankor-servlet</del></td>
+            <td>Deprecated</td>
+        </tr>
+        <tr>
+            <td>ankor-socket-connector</td>
+            <td>Messaging via simple socket connections (only for testing, not meant for production).</td>
+        </tr>
+        <tr>
+            <td>ankor-websocket-connector</td>
+            <td>Messaging via WebSocket (preferred default messaging implementation for Ankor).</td>
+        </tr>
+    </tbody>
+</table>
 
 ## Getting started
 

@@ -3,8 +3,14 @@ define([
     "./Model",
     "./Path",
     "./Ref",
-], function(ListenerRegistry, Model, Path, Ref) {
+    "./events/BaseEvent",
+    "./events/ChangeEvent",
+    "./events/ActionEvent"
+], function(ListenerRegistry, Model, Path, Ref, BaseEvent, ChangeEvent, ActionEvent) {
     var AnkorSystem = function(options) {
+        if (!options) {
+          throw new Error("AnkorSystem missing options");
+        }
         if (!options.utils) {
             throw new Error("AnkorSystem missing utils");
         }
@@ -35,7 +41,11 @@ define([
     };
 
     AnkorSystem.prototype.triggerListeners = function(path, event) {
-        this.listenerRegistry.triggerListeners(path, event);
+        if (event instanceof ChangeEvent) {
+            this.listenerRegistry.triggerListeners(path, event);
+        } else if (event instanceof ActionEvent) {
+            this.listenerRegistry.triggerActionListeners(path, event);
+        }
     };
 
     AnkorSystem.prototype.removeInvalidListeners = function(path) {

@@ -10,10 +10,9 @@
     <!-- Le styles -->
     {% load staticfiles %}
     <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" type="text/css" rel="stylesheet">
-    <link href="{% static 'bootstrap-theme.min.css' %}" type="text/css" rel="stylesheet">
+    <link href="{% static 'bootstrap.custom.css' %}" type="text/css" rel="stylesheet">
     <link href="{% static 'font-awesome/css/font-awesome.min.css' %}" type="text/css" rel="stylesheet">
     <link href="{% static 'github.css' %}" type="text/css" rel="stylesheet"/>
-    <link href="{% static 'breadcrumb.css' %}" type="text/css" rel="stylesheet"/>
     <link href="{% static 'ankor.css' %}" type="text/css" rel="stylesheet"/>
 
     <!--[if lt IE 9]>
@@ -30,8 +29,17 @@
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
     <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
     <link rel="icon" type="image/png" href="{% static 'images/icon.png' %}"/>
+    <script type="text/javascript">
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-585585-7']);
+        _gaq.push(['_trackPageview']);
+        (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
 </head>
-
 <body>
 {% include "navbar.html" %}
 

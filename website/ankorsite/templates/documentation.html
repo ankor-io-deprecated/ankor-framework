@@ -11,23 +11,32 @@
     {% for v in releaseVersions %}
     <h3>Ankor {{ v }}</h3>
     <ul>
-        <li><a href="manual/{{ v }}">Ankor Manual</a></li>
+        <li><a href="/manual/{{ v }}">Ankor Manual</a></li>
         <li><a href="{% static 'javadoc/apidocs-'%}{{ v }}/index.html">Ankor API</a></li>
         <li><a href="spidoc/{{ v }}">Developer Documentation (SPI)</a></li>
         <li><a href="http://github.com/ankor-io/ankor-framework/blob/ankor-{{ v|safe }}/release-notes.md">Release Notes</a></li>
+        
+        {% if v == "0.3" %}
+            <li><a href="/documentation/stateless">Stateless Feature</a></li>
+        {% endif %}
     </ul>
     {% endfor %}
 
     <h3>Ankor 0.1</h3>
     <ul>
-        <li><a href="manual/0.1">Ankor Manual</a></li>
+        <li><a href="/manual/0.1">Ankor Manual</a></li>
         <li><a href="{% static 'javadoc/apidocs-0.1/index.html' %}">Ankor API</a></li>
     </ul>
 
 
+    <h2>Wiki</h2>
+
+    Additional user contributions on the <a href="http://github.com/ankor-io/ankor-framework/wiki">Ankor Github Wiki</a>.
+
+
     <h2>Other Resources</h2>
 
-    <h3>JavaLand 2014 - Presentation (in German language)</h3>
+    <h3>JavaLand 2014 - Presentation (partly German)</h3>
     <iframe src="http://www.slideshare.net/slideshow/embed_code/33032491" width="427" height="356" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:1px solid #CCC; border-width:1px 1px 0; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe>
 
 {% endblock %}

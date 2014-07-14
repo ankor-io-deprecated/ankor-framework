@@ -12,12 +12,12 @@
 
 
 
-- (id) initWith:(NSString*)property action:(NSString*)action {
-    return [self initWith:property action:action params:nil];
+- (id) initWith:(NSString*)property action:(NSString*)action stateProps:(NSArray*)stateProps stateValues:(NSDictionary*) stateValues {
+    return [self initWith:property action:action params:nil stateProps:stateProps stateValues:stateValues];
 }
 
-- (id) initWith:(NSString*)property action:(NSString*)action params:(NSDictionary*)params {
-    self = [super initWith:property];
+- (id) initWith:(NSString*)property action:(NSString*)action params:(NSDictionary*)params stateProps:(NSArray*)stateProps stateValues:(NSDictionary*) stateValues {
+    self = [super initWith:property stateProps:stateProps stateValues:stateValues];
     self.action = action;
     self.params = params;
     return self;

@@ -29,8 +29,8 @@ public class SimpleClientApplication implements Application {
     }
 
     @Override
-    public boolean supportsModel(String modelName) {
-        return true;
+    public boolean isStateless() {
+        return false;
     }
 
     @Override

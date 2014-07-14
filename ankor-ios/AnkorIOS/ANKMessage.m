@@ -10,8 +10,10 @@
 
 @implementation ANKMessage
 
-- (id)initWith:(NSString *)property {
+- (id)initWith:(NSString *)property stateProps:(NSArray *)stateProps stateValues:(NSDictionary *)stateValues {
     self.property = property;
+    self.stateProps = stateProps;
+    self.stateValues = stateValues;
     return self;
 }
 

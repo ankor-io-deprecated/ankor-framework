@@ -52,7 +52,8 @@ public class AnkorSystem {
                           Modifier modifier,
                           BeanMetadataProvider beanMetadataProvider,
                           Scheduler scheduler,
-                          AnkorSystemMonitor monitor) {
+                          AnkorSystemMonitor monitor,
+                          ConnectorLoader connectorLoader) {
         this.application = application;
         this.config = config;
         this.switchboard = switchboard;
@@ -63,7 +64,7 @@ public class AnkorSystem {
         this.beanMetadataProvider = beanMetadataProvider;
         this.scheduler = scheduler;
         this.monitor = monitor;
-        this.connectorLoader = new ConnectorLoader();
+        this.connectorLoader = connectorLoader;
         this.running = false;
         this.attributes = new ConcurrentHashMap<String, Object>();
     }

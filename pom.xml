@@ -4,10 +4,30 @@
     <groupId>at.irian.ankor</groupId>
     <artifactId>ankor-project</artifactId>
     <packaging>pom</packaging>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.4-SNAPSHOT</version>
     <name>Ankor - Project</name>
 
+    <description>The Ankor Framework - Master POM</description>
+
+    <url>https://github.com/ankor-io/ankor-framework</url>
+    <organization>
+        <name>Ankor Developers Team</name>
+        <url>https://github.com/orgs/ankor-io/teams/ankor-developers</url>
+    </organization>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <issueManagement>
+        <system>Github Issues</system>
+        <url>https://github.com/ankor-io/ankor-framework/issues</url>
+    </issueManagement>
+
     <modules>
+        <module>ankor-bom</module>
         <module>ankor-core</module>
         <module>ankor-annotation</module>
         <module>ankor-proxy</module>
@@ -16,147 +36,70 @@
         <module>ankor-actor</module>
         <module>ankor-socket-connector</module>
         <module>ankor-websocket-connector</module>
-        <module>ankor-service</module>
-        <module>ankor-servlet</module>
         <module>ankor-fx</module>
         <module>ankor-js</module>
+        <module>ankor-system</module>
+        <module>ankor-console-client</module>
+        <module>ankor-bundle-server-viewmodel</module>
+        <module>ankor-bundle-socket-fx-client</module>
+        <module>ankor-bundle-websocket-java-client</module>
+        <module>ankor-bundle-socket-server</module>
+        <module>ankor-bundle-websocket-fx-client</module>
+        <module>ankor-bundle-websocket-server</module>
+        <module>ankor-bundle-js-client</module>
         <module>samples</module>
     </modules>
 
     <properties>
-        <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-        <jackson.version>2.2.2</jackson.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencyManagement>
-
         <dependencies>
 
-            <dependency>
-                <groupId>javax.el</groupId>
-                <artifactId>el-api</artifactId>
-                <version>2.2</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.glassfish.web</groupId>
-                <artifactId>el-impl</artifactId>
-                <version>2.2</version>
-            </dependency>
-
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>4.11</version>
-            </dependency>
-
-            <dependency>
-                <groupId>commons-lang</groupId>
-                <artifactId>commons-lang</artifactId>
-                <version>2.6</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-all</artifactId>
-                <version>1.9.5</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.assertj</groupId>
-                <artifactId>assertj-core</artifactId>
-                <version>1.5.0</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.skyscreamer</groupId>
-                <artifactId>jsonassert</artifactId>
-                <version>1.2.0</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>1.7.1</version>
-            </dependency>
-
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-classic</artifactId>
-                <version>1.0.7</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.typesafe</groupId>
-                <artifactId>config</artifactId>
-                <version>0.3.1</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>15.0</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-annotations</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.antlr</groupId>
-                <artifactId>antlr4-runtime</artifactId>
-                <version>4.1</version>
-            </dependency>
+            <!-- versions for the most common dependencies are defined here -->
 
         </dependencies>
-
     </dependencyManagement>
 
     <dependencies>
+
+        <!-- dependencies that are needed in ALL modules are defined here -->
+
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+            <version>1.7.5</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>com.typesafe</groupId>
             <artifactId>config</artifactId>
+            <version>0.3.1</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>15.0</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <version>4.11</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
+            <version>1.0.7</version>
             <scope>test</scope>
         </dependency>
-
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <scope>test</scope>
-        </dependency>
-
 
     </dependencies>
 
@@ -179,7 +122,7 @@
         <developerConnection>scm:git:https://svn.irian.at/ankor/.git</developerConnection>
         <url>https://svn.irian.at/ankor/.git</url>
       <tag>HEAD</tag>
-  </scm>
+    </scm>
 
     <build>
         <plugins>

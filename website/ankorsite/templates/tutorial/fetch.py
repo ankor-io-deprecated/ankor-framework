@@ -3,10 +3,11 @@ import urllib2
 num_per_type = {
 	"fx": 7, 
 	"server": 8,
-    "ios": 4
+    "ios": 4,
+    "js": 6
 }
 
-repository_name = "ankor-todo-tutorial-0.2"
+repository_name = "ankor-todo-tutorial-SNAPSHOT"
 
 print("fetching READMEs from github...")
 

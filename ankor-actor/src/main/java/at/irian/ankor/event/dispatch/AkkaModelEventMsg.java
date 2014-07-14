@@ -28,4 +28,12 @@ public class AkkaModelEventMsg implements ConsistentHashingRouter.ConsistentHash
     public Object consistentHashKey() {
         return modelSession.getId();
     }
+
+    @Override
+    public String toString() {
+        return "AkkaModelEventMsg{" +
+               "modelSession=" + modelSession +
+               ", modelEvent=" + modelEvent +
+               '}';
+    }
 }

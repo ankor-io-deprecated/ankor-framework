@@ -1,7 +1,7 @@
 define([
     "./PathSegment"
-], function(PathSegment) {
-    var parseSegments = function(pathString) {
+], function (PathSegment) {
+    var parseSegments = function (pathString) {
         var segments = [];
         var pathSegments = pathString.split(".");
         for (var i = 0, pathSegment; (pathSegment = pathSegments[i]); i++) {
@@ -17,7 +17,7 @@ define([
 
                 for (var j = 0, key; (key = keys[j]); j++) {
                     if (key.indexOf("'") != -1 || key.indexOf('"') != -1) {
-                        segments.push(new PathSegment(key.substring(1, key.length -1), PathSegment.TYPE.PROPERTY));
+                        segments.push(new PathSegment(key.substring(1, key.length - 1), PathSegment.TYPE.PROPERTY));
                     }
                     else {
                         segments.push(new PathSegment(parseInt(key), PathSegment.TYPE.INDEX));
@@ -28,7 +28,7 @@ define([
         return segments;
     };
 
-    var Path = function(pathOrSegments) {
+    var Path = function (pathOrSegments) {
         this.segments = [];
 
         if (pathOrSegments instanceof Array) {
@@ -39,7 +39,7 @@ define([
         }
     };
 
-    Path.prototype.toString = function() {
+    Path.prototype.toString = function () {
         var path = "";
         for (var i = 0, segment; (segment = this.segments[i]); i++) {
             if (segment.type === PathSegment.TYPE.PROPERTY) {
@@ -55,7 +55,7 @@ define([
         return path;
     };
 
-    Path.prototype.append = function(path) {
+    Path.prototype.append = function (path) {
         var segments = [];
 
         if (path instanceof Path) {
@@ -71,25 +71,29 @@ define([
         return new Path(this.segments.concat(segments));
     };
 
-    Path.prototype.appendIndex = function(index) {
+    Path.prototype.appendIndex = function (index) {
         var segments = this.segments.slice(0);
         segments.push(new PathSegment(index, PathSegment.TYPE.INDEX));
         return new Path(segments);
     };
 
-    Path.prototype.parent = function() {
+    Path.prototype.parent = function () {
         return new Path(this.segments.slice(0, -1));
     };
 
-    Path.prototype.propertyName = function() {
+    Path.prototype.root = function () {
+        return new Path([this.segments[0]]);
+    };
+
+    Path.prototype.propertyName = function () {
         return this.segments[this.segments.length - 1].key;
     };
 
-    Path.prototype.equals = function(path) {
+    Path.prototype.equals = function (path) {
         return this.toString() == path.toString();
     };
 
-    Path.prototype.slice = function(startIndex, lastIndex) {
+    Path.prototype.slice = function (startIndex, lastIndex) {
         return new Path(this.segments.slice(startIndex, lastIndex));
     };
 

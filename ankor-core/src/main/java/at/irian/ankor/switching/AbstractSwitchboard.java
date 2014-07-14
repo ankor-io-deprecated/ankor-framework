@@ -5,8 +5,8 @@ import at.irian.ankor.switching.connector.ConnectorMapping;
 import at.irian.ankor.switching.connector.HandlerScopeContext;
 import at.irian.ankor.switching.msg.EventMessage;
 import at.irian.ankor.switching.routing.ModelAddress;
+import at.irian.ankor.switching.routing.ModelAddressQualifier;
 import at.irian.ankor.switching.routing.RoutingLogic;
-import at.irian.ankor.switching.routing.RoutingTable;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -27,18 +27,15 @@ public abstract class AbstractSwitchboard implements Switchboard {
         STOPPED
     }
 
-    private final RoutingTable routingTable;
     private final ConnectorMapping connectorMapping;
     private final HandlerScopeContext handlerScopeContext;
     private final SwitchboardMonitor switchboardMonitor;
     private volatile RoutingLogic routingLogic;
     private volatile Status status = Status.INITIALIZED;
 
-    public AbstractSwitchboard(RoutingTable routingTable,
-                               ConnectorMapping connectorMapping,
+    public AbstractSwitchboard(ConnectorMapping connectorMapping,
                                HandlerScopeContext handlerScopeContext,
                                SwitchboardMonitor switchboardMonitor) {
-        this.routingTable = routingTable;
         this.connectorMapping = connectorMapping;
         this.handlerScopeContext = handlerScopeContext;
         this.switchboardMonitor = switchboardMonitor;
@@ -55,16 +52,9 @@ public abstract class AbstractSwitchboard implements Switchboard {
         checkRunning();
 
         // find route
-        ModelAddress receiver = routingLogic.findRoutee(sender, connectParameters);
+        ModelAddress receiver = routingLogic.connect(sender, connectParameters);
         if (receiver == null) {
             LOG.info("Connect request from {} with params {} was not accepted", sender, connectParameters);
-            return;
-        }
-
-        // add route
-        boolean success = routingTable.connect(sender, receiver);
-        if (!success) {
-            LOG.warn("Already connected: {} and {}", sender, receiver);
             return;
         }
 
@@ -85,7 +75,7 @@ public abstract class AbstractSwitchboard implements Switchboard {
                                  ModelAddress sender,
                                  EventMessage message,
                                  Set<ModelAddress> alreadyDelivered) {
-        Collection<ModelAddress> receivers = routingTable.getConnectedAddresses(sender);
+        Collection<ModelAddress> receivers = routingLogic.getConnectedRoutees(sender);
         for (ModelAddress receiver : receivers) {
             if (!alreadyDelivered.contains(receiver)) {
                 dispatchableSend(originalSender, receiver, message);
@@ -106,9 +96,23 @@ public abstract class AbstractSwitchboard implements Switchboard {
         switchboardMonitor.monitor_closeAllConnections(this, sender);
         checkRunningOrStopping();
 
-        Collection<ModelAddress> receivers = routingTable.getConnectedAddresses(sender);
+        Collection<ModelAddress> receivers = routingLogic.getConnectedRoutees(sender);
         for (ModelAddress receiver : receivers) {
             dispatchableCloseConnection(sender, receiver);
+        }
+    }
+
+    @Override
+    public void closeQualifyingConnections(ModelAddressQualifier senderQualifier) {
+        switchboardMonitor.monitor_closeQualifyingConnections(this, senderQualifier);
+        checkRunningOrStopping();
+
+        Collection<ModelAddress> senders = routingLogic.getQualifiyingAdresses(senderQualifier);
+        for (ModelAddress sender : senders) {
+            Collection<ModelAddress> receivers = routingLogic.getConnectedRoutees(sender);
+            for (ModelAddress receiver : receivers) {
+                dispatchableCloseConnection(sender, receiver);
+            }
         }
     }
 
@@ -118,9 +122,9 @@ public abstract class AbstractSwitchboard implements Switchboard {
         checkRunningOrStopping();
 
         LOG.debug("Remove route between {} and {}", sender, receiver);
-        routingTable.disconnect(sender, receiver);
+        routingLogic.disconnect(sender, receiver);
 
-        boolean noMoreRouteToReceiver = !routingTable.hasConnectedAddresses(receiver);
+        boolean noMoreRouteToReceiver = routingLogic.getConnectedRoutees(receiver).isEmpty();
         handleCloseConnection(sender, receiver, noMoreRouteToReceiver);
     }
 
@@ -130,6 +134,7 @@ public abstract class AbstractSwitchboard implements Switchboard {
         if (this.routingLogic == null) {
             throw new IllegalStateException("No RoutingLogic");
         }
+        this.routingLogic.init();
         this.status = Status.RUNNING;
     }
 
@@ -137,10 +142,10 @@ public abstract class AbstractSwitchboard implements Switchboard {
     public void stop() {
         switchboardMonitor.monitor_stop(this);
         this.status = Status.STOPPING;
-        for (ModelAddress p : routingTable.getAllConnectedAddresses()) {
+        for (ModelAddress p : routingLogic.getAllConnectedRoutees()) {
             closeAllConnections(p);
         }
-        routingTable.clear();
+        this.routingLogic.close();
         this.status = Status.STOPPED;
     }
 

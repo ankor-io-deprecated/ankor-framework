@@ -1,6 +1,11 @@
 package at.irian.ankor.switching.routing;
 
 /**
+ * A ModelAddress uniquely references a named model on the local system or a remote system.
+ * Concrete implementations of a ModelAddress are always associated with a concrete
+ * {@link at.irian.ankor.switching.connector.Connector} so that the {@link at.irian.ankor.switching.Switchboard}
+ * knows how to transmit messages to the (local or remote) model that is referenced by this ModelAddress.
+ *
  * @author Manfred Geiler
  */
 public interface ModelAddress {

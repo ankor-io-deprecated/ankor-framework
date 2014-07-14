@@ -19,7 +19,7 @@ For a server implementation you will need the `ankor-service` module:
     <dependency>
         <groupId>at.irian.ankor</groupId>
         <artifactId>ankor-service</artifactId>
-        <version>0.1</version>
+        <version>$VERSION</version>
     </dependency>
     
 For a concrete example see the [`pom.xml`][1] file of the Ankor todo sample server.
@@ -31,7 +31,7 @@ To deploy an application in a servlet container add the `ankor-servlet` module:
     <dependency>
         <groupId>at.irian.ankor</groupId>
         <artifactId>ankor-servlet</artifactId>
-        <version>0.1</version>
+        <version>$VERSION</version>
     </dependency>
     
 For a concrete example see the [`pom.xml`][2] file of the Ankor todo sample servlet.
@@ -45,7 +45,7 @@ To integrate Ankor in a JavaFX application add the `ankor-fx` module.
     <dependency>
         <groupId>at.irian.ankor</groupId>
         <artifactId>ankor-fx</artifactId>
-        <version>0.1</version>
+        <version>$VERSION</version>
     </dependency>
     
 For a concrete example see the [`pom.xml`][3] file of the Ankor todo sample JavaFX client.
@@ -53,6 +53,6 @@ For a concrete example see the [`pom.xml`][3] file of the Ankor todo sample Java
 <br/>
 <br/>
 
-[1]: https://github.com/ankor-io/ankor-todo-tutorial/blob/master/todo-application/pom.xml
-[2]: https://github.com/ankor-io/ankor-todo-tutorial/blob/master/todo-servlet/pom.xml
-[3]: https://github.com/ankor-io/ankor-todo-tutorial/blob/master/todo-fx/pom.xml
+[1]: https://github.com/ankor-io/ankor-todo-tutorial/blob/server-complete/todo-server/pom.xml
+[2]: https://github.com/ankor-io/ankor-todo-tutorial/blob/server-complete/todo-servlet/pom.xml
+[3]: https://github.com/ankor-io/ankor-todo-tutorial/blob/fx-complete/todo-fx/pom.xml

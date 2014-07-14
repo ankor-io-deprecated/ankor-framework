@@ -23,11 +23,6 @@ public abstract class SimpleSingleRootApplication extends BaseApplication {
     }
 
     @Override
-    public boolean supportsModel(String modelName) {
-        return this.modelName.equals(modelName);
-    }
-
-    @Override
     public Set<String> getKnownModelNames() {
         return Collections.singleton(this.modelName);
     }
@@ -42,7 +37,7 @@ public abstract class SimpleSingleRootApplication extends BaseApplication {
     public final Object createModel(String modelName, Map<String, Object> connectParameters, RefContext refContext) {
         checkModelName(modelName);
         Object modelRoot = createModel(refContext.refFactory().ref(modelName), connectParameters);
-        modelRoots.add(modelRoot);
+        if (!isStateless()) modelRoots.add(modelRoot);
         return modelRoot;
     }
 
@@ -50,7 +45,7 @@ public abstract class SimpleSingleRootApplication extends BaseApplication {
     public final void releaseModel(String modelName, Object modelRoot) {
         checkModelName(modelName);
         releaseModel(modelRoot);
-        modelRoots.remove(modelRoot);
+        if (!isStateless()) modelRoots.remove(modelRoot);
     }
 
     private void checkModelName(String modelName) {
@@ -73,6 +68,8 @@ public abstract class SimpleSingleRootApplication extends BaseApplication {
 
     public abstract Object createModel(Ref rootRef, Map<String, Object> connectParameters);
 
-    public void releaseModel(Object model) {}
+    public void releaseModel(Object model) {
+        
+    }
 
 }

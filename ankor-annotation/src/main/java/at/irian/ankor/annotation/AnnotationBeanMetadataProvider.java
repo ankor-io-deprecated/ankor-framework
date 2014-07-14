@@ -11,7 +11,6 @@ import at.irian.ankor.viewmodel.factory.InitMethodMetadata;
 import at.irian.ankor.viewmodel.metadata.*;
 import at.irian.ankor.viewmodel.watch.WatchedPropertyMetadata;
 
-import java.beans.Introspector;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -179,7 +178,7 @@ public class AnnotationBeanMetadataProvider implements BeanMetadataProvider {
                 String[] paths = autoSignalAnnotation.value();
                 if (paths.length == 0 || (paths.length == 1 && paths[0].isEmpty())) {
                     if (isSetter(method)) {
-                        String propertyName = Introspector.decapitalize(method.getName().substring(3));
+                        String propertyName = decapitalize(method.getName().substring(3));
                         signalMetadata = signalMetadata.withPath('.' + propertyName);
                         setterAutoSignal = true;
                     } else {
@@ -193,7 +192,7 @@ public class AnnotationBeanMetadataProvider implements BeanMetadataProvider {
             }
 
             if (!setterAutoSignal && autoSignalForAllSetters && isSetter(method)) {
-                String propertyName = Introspector.decapitalize(method.getName().substring(3));
+                String propertyName = decapitalize(method.getName().substring(3));
                 signalMetadata = signalMetadata.withPath('.' + propertyName);
             }
 
@@ -257,11 +256,11 @@ public class AnnotationBeanMetadataProvider implements BeanMetadataProvider {
     private String getPropertyNameFromMethod(Method method) {
         String methodName = method.getName();
         if (methodName.startsWith("get")) {
-            return Introspector.decapitalize(methodName.substring(3));
+            return decapitalize(methodName.substring(3));
         } else if (methodName.startsWith("is")) {
-            return Introspector.decapitalize(methodName.substring(2));
+            return decapitalize(methodName.substring(2));
         } else if (methodName.startsWith("set")) {
-            return Introspector.decapitalize(methodName.substring(3));
+            return decapitalize(methodName.substring(3));
         } else {
             throw new IllegalArgumentException("Not a valid getter or setter method: " + method);
         }
@@ -289,5 +288,19 @@ public class AnnotationBeanMetadataProvider implements BeanMetadataProvider {
         return null;
     }
 
+
+    private static String decapitalize(String name) {
+        if (name == null || name.isEmpty()) {
+            return name;
+        } else if (name.length() == 1) {
+            return name.toLowerCase();
+        } else {
+            if (Character.isUpperCase(name.charAt(0)) && Character.isUpperCase(name.charAt(1))) {
+                return name;
+            } else {
+                return Character.toLowerCase(name.charAt(0)) + name.substring(1);
+            }
+        }
+    }
 
 }
