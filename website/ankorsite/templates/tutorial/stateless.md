@@ -3,15 +3,18 @@
 # Stateless
 
 Starting with version 0.3 Ankor supports stateless servers.
-This means that no view model is kept in memory between requests.
-Let's see how we can modify the todo example from the [tutorial][tutorial] to become a stateless server.
+This means that on the server there is no view model kept in memory between messages.
+Let's see how we can modify the todo example from the [server tutorial][tutorial] to become a stateless server.
 
-This quick tutorial assumes that you are familiar with the basics of Ankor and our todo example app. 
+<div class="alert alert-info">
+    <strong>Note:</strong> This quick tutorial assumes that you are familiar with the basics of Ankor and our todo example app. 
+</div>
 
 ## Application
 
 First of all we need to tell Ankor that we want our application be stateless.
-Here is the complete `Application` implementation for the stateless todo app:
+Basically all we need to do in your `Application` implementation to to overwrite the `isStateless` method.
+Take a look at the `Application` implementation for the stateless todo app:
 
     :::java
     public class StatelessTodoServerApplication extends SimpleSingleRootApplication {
@@ -43,9 +46,9 @@ Note that:
 This sets the basis for our stateless application, however we need to modify our view model as well.
 
 In our [`TaskListModel`][tasklistmodel] we use the [`@StateHolder`][stateholder] annotation to tell Ankor which properties "carry" the state of the application.
-This means that the last state of the view model can be restored by using these properties.
+What is meant by "carry" is that these properties are sufficient to restore the last state of the view model.
 
-In the case of our todo application it's only the `filter` property:
+In the case of our todo application it's just the `filter` property:
 
     :::java
     @StateHolder
@@ -60,14 +63,15 @@ which is a list of all the properties annotated with `@StateHolder`.
 containing the current state of all "stateProps".
 3. The server will create a new view model by calling `createModel` in your `Application` implementation (see above).
 4. The server will call the setter of every state property on the view model.
-5. The request is processed by the view model as with a stateful server.
+5. Finally the request is processed by the view model just like with a stateful server.
 
 <div class="alert alert-danger">
-<strong>Important:</strong> Step 4 implies that all setters for state properties are written so that a consistent state of the model is maintained.
-In other words, the setters need to restore the last state of the view model.
+    <strong>Important:</strong>
+    As you might have noticed, step 4 implies that all setters for state properties have to be written so that a consistent state of the model is maintained.
+    In other words, the setters need to restore the last state of the view model.
 </div>
 
-### Example
+## Example
 
 Let's look at our todo example:
 
@@ -85,9 +89,9 @@ Let's look at our todo example:
         ...
     }
     
-As you can see there is a method `initCalculatedFields` that sets the properties of all "calculated" fields. 
-Calculated fields are basically all fields thate are not `@StateHolder`s.
-Most of them depend directly or indirectly on the current value of `filter`, which is our state holder.
+There is a method `initCalculatedFields` that sets the properties of all "calculated" fields. 
+Calculated fields are basically all fields that are not annotated with `@StateHolder`.
+Most of them depend directly or indirectly on the current value of `filter`.
 
 Obviously we use `initCalculatedFields` in the constructor to initialize the fields:
     
@@ -101,7 +105,7 @@ Obviously we use `initCalculatedFields` in the constructor to initialize the fie
         initCalculatedFields();
     }
     
-However, we also need to call `initCalculatedFields` in `setFilter` to keep the state of the calculated fields consistent with the new value of `filter`:
+However, we also use `initCalculatedFields` in `setFilter` to keep the state of the calculated fields consistent with the new value of `filter`:
 
     :::java
     public void setFilter(String filter) {
@@ -109,14 +113,17 @@ However, we also need to call `initCalculatedFields` in `setFilter` to keep the 
         initCalculatedFields();
     }
     
-To recap: To activate the stateless feature in Ankor you have to override `isStateless` in your application.
-Next you have to find the properties that "carry" the state of the application and annotate them with `@StateHolder`.
-In order for it to work correctly it is required to keep the state of the view model consistent when the setters of the state holders are invoked.
+And that's it!
+
+## Recap
+1. To activate the stateless feature in Ankor we have to override `isStateless` in our application.
+2. Then we have to find the properties that "carry" the state of our application and annotate them with `@StateHolder`.
+3. In order for this to work correctly it is required to keep the state of the view model consistent when the setters of the state holders are called.
     
 
 [tutorial]: http://ankor.io/tutorials/server
-[tasklistmodel]: #
-[stateholder]: #
+[tasklistmodel]: https://github.com/ankor-io/ankor-todo-tutorial/blob/server-complete/todo-server/src/main/java/io/ankor/tutorial/viewmodel/TaskListModel.java
+[stateholder]: http://ankor.io/static/javadoc/apidocs-0.3/index.html
 
 
 

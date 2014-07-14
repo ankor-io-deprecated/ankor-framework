@@ -116,7 +116,7 @@ p > img {
 }
 
 .foreground .container {
-    padding-bottom: 30px;
+    padding-bottom: 50px;
 }
 
 #footer, body {
@@ -188,3 +188,23 @@ blockquote footer {
     font-style: normal;
     font-size: 14px;
 }
+
+.toc {
+    width: 100%;
+    border: 1px solid #ddd;
+    padding: 10px;
+    background: #fefefe;
+    border-radius: 4px;
+}
+
+.toc ul {
+    padding-left: 25px;
+}
+
+@media (min-width: 768px) {
+    .toc {
+        width: 320px;
+        margin-bottom: 30px;
+    }
+}
+
