@@ -8,19 +8,19 @@
 #heading {
     -fx-font-family: Helvetica, Arial, sans-serif;
     -fx-font-weight: bold;
-    -fx-font-size: 70pt;
+    -fx-font-size: 70px;
     -fx-text-fill: rgba(255, 255, 255, 0.3);
-    -fx-effect: dropshadow(one-pass-box, rgba(0, 0, 0, 0.8), 0, 0 , -1, -1);
+    -fx-effect: dropshadow(one-pass-box, rgba(0, 0, 0, 0.8), 0, 0, -1, -1);
 }
 
 #pane {
-    -fx-border-width: 0 0 1 0;
+    -fx-border-width: 0 0 1px 0;
     -fx-border-style: solid;
     -fx-border-color: #6c615c;
     -fx-background: #8d7d77;
     -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, rgba(132, 110, 100, 0.8) 0%, rgba(101, 84, 76, 0.8) 100%);
-    -fx-border-radius: 1 1 0 0;
-    -fx-background-radius: 1 1 0 0;
+    -fx-border-radius: 1px 1px 0 0;
+    -fx-background-radius: 1px 1px 0 0;
 }
 
 #newTodo {
@@ -42,12 +42,12 @@
 }
 
 #todoApp {
-    -fx-border-width: 1;
+    -fx-border-width: 1px;
     -fx-border-style: solid;
     -fx-border-color: #ccc;
     -fx-background-color: #fff;
-    -fx-border-radius: 1 1 1 1;
-    -fx-background-radius: 1 1 1 1;
+    -fx-border-radius: 1px 1px 1px 1px;
+    -fx-background-radius: 1px 1px 1px 1px;
 }
 
 .boxShadow {
@@ -67,11 +67,11 @@
     -fx-text-fill: #4d4d4d;
     -fx-background-color: transparent;
     -fx-border: none;
-    -fx-font-size: 24pt;
+    -fx-font-size: 24px;
 }
 
 #info .label, #info .hyperlink {
-    -fx-font-size: 12pt;
+    -fx-font-size: 12px;
     -fx-text-fill: #a6a6a6;
     -fx-effect: dropshadow(two-pass-box, rgba(255, 255, 255, 0.7), 1, 0, 1, 1);
 }
@@ -103,12 +103,11 @@
     -fx-font-weight: bold;
 }
 
-
 #clearButton {
     -fx-background-color: rgba(0, 0, 0, 0.1);
     -fx-border: none;
-    -fx-font-size: 11pt;
-    -fx-padding: 4 10 2 10;
+    -fx-font-size: 11px;
+    -fx-padding: 4px 10px 2px 10px;
 }
 
 #clearButton:hover {
@@ -116,7 +115,7 @@
 }
 
 #clearButton:focused {
-    -fx-background-insets: 0, 0, 1, 2;
+    -fx-background-insets: 0, 0, 1px, 2px;
 }
 
 .paper {
@@ -132,10 +131,19 @@
 }
 
 .task {
-    -fx-border-width: 0 0 1 0;
+    -fx-background-color: rgba(255, 255, 255, 0.9);
     -fx-border-color: #ccc;
-    -fx-border-style: dotted;
+    -fx-border-width: 1px;
+    -fx-border-style: dashed hidden hidden hidden;
 }
+
+/*
+.task-dotted {
+    -fx-border-width: 0 0 1px 0;
+    -fx-border-style: dotted;
+    -fx-border-color: #ccc;
+}
+*/
 
 .scroll-pane {
     -fx-border: none;
@@ -146,7 +154,7 @@
 .list-cell {
     -fx-height: 65;
     -fx-padding: 0 0 0 0;
-    -fx-margin: -1 0 0 -1;
+    /*-fx-margin: -1px 0 0 -1px;*/
     -fx-background-color: transparent;
     -fx-border-width: 0 0 1 0;
     -fx-border-color: #ccc;
@@ -159,11 +167,11 @@
 }
 
 .list-cell:empty {
-    visibility:hidden;
+    visibility: hidden;
 }
 
 .deleteButton {
-    -fx-font-size: 22pt;
+    -fx-font-size: 22px;
     -fx-text-fill: #a88a8a;
     -fx-background-color: transparent;
     visibility: hidden;
