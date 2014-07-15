@@ -85,7 +85,7 @@ public class TaskListController implements Initializable {
 
     /**
      * Render the task list, updating the UI only if the list actually changed.
-     * 
+     *
      * @param tasksRef A @{link FxRef} to the list of tasks.
      */
     @ChangeListener(pattern = "root.model.(tasks)")
@@ -95,7 +95,7 @@ public class TaskListController implements Initializable {
         // get the list of nodes of the current items
         ObservableList<Node> children = tasksList.getChildren();
         children.removeAll(Collections.singleton(null)); // remove null values
-        
+
         // since the indices shift with every addition/deletion keep a copy
         List<Node> childrenCopy = new ArrayList<>(children);
 
@@ -111,7 +111,7 @@ public class TaskListController implements Initializable {
         for (int i = 0; i < newIdsSize; i++) {
             newIds.add(tasksRef.appendIndex(i).appendPath("id").<String>getValue());
         }
-        
+
         // get a set of matches between the ids in the current and the new list
         Set<Match> matchSet = getMatchSet(currentIds, newIds);
 
@@ -123,29 +123,29 @@ public class TaskListController implements Initializable {
 
     /**
      * Get a set of matches between the ids in the current and the new list
-     * 
+     *
      * @param currentIds a ordered list of ids, representing the current state in the UI
-     * @param newIds a ordered list of ids, representing the new state in the UI
+     * @param newIds     a ordered list of ids, representing the new state in the UI
      * @return A set of matches between the ids in the current and the new list
      */
     private Set<Match> getMatchSet(List<String> currentIds, List<String> newIds) {
-        Set<Match> matchList = new LinkedHashSet<>(currentIds.size() + newIds.size());
+        Set<Match> matchSet = new LinkedHashSet<>(currentIds.size() + newIds.size());
 
         for (int i = 0; i < currentIds.size(); i++) {
             String id = currentIds.get(i);
             int indexOfId = newIds.indexOf(id);
             Match m = getMatchByIndex(i, indexOfId);
-            matchList.add(m);
+            matchSet.add(m);
         }
 
         for (int i = 0; i < newIds.size(); i++) {
             String id = newIds.get(i);
             int indexOfId = currentIds.indexOf(id);
             Match m = getMatchByIndex(indexOfId, i);
-            matchList.add(m);
+            matchSet.add(m);
         }
 
-        return matchList;
+        return matchSet;
     }
 
     @FXML
@@ -229,9 +229,9 @@ public class TaskListController implements Initializable {
 
     /**
      * Get the correct {@link Match} based on the indices of an item in two lists.
-     * 
+     *
      * @param currentIndex the index of the item in the current list
-     * @param newIndex the index of the item in the new list
+     * @param newIndex     the index of the item in the new list
      * @return the correct {@link Match} based on the indices
      */
     private Match getMatchByIndex(int currentIndex, int newIndex) {
@@ -252,12 +252,12 @@ public class TaskListController implements Initializable {
 
     /**
      * Details the relation of a single item between two lists.
-     *
+     * <p/>
      * The item can be present only in the current list: {@link RemoveMatch}
      * The item can be present only in the new list: {@link AddMatch}
      * The item can have kept its index: {@link PassThroughMatch}
      * The item can have a different index in both lists: {@link MoveMatch}
-     * 
+     * <p/>
      * Should only be created via {@link #getMatchByIndex(int, int)}
      */
     private abstract class Match {
@@ -266,7 +266,7 @@ public class TaskListController implements Initializable {
 
         /**
          * @param currentIndex The index of the item in the current list, -1 if not present
-         * @param newIndex The index of the item in the new list, -1 if not present
+         * @param newIndex     The index of the item in the new list, -1 if not present
          */
         public Match(int currentIndex, int newIndex) {
             this.currentIndex = currentIndex;
@@ -292,13 +292,13 @@ public class TaskListController implements Initializable {
             result = 31 * result + newIndex;
             return result;
         }
-        
+
         /**
          * Updates the UI.
-         *
+         * <p/>
          * Since this will change the indices, a copy of the nodes is required.
          *
-         * @param tasksRef a {@link at.irian.ankor.fx.binding.fxref.FxRef} to the tasks
+         * @param tasksRef     a {@link at.irian.ankor.fx.binding.fxref.FxRef} to the tasks
          * @param childrenCopy a list of the current nodes in the UI, not effected by previous changes
          */
         public abstract void update(FxRef tasksRef, List<Node> childrenCopy);
@@ -316,14 +316,14 @@ public class TaskListController implements Initializable {
         public void update(FxRef tasksRef, List<Node> childrenCopy) {
         }
     }
-    
+
     private static Stack<TaskPane> pool = new Stack<>();
 
     /**
      * The item is only present in the new list
      */
     private class AddMatch extends Match {
-        
+
         public AddMatch(int newIndex) {
             super(-1, newIndex);
         }
@@ -334,18 +334,18 @@ public class TaskListController implements Initializable {
         public int getAddIndex() {
             return newIndex;
         }
-        
+
         @Override
         public void update(FxRef tasksRef, List<Node> childrenCopy) {
             TaskPane tp;
-            
+
             if (!pool.isEmpty()) {
                 tp = pool.pop();
                 tp.newRef(getAddIndex(), tasksRef.appendIndex(getAddIndex()));
             } else {
                 tp = new TaskPane(getAddIndex(), tasksRef.appendIndex(getAddIndex()));
             }
-            
+
             tasksList.getChildren().add(getAddIndex(), tp);
         }
 
@@ -373,7 +373,7 @@ public class TaskListController implements Initializable {
         public int getToIndex() {
             return newIndex;
         }
-        
+
         @Override
         public void update(FxRef tasksRef, List<Node> childrenCopy) {
             ((TaskPane) childrenCopy.get(getFromIndex())).updateRef(getToIndex(), tasksRef.appendIndex(getToIndex()));
@@ -396,7 +396,7 @@ public class TaskListController implements Initializable {
         public int getRemoveIndex() {
             return currentIndex;
         }
-        
+
         @Override
         public void update(FxRef tasksRef, List<Node> childrenCopy) {
             TaskPane tp = (TaskPane) childrenCopy.get(getRemoveIndex());

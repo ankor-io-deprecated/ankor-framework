@@ -79,7 +79,8 @@ public class TaskListModel {
         toggleAll = calcToggleAllSelected(itemsLeft);
     }
 
-    @ChangeListener(pattern = {"root.model.tasks.(*).title",
+    @ChangeListener(pattern = {
+            "root.model.tasks.(*).title",
             "root.model.tasks.(*).completed"})
     public void onTaskChanged(Ref ref) {
         LOG.info("Task {} changed", ref.path());
