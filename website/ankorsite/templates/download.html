@@ -14,4 +14,53 @@
 {{ mdcontent|markdown:"codehilite" }}
 {% endautoescape %}
 
+<div class="tabbable ">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#server_viewmodel" data-toggle="tab">Server Viewmodel</a></li>
+        <li><a href="#socket_fx_client" data-toggle="tab">Socket JavaFX Client</a></li>
+        <li><a href="#socket_server" data-toggle="tab">Socket Server</a></li>
+        <li><a href="#websocket_fx_client" data-toggle="tab">WebSocket JavaFX Client</a></li>
+        <li><a href="#websocket_server" data-toggle="tab">WebSocket Server</a></li>
+        <li><a href="#js_client" data-toggle="tab">JavaScript Client</a></li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane active" id="server_viewmodel">
+            {% load markdownlib %}
+            {% autoescape off %}
+            {{ server_viewmodel|markdown:"codehilite" }}
+            {% endautoescape %}
+        </div>
+        <div class="tab-pane" id="socket_fx_client">
+            {% load markdownlib %}
+            {% autoescape off %}
+            {{ socket_fx_client|markdown:"codehilite" }}
+            {% endautoescape %}
+        </div>
+        <div class="tab-pane" id="socket_server">
+            {% load markdownlib %}
+            {% autoescape off %}
+            {{ socket_server|markdown:"codehilite" }}
+            {% endautoescape %}
+        </div>
+        <div class="tab-pane" id="websocket_fx_client">
+            {% load markdownlib %}
+            {% autoescape off %}
+            {{ websocket_fx_client|markdown:"codehilite" }}
+            {% endautoescape %}
+        </div>
+        <div class="tab-pane" id="websocket_server">
+            {% load markdownlib %}
+            {% autoescape off %}
+            {{ websocket_server|markdown:"codehilite" }}
+            {% endautoescape %}
+        </div>
+        <div class="tab-pane" id="js_client">
+            {% load markdownlib %}
+            {% autoescape off %}
+            {{ js_client|markdown:"codehilite" }}
+            {% endautoescape %}
+        </div>
+    </div>
+</div>
+
 {% endblock %}
