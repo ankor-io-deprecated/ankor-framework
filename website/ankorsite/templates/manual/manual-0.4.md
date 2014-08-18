@@ -123,18 +123,56 @@ Ankor consists of several modules from which you probably only need some of them
 
 ### Hello world
 
-TBD
+A simple Ankor view model that counts the number of changes of a property.
+
+    public class HelloAnkorApplication extends SimpleSingleRootApplication {
+        
+        public HelloAnkorApplication() {
+            super("Hello Ankor", "root");
+        }
+    
+        @Override
+        public Object createModel(Ref rootRef, Map<String, Object> connectParameters) {
+            return new RootModel(rootRef);
+        }
+        
+        public class RootModel {
+    
+            private final Ref rootRef;
+            
+            // view model properties
+            private String helloWorld = "Hello World";
+            private int count = 0;
+            
+            public RootModel(Ref rootRef) {
+                AnkorPatterns.initViewModel(this, rootRef); // make Ankor view model
+                this.rootRef = rootRef; // save the ref
+            }
+            
+            @ChangeListener(pattern = "root.helloWorld")
+            public void onHelloWorldChanged() {
+                // count the changes of the helloWorld property and send the new value to the client
+                rootRef.appendPath("count").setValue(count + 1);
+            }
+            
+            // TODO: getters and setters for view model properties
+        }
+    }
+    
+This snippet is taken form the [`hello-ankor`][helloankor] sample.
 
 ### Tutorials
 
 The best way to get an idea of how applications can be written using Ankor is stepping through the [tutorials](/tutorials).
 
-
 # General
 
 ## What is a Ref?
 
-TBD
+A core concept of Ankor is the [`Ref`][ref]. 
+It represents a reference to a view model.
+All view model properties are ordered in a hierarchical tree structure.
+The Ref object allows us to navigate this tree structure and manipulate the underlying properties.
 
 ## Change Events
 
@@ -144,7 +182,9 @@ TBD
 
 TBD
 
-
 # Frequently Asked Questions
 
 TBD
+
+[ref]: http://ankor.io/static/javadoc/apidocs-0.3/at/irian/ankor/ref/Ref.html
+[helloankor]: https://github.com/ankor-io/hello-ankor
