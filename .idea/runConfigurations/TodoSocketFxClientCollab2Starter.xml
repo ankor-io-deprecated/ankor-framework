@@ -6,7 +6,7 @@
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>
-    <option name="MAIN_CLASS_NAME" value="at.irian.ankorsamples.todosample.fxclient.TodoSocketFxClientCollab2Starter" />
+    <option name="MAIN_CLASS_NAME" value="at.irian.ankorsamples.todosample.fxclient.starter.TodoSocketFxClientCollab2Starter" />
     <option name="VM_PARAMETERS" value="" />
     <option name="PROGRAM_PARAMETERS" value="" />
     <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />

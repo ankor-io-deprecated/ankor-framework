@@ -6,136 +6,181 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 <?import java.net.URL?>
-<AnchorPane id="body" minWidth="650.0" prefHeight="650.0" prefWidth="650.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="at.irian.ankorsamples.todosample.fxclient.fx.TaskListController">
-  <children>
-    <VBox alignment="TOP_CENTER" prefWidth="550.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-      <children>
-        <VBox alignment="CENTER" maxWidth="550.0" VBox.vgrow="ALWAYS">
-          <children>
-            <Label id="heading" alignment="CENTER" text="todos" textAlignment="CENTER">
-              <font>
-                <Font size="70.0" />
-              </font>
-              <VBox.margin>
-                <Insets bottom="10.0" top="10.0" />
-              </VBox.margin>
-            </Label>
-            <GridPane VBox.vgrow="ALWAYS">
-              <children>
-                <Pane id="bigShadow" style="-fx-background-color: #fff;" styleClass="bigShadow" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                <AnchorPane id="footer" fx:id="footerBottom" prefHeight="30.0" styleClass="boxShadow, paper" visible="true" GridPane.columnIndex="0" GridPane.rowIndex="2">
-                  <children>
-                    <HBox id="filters" alignment="CENTER" prefHeight="35.0" prefWidth="530.0" spacing="5.0" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                      <children>
-                        <RadioButton fx:id="filterAll" mnemonicParsing="false" selected="true" text="All" onAction="#filterAllClicked">
-                          <toggleGroup>
-                            <ToggleGroup fx:id="filterToggleGroup" />
-                          </toggleGroup>
-                        </RadioButton>
-                        <RadioButton fx:id="filterActive" mnemonicParsing="false" text="Active" toggleGroup="$filterToggleGroup" HBox.hgrow="NEVER" onAction="#filterActiveClicked" />
-                        <RadioButton fx:id="filterCompleted" mnemonicParsing="false" text="Completed" toggleGroup="$filterToggleGroup" onAction="#filterCompletedClicked" />
-                      </children>
-                      <padding>
-                        <Insets />
-                      </padding>
-                    </HBox>
-                    <HBox id="todoCount" alignment="CENTER_LEFT" prefHeight="35.0" spacing="5.0" visible="true" AnchorPane.leftAnchor="10.0">
-                      <children>
-                        <Label fx:id="todoCountNum" style="-fx-font-weight: bold;" text="0" />
-                        <Label fx:id="todoCountText" text="items left" />
-                      </children>
-                    </HBox>
-                    <Button fx:id="clearButton" alignment="CENTER_RIGHT" contentDisplay="CENTER" layoutY="7.0" mnemonicParsing="false" onAction="#clearTasks" prefHeight="20.0" text="Clear completed (0)" textAlignment="CENTER" visible="true" AnchorPane.rightAnchor="10.0">
-                      <effect>
-                        <InnerShadow blurType="TWO_PASS_BOX" color="#00000033" height="1.0" radius="0.0" width="0.0" />
-                      </effect>
-                    </Button>
-                  </children>
-                  <GridPane.margin>
-                    <Insets left="10.0" right="10.0" />
-                  </GridPane.margin>
-                </AnchorPane>
-                <Pane fx:id="footerTop" styleClass="boxShadow, paper" visible="true" GridPane.columnIndex="0" GridPane.rowIndex="1">
-                  <GridPane.margin>
-                    <Insets left="5.0" right="5.0" />
-                  </GridPane.margin>
-                </Pane>
-                <AnchorPane id="" GridPane.columnIndex="0" GridPane.rowIndex="0">
-                  <children>
-                    <VBox id="todoApp" styleClass="boxShadow" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                      <children>
-                        <Pane id="pane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="15.0" visible="true" />
-                        <HBox id="header" alignment="CENTER_LEFT" maxHeight="65.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="65.0" style="">
-                          <children>
-                            <ToggleButton fx:id="toggleAllButton" onAction="#toggleAll" alignment="CENTER" minWidth="-1.0" mnemonicParsing="false" prefWidth="40.0" rotate="90.0" text="»" />
-                            <TextField fx:id="newTodo" onAction="#newTodo" prefHeight="65.0" promptText="What needs to be done?" HBox.hgrow="ALWAYS">
-                              <HBox.margin>
-                                <Insets left="10.0" right="10.0" />
-                              </HBox.margin>
-                            </TextField>
-                          </children>
-                          <padding>
-                            <Insets left="1.0" />
-                          </padding>
-                        </HBox>
-                        <ScrollPane cache="false" fitToHeight="false" fitToWidth="false" hbarPolicy="NEVER" mouseTransparent="false" pannable="false" pickOnBounds="false" prefHeight="270.0" prefWidth="548.0" style="" vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS">
-                          <content>
-                            <VBox id="taskList" fx:id="tasksList" prefHeight="270.0" prefWidth="548.0" />
-                          </content>
-                        </ScrollPane>
-                      </children>
-                    </VBox>
-                    <Pane id="lines" layoutX="40.0" prefHeight="208.0" prefWidth="4.0" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="16.0" />
-                  </children>
-                </AnchorPane>
-              </children>
-              <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
-              </columnConstraints>
-              <rowConstraints>
-                <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-                <RowConstraints maxHeight="3.0" minHeight="3.0" prefHeight="3.0" vgrow="NEVER" />
-                <RowConstraints maxHeight="35.0" minHeight="35.0" prefHeight="35.0" vgrow="NEVER" />
-              </rowConstraints>
-            </GridPane>
-            <VBox id="info" prefHeight="147.0" prefWidth="600.0" spacing="12.0">
-              <children>
-                <HBox alignment="TOP_CENTER">
-                  <children>
-                    <Label id="serverStatus" prefHeight="19.0" styleClass="footerText" text="" HBox.hgrow="ALWAYS" />
-                  </children>
-                </HBox>
-                <HBox alignment="TOP_CENTER">
-                  <children>
-                    <Label prefHeight="19.0" styleClass="footerText" text="Double-click to edit a todo" HBox.hgrow="ALWAYS" />
-                  </children>
-                </HBox>
-                <HBox alignment="TOP_CENTER">
-                  <children>
-                    <Label prefHeight="19.0" styleClass="footerText" text="Written by" HBox.hgrow="ALWAYS" />
-                    <Hyperlink onAction="#openIRIAN" styleClass="footerText" text="IRIAN Solutions" HBox.hgrow="ALWAYS" />
-                  </children>
-                </HBox>
-                <HBox alignment="TOP_CENTER">
-                  <children>
-                    <Label prefHeight="19.0" styleClass="footerText" text="Part of" HBox.hgrow="ALWAYS" />
-                    <Hyperlink onAction="#openTodoMVC" styleClass="footerText" text="TodoMVC" HBox.hgrow="ALWAYS" />
-                  </children>
-                </HBox>
-              </children>
-              <padding>
-                <Insets top="25.0" />
-              </padding>
-            </VBox>
-          </children>
+<AnchorPane id="body" minWidth="650.0" prefHeight="650.0" prefWidth="650.0"
+            xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="at.irian.ankorsamples.todosample.fxclient.fx.TaskListController">
+    <children>
+        <VBox alignment="TOP_CENTER" prefWidth="550.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+              AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <VBox alignment="CENTER" maxWidth="550.0" VBox.vgrow="ALWAYS">
+                    <children>
+                        <Label id="heading" alignment="CENTER" text="todos" textAlignment="CENTER">
+                            <font>
+                                <Font size="70.0"/>
+                            </font>
+                            <VBox.margin>
+                                <Insets bottom="10.0" top="10.0"/>
+                            </VBox.margin>
+                        </Label>
+                        <GridPane VBox.vgrow="ALWAYS">
+                            <children>
+                                <Pane id="bigShadow" style="-fx-background-color: #fff;" styleClass="bigShadow"
+                                      GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                                <AnchorPane id="footer" fx:id="footerBottom" prefHeight="30.0"
+                                            styleClass="boxShadow, paper" visible="true" GridPane.columnIndex="0"
+                                            GridPane.rowIndex="2">
+                                    <children>
+                                        <HBox id="filters" alignment="CENTER" prefHeight="35.0" prefWidth="530.0"
+                                              spacing="5.0" visible="true" AnchorPane.bottomAnchor="0.0"
+                                              AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                                              AnchorPane.topAnchor="0.0">
+                                            <children>
+                                                <RadioButton fx:id="filterAll" mnemonicParsing="false"
+                                                             onAction="#filterAllClicked" selected="true" text="All">
+                                                    <toggleGroup>
+                                                        <ToggleGroup fx:id="filterToggleGroup"/>
+                                                    </toggleGroup>
+                                                </RadioButton>
+                                                <RadioButton fx:id="filterActive" mnemonicParsing="false"
+                                                             onAction="#filterActiveClicked" text="Active"
+                                                             toggleGroup="$filterToggleGroup" HBox.hgrow="NEVER"/>
+                                                <RadioButton fx:id="filterCompleted" mnemonicParsing="false"
+                                                             onAction="#filterCompletedClicked" text="Completed"
+                                                             toggleGroup="$filterToggleGroup"/>
+                                            </children>
+                                            <padding>
+                                                <Insets/>
+                                            </padding>
+                                        </HBox>
+                                        <HBox id="todoCount" alignment="CENTER_LEFT" prefHeight="35.0" spacing="5.0"
+                                              visible="true" AnchorPane.leftAnchor="10.0">
+                                            <children>
+                                                <Label fx:id="todoCountNum" style="-fx-font-weight: bold;" text="0"/>
+                                                <Label fx:id="todoCountText" text="items left"/>
+                                            </children>
+                                        </HBox>
+                                        <Button fx:id="clearButton" alignment="CENTER_RIGHT" contentDisplay="CENTER"
+                                                layoutY="7.0" mnemonicParsing="false" onAction="#clearTasks"
+                                                prefHeight="20.0" text="Clear completed (0)" visible="true"
+                                                AnchorPane.rightAnchor="10.0">
+                                            <effect>
+                                                <InnerShadow blurType="TWO_PASS_BOX" color="#00000033" height="1.0"
+                                                             radius="0.0" width="0.0"/>
+                                            </effect>
+                                        </Button>
+                                    </children>
+                                    <GridPane.margin>
+                                        <Insets left="10.0" right="10.0"/>
+                                    </GridPane.margin>
+                                </AnchorPane>
+                                <Pane fx:id="footerTop" styleClass="boxShadow, paper" visible="true"
+                                      GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                    <GridPane.margin>
+                                        <Insets left="5.0" right="5.0"/>
+                                    </GridPane.margin>
+                                </Pane>
+                                <AnchorPane id="" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                    <children>
+                                        <VBox id="todoApp" styleClass="boxShadow" AnchorPane.bottomAnchor="0.0"
+                                              AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                                              AnchorPane.topAnchor="0.0">
+                                            <children>
+                                                <Pane id="pane" minHeight="-Infinity" minWidth="-Infinity"
+                                                      prefHeight="15.0" visible="true"/>
+                                                <HBox id="header" alignment="CENTER_LEFT" maxHeight="65.0"
+                                                      minHeight="-Infinity" minWidth="-Infinity" prefHeight="65.0"
+                                                      style="">
+                                                    <children>
+                                                        <ToggleButton fx:id="toggleAllButton" alignment="CENTER"
+                                                                      minWidth="-1.0" mnemonicParsing="false"
+                                                                      onAction="#toggleAll" prefWidth="40.0"
+                                                                      rotate="90.0" text="»"/>
+                                                        <TextField fx:id="newTodo" onAction="#newTodo" prefHeight="65.0"
+                                                                   promptText="What needs to be done?"
+                                                                   HBox.hgrow="ALWAYS">
+                                                            <HBox.margin>
+                                                                <Insets left="10.0" right="10.0"/>
+                                                            </HBox.margin>
+                                                        </TextField>
+                                                    </children>
+                                                    <padding>
+                                                        <Insets left="1.0"/>
+                                                    </padding>
+                                                </HBox>
+                                                <ScrollPane cache="false" fitToHeight="false" fitToWidth="false"
+                                                            hbarPolicy="NEVER" mouseTransparent="false" pannable="false"
+                                                            pickOnBounds="false" prefHeight="270.0" prefWidth="548.0"
+                                                            style="" vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS">
+                                                    <content>
+                                                        <VBox id="taskList" fx:id="tasksList" prefHeight="270.0"
+                                                              prefWidth="548.0"/>
+                                                    </content>
+                                                </ScrollPane>
+                                            </children>
+                                        </VBox>
+                                        <Pane id="lines" layoutX="40.0" prefHeight="208.0" prefWidth="4.0"
+                                              AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="16.0"/>
+                                    </children>
+                                </AnchorPane>
+                            </children>
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
+                                <RowConstraints maxHeight="3.0" minHeight="3.0" prefHeight="3.0" vgrow="NEVER"/>
+                                <RowConstraints maxHeight="35.0" minHeight="35.0" prefHeight="35.0" vgrow="NEVER"/>
+                            </rowConstraints>
+                        </GridPane>
+                        <VBox id="info" prefHeight="147.0" prefWidth="600.0" spacing="12.0">
+                            <children>
+                                <HBox alignment="TOP_CENTER">
+                                    <children>
+                                        <Label id="serverStatus" prefHeight="19.0" styleClass="footerText"
+                                               HBox.hgrow="ALWAYS"/>
+                                    </children>
+                                </HBox>
+                                <HBox alignment="TOP_CENTER">
+                                    <children>
+                                        <Label prefHeight="19.0" styleClass="footerText"
+                                               text="Double-click to edit a todo" HBox.hgrow="ALWAYS"/>
+                                    </children>
+                                </HBox>
+                                <HBox alignment="TOP_CENTER">
+                                    <children>
+                                        <Label prefHeight="19.0" styleClass="footerText" text="Written by"
+                                               HBox.hgrow="ALWAYS"/>
+                                        <Hyperlink onAction="#openIRIAN" styleClass="footerText" text="IRIAN Solutions"
+                                                   HBox.hgrow="ALWAYS"/>
+                                    </children>
+                                </HBox>
+                                <HBox alignment="TOP_CENTER">
+                                    <children>
+                                        <Label prefHeight="19.0" styleClass="footerText" text="Part of"
+                                               HBox.hgrow="ALWAYS"/>
+                                        <Hyperlink onAction="#openTodoMVC" styleClass="footerText" text="TodoMVC"
+                                                   HBox.hgrow="ALWAYS"/>
+                                    </children>
+                                </HBox>
+                            </children>
+                            <padding>
+                                <Insets top="25.0"/>
+                            </padding>
+                        </VBox>
+                    </children>
+                    <VBox.margin>
+                        <Insets/>
+                    </VBox.margin>
+                </VBox>
+            </children>
+            <padding>
+                <Insets bottom="25.0" top="25.0"/>
+            </padding>
         </VBox>
-      </children>
-      <padding>
-        <Insets top="25.0" />
-      </padding>
-    </VBox>
-  </children>
-  <stylesheets>
-    <URL value="@style.css" />
-  </stylesheets>
+    </children>
+    <stylesheets>
+        <URL value="@style.css"/>
+    </stylesheets>
 </AnchorPane>

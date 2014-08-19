@@ -80,10 +80,16 @@ def index(request):
     return HttpResponse(template.render(context))
 
 
+def get_bundle_md_content(name):
+    with open(SITE_ROOT + '/templates/download/' + name + '.md', 'r') as f:
+        return File(f).read()
+
+
 def download(request):
     try:
         with open(SITE_ROOT + '/templates/download.md', 'r') as f:
             mdcontent = File(f).read()
+
     except IOError:
         return HttpResponseNotFound()
 
@@ -94,7 +100,13 @@ def download(request):
         'activeMenuText': 'Download',
         'stableVersion': ANKOR_STABLE_VERSION,
         'latestVersion': ANKOR_LATEST_VERSION,
-        'mdcontent': mdcontent
+        'mdcontent': mdcontent,
+        'server_viewmodel': get_bundle_md_content('server_viewmodel'),
+        'socket_fx_client': get_bundle_md_content('socket_fx_client'),
+        'socket_server': get_bundle_md_content('socket_server'),
+        'websocket_fx_client': get_bundle_md_content('websocket_fx_client'),
+        'websocket_server': get_bundle_md_content('websocket_server'),
+        'js_client': get_bundle_md_content('js_client')
     })
 
     return HttpResponse(template.render(context))

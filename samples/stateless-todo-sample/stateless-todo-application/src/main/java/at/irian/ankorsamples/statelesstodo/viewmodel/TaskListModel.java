@@ -26,10 +26,10 @@ public class TaskListModel {
 
     @StateHolder
     private Filter filter;
-    
+
     @StateHolder
     private int editing;
-    
+
     // calculated fields
 
     private List<TaskModel> tasks;
@@ -43,7 +43,7 @@ public class TaskListModel {
     private boolean filterAllSelected;
     private boolean filterActiveSelected;
     private boolean filterCompletedSelected;
-    
+
     private boolean toggleAll;
 
     private String itemsLeftText;
@@ -64,7 +64,7 @@ public class TaskListModel {
         LOG.info("Init calculated fields");
 
         tasks = queryTaskList(filter);
-        
+
         editing = -1;
 
         itemsLeft = taskRepository.countTasks(Filter.active);
@@ -82,8 +82,9 @@ public class TaskListModel {
         toggleAll = calcToggleAllSelected(itemsLeft);
     }
 
-    @ChangeListener(pattern = {"root.model.tasks.(*).title",
-                               "root.model.tasks.(*).completed"})
+    @ChangeListener(pattern = {
+            "root.model.tasks.(*).title",
+            "root.model.tasks.(*).completed"})
     public void onTaskChanged(Ref ref) {
         LOG.info("Task {} changed", ref.path());
         TaskModel taskModel = ref.getValue();
@@ -93,7 +94,7 @@ public class TaskListModel {
         taskRepository.updateTask(task);
         updateTasksList();
     }
-    
+
     @ChangeListener(pattern = "root.model.filter")
     public void onFilterChanged() {
         LOG.info("Filter changed to {}", filter);
