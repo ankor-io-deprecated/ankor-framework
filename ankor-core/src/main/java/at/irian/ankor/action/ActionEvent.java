@@ -6,7 +6,7 @@ import at.irian.ankor.event.source.Source;
 import at.irian.ankor.ref.Ref;
 
 /**
- *
+ * A {@link at.irian.ankor.event.ModelPropertyEvent} that carries an {@link Action} as payload.
  *
  * @author Manfred Geiler
  */
@@ -19,19 +19,27 @@ public class ActionEvent extends ModelPropertyEvent {
         this.action = action;
     }
 
-    public Ref getActionProperty() {
-        return getProperty();
-    }
-
+    /**
+     * @return the {@link Action} that is associated with this event
+     */
     public Action getAction() {
         return action;
     }
 
+    /**
+     * @param listener  an {@link EventListener} instance
+     * @return true, if the given listener is an {@link ActionEventListener}
+     */
     @Override
     public boolean isAppropriateListener(EventListener listener) {
         return listener instanceof ActionEventListener;
     }
 
+    /**
+     * Casts the given listener to {@link ActionEventListener} and
+     * dispatches to its {@link at.irian.ankor.action.ActionEventListener#process(ActionEvent)} method
+     * @param listener  an {@link EventListener} instance
+     */
     @Override
     public void processBy(EventListener listener) {
         ((ActionEventListener) listener).process(this);
@@ -40,7 +48,7 @@ public class ActionEvent extends ModelPropertyEvent {
     @Override
     public String toString() {
         return "ActionEvent{" +
-               "actionProperty=" + getActionProperty() +
+               "property=" + getProperty() +
                ", action=" + action +
                '}';
     }

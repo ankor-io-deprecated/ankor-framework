@@ -40,7 +40,7 @@ public class ViewModelActionEventListener extends ActionEventListener {
         if (bean != null && watchedProperty.isValid()) {
             Action action = event.getAction();
             String eventActionName = action.getName();
-            Ref actionProperty = event.getActionProperty();
+            Ref actionProperty = event.getProperty();
             for (ActionListenerMetadata actionListenerMetadata : actionListenersMetadata) {
                 if (eventActionName.equals(actionListenerMetadata.getActionName())) {
                     RefMatcher pattern = actionListenerMetadata.getPattern();
@@ -51,7 +51,7 @@ public class ViewModelActionEventListener extends ActionEventListener {
                             invoke(bean, invocation, match.getBackRefs(), action.getParams());
                         }
                     } else {
-                        if (watchedProperty.equals(event.getActionProperty())) {
+                        if (watchedProperty.equals(event.getProperty())) {
                             InvocationMetadata invocation = actionListenerMetadata.getInvocation();
                             invoke(bean, invocation, Collections.<Ref>emptyList(), action.getParams());
                         }

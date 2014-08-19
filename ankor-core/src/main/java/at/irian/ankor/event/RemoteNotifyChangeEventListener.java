@@ -46,7 +46,7 @@ public class RemoteNotifyChangeEventListener extends ChangeEventListener {
     public void process(ChangeEvent event) {
         if (Events.isLocalModelEvent(event)) {
             Change change = event.getChange();
-            Ref changedProperty = event.getChangedProperty();
+            Ref changedProperty = event.getProperty();
             Change modifiedChange = preSendModifier.modifyBeforeSend(change, changedProperty);
             ModelSession modelSession = changedProperty.context().modelSession();
             String modelName = changedProperty.root().propertyName();

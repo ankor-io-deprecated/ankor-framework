@@ -45,7 +45,7 @@ public class RemoteNotifyActionEventListener extends ActionEventListener {
     public void process(ActionEvent event) {
         if (Events.isLocalModelEvent(event)) {
             Action action = event.getAction();
-            Ref actionProperty = event.getActionProperty();
+            Ref actionProperty = event.getProperty();
             Action modifiedAction = preSendModifier.modifyBeforeSend(action, actionProperty);
             ModelSession modelSession = actionProperty.context().modelSession();
             String modelName = actionProperty.root().propertyName();

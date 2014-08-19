@@ -35,7 +35,7 @@ public class ViewModelChangeEventListener extends ChangeEventListener {
     public void process(ChangeEvent event) {
         Object bean = beanReference.get();
         if (bean != null && viewModelBeanRef.isValid()) {
-            Ref changedProperty = event.getChangedProperty();
+            Ref changedProperty = event.getProperty();
             for (ChangeListenerMetadata changeListenerMetadata : changeListenersMetadata) {
                 RefMatcher.Result match = changeListenerMetadata.getPattern().match(changedProperty, viewModelBeanRef);
                 if (match.isMatch()) {

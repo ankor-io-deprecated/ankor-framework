@@ -117,7 +117,7 @@ public final class FxRefs {
         ref.context().modelSession().getEventListeners().add(new ChangeEventListener(ref) {
             @Override
             public void process(ChangeEvent event) {
-                if (event.getChangedProperty().equals(getWatchedProperty())) {
+                if (event.getProperty().equals(getWatchedProperty())) {
                     if (event.getSource() instanceof ModelSource
                         && ((ModelSource)event.getSource()).getOrigination() == circuitBreaker) {
                         // ignore

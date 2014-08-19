@@ -35,7 +35,7 @@ public abstract class Event extends EventObject {
     }
 
     /**
-     * @param listener  a {@link EventListener} instance
+     * @param listener  an {@link EventListener} instance
      * @return true, if the given listener is of a well-known type and/or the given listener instance is appropriate
      *         for processing this event
      */
@@ -43,7 +43,7 @@ public abstract class Event extends EventObject {
 
     /**
      * Dispatch the processing of this event to the given listener instance
-     * @param listener  a {@link EventListener} instance
+     * @param listener  an {@link EventListener} instance
      */
     public abstract void processBy(EventListener listener);
 }

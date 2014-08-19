@@ -18,7 +18,7 @@ class PropRefChangeEventListener extends ChangeEventListener implements RefEvent
 
     @Override
     public void process(ChangeEvent event) {
-        Ref changedProperty = event.getChangedProperty();
+        Ref changedProperty = event.getProperty();
         Ref watchedProperty = getWatchedProperty();
         if (isRelevantPropChange(changedProperty, watchedProperty)) {
             listener.processChange(changedProperty);

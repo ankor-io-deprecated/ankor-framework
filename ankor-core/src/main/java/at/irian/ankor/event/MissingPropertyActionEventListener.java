@@ -38,7 +38,7 @@ public class MissingPropertyActionEventListener extends ActionEventListener {
     public void process(ActionEvent event) {
         Action action = event.getAction();
         if (!Events.isLocalModelEvent(event) && MISSING_PROPERTY_ACTION_NAME.equals(action.getName())) {
-            Ref missingProperty = event.getActionProperty();
+            Ref missingProperty = event.getProperty();
             LOG.debug("handling missing property request for {}", missingProperty);
 
             // special AnkorBigList handling

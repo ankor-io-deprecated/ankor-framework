@@ -31,7 +31,7 @@ abstract class ObservableChangeEventListener extends ChangeEventListener {
             }
         }
 
-        Ref changedProperty = event.getChangedProperty();
+        Ref changedProperty = event.getProperty();
         handleChange(changedProperty, event.getChange());
     }
 

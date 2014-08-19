@@ -3,10 +3,11 @@ package at.irian.ankor.event;
 import at.irian.ankor.ref.Ref;
 
 /**
+ * todo: abandon this base class and put functionality directly into derived classes
+ *
  * @author Manfred Geiler
  */
-public abstract class PropertyWatcherEventListener implements EventListener, PropertyWatcher, RefOwned {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(PropertyWatcherEventListener.class);
+public abstract class PropertyWatcherEventListener implements EventListener {
 
     private final Ref watchedProperty;
 
@@ -14,20 +15,13 @@ public abstract class PropertyWatcherEventListener implements EventListener, Pro
         this.watchedProperty = watchedProperty;
     }
 
-    @Override
     public Ref getWatchedProperty() {
         return watchedProperty;
     }
 
     @Override
-    public Ref getOwner() {
-        return watchedProperty;
-    }
-
-    @Override
     public boolean isDiscardable() {
-        Ref owner = getOwner();
-        return owner != null && !owner.isValid();
+        return watchedProperty != null && !watchedProperty.isValid();
     }
 
 }

@@ -1,6 +1,8 @@
 package at.irian.ankor.event;
 
 /**
+ * Base type for all Ankor event listeners.
+ *
  * @author Manfred Geiler
  */
 public interface EventListener {

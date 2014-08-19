@@ -19,7 +19,7 @@ class PropRefActionEventListener extends ActionEventListener implements RefEvent
     @Override
     public void process(ActionEvent event) {
         Ref watchedProperty = getWatchedProperty();
-        if (isRelevantActionProperty(event.getActionProperty(), watchedProperty)) {
+        if (isRelevantActionProperty(event.getProperty(), watchedProperty)) {
             listener.processAction(watchedProperty, event.getAction());
         }
     }

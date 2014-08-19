@@ -171,7 +171,7 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
                                                   List<Event> bufferedEvents) {
         for (Event event : bufferedEvents) {
             if (event instanceof ChangeEvent) {
-                Ref changedProperty = ((ChangeEvent) event).getChangedProperty();
+                Ref changedProperty = ((ChangeEvent)event).getProperty();
                 if (changedProperty.equals(this)) {
                     Change nestedChange = ((ChangeEvent) event).getChange();
                     if (nestedChange.getType() == ChangeType.value) {

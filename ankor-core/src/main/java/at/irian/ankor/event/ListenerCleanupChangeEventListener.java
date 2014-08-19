@@ -47,7 +47,7 @@ public class ListenerCleanupChangeEventListener extends ChangeEventListener {
     }
 
     private void cleanupListeners(ChangeEvent event) {
-        Ref changedProperty = event.getChangedProperty();
+        Ref changedProperty = event.getProperty();
         if (changedProperty != null) {
             changedProperty.context().modelSession().getEventListeners().cleanup();
         }

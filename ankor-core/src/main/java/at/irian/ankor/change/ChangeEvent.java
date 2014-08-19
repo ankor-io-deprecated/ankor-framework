@@ -18,10 +18,6 @@ public class ChangeEvent extends ModelPropertyEvent {
         this.change = change;
     }
 
-    public Ref getChangedProperty() {
-        return getProperty();
-    }
-
     public Change getChange() {
         return change;
     }
@@ -39,7 +35,7 @@ public class ChangeEvent extends ModelPropertyEvent {
     @Override
     public String toString() {
         return "ChangeEvent{" +
-               "changedProperty=" + getChangedProperty() +
+               "property=" + getProperty() +
                ", change=" + change +
                '}';
     }

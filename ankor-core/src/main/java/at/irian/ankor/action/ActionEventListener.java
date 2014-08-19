@@ -4,8 +4,10 @@ import at.irian.ankor.event.PropertyWatcherEventListener;
 import at.irian.ankor.ref.Ref;
 
 /**
-* @author Manfred Geiler
-*/
+ * todo: make this an interface
+ *
+ * @author Manfred Geiler
+ */
 public abstract class ActionEventListener extends PropertyWatcherEventListener {
 
     public ActionEventListener(Ref watchedProperty) {
