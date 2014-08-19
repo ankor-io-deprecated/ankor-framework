@@ -1,6 +1,6 @@
 package at.irian.ankor.ref.listener;
 
-import at.irian.ankor.event.ModelEventListener;
+import at.irian.ankor.event.EventListener;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.RefContext;
 import at.irian.ankor.ref.impl.RefContextImplementor;
@@ -58,12 +58,12 @@ public final class RefListeners {
     }
 
     public static void removeListener(RefContext refContext, RefListener listener) {
-        ArrayList<ModelEventListener> eventListenersToRemove = null;
-        for (ModelEventListener eventListener : ((RefContextImplementor) refContext).eventListeners()) {
+        ArrayList<EventListener> eventListenersToRemove = null;
+        for (EventListener eventListener : ((RefContextImplementor) refContext).eventListeners()) {
             if (eventListener instanceof RefEventListenerImplementor) {
                 if (((RefEventListenerImplementor)eventListener).getRefListener() == listener) {
                     if (eventListenersToRemove == null) {
-                        eventListenersToRemove = new ArrayList<ModelEventListener>();
+                        eventListenersToRemove = new ArrayList<EventListener>();
                     }
                     eventListenersToRemove.add(eventListener);
                 }
@@ -71,7 +71,7 @@ public final class RefListeners {
         }
 
         if (eventListenersToRemove != null) {
-            for (ModelEventListener eventListener : eventListenersToRemove) {
+            for (EventListener eventListener : eventListenersToRemove) {
                 ((RefContextImplementor) refContext).eventListeners().remove(eventListener);
             }
         }

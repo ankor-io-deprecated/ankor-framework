@@ -1,8 +1,8 @@
 package at.irian.ankor.event.dispatch;
 
+import at.irian.ankor.event.Event;
 import at.irian.ankor.event.EventListeners;
-import at.irian.ankor.event.ModelEvent;
-import at.irian.ankor.event.ModelEventListener;
+import at.irian.ankor.event.EventListener;
 
 /**
  * @author Manfred Geiler
@@ -17,8 +17,8 @@ public class SimpleEventDispatcher implements EventDispatcher {
     }
 
     @Override
-    public void dispatch(ModelEvent event) {
-        for (ModelEventListener eventListener : eventListeners) {
+    public void dispatch(Event event) {
+        for (EventListener eventListener : eventListeners) {
             if (event.isAppropriateListener(eventListener)) {
                 try {
                     event.processBy(eventListener);

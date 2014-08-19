@@ -16,7 +16,7 @@
 
 package at.irian.ankor.event.dispatch;
 
-import at.irian.ankor.event.ModelEvent;
+import at.irian.ankor.event.Event;
 import javafx.application.Platform;
 
 /**
@@ -32,7 +32,7 @@ public class JavaFxEventDispatcher implements EventDispatcher {
     }
 
     @Override
-    public void dispatch(final ModelEvent event) {
+    public void dispatch(final Event event) {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {

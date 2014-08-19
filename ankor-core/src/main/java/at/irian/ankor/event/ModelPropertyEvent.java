@@ -6,10 +6,13 @@ import at.irian.ankor.ref.Ref;
 import at.irian.ankor.session.ModelSession;
 
 /**
+ * An {@link Event} that is bound to a certain model instance.
+ *
+ *
  * @author Manfred Geiler
  */
-public abstract class ModelPropertyEvent extends ModelEvent {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelEvent.class);
+public abstract class ModelPropertyEvent extends Event {
+    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(Event.class);
 
     private final Ref property;
 

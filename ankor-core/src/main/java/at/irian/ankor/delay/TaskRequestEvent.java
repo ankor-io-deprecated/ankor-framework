@@ -1,13 +1,13 @@
 package at.irian.ankor.delay;
 
-import at.irian.ankor.event.ModelEvent;
-import at.irian.ankor.event.ModelEventListener;
+import at.irian.ankor.event.Event;
+import at.irian.ankor.event.EventListener;
 import at.irian.ankor.event.source.Source;
 
 /**
  * @author Manfred Geiler
  */
-public class TaskRequestEvent extends ModelEvent {
+public class TaskRequestEvent extends Event {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TaskRequestEvent.class);
 
     private final Runnable task;
@@ -22,12 +22,12 @@ public class TaskRequestEvent extends ModelEvent {
     }
 
     @Override
-    public boolean isAppropriateListener(ModelEventListener listener) {
+    public boolean isAppropriateListener(EventListener listener) {
         return listener instanceof TaskRequestEventListener;
     }
 
     @Override
-    public void processBy(ModelEventListener listener) {
+    public void processBy(EventListener listener) {
         ((TaskRequestEventListener)listener).processTaskRequest(this);
     }
 

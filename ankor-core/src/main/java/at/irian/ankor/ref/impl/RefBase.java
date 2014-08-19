@@ -7,7 +7,7 @@ import at.irian.ankor.base.Wrapper;
 import at.irian.ankor.change.Change;
 import at.irian.ankor.change.ChangeEvent;
 import at.irian.ankor.change.ChangeType;
-import at.irian.ankor.event.ModelEvent;
+import at.irian.ankor.event.Event;
 import at.irian.ankor.event.dispatch.BufferingEventDispatcher;
 import at.irian.ankor.event.dispatch.EventDispatcher;
 import at.irian.ankor.event.source.ModelSource;
@@ -106,7 +106,7 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
             // the actual applying of the changed value to the model. Technically speaking we buffer
             // all events that are fired during the call to the according setter of the property that
             // is subject to this change.
-            List<ModelEvent> bufferedEvents = handleValueChangeAndBufferEvents(modelSession, change.getValue());
+            List<Event> bufferedEvents = handleValueChangeAndBufferEvents(modelSession, change.getValue());
 
             // By having delayed all events until here, we are now able to detect any value change events that
             // carry the very same change info as we are currently applying to the model. We suppress the
@@ -153,7 +153,7 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
     }
 
 
-    private List<ModelEvent> handleValueChangeAndBufferEvents(ModelSession modelSession, Object newValue) {
+    private List<Event> handleValueChangeAndBufferEvents(ModelSession modelSession, Object newValue) {
         BufferingEventDispatcher bufferingEventDispatcher = new BufferingEventDispatcher();
         EventDispatcher originalEventDispatcher = modelSession.getEventDispatcher();
         try {
@@ -168,12 +168,12 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
 
     private void dispatchOrSuppressBufferedEvents(Change change,
                                                   ModelSession modelSession,
-                                                  List<ModelEvent> bufferedEvents) {
-        for (ModelEvent modelEvent : bufferedEvents) {
-            if (modelEvent instanceof ChangeEvent) {
-                Ref changedProperty = ((ChangeEvent) modelEvent).getChangedProperty();
+                                                  List<Event> bufferedEvents) {
+        for (Event event : bufferedEvents) {
+            if (event instanceof ChangeEvent) {
+                Ref changedProperty = ((ChangeEvent) event).getChangedProperty();
                 if (changedProperty.equals(this)) {
-                    Change nestedChange = ((ChangeEvent) modelEvent).getChange();
+                    Change nestedChange = ((ChangeEvent) event).getChange();
                     if (nestedChange.getType() == ChangeType.value) {
                         Object v1 = change.getValue();
                         Object v2 = nestedChange.getValue();
@@ -186,7 +186,7 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
                     }
                 }
             }
-            modelSession.getEventDispatcher().dispatch(modelEvent);
+            modelSession.getEventDispatcher().dispatch(event);
         }
     }
 

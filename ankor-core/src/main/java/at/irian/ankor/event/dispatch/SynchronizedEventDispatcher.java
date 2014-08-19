@@ -1,7 +1,7 @@
 package at.irian.ankor.event.dispatch;
 
+import at.irian.ankor.event.Event;
 import at.irian.ankor.session.ModelSession;
-import at.irian.ankor.event.ModelEvent;
 
 /**
  * @author Manfred Geiler
@@ -18,7 +18,7 @@ public class SynchronizedEventDispatcher implements EventDispatcher {
     }
 
     @Override
-    public void dispatch(ModelEvent event) {
+    public void dispatch(Event event) {
         synchronized (modelSession) {
             DispatchThreadChecker dispatchThreadChecker = new DispatchThreadChecker(modelSession);
             boolean registered = dispatchThreadChecker.registerCurrentThread();

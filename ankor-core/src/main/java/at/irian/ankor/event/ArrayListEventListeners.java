@@ -12,7 +12,7 @@ public class ArrayListEventListeners implements EventListeners {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(UnsynchronizedListenersHolder.class);
 
     private final EventListeners parentListeners;
-    private final List<ModelEventListener> listeners;
+    private final List<EventListener> listeners;
 
     public ArrayListEventListeners() {
         this(null);
@@ -20,25 +20,25 @@ public class ArrayListEventListeners implements EventListeners {
 
     public ArrayListEventListeners(EventListeners parentListeners) {
         this.parentListeners = parentListeners;
-        this.listeners = new CopyOnWriteArrayList<ModelEventListener>();
+        this.listeners = new CopyOnWriteArrayList<EventListener>();
     }
 
     @Override
-    public void add(ModelEventListener listener) {
+    public void add(EventListener listener) {
         listeners.add(listener);
     }
 
     @Override
-    public void remove(ModelEventListener listener) {
+    public void remove(EventListener listener) {
         listeners.remove(listener);
     }
 
     @Override
-    public Iterator<ModelEventListener> iterator() {
+    public Iterator<EventListener> iterator() {
         if (parentListeners != null) {
-            final Iterator<ModelEventListener> parentIterator = parentListeners.iterator();
-            final Iterator<ModelEventListener> thisIterator = listeners.iterator();
-            return new Iterator<ModelEventListener>() {
+            final Iterator<EventListener> parentIterator = parentListeners.iterator();
+            final Iterator<EventListener> thisIterator = listeners.iterator();
+            return new Iterator<EventListener>() {
 
                 private int internalState = 0;
 
@@ -48,7 +48,7 @@ public class ArrayListEventListeners implements EventListeners {
                 }
 
                 @Override
-                public ModelEventListener next() {
+                public EventListener next() {
                     if (parentIterator.hasNext()) {
                         internalState = 1;
                         return parentIterator.next();
@@ -78,18 +78,18 @@ public class ArrayListEventListeners implements EventListeners {
 
     @Override
     public void cleanup() {
-        List<ModelEventListener> removeList = null;
-        for (ModelEventListener listener : this.listeners) {
+        List<EventListener> removeList = null;
+        for (EventListener listener : this.listeners) {
             if (listener != null && listener.isDiscardable()) {  // yes, the CopyOnWriteArrayList actually may return nulls!
                 if (removeList == null) {
-                    removeList = new ArrayList<ModelEventListener>();
+                    removeList = new ArrayList<EventListener>();
                 }
                 removeList.add(listener);
             }
         }
         if (removeList != null) {
-            for (ModelEventListener modelEventListener : removeList) {
-                this.listeners.remove(modelEventListener);
+            for (EventListener eventListener : removeList) {
+                this.listeners.remove(eventListener);
             }
         }
     }

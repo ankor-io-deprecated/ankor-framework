@@ -1,6 +1,6 @@
 package at.irian.ankor.action;
 
-import at.irian.ankor.event.ModelEventListener;
+import at.irian.ankor.event.EventListener;
 import at.irian.ankor.event.ModelPropertyEvent;
 import at.irian.ankor.event.source.Source;
 import at.irian.ankor.ref.Ref;
@@ -28,12 +28,12 @@ public class ActionEvent extends ModelPropertyEvent {
     }
 
     @Override
-    public boolean isAppropriateListener(ModelEventListener listener) {
+    public boolean isAppropriateListener(EventListener listener) {
         return listener instanceof ActionEventListener;
     }
 
     @Override
-    public void processBy(ModelEventListener listener) {
+    public void processBy(EventListener listener) {
         ((ActionEventListener) listener).process(this);
     }
 

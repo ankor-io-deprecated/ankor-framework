@@ -3,11 +3,11 @@ package at.irian.ankor.event;
 /**
  * @author Manfred Geiler
  */
-public interface EventListeners extends Iterable<ModelEventListener> {
+public interface EventListeners extends Iterable<EventListener> {
 
-    void add(ModelEventListener listener);
+    void add(EventListener listener);
 
-    void remove(ModelEventListener listener);
+    void remove(EventListener listener);
 
     /**
      * Removes all discardable listeners.

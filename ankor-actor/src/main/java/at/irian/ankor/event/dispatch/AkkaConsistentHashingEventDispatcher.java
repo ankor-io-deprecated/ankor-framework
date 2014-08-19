@@ -1,7 +1,7 @@
 package at.irian.ankor.event.dispatch;
 
 import akka.actor.ActorRef;
-import at.irian.ankor.event.ModelEvent;
+import at.irian.ankor.event.Event;
 import at.irian.ankor.session.ModelSession;
 
 /**
@@ -18,7 +18,7 @@ class AkkaConsistentHashingEventDispatcher implements EventDispatcher {
     }
 
     @Override
-    public void dispatch(ModelEvent event) {
+    public void dispatch(Event event) {
         eventDispatcherActor.tell(new AkkaModelEventMsg(modelSession, event), ActorRef.noSender());
     }
 

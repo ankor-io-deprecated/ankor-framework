@@ -2,7 +2,7 @@ package at.irian.ankor.event.dispatch;
 
 import akka.actor.Props;
 import akka.actor.UntypedActor;
-import at.irian.ankor.event.ModelEvent;
+import at.irian.ankor.event.Event;
 import at.irian.ankor.session.ModelSession;
 import com.typesafe.config.Config;
 
@@ -31,7 +31,7 @@ public class AkkaSessionBoundEventDispatcherActor extends UntypedActor {
         }
     }
 
-    private void handleEvent(ModelSession modelSession, ModelEvent event) {
+    private void handleEvent(ModelSession modelSession, Event event) {
         DispatchThreadChecker dispatchThreadChecker = new DispatchThreadChecker(modelSession);
         boolean registered = dispatchThreadChecker.registerCurrentThread();
 

@@ -1,6 +1,6 @@
 package at.irian.ankor.event.dispatch;
 
-import at.irian.ankor.event.ModelEvent;
+import at.irian.ankor.event.Event;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,12 +12,12 @@ import java.util.List;
 public class BufferingEventDispatcher implements EventDispatcher {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(BufferingEventDispatcher.class);
 
-    private List<ModelEvent> bufferedEvents = null;
+    private List<Event> bufferedEvents = null;
 
     @Override
-    public void dispatch(ModelEvent event) {
+    public void dispatch(Event event) {
         if (bufferedEvents == null) {
-            bufferedEvents = new ArrayList<ModelEvent>();
+            bufferedEvents = new ArrayList<Event>();
         }
         bufferedEvents.add(event);
     }
@@ -27,7 +27,7 @@ public class BufferingEventDispatcher implements EventDispatcher {
         bufferedEvents = null;
     }
 
-    public List<ModelEvent> getBufferedEvents() {
-        return bufferedEvents != null ? bufferedEvents : Collections.<ModelEvent>emptyList();
+    public List<Event> getBufferedEvents() {
+        return bufferedEvents != null ? bufferedEvents : Collections.<Event>emptyList();
     }
 }

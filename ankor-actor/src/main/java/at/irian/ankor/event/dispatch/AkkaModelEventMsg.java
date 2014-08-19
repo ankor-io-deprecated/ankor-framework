@@ -1,7 +1,7 @@
 package at.irian.ankor.event.dispatch;
 
 import akka.routing.ConsistentHashingRouter;
-import at.irian.ankor.event.ModelEvent;
+import at.irian.ankor.event.Event;
 import at.irian.ankor.session.ModelSession;
 
 /**
@@ -9,19 +9,19 @@ import at.irian.ankor.session.ModelSession;
  */
 public class AkkaModelEventMsg implements ConsistentHashingRouter.ConsistentHashable {
     private final ModelSession modelSession;
-    private final ModelEvent modelEvent;
+    private final Event event;
 
-    public AkkaModelEventMsg(ModelSession modelSession, ModelEvent modelEvent) {
+    public AkkaModelEventMsg(ModelSession modelSession, Event event) {
         this.modelSession = modelSession;
-        this.modelEvent = modelEvent;
+        this.event = event;
     }
 
     public ModelSession getModelSession() {
         return modelSession;
     }
 
-    public ModelEvent getModelEvent() {
-        return modelEvent;
+    public Event getModelEvent() {
+        return event;
     }
 
     @Override
@@ -33,7 +33,7 @@ public class AkkaModelEventMsg implements ConsistentHashingRouter.ConsistentHash
     public String toString() {
         return "AkkaModelEventMsg{" +
                "modelSession=" + modelSession +
-               ", modelEvent=" + modelEvent +
+               ", event=" + event +
                '}';
     }
 }
