@@ -28,6 +28,7 @@
         <module>animals-sample</module>
         <module>fxrates-sample</module>
         <module>stateless-todo-sample</module>
+        <module>spring-todo-sample</module>
     </modules>
 
     <distributionManagement>
