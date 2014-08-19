@@ -7,12 +7,12 @@ import at.irian.ankor.session.ModelSession;
 
 /**
  * An {@link Event} that is bound to a certain model instance.
- *
+ * In fact a ModelPropertyEvent is bound to a model property, i.e. a {@link at.irian.ankor.ref.Ref}.
+ * Events that cannot be associated with a certain model property should be bound to the root property of that model.
  *
  * @author Manfred Geiler
  */
 public abstract class ModelPropertyEvent extends Event {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(Event.class);
 
     private final Ref property;
 
@@ -23,17 +23,6 @@ public abstract class ModelPropertyEvent extends Event {
 
     public Ref getProperty() {
         return property;
-    }
-
-
-    public boolean isLocalEvent() {
-        if (getSource() instanceof ModelSource) {
-            String sourceModelSessionId = ((ModelSource) getSource()).getModelSessionId();
-            ModelSession currentModelSession = getProperty().context().modelSession();
-            return sourceModelSessionId.equals(currentModelSession.getId());
-        } else {
-            return false;
-        }
     }
 
 }

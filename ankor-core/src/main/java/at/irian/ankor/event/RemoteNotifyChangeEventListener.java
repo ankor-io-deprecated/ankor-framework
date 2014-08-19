@@ -22,7 +22,6 @@ import java.util.Set;
  * @author Manfred Geiler
  */
 public class RemoteNotifyChangeEventListener extends ChangeEventListener {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RemoteNotifyChangeEventListener.class);
 
     private final Switchboard switchboard;
     private final Modifier preSendModifier;
@@ -45,7 +44,7 @@ public class RemoteNotifyChangeEventListener extends ChangeEventListener {
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public void process(ChangeEvent event) {
-        if (event.isLocalEvent()) {
+        if (Events.isLocalModelEvent(event)) {
             Change change = event.getChange();
             Ref changedProperty = event.getChangedProperty();
             Change modifiedChange = preSendModifier.modifyBeforeSend(change, changedProperty);

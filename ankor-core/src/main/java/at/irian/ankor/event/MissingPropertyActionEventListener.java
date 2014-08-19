@@ -37,7 +37,7 @@ public class MissingPropertyActionEventListener extends ActionEventListener {
     @Override
     public void process(ActionEvent event) {
         Action action = event.getAction();
-        if (!event.isLocalEvent() && MISSING_PROPERTY_ACTION_NAME.equals(action.getName())) {
+        if (!Events.isLocalModelEvent(event) && MISSING_PROPERTY_ACTION_NAME.equals(action.getName())) {
             Ref missingProperty = event.getActionProperty();
             LOG.debug("handling missing property request for {}", missingProperty);
 
