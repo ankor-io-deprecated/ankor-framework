@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Convenient builder for an {@link Action}.
+ *
 * @author Manfred Geiler
 */
 public class ActionBuilder {

@@ -1,7 +1,6 @@
 package at.irian.ankor.serialization.json.common;
 
 import at.irian.ankor.action.Action;
-import at.irian.ankor.action.CloseAction;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -44,11 +43,7 @@ public class ActionDeserializer extends StdDeserializer<Action> {
     }
 
     private Action createAction(String actionName) {
-        if (CloseAction.CLOSE_ACTION_NAME.equals(actionName)) {
-            return new CloseAction();
-        } else {
-            return new Action(actionName);
-        }
+        return new Action(actionName);
     }
 
 }

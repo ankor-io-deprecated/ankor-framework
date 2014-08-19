@@ -6,6 +6,8 @@ import at.irian.ankor.event.source.Source;
 import at.irian.ankor.ref.Ref;
 
 /**
+ *
+ *
  * @author Manfred Geiler
  */
 public class ActionEvent extends ModelPropertyEvent {

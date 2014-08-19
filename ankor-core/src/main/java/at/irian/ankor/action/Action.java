@@ -9,8 +9,11 @@ import java.util.Map;
 
 /**
  * An action that happened.
- * Typically an Action is reported by means of an {@link ActionEvent}.
+ * Typically an Action is reported by firing an {@link ActionEvent}.
  * Every action must have a name and optionally can have parameters.
+ * An action is an application specific incident that just happened within the context of a model.
+ * Technically speaking an action is fired on the client or the server side. However, from the model perspective it does
+ * not matter where an action actually has happened physically.
  *
  * @author Manfred Geiler
  */
