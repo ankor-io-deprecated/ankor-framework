@@ -53,37 +53,37 @@ define([
 
             var todoItems = tasks.map(function (todo, i) {
                 return (
-                    TodoItem(
-                    {key:todo.id,
-                    index:i,
-                    editing:i === this.props.model.editing,
-                    todo:todo,
-                    modelRef:tasksRef.appendIndex(i),
-                    onDestroy:this.destroy.bind(this, todo.id)}
+                    TodoItem({
+                    key: todo.id, 
+                    index: i, 
+                    editing: i === this.props.model.editing, 
+                    todo: todo, 
+                    modelRef: tasksRef.appendIndex(i), 
+                    onDestroy: this.destroy.bind(this, todo.id)}
                     )
                     );
             }, this);
 
             if (this.props.model.footerVisibility) {
                 footer =
-                    TodoFooter(
-                    {filter:this.props.model.filter,
-                    clearButtonVisibility:this.props.model.clearButtonVisibility,
-                    itemsLeft:this.props.model.itemsLeft,
-                    itemsLeftText:this.props.model.itemsLeftText,
-                    itemsCompleteText:this.props.model.itemsCompleteText,
-                    onClearCompleted:this.clearCompleted}
+                    TodoFooter({
+                    filter: this.props.model.filter, 
+                    clearButtonVisibility: this.props.model.clearButtonVisibility, 
+                    itemsLeft: this.props.model.itemsLeft, 
+                    itemsLeftText: this.props.model.itemsLeftText, 
+                    itemsCompleteText: this.props.model.itemsCompleteText, 
+                    onClearCompleted: this.clearCompleted}
                     );
 
                 main =
-                    React.DOM.section( {id:"main"}, 
-                        React.DOM.input(
-                        {id:"toggle-all",
-                        type:"checkbox",
-                        onChange:this.toggleAll,
-                        checked:this.props.model.toggleAll}
-                        ),
-                        React.DOM.ul( {id:"todo-list"}, 
+                    React.DOM.section({id: "main"}, 
+                        React.DOM.input({
+                        id: "toggle-all", 
+                        type: "checkbox", 
+                        onChange: this.toggleAll, 
+                        checked: this.props.model.toggleAll}
+                        ), 
+                        React.DOM.ul({id: "todo-list"}, 
 							todoItems
                         )
                     );
@@ -91,17 +91,17 @@ define([
 
             return (
                 React.DOM.div(null, 
-                    React.DOM.header( {id:"header"}, 
-                        React.DOM.h1(null, "todos"),
-                        React.DOM.input(
-                        {ref:"newField",
-                        id:"new-todo",
-                        placeholder:"What needs to be done?",
-                        onKeyDown:this.handleNewTodoKeyDown,
-                        autoFocus:true}
+                    React.DOM.header({id: "header"}, 
+                        React.DOM.h1(null, "todos"), 
+                        React.DOM.input({
+                        ref: "newField", 
+                        id: "new-todo", 
+                        placeholder: "What needs to be done?", 
+                        onKeyDown: this.handleNewTodoKeyDown, 
+                        autoFocus: true}
                         )
-                    ),
-					main,
+                    ), 
+					main, 
 					footer
                 )
                 );

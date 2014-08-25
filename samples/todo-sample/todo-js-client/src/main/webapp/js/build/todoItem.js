@@ -51,29 +51,29 @@ define([
             });
 
             return (
-                React.DOM.li( {className:classes}, 
-                    React.DOM.div( {className:"view"}, 
-                        React.DOM.input(
-                        {className:  "toggle",
-                        type:  "checkbox",
-                        checked:  this.props.todo.completed,
-                        onChange:  this.onToggle}
-                        ),
-                        React.DOM.label( {onDoubleClick:this.setEditing.bind(this, this.props.index)}, 
+                React.DOM.li({className: classes}, 
+                    React.DOM.div({className: "view"}, 
+                        React.DOM.input({
+                        className: "toggle", 
+                        type: "checkbox", 
+                        checked: this.props.todo.completed, 
+                        onChange: this.onToggle}
+                        ), 
+                        React.DOM.label({onDoubleClick: this.setEditing.bind(this, this.props.index)}, 
                             this.props.todo.title
-                        ),
-                        React.DOM.button(
-                        {className:  "destroy",
-                        onClick:  this.props.onDestroy}
+                        ), 
+                        React.DOM.button({
+                        className: "destroy", 
+                        onClick: this.props.onDestroy}
                         )
-                    ),
-                    React.DOM.input(
-                    {ref:  "editField",
-                    className:  "edit",
-                    value:  this.props.todo.title,
-                    onBlur:  this.setEditing.bind(this, -1),
-                    onChange:  this.handleChange,
-                    onKeyDown:  this.handleKeyDown}
+                    ), 
+                    React.DOM.input({
+                    ref: "editField", 
+                    className: "edit", 
+                    value: this.props.todo.title, 
+                    onBlur: this.setEditing.bind(this, -1), 
+                    onChange: this.handleChange, 
+                    onKeyDown: this.handleKeyDown}
                     )
                 )
                 );

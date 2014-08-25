@@ -19,9 +19,9 @@ define([
 
     var render = function () {
         React.renderComponent(
-            TodoApp(
-            {model:rootRef.appendPath("model").getValue(),
-            modelRef:rootRef.appendPath("model")}
+            TodoApp({
+            model: rootRef.appendPath("model").getValue(), 
+            modelRef: rootRef.appendPath("model")}
             ),
             document.getElementById('todoapp')
         );
@@ -55,7 +55,7 @@ define([
         var label = connected ? "ok" : "closed";
 
         React.renderComponent(
-            React.DOM.p( {style:style}, "Server Connection: ", label),
+            React.DOM.p({style: style}, "Server Connection: ", label),
             document.getElementById('connectionstatus')
         )
     };
