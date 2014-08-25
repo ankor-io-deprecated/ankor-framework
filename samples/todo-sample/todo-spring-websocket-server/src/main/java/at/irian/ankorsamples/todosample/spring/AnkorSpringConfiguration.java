@@ -1,4 +1,4 @@
-package hello;
+package at.irian.ankorsamples.todosample.spring;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -11,7 +11,7 @@ import java.util.Map;
 
 // http://stackoverflow.com/a/25425384/870615
 public abstract class AnkorSpringConfiguration {
-    
+
     @Bean
     public ServletContextAware endpointExporterInitializer(final ApplicationContext applicationContext) {
         return new ServletContextAware() {
@@ -38,7 +38,7 @@ public abstract class AnkorSpringConfiguration {
             }
         };
     }
-    
+
     @Bean
     public abstract ServerEndpointRegistration ankorEndpoint();
 }

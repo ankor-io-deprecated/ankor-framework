@@ -35,6 +35,7 @@
         <module>todo-websocket-server</module>
         <module>todo-distributed-performance-test</module>
         <module>todo-performance-test</module>
+        <module>todo-spring-websocket-server</module>
     </modules>
 
     <properties>
