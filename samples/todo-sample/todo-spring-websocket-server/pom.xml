@@ -10,7 +10,7 @@
     </parent>
     
     <groupId>at.irian.ankorsamples</groupId>
-    <artifactId>todo-spring-websocket-sample</artifactId>
+    <artifactId>todo-spring-websocket-server</artifactId>
     <name>Todo Sample - Spring Boot WebSocket Server</name>
     <version>0.0.1</version>
 
