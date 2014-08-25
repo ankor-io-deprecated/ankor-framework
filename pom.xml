@@ -36,6 +36,7 @@
         <module>ankor-actor</module>
         <module>ankor-socket-connector</module>
         <module>ankor-websocket-connector</module>
+        <module>ankor-spring-websocket-connector</module>
         <module>ankor-fx</module>
         <module>ankor-js</module>
         <module>ankor-system</module>
