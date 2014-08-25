@@ -31,13 +31,6 @@
             <version>0.4-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
-        
-        <dependency>
-            <groupId>at.irian.ankorsamples</groupId>
-            <artifactId>todo-js-client</artifactId>
-            <version>0.4-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
     </dependencies>
 
     <build>
