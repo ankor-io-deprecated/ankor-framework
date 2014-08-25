@@ -30,7 +30,7 @@ public class AnimalsWebSocketServerEndpoint extends WebSocketServerEndpoint {
     }
 
     @Override
-    protected String getPath() {
+    public String getPath() {
         return "/websocket/ankor/{clientId}";
     }
 }

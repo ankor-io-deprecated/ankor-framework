@@ -14,6 +14,7 @@
     <version>0.1.0</version>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <start-class>hello.Server</start-class>
         <java.version>1.7</java.version>
     </properties>
@@ -26,11 +27,17 @@
 
         <dependency>
             <groupId>at.irian.ankorsamples</groupId>
-            <artifactId>todo-application</artifactId>
+            <artifactId>todo-websocket-server</artifactId>
             <version>0.4-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         
+        <dependency>
+            <groupId>at.irian.ankorsamples</groupId>
+            <artifactId>todo-js-client</artifactId>
+            <version>0.4-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -51,11 +58,23 @@
             <id>spring-releases</id>
             <url>http://repo.spring.io/libs-release</url>
         </repository>
+        
+        <repository>
+            <id>ankor-release</id>
+            <name>Ankor - Release</name>
+            <url>http://repo.irian.at/content/repositories/ankor-release</url>
+        </repository>
     </repositories>
+
     <pluginRepositories>
         <pluginRepository>
             <id>spring-releases</id>
             <url>http://repo.spring.io/libs-release</url>
+        </pluginRepository>
+        
+        <pluginRepository>
+            <id>ankor-releases</id>
+            <url>http://repo.irian.at/content/repositories/ankor-release</url>
         </pluginRepository>
     </pluginRepositories>
 </project>
