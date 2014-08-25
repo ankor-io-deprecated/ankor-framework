@@ -18,9 +18,9 @@ define([
 
             if (this.props.clearButtonVisibility) {
                 clearButton = (
-                    React.DOM.button(
-                    {id:"clear-completed",
-                    onClick:this.props.onClearCompleted}, 
+                    React.DOM.button({
+                    id: "clear-completed", 
+                    onClick: this.props.onClearCompleted}, 
             this.props.itemsCompleteText
                     )
                     );
@@ -32,23 +32,23 @@ define([
             var filterActive = cx({selected: filter === FILTER.ACTIVE});
             var filterCompleted = cx({selected: filter === FILTER.COMPLETED});
             return (
-                React.DOM.footer( {id:"footer"}, 
-                    React.DOM.span( {id:"todo-count"}, 
+                React.DOM.footer({id: "footer"}, 
+                    React.DOM.span({id: "todo-count"}, 
                         React.DOM.strong(null, this.props.itemsLeft), " ", this.props.itemsLeftText
-                    ),
-                    React.DOM.ul( {id:"filters"}, 
+                    ), 
+                    React.DOM.ul({id: "filters"}, 
                         React.DOM.li(null, 
-                            React.DOM.a( {href:"#/", className:filterAll}, "All")
-                        ),
-						' ',
+                            React.DOM.a({href: "#/", className: filterAll}, "All")
+                        ), 
+						' ', 
                         React.DOM.li(null, 
-                            React.DOM.a( {href:"#/active", className:filterActive}, "Active")
-                        ),
-						' ',
+                            React.DOM.a({href: "#/active", className: filterActive}, "Active")
+                        ), 
+						' ', 
                         React.DOM.li(null, 
-                            React.DOM.a( {href:"#/completed", className:filterCompleted}, "Completed")
+                            React.DOM.a({href: "#/completed", className: filterCompleted}, "Completed")
                         )
-                    ),
+                    ), 
 					clearButton
                 )
                 );
