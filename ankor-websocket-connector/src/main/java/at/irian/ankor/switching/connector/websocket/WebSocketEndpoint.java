@@ -24,7 +24,9 @@ public abstract class WebSocketEndpoint extends Endpoint {
 
     protected abstract AnkorSystem getAnkorSystem();
 
-    protected abstract String getPath();
+    public String getPath() {
+        return "/websocket/ankor/{clientId}";
+    };
 
     @Override
     public void onOpen(Session session, EndpointConfig config) {

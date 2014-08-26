@@ -14,9 +14,4 @@ public class TodoWebSocketServerEndpoint extends WebSocketServerEndpoint {
     protected Application createApplication() {
         return new TodoServerApplication();
     }
-
-    @Override
-    protected String getPath() {
-        return "/websocket/ankor/{clientId}";
-    }
 }

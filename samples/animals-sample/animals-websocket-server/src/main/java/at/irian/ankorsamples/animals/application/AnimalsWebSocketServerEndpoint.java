@@ -28,9 +28,4 @@ public class AnimalsWebSocketServerEndpoint extends WebSocketServerEndpoint {
     protected Application createApplication() {
         return new AnimalsServerApplication();
     }
-
-    @Override
-    protected String getPath() {
-        return "/websocket/ankor/{clientId}";
-    }
 }
