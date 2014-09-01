@@ -1,10 +1,9 @@
-# Ankor Release 0.3
+# Ankor Release 0.4
 
 ## New Features
 
-* Stateless application support (see stateless-todo-sample)
-* Maven BOM ("Bill of Materials")
-* Ready-to-use Maven Bundles for common Ankor configurations
+* Spring Boot Support
+* Utilities for React Javascript Clients
 
 ## Improvements
 
@@ -12,4 +11,3 @@
 
 ## Migration
 
-* see sample applications for how to use one simple Maven bundle dependency instead of multiple Ankor module dependencies
