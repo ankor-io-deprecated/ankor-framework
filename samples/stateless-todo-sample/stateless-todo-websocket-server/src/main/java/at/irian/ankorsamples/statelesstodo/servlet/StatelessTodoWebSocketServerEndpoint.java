@@ -33,7 +33,7 @@ public class StatelessTodoWebSocketServerEndpoint extends WebSocketStatelessServ
     }
 
     @Override
-    public String getPath() {
+    protected String getPath() {
         return "/websocket/ankorstateless/{clientId}";
     }
 }

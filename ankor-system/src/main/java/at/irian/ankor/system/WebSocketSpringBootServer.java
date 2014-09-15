@@ -90,7 +90,7 @@ public abstract class WebSocketSpringBootServer extends WebSocketServerEndpoint
     }
 
     @Override
-    public String getPath() {
+    protected String getPath() {
         return "/websocket/ankor/{clientId}";
     }
 

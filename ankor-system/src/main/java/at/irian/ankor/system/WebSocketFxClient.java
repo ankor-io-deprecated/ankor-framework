@@ -264,7 +264,7 @@ public class WebSocketFxClient implements AnkorClient {
         }
 
         @Override
-        public String getPath() {
+        protected String getPath() {
             return "WebSocket";
         }
 
