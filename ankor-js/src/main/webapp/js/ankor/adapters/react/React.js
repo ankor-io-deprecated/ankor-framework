@@ -12,4 +12,3 @@ define([
     };
     return React;
 });
-

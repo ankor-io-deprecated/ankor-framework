@@ -1,0 +1,14 @@
+{
+  "name": "build",
+  "version": "0.0.0",
+  "description": "",
+  "main": "ankor.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "requirejs": "^2.1.15"
+  }
+}

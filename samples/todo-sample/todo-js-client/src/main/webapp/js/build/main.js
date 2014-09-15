@@ -9,12 +9,9 @@
 define([
     "underscore",
     "react",
-    "build/todoApp",
-    "ankor/AnkorSystem",
-    "ankor/transport/WebSocketTransport",
-    "ankor/utils/BaseUtils",
-    'base'
-], function (_, React, TodoApp, AnkorSystem, WebSocketTransport, BaseUtils) {
+    "ankor",
+    "build/todoApp"
+], function (_, React, ankor, TodoApp) {
     'use strict';
 
     var render = function () {
@@ -30,12 +27,12 @@ define([
     // no need to render on every message
     render = _.throttle(render, 10);
 
-    var ankorSystem = new AnkorSystem({
+    var ankorSystem = new ankor.AnkorSystem({
         debug: true,
         senderId: null,
         modelId: "root",
-        utils: new BaseUtils(),
-        transport: new WebSocketTransport("/stateless/websocket/ankorstateless", {
+        utils: new ankor.utils.BaseUtils(),
+        transport: new ankor.transport.WebSocketTransport("/websocket/ankor", {
             connectProperty: "root"
         })
     });
