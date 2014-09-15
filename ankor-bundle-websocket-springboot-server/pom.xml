@@ -23,50 +23,18 @@
         <version>0.4-SNAPSHOT</version>
     </parent>
 
-    <artifactId>ankor-system</artifactId>
-    <packaging>jar</packaging>
-    <name>Ankor - System</name>
-    <description>AnkorSystem builder and helper classes for starting up Ankor nodes (i.e. Ankor servers or clients).</description>
+    <artifactId>ankor-bundle-websocket-springboot-server</artifactId>
+    <packaging>pom</packaging>
+    <name>Ankor Bundle - WebSocket-based Spring Boot Server</name>
+    <description>Bundle dependencies for a WebSocket-based server that starts by means of Spring Boot.</description>
 
     <dependencies>
 
         <dependency>
             <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-core</artifactId>
+            <artifactId>ankor-system</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-el</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-            <optional>true</optional>
-        </dependency>
-
-        <dependency>
-            <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-json</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-            <optional>true</optional>
-        </dependency>
-
-        <dependency>
-            <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-socket-connector</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-            <optional>true</optional>
-        </dependency>
-
-        <dependency>
-            <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-websocket-connector</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-            <optional>true</optional>
         </dependency>
 
         <dependency>
@@ -74,39 +42,41 @@
             <artifactId>ankor-annotation</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
-            <optional>true</optional>
-        </dependency>
-
-        <dependency>
-            <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-proxy</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-            <optional>true</optional>
         </dependency>
 
         <dependency>
             <groupId>at.irian.ankor</groupId>
             <artifactId>ankor-actor</artifactId>
             <version>${project.version}</version>
-            <scope>compile</scope>
-            <optional>true</optional>
+            <scope>runtime</scope>
         </dependency>
 
         <dependency>
             <groupId>at.irian.ankor</groupId>
-            <artifactId>ankor-fx</artifactId>
+            <artifactId>ankor-proxy</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>at.irian.ankor</groupId>
+            <artifactId>ankor-websocket-connector</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
-            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>at.irian.ankor</groupId>
+            <artifactId>ankor-json</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
         </dependency>
 
         <dependency>
             <groupId>javax.websocket</groupId>
             <artifactId>javax.websocket-api</artifactId>
             <version>1.0</version>
-            <scope>compile</scope>
-            <optional>true</optional>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -114,9 +84,21 @@
             <artifactId>spring-boot-starter-websocket</artifactId>
             <version>1.1.5.RELEASE</version>
             <scope>compile</scope>
-            <optional>true</optional>
         </dependency>
 
     </dependencies>
+
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>1.1.5.RELEASE</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 
 </project>

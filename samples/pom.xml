@@ -44,4 +44,19 @@
         </snapshotRepository>
     </distributionManagement>
 
+    <repositories>
+        <repository>
+            <id>ankor-release</id>
+            <url>http://repo.irian.at/content/repositories/ankor-release</url>
+            <releases><enabled>true</enabled></releases>
+            <snapshots><enabled>false</enabled></snapshots>
+        </repository>
+        <repository>
+            <id>ankor-snapshot</id>
+            <url>http://repo.irian.at/content/repositories/ankor-snapshot</url>
+            <releases><enabled>false</enabled></releases>
+            <snapshots><enabled>true</enabled></snapshots>
+        </repository>
+    </repositories>
+
 </project>

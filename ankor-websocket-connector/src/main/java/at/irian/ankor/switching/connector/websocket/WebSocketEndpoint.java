@@ -15,6 +15,8 @@ import javax.websocket.EndpointConfig;
 import javax.websocket.Session;
 
 /**
+ * Endpoint for Websocket-based Ankor applications.
+ *
  * @author Thomas Spiegl
  */
 public abstract class WebSocketEndpoint extends Endpoint {

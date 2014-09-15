@@ -30,6 +30,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * Server-side endpoint for Websocket-based applications.
+ *
  * @author Manfred Geiler
  */
 public abstract class WebSocketServerEndpoint extends WebSocketEndpoint implements ServerApplicationConfig {
