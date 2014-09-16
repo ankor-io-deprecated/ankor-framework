@@ -18,7 +18,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
     }
 
     @Override
-    public <T> T createNewInstance(Class<T> type, Ref ref, Object[] args) {
+    public final <T> T createNewInstance(Class<T> type, Ref ref, Object[] args) {
 
         BeanMetadata metadata = metadataProvider.getMetadata(type);
 

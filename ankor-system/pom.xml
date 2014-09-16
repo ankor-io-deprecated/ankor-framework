@@ -95,6 +95,14 @@
 
         <dependency>
             <groupId>at.irian.ankor</groupId>
+            <artifactId>ankor-spring</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>at.irian.ankor</groupId>
             <artifactId>ankor-fx</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>

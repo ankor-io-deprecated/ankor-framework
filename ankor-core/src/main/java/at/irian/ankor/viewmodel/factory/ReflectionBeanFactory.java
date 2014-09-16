@@ -6,6 +6,8 @@ import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
 import at.irian.ankor.viewmodel.metadata.MethodMetadata;
 import org.apache.commons.lang.reflect.ConstructorUtils;
 
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * @author Manfred Geiler
  */
@@ -16,6 +18,7 @@ public class ReflectionBeanFactory extends AbstractBeanFactory {
         super(metadataProvider);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected <T> T createInstance(Class<T> type,
                                    Ref ref,
@@ -23,7 +26,15 @@ public class ReflectionBeanFactory extends AbstractBeanFactory {
         T instance;
         try {
             //noinspection unchecked
-            instance = (T) ConstructorUtils.invokeConstructor(type, constructorArgs, getParameterTypes(constructorArgs));
+            try {
+                instance = (T) ConstructorUtils.invokeConstructor(type, constructorArgs, getParameterTypes(constructorArgs));
+            } catch (NoSuchMethodException e) {
+                // try with Ref as first argument
+                Object[] extConstructorArgs = new Object[constructorArgs.length + 1];
+                extConstructorArgs[0] = ref;
+                System.arraycopy(constructorArgs, 0, extConstructorArgs, 1, constructorArgs.length);
+                instance = (T) ConstructorUtils.invokeConstructor(type, extConstructorArgs, getParameterTypes(extConstructorArgs));
+            }
         } catch (Exception e) {
             throw new IllegalArgumentException("Could not create instance of type " + type, e);
         }

@@ -16,12 +16,16 @@
 
 package at.irian.ankor.system;
 
+import at.irian.ankor.application.Application;
+import at.irian.ankor.viewmodel.factory.BeanFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.MimeMappings;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 import org.springframework.web.socket.server.standard.ServerEndpointRegistration;
@@ -30,24 +34,38 @@ import javax.servlet.ServletContext;
 import java.util.Map;
 
 /**
- * Base class for Websocket-based Spring Boot Standalone Server.
+ * Websocket-based Spring Boot Standalone Server.
+ * The path "at.irian.ankor.spring" is scanned for Spring beans. So the
+ * {@link at.irian.ankor.spring.SpringBasedBeanFactory} is automatically getting found.
+ * Application implementors have to provide a Spring bean of type {@link at.irian.ankor.application.Application}.
  * <p>
- * Example implementation:
+ * Ankor Spring Boot Applications are typically started in a main method like so:
  * <pre>
- *     @<span/>Override
- *     protected Application createApplication() {
- *          return new MyAnkorApplication();
+ *
+ *     @<span/>Bean
+ *     public final Application application() {
+ *         SpringBasedAnkorApplication application = new SpringBasedAnkorApplication();
+ *         application.setDefaultModelType(MyRootModel.class);
+ *         return application;
  *     }
  *
  *     public static void main(String[] args) {
- *          SpringApplication.run(MyWebSocketSpringBootServer.class, args);
+ *          SpringApplication.run(WebSocketSpringBootServer.class, args);
  *     }
  * </pre>
  * </p>
  */
+@ComponentScan(basePackages = "at.irian.ankor.spring")
 @EnableAutoConfiguration
 public abstract class WebSocketSpringBootServer extends WebSocketServerEndpoint
                                                 implements EmbeddedServletContainerCustomizer {
+
+    @SuppressWarnings("SpringJavaAutowiredMembersInspection")
+    @Autowired(required = true)
+    private Application application;
+
+    @Autowired(required = true)
+    private BeanFactory beanFactory;
 
     @Override
     public void customize(ConfigurableEmbeddedServletContainer container) {
@@ -90,8 +108,18 @@ public abstract class WebSocketSpringBootServer extends WebSocketServerEndpoint
     }
 
     @Override
+    protected AnkorSystemBuilder createAnkorSystemBuilder() {
+        AnkorSystemBuilder ankorSystemBuilder = super.createAnkorSystemBuilder();
+        return ankorSystemBuilder.withBeanFactory(beanFactory);
+    }
+
+    @Override
     protected String getPath() {
         return "/websocket/ankor/{clientId}";
     }
 
+    @Override
+    protected final Application createApplication() {
+        return application;
+    }
 }

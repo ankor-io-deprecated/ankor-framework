@@ -9,13 +9,11 @@ import at.irian.ankor.viewmodel.RefAware;
 public final class BeanFactories {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(BeanFactories.class);
 
-    private static final Object[] EMPTY_CONSTRUCTOR_ARGS = new Object[]{};
-
     private BeanFactories() {}
 
-    public static <T> T newInstance(Class<T> type, Ref ref) {
+    public static <T> T newInstance(Class<T> type, Ref ref, Object... constructorArgs) {
         BeanFactory beanFactory = ref.context().beanFactory();
-        return beanFactory.createNewInstance(type, ref, EMPTY_CONSTRUCTOR_ARGS);
+        return beanFactory.createNewInstance(type, ref, constructorArgs);
     }
 
     public static <T> T newPropertyInstance(Class<T> type, Ref beanRef, String propertyName) {

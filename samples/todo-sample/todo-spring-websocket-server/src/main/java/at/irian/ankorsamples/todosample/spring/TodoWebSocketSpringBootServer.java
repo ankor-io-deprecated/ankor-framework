@@ -17,17 +17,26 @@
 package at.irian.ankorsamples.todosample.spring;
 
 import at.irian.ankor.application.Application;
+import at.irian.ankor.spring.SpringBasedAnkorApplication;
 import at.irian.ankor.system.WebSocketSpringBootServer;
-import at.irian.ankorsamples.todosample.application.TodoServerApplication;
+import at.irian.ankorsamples.todosample.viewmodel.ModelRoot;
 import org.springframework.boot.SpringApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
 /**
  */
+@Configuration
+@ComponentScan("at.irian.ankorsamples.todosample.spring")
 public class TodoWebSocketSpringBootServer extends WebSocketSpringBootServer {
 
-    @Override
-    protected Application createApplication() {
-        return new TodoServerApplication();
+    @Bean
+    public Application application() {
+        SpringBasedAnkorApplication application = new SpringBasedAnkorApplication();
+        application.setName("Todo (WebSocket Spring Boot)");
+        application.setDefaultModelType(SpringModelRoot.class);
+        return application;
     }
 
     public static void main(String[] args) {

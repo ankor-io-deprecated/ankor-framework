@@ -67,6 +67,13 @@
 
         <dependency>
             <groupId>at.irian.ankor</groupId>
+            <artifactId>ankor-spring</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>at.irian.ankor</groupId>
             <artifactId>ankor-json</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>

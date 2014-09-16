@@ -14,27 +14,35 @@
  * limitations under the License.
  */
 
-package at.irian.ankor.viewmodel.factory;
+package at.irian.ankor.spring;
 
+import at.irian.ankor.annotation.AnnotationBeanMetadataProvider;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.viewmodel.factory.AbstractBeanFactory;
+import at.irian.ankor.viewmodel.factory.ReflectionBeanFactory;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+
+import java.beans.Introspector;
 
 /**
  */
 @SuppressWarnings({"SpringFacetCodeInspection", "UnusedDeclaration"})
 @Configuration
-@Component
-public class SpringBeanFactory implements BeanFactory, ApplicationContextAware {
+public class SpringBasedBeanFactory extends ReflectionBeanFactory implements ApplicationContextAware {
 
     private static final ThreadLocal<Ref> TEMPORARY_REF_HOLDER = new ThreadLocal<Ref>();
 
     private ApplicationContext applicationContext;
+
+    public SpringBasedBeanFactory() {
+        super(new AnnotationBeanMetadataProvider());
+    }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -43,18 +51,24 @@ public class SpringBeanFactory implements BeanFactory, ApplicationContextAware {
 
     @Bean
     @Scope("prototype")
-    public Ref getRef() {
+    public Ref ref() {
         return TEMPORARY_REF_HOLDER.get();
     }
 
+
+    @SuppressWarnings("unchecked")
     @Override
-    public <T> T createNewInstance(Class<T> type, Ref ref, Object[] constructorArgs) {
-        if (constructorArgs != null && constructorArgs.length > 0) {
-            throw new IllegalArgumentException("Constructor args not supported by Ankor Spring Support");
-        }
+    protected <T> T createInstance(Class<T> type, Ref ref, Object[] constructorArgs) {
         try {
             TEMPORARY_REF_HOLDER.set(ref);
-            return applicationContext.getBean(type);
+            if (constructorArgs != null && constructorArgs.length > 0) {
+                String beanName = Introspector.decapitalize(type.getSimpleName());
+                return (T)applicationContext.getBean(beanName, constructorArgs);
+            } else {
+                return applicationContext.getBean(type);
+            }
+        } catch (NoSuchBeanDefinitionException e) {
+            return super.createInstance(type, ref, constructorArgs);
         } finally {
             TEMPORARY_REF_HOLDER.remove();
         }
