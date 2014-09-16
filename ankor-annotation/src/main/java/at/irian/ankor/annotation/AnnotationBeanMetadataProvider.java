@@ -3,6 +3,7 @@ package at.irian.ankor.annotation;
 import at.irian.ankor.big.BigListMetadata;
 import at.irian.ankor.big.BigMapMetadata;
 import at.irian.ankor.delay.FloodControlMetadata;
+import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.TypedRef;
 import at.irian.ankor.ref.match.RefMatcherFactory;
 import at.irian.ankor.ref.match.pattern.AntlrRefMatcherFactory;
@@ -64,31 +65,39 @@ public class AnnotationBeanMetadataProvider implements BeanMetadataProvider {
 
         for (Field field : type.getDeclaredFields()) {
 
-            beanMetadata = beanMetadata.withTypedProperty(field.getName(), field.getType());
+            String propertyName = field.getName();
+            beanMetadata = beanMetadata.withTypedProperty(propertyName, field.getType());
+
+            beanMetadata = beanMetadata.withPropertyField(propertyName, field);
 
             AnkorWatched watchedAnnotation = field.getAnnotation(AnkorWatched.class);
             if (watchedAnnotation != null) {
-                beanMetadata = addWatchedMetadata(beanMetadata, field.getName(), field, watchedAnnotation);
+                beanMetadata = addWatchedMetadata(beanMetadata, propertyName, field, watchedAnnotation);
             }
 
             AnkorBigList bigListAnnotation = field.getAnnotation(AnkorBigList.class);
             if (bigListAnnotation != null) {
-                beanMetadata = addBigListMetadata(beanMetadata, field.getName(), bigListAnnotation);
+                beanMetadata = addBigListMetadata(beanMetadata, propertyName, bigListAnnotation);
             }
 
             AnkorBigMap bigMapAnnotation = field.getAnnotation(AnkorBigMap.class);
             if (bigMapAnnotation != null) {
-                beanMetadata = addBigMapMetadata(beanMetadata, field.getName(), bigMapAnnotation);
+                beanMetadata = addBigMapMetadata(beanMetadata, propertyName, bigMapAnnotation);
             }
 
-            Virtual virtualAnnotation = field.getAnnotation(Virtual.class);
-            if (virtualAnnotation != null) {
-                beanMetadata = beanMetadata.withVirtualProperty(field.getName());
+            if (field.getAnnotation(Virtual.class) != null) {
+                beanMetadata = beanMetadata.withVirtualProperty(propertyName);
             }
 
-            StateHolder stateHolderAnnotation = field.getAnnotation(StateHolder.class);
-            if (stateHolderAnnotation != null) {
-                beanMetadata = beanMetadata.withStateHolderProperty(field.getName());
+            if (field.getAnnotation(StateHolder.class) != null) {
+                beanMetadata = beanMetadata.withStateHolderProperty(propertyName);
+            }
+
+            if (field.getAnnotation(InjectedRef.class) != null) {
+                if (!Ref.class.isAssignableFrom(field.getType())) {
+                    throw new IllegalStateException("@InjectedRef is only allowed for fields of type Ref");
+                }
+                beanMetadata = beanMetadata.withInjectedRefProperty(propertyName);
             }
         }
 
@@ -197,11 +206,16 @@ public class AnnotationBeanMetadataProvider implements BeanMetadataProvider {
             }
 
             if (!signalMetadata.getPaths().isEmpty()) {
-                beanMetadata = beanMetadata.withMethodMetadata(method, signalMetadata);
+                beanMetadata = beanMetadata.withGenericMethodMetadata(method, signalMetadata);
             }
 
             if (isSetter(method) || isGetter(method)) {
-                beanMetadata = beanMetadata.withTypedProperty(getPropertyNameFromMethod(method), method.getReturnType());
+                String propertyName = getPropertyNameFromMethod(method);
+                beanMetadata = beanMetadata.withTypedProperty(propertyName, method.getReturnType());
+
+                if (isSetter(method)) {
+                    beanMetadata = beanMetadata.withPropertySetterMethod(propertyName, method);
+                }
             }
 
             AnkorBigList bigListAnnotation = method.getAnnotation(AnkorBigList.class);
@@ -216,17 +230,27 @@ public class AnnotationBeanMetadataProvider implements BeanMetadataProvider {
 
             AnkorInit initAnnotation = method.getAnnotation(AnkorInit.class);
             if (initAnnotation != null) {
-                beanMetadata = beanMetadata.withMethodMetadata(method, InitMethodMetadata.INSTANCE);
+                beanMetadata = beanMetadata.withGenericMethodMetadata(method, InitMethodMetadata.INSTANCE);
             }
 
             AnkorFloodControl floodControlAnnotation = method.getAnnotation(AnkorFloodControl.class);
             if (floodControlAnnotation != null) {
-                beanMetadata = beanMetadata.withMethodMetadata(method, new FloodControlMetadata(floodControlAnnotation.delayMillis()));
+                beanMetadata = beanMetadata.withGenericMethodMetadata(method,
+                                                                      new FloodControlMetadata(floodControlAnnotation.delayMillis()));
             }
 
-            Virtual virtualAnnotation = method.getAnnotation(Virtual.class);
-            if (virtualAnnotation != null) {
+            if (method.getAnnotation(Virtual.class) != null) {
                 beanMetadata = beanMetadata.withVirtualProperty(getPropertyNameFromMethod(method));
+            }
+
+            if (method.getAnnotation(InjectedRef.class) != null) {
+                if (isGetter(method) && !Ref.class.isAssignableFrom(method.getReturnType())) {
+                    throw new IllegalStateException("@InjectedRef is only allowed for getters of type Ref");
+                }
+                if (isSetter(method) && !Ref.class.isAssignableFrom(method.getParameterTypes()[0])) {
+                    throw new IllegalStateException("@InjectedRef is only allowed for setters of type Ref");
+                }
+                beanMetadata = beanMetadata.withInjectedRefProperty(getPropertyNameFromMethod(method));
             }
         }
 

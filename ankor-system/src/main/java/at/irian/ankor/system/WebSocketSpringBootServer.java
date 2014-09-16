@@ -17,6 +17,7 @@
 package at.irian.ankor.system;
 
 import at.irian.ankor.application.Application;
+import at.irian.ankor.spring.SpringBasedBeanFactory;
 import at.irian.ankor.viewmodel.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

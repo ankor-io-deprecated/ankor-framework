@@ -131,9 +131,9 @@ public class SpringBasedAnkorApplication implements Application, ApplicationCont
             throw new IllegalArgumentException("Unexpected model name " + modelName + " - expected one of: " + sb.toString());
         }
 
-        Object modelRoot = refContext.beanFactory().createNewInstance(modelType,
-                                                                      refContext.refFactory().ref(modelName),
-                                                                      EMPTY_CONSTRUCTOR_ARGS);
+        Object modelRoot = refContext.beanFactory().createAndInitializeInstance(modelType,
+                                                                                refContext.refFactory().ref(modelName),
+                                                                                EMPTY_CONSTRUCTOR_ARGS);
 
         String instanceId = getInstanceId(connectParameters);
 

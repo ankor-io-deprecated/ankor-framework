@@ -13,7 +13,7 @@ public final class BeanFactories {
 
     public static <T> T newInstance(Class<T> type, Ref ref, Object... constructorArgs) {
         BeanFactory beanFactory = ref.context().beanFactory();
-        return beanFactory.createNewInstance(type, ref, constructorArgs);
+        return beanFactory.createAndInitializeInstance(type, ref, constructorArgs);
     }
 
     public static <T> T newPropertyInstance(Class<T> type, Ref beanRef, String propertyName) {

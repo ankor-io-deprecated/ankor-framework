@@ -14,27 +14,19 @@
  * limitations under the License.
  */
 
-package at.irian.ankorsamples.todosample.spring;
+package at.irian.ankor.annotation;
 
-import at.irian.ankor.ref.Ref;
-
-import static at.irian.ankor.viewmodel.factory.BeanFactories.newInstance;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
+ * A view model bean property annotated with {@link InjectedRef} is automatically getting injected the
+ * {@link at.irian.ankor.ref.Ref Ref} that is associated with this bean.
+ * The injection takes place during the initialization phase (i.e. view model post processing phase) of the view model bean.
  */
-public class SpringModelRoot {
-
-    private SpringTaskListModel model;
-
-    public SpringModelRoot(Ref rootRef) {
-        this.model = newInstance(SpringTaskListModel.class, rootRef.appendPath("model"));
-    }
-
-    public SpringTaskListModel getModel() {
-        return model;
-    }
-
-    public void setModel(SpringTaskListModel model) {
-        this.model = model;
-    }
+@Target({ElementType.FIELD, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface InjectedRef {
 }

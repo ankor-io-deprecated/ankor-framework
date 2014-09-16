@@ -38,6 +38,7 @@ import at.irian.ankor.monitor.stats.AnkorSystemStats;
 import at.irian.ankor.monitor.stats.StatsAnkorSystemMonitor;
 import at.irian.ankor.ref.RefContextFactory;
 import at.irian.ankor.ref.RefContextFactoryProvider;
+import at.irian.ankor.ref.RefInjectionViewModelPostProcessor;
 import at.irian.ankor.ref.el.ELRefContextFactoryProvider;
 import at.irian.ankor.serialization.json.simpletree.SimpleTreeJsonMessageMapper;
 import at.irian.ankor.serialization.json.viewmodel.ViewModelJsonMessageMapper;
@@ -358,6 +359,7 @@ public class AnkorSystemBuilder {
         list.add(new ChangeListenersPostProcessor());
         list.add(new WatchedViewModelPostProcessor());
         list.add(new StateHolderViewModelPostProcessor());
+        list.add(new RefInjectionViewModelPostProcessor());
         return list;
     }
 

@@ -6,5 +6,5 @@ import at.irian.ankor.ref.Ref;
  * @author Manfred Geiler
  */
 public interface BeanFactory {
-    <T> T createNewInstance(Class<T> type, Ref ref, Object[] constructorArgs);
+    <T> T createAndInitializeInstance(Class<T> type, Ref ref, Object[] constructorArgs);
 }

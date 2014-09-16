@@ -18,6 +18,7 @@ package at.irian.ankorsamples.todosample.spring;
 
 import at.irian.ankor.annotation.ActionListener;
 import at.irian.ankor.annotation.ChangeListener;
+import at.irian.ankor.annotation.InjectedRef;
 import at.irian.ankor.annotation.Param;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorsamples.todosample.domain.Filter;
@@ -39,11 +40,12 @@ public class SpringTaskListModel {
     @Autowired
     private TaskRepository taskRepository;
 
+    @InjectedRef
     private Ref modelRef;
 
     // state fields
 
-    private Filter filter;
+    private Filter filter = Filter.all;
 
     private int editing;
 
@@ -65,12 +67,6 @@ public class SpringTaskListModel {
 
     private String itemsLeftText;
     private String itemsCompleteText;
-
-    public SpringTaskListModel(Ref modelRef) {
-        this.modelRef = modelRef;
-        // init state fields
-        filter = Filter.all;
-    }
 
     @PostConstruct
     protected void initCalculatedFields() {

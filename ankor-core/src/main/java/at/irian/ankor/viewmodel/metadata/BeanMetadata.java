@@ -1,5 +1,6 @@
 package at.irian.ankor.viewmodel.metadata;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -90,12 +91,39 @@ public class BeanMetadata {
         return new BeanMetadata(changeListeners, actionListeners, map, methodMetadataMap);
     }
 
+    public BeanMetadata withInjectedRefProperty(String propertyName) {
+        //noinspection unchecked
+        Map<String, PropertyMetadata> map
+                = addToPropertyMetadataMap(propertyMetadataMap,
+                                           propertyName,
+                                           getPropertyMetadata(propertyName).withInjectedRef(true));
+        return new BeanMetadata(changeListeners, actionListeners, map, methodMetadataMap);
+    }
+
     public BeanMetadata withTypedProperty(String propertyName, Class<?> type) {
         //noinspection unchecked
         Map<String, PropertyMetadata> map
                 = addToPropertyMetadataMap(propertyMetadataMap,
                                            propertyName,
                                            getPropertyMetadata(propertyName).withPropertyType(type));
+        return new BeanMetadata(changeListeners, actionListeners, map, methodMetadataMap);
+    }
+
+    public BeanMetadata withPropertyField(String propertyName, Field field) {
+        //noinspection unchecked
+        Map<String, PropertyMetadata> map
+                = addToPropertyMetadataMap(propertyMetadataMap,
+                                           propertyName,
+                                           getPropertyMetadata(propertyName).withField(field));
+        return new BeanMetadata(changeListeners, actionListeners, map, methodMetadataMap);
+    }
+
+    public BeanMetadata withPropertySetterMethod(String propertyName, Method setterMethod) {
+        //noinspection unchecked
+        Map<String, PropertyMetadata> map
+                = addToPropertyMetadataMap(propertyMetadataMap,
+                                           propertyName,
+                                           getPropertyMetadata(propertyName).withSetterMethod(setterMethod));
         return new BeanMetadata(changeListeners, actionListeners, map, methodMetadataMap);
     }
 
@@ -122,7 +150,7 @@ public class BeanMetadata {
         return map;
     }
 
-    public BeanMetadata withMethodMetadata(Method method, Object metadata) {
+    public BeanMetadata withGenericMethodMetadata(Method method, Object metadata) {
         Map<Method, MethodMetadata> map = new HashMap<Method, MethodMetadata>();
         if (this.methodMetadataMap != null) {
             map.putAll(this.methodMetadataMap);

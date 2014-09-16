@@ -20,9 +20,9 @@ public class ReflectionBeanFactory extends AbstractBeanFactory {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected <T> T createInstance(Class<T> type,
-                                   Ref ref,
-                                   Object[] constructorArgs) {
+    protected <T> T createRawInstance(Class<T> type,
+                                      Ref ref,
+                                      Object[] constructorArgs) {
         T instance;
         try {
             //noinspection unchecked

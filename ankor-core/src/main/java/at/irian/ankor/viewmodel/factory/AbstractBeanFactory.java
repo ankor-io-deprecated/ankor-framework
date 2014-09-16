@@ -17,20 +17,20 @@ public abstract class AbstractBeanFactory implements BeanFactory {
         this.metadataProvider = metadataProvider;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public final <T> T createNewInstance(Class<T> type, Ref ref, Object[] args) {
-
+    public final <T> T createAndInitializeInstance(Class<T> type, Ref ref, Object[] args) {
         BeanMetadata metadata = metadataProvider.getMetadata(type);
-
-        T instance = createInstance(type, ref, args);
-
-        invokePostProcessorsOn(instance, ref, metadata);
-
-        return instance;
+        Object instance = createRawInstance(type, ref, args);
+        return (T)initializeInstance(instance, ref, metadata);
     }
 
-    protected abstract <T> T createInstance(Class<T> type, Ref ref, Object[] args);
+    protected abstract <T> T createRawInstance(Class<T> type, Ref ref, Object[] args);
 
+    public Object initializeInstance(Object instance, Ref ref, BeanMetadata metadata) {
+        invokePostProcessorsOn(instance, ref, metadata);
+        return instance;
+    }
 
     protected void invokePostProcessorsOn(Object viewModelBean, Ref viewModelRef, BeanMetadata metadata) {
         for (ViewModelPostProcessor viewModelPostProcessor : viewModelRef.context().viewModelPostProcessors()) {

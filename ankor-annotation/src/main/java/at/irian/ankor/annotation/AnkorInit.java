@@ -7,8 +7,10 @@ import java.lang.annotation.Target;
 
 /**
  * @author Manfred Geiler
+ * @deprecated todo: no longer needed
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
+@Deprecated
 public @interface AnkorInit {
 }

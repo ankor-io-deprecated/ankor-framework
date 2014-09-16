@@ -23,9 +23,9 @@ public class CglibProxyBeanFactory extends AbstractBeanFactory {
     }
 
     @Override
-    protected <T> T createInstance(Class<T> type,
-                                   Ref ref,
-                                   Object[] args) {
+    protected <T> T createRawInstance(Class<T> type,
+                                      Ref ref,
+                                      Object[] args) {
         BeanMetadata metadata = metadataProvider.getMetadata(type);
         Enhancer e = new Enhancer();
         e.setSuperclass(type);
