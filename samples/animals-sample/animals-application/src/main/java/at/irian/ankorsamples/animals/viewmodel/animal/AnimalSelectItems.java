@@ -1,6 +1,5 @@
 package at.irian.ankorsamples.animals.viewmodel.animal;
 
-import at.irian.ankor.annotation.AnkorInit;
 import at.irian.ankor.annotation.AutoSignal;
 import at.irian.ankorsamples.animals.domain.AnimalFamily;
 import at.irian.ankorsamples.animals.domain.AnimalType;
@@ -20,13 +19,11 @@ public class AnimalSelectItems {
     private List<AnimalType> types;
     private List<AnimalFamily> families;
 
-    @AnkorInit
     public void initEmpty() {
         init(Collections.<AnimalType>emptyList(),
              Collections.<AnimalFamily>emptyList());
     }
 
-    @AnkorInit
     public void init(List<AnimalType> types, List<AnimalFamily> families) {
         this.types = withNullItem(types);
         this.families = withNullItem(families);

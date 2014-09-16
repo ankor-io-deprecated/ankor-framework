@@ -1,7 +1,6 @@
 package at.irian.ankorsamples.animals.viewmodel.animal;
 
 import at.irian.ankor.annotation.ActionListener;
-import at.irian.ankor.annotation.AnkorInit;
 import at.irian.ankor.annotation.AutoSignal;
 import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.ref.Ref;
@@ -40,7 +39,6 @@ public class AnimalDetailModel {
 
     private String nameStatus;
 
-    @AnkorInit
     public void init(TypedRef<String> panelNameRef,
                      TypedRef<String> serverStatusRef,
                      AnimalRepository animalRepository,
