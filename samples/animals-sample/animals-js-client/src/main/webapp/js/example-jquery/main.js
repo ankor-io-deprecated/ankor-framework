@@ -14,7 +14,9 @@ define([
         debug: true,
         modelId: "collabTest",
         // transport: new HttpPollingTransport("/ankor"),
-        transport: new WebSocketTransport("/websocket/ankor"),
+        transport: new WebSocketTransport("/websocket/ankor", {
+            connectProperty: "root"
+        }),
         utils: new jQueryUtils($)
     });
     window.ankorSystem = ankorSystem; //Make reference to ankor system globally available -> for debugging only

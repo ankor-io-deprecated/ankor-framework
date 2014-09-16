@@ -10,7 +10,9 @@ define([
         debug: true,
         modelId: "collabTest",
         //transport: new HttpPollingTransport("/ankor"),
-        transport: new WebSocketTransport("/websocket/ankor"),
+        transport: new WebSocketTransport("/websocket/ankor", {
+            connectProperty: "root"
+        }),
         utils: new DojoUtils()
     });
 
