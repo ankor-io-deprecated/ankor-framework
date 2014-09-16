@@ -3,7 +3,6 @@ package at.irian.ankorsamples.todosample.viewmodel;
 import at.irian.ankor.annotation.ActionListener;
 import at.irian.ankor.annotation.ChangeListener;
 import at.irian.ankor.annotation.Param;
-import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankorsamples.todosample.domain.Filter;
 import at.irian.ankorsamples.todosample.domain.Task;
@@ -47,7 +46,6 @@ public class TaskListModel {
     private String itemsCompleteText;
 
     public TaskListModel(Ref modelRef, TaskRepository taskRepository) {
-        AnkorPatterns.initViewModel(this, modelRef);
         this.modelRef = modelRef;
         this.taskRepository = taskRepository;
 

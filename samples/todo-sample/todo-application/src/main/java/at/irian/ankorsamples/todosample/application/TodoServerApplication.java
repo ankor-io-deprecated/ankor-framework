@@ -2,6 +2,7 @@ package at.irian.ankorsamples.todosample.application;
 
 import at.irian.ankor.application.CollaborationSingleRootApplication;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.viewmodel.factory.BeanFactories;
 import at.irian.ankorsamples.todosample.domain.TaskRepository;
 import at.irian.ankorsamples.todosample.viewmodel.ModelRoot;
 
@@ -22,6 +23,6 @@ public class TodoServerApplication extends CollaborationSingleRootApplication {
 
     @Override
     public Object doCreateModel(Ref rootRef, Map<String, Object> connectParameters) {
-        return new ModelRoot(rootRef, new TaskRepository());
+        return BeanFactories.newInstance(ModelRoot.class, rootRef, new TaskRepository());
     }
 }
