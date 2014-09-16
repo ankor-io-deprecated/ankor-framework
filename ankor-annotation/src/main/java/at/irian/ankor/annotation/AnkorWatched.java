@@ -6,6 +6,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Marks a view model property of type {@link java.util.List} as a "watched list".
+ * Watched list properties are automatically getting wrapped by a {@link at.irian.ankor.viewmodel.watch.WatchedList}
+ * during view model bean post processing.
+ *
  * @author Manfred Geiler
  */
 @Target({ElementType.FIELD})
