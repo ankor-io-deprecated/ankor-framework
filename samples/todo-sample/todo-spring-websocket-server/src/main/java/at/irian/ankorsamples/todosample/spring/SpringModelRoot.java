@@ -17,27 +17,20 @@
 package at.irian.ankorsamples.todosample.spring;
 
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.viewmodel.factory.BeanFactories;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
+import static at.irian.ankor.viewmodel.factory.BeanFactories.newInstance;
 
 /**
  */
-@Component
-@Scope("prototype")
 public class SpringModelRoot {
 
-    @Autowired
-    private Ref rootRef;
+    private final Ref rootRef;
 
     private SpringTaskListModel model;
 
-    @PostConstruct
-    protected void init() {
-        this.model = BeanFactories.newInstance(SpringTaskListModel.class, rootRef.appendPath("model"));
+    public SpringModelRoot(Ref rootRef) {
+        this.rootRef = rootRef;
+        this.model = newInstance(SpringTaskListModel.class, rootRef.appendPath("model"));
     }
 
     public SpringTaskListModel getModel() {

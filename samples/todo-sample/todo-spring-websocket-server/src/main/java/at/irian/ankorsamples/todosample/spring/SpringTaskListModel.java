@@ -25,8 +25,6 @@ import at.irian.ankorsamples.todosample.domain.Task;
 import at.irian.ankorsamples.todosample.domain.TaskRepository;
 import at.irian.ankorsamples.todosample.viewmodel.TaskModel;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -34,8 +32,6 @@ import java.util.List;
 
 /**
  */
-@Component
-@Scope("prototype")
 public class SpringTaskListModel {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SpringTaskListModel.class);
 
@@ -43,7 +39,6 @@ public class SpringTaskListModel {
     @Autowired
     private TaskRepository taskRepository;
 
-    @Autowired
     private Ref modelRef;
 
     // state fields
@@ -71,14 +66,14 @@ public class SpringTaskListModel {
     private String itemsLeftText;
     private String itemsCompleteText;
 
-    @PostConstruct
-    protected void init() {
+    public SpringTaskListModel(Ref modelRef) {
+        this.modelRef = modelRef;
         // init state fields
         filter = Filter.all;
-        initCalculatedFields();
     }
 
-    private void initCalculatedFields() {
+    @PostConstruct
+    protected void initCalculatedFields() {
         LOG.info("Init calculated fields");
 
         tasks = queryTaskList(filter);

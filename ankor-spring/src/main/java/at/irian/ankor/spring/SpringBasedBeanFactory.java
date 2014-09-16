@@ -18,17 +18,14 @@ package at.irian.ankor.spring;
 
 import at.irian.ankor.annotation.AnnotationBeanMetadataProvider;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.viewmodel.factory.AbstractBeanFactory;
 import at.irian.ankor.viewmodel.factory.ReflectionBeanFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-
-import java.beans.Introspector;
 
 /**
  */
@@ -59,16 +56,15 @@ public class SpringBasedBeanFactory extends ReflectionBeanFactory implements App
     @SuppressWarnings("unchecked")
     @Override
     protected <T> T createInstance(Class<T> type, Ref ref, Object[] constructorArgs) {
+
+        AutowireCapableBeanFactory autowireCapableBeanFactory = applicationContext.getAutowireCapableBeanFactory();
+
+        T bean = super.createInstance(type, ref, constructorArgs);
+
+        TEMPORARY_REF_HOLDER.set(ref);
         try {
-            TEMPORARY_REF_HOLDER.set(ref);
-            if (constructorArgs != null && constructorArgs.length > 0) {
-                String beanName = Introspector.decapitalize(type.getSimpleName());
-                return (T)applicationContext.getBean(beanName, constructorArgs);
-            } else {
-                return applicationContext.getBean(type);
-            }
-        } catch (NoSuchBeanDefinitionException e) {
-            return super.createInstance(type, ref, constructorArgs);
+            autowireCapableBeanFactory.autowireBean(bean);
+            return (T)autowireCapableBeanFactory.initializeBean(bean, ref.propertyName());
         } finally {
             TEMPORARY_REF_HOLDER.remove();
         }
