@@ -20,7 +20,7 @@
     <groupId>at.irian.ankorsamples</groupId>
     <artifactId>ankor-samples</artifactId>
     <packaging>pom</packaging>
-    <version>0.4-SNAPSHOT</version>
+    <version>0.3.1</version>
     <name>Ankor Samples</name>
 
     <modules>

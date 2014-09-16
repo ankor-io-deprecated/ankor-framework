@@ -20,7 +20,7 @@
     <parent>
         <groupId>at.irian.ankorsamples</groupId>
         <artifactId>fxrates-sample</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <version>0.3.1</version>
     </parent>
 
     <artifactId>fxrates-client</artifactId>
