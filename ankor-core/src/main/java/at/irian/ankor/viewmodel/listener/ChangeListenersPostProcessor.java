@@ -1,5 +1,6 @@
 package at.irian.ankor.viewmodel.listener;
 
+import at.irian.ankor.event.EventListener;
 import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.ref.impl.RefContextImplementor;
@@ -13,15 +14,25 @@ import java.util.Collection;
  * @author Manfred Geiler
  */
 public class ChangeListenersPostProcessor implements ViewModelPostProcessor {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ActionListenersPostProcessor.class);
 
     @Override
-    public void postProcess(Object bean, Ref ref, BeanMetadata md) {
-        EventListeners eventListeners = ((RefContextImplementor) ref.context()).eventListeners();
+    public void postProcess(Object bean, Ref beanRef, BeanMetadata md) {
+        EventListeners eventListeners = ((RefContextImplementor) beanRef.context()).eventListeners();
+
+        // look for a ViewModelChangeEventListener bound to the same Ref...
+        for (EventListener eventListener : eventListeners) {
+            if (eventListener instanceof ViewModelChangeEventListener) {
+                if (((ViewModelChangeEventListener) eventListener).getViewModelBeanRef().equals(beanRef)) {
+                    // ... and discard it
+                    eventListeners.remove(eventListener);
+                    break;
+                }
+            }
+        }
 
         Collection<ChangeListenerMetadata> changeListeners = md.getChangeListeners();
         if (changeListeners != null && !changeListeners.isEmpty()) {
-            eventListeners.add(new ViewModelChangeEventListener(ref, bean, changeListeners));
+            eventListeners.add(new ViewModelChangeEventListener(beanRef, bean, changeListeners));
         }
     }
 }

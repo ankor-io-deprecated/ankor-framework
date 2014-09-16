@@ -25,10 +25,14 @@ public class ViewModelChangeEventListener extends ChangeEventListener {
     public ViewModelChangeEventListener(Ref viewModelBeanRef,
                                         Object bean,
                                         Collection<ChangeListenerMetadata> changeListenersMetadata) {
-        super(null);
+        super(null); //this is a global listener because we are interested on all change events (for pattern matching)
         this.viewModelBeanRef = viewModelBeanRef;
         this.beanReference = new WeakReference<Object>(bean);
         this.changeListenersMetadata = changeListenersMetadata;
+    }
+
+    public Ref getViewModelBeanRef() {
+        return viewModelBeanRef;
     }
 
     @Override
