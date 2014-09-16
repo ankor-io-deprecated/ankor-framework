@@ -127,12 +127,17 @@ public interface TypedRef<T> {
     void signalValueChange();
 
     /**
+     * Applying a new value to a virtual Ref does not change the underyling property value.
+     * It is allowed to set a new value on a read-only virtual Ref (see {@link #isReadOnly()}).
+     * Applying a new value to a virtual Ref causes a {@link at.irian.ankor.change.ChangeEvent ChangeEvent} getting fired
+     * - like normal Refs.
+     *
      * @return true, if this Ref is virtual and there is no real value behind this Ref
      */
     boolean isVirtual();
 
     /**
-     * @return true, if this Ref is virtual and there is no real value behind this Ref
+     * @return true, if this Ref is read-only
      */
     boolean isReadOnly();
 }
