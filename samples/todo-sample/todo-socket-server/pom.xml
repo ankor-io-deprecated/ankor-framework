@@ -20,7 +20,7 @@
     <parent>
         <groupId>at.irian.ankorsamples</groupId>
         <artifactId>todo-sample</artifactId>
-        <version>0.3.1</version>
+        <version>0.3.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>todo-socket-server</artifactId>
