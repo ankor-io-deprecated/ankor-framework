@@ -96,7 +96,7 @@ public abstract class RefBase implements Ref, RefImplementor, CollectionRef, Map
         ModelSession modelSession = context().modelSession();
 
         if (isVirtual()) {
-            LOG.warn("Cannot set virtual property {}", this);
+            LOG.debug("Virtual property is not set: {}", this);
             fireChangeEvent(source, change, modelSession.getEventDispatcher());
             return;
         }
