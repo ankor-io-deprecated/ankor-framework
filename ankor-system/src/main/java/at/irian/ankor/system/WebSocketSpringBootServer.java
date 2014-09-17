@@ -16,17 +16,16 @@
 
 package at.irian.ankor.system;
 
-import at.irian.ankor.application.Application;
-import at.irian.ankor.spring.SpringBasedBeanFactory;
+import at.irian.ankor.viewmodel.factory.AbstractBeanFactory;
 import at.irian.ankor.viewmodel.factory.BeanFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import at.irian.ankor.viewmodel.factory.SpringBasedBeanFactory;
+import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.MimeMappings;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 import org.springframework.web.socket.server.standard.ServerEndpointRegistration;
@@ -37,7 +36,7 @@ import java.util.Map;
 /**
  * Websocket-based Spring Boot Standalone Server.
  * The path "at.irian.ankor.spring" is scanned for Spring beans. So the
- * {@link at.irian.ankor.spring.SpringBasedBeanFactory} is automatically getting found.
+ * {@link at.irian.ankor.viewmodel.factory.SpringBasedBeanFactory} is automatically getting found.
  * Application implementors have to provide a Spring bean of type {@link at.irian.ankor.application.Application}.
  * <p>
  * Ankor Spring Boot Applications are typically started in a main method like so:
@@ -56,17 +55,11 @@ import java.util.Map;
  * </pre>
  * </p>
  */
-@ComponentScan(basePackages = "at.irian.ankor.spring")
 @EnableAutoConfiguration
 public abstract class WebSocketSpringBootServer extends WebSocketServerEndpoint
                                                 implements EmbeddedServletContainerCustomizer {
 
-    @SuppressWarnings("SpringJavaAutowiredMembersInspection")
-    @Autowired(required = true)
-    private Application application;
-
-    @Autowired(required = true)
-    private BeanFactory beanFactory;
+    private ApplicationContext springApplicationContext;
 
     @Override
     public void customize(ConfigurableEmbeddedServletContainer container) {
@@ -78,6 +71,7 @@ public abstract class WebSocketSpringBootServer extends WebSocketServerEndpoint
 
     @Bean
     public ServletContextAware endpointExporterInitializer(final ApplicationContext applicationContext) {
+        this.springApplicationContext = applicationContext;
         return new ServletContextAware() {
             @Override
             public void setServletContext(ServletContext servletContext) {
@@ -111,6 +105,11 @@ public abstract class WebSocketSpringBootServer extends WebSocketServerEndpoint
     @Override
     protected AnkorSystemBuilder createAnkorSystemBuilder() {
         AnkorSystemBuilder ankorSystemBuilder = super.createAnkorSystemBuilder();
+        BeanMetadataProvider beanMetadataProvider = ankorSystemBuilder.getBeanMetadataProvider();
+        BeanFactory baseBeanFactory = ankorSystemBuilder.getBeanFactory();
+        SpringBasedBeanFactory beanFactory = new SpringBasedBeanFactory(beanMetadataProvider,
+                                                                        (AbstractBeanFactory)baseBeanFactory,
+                                                                        springApplicationContext);
         return ankorSystemBuilder.withBeanFactory(beanFactory);
     }
 
@@ -119,8 +118,4 @@ public abstract class WebSocketSpringBootServer extends WebSocketServerEndpoint
         return "/websocket/ankor/{clientId}";
     }
 
-    @Override
-    protected final Application createApplication() {
-        return application;
-    }
 }

@@ -20,12 +20,21 @@ public abstract class AbstractBeanFactory implements BeanFactory {
     @SuppressWarnings("unchecked")
     @Override
     public final <T> T createAndInitializeInstance(Class<T> type, Ref ref, Object[] args) {
+        if (type == null) {
+            throw new NullPointerException("type");
+        }
+        if (ref == null) {
+            throw new NullPointerException("ref");
+        }
+        if (args == null) {
+            throw new NullPointerException("args");
+        }
         BeanMetadata metadata = metadataProvider.getMetadata(type);
         Object instance = createRawInstance(type, ref, args);
         return (T)initializeInstance(instance, ref, metadata);
     }
 
-    protected abstract <T> T createRawInstance(Class<T> type, Ref ref, Object[] args);
+    public abstract <T> T createRawInstance(Class<T> type, Ref ref, Object[] args);
 
     public Object initializeInstance(Object instance, Ref ref, BeanMetadata metadata) {
         invokePostProcessorsOn(instance, ref, metadata);
@@ -36,15 +45,6 @@ public abstract class AbstractBeanFactory implements BeanFactory {
         for (ViewModelPostProcessor viewModelPostProcessor : viewModelRef.context().viewModelPostProcessors()) {
             viewModelPostProcessor.postProcess(viewModelBean, viewModelRef, metadata);
         }
-    }
-
-    protected static Class[] getParameterTypes(Object[] args) {
-        Class parameterTypes[] = new Class[args.length];
-        for (int i = 0; i < args.length; i++) {
-            Object arg = args[i];
-            parameterTypes[i] = arg != null ? arg.getClass() : Object.class;
-        }
-        return parameterTypes;
     }
 
 }

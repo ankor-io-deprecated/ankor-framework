@@ -102,6 +102,16 @@
 
     </dependencies>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>at.irian.ankor</groupId>
+                <artifactId>ankor-js</artifactId>
+                <version>${project.version}</version>
+                <type>war</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
 
@@ -121,7 +131,7 @@
                 <executions>
                     <execution>
                         <id>unpack</id>
-                        <phase>generate-sources</phase>
+                        <phase>generate-resources</phase>
                         <goals>
                             <goal>unpack</goal>
                         </goals>
@@ -130,10 +140,9 @@
                                 <artifactItem>
                                     <groupId>at.irian.ankor</groupId>
                                     <artifactId>ankor-js</artifactId>
-                                    <version>${project.version}</version>
                                     <type>war</type>
                                     <outputDirectory>${project.build.directory}/ankor-js-resources/static</outputDirectory>
-                                    <includes>js/**</includes>
+                                    <excludes>WEB-INF/**,META-INF/**</excludes>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>

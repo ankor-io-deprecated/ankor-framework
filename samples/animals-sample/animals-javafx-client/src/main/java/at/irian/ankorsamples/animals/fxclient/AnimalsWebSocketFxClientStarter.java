@@ -24,6 +24,9 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
+/**
+ * Launcher for the WebSocket-based Animals Sample JavaFX Client.
+ */
 public class AnimalsWebSocketFxClientStarter extends javafx.application.Application {
     //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TodoWebSocketFxClientStarter.class);
 
@@ -37,6 +40,7 @@ public class AnimalsWebSocketFxClientStarter extends javafx.application.Applicat
         ankorClient = WebSocketFxClient.builder()
                 .withApplicationName("Animals FX Client")
                 .withModelName("root")
+                //.withConnectParam(CollaborationSingleRootApplication.MODEL_INSTANCE_ID_PARAM, "collaboration-test-instance")
                 .withServer("ws://localhost:8080/websocket/ankor")
                 .build();
     }

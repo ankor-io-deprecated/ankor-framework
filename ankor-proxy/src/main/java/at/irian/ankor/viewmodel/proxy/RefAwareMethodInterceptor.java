@@ -3,6 +3,9 @@ package at.irian.ankor.viewmodel.proxy;
 import java.lang.reflect.Method;
 
 /**
+ *  Method interceptor that implements the {@link at.irian.ankor.viewmodel.RefAware#getRef()} method for automatically
+ *  mxining in of the RefAware marker interface to every view model bean.
+ *
  * @author Manfred Geiler
  */
 public class RefAwareMethodInterceptor implements MethodInterceptor {

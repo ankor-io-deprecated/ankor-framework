@@ -7,6 +7,10 @@ import at.irian.ankor.viewmodel.metadata.MethodMetadata;
 import java.lang.reflect.Method;
 
 /**
+ * Method interceptor that implements the "auto signalling" feature for setter methods.
+ * Whenever a setter is called on a view model bean, a ValueChange is signalled automatically on the
+ * corresponding Ref.
+ *
  * @author Manfred Geiler
  */
 public class AutoSignalMethodInterceptor implements MethodInterceptor {

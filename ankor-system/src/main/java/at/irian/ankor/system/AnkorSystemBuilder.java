@@ -69,8 +69,11 @@ import com.typesafe.config.ConfigFactory;
 import java.util.*;
 
 /**
+ * Convenient Builder for setting up an {@link AnkorSystem AnkorSystem}.
+ *
  * @author Manfred Geiler
  */
+@SuppressWarnings("UnusedDeclaration")
 public class AnkorSystemBuilder {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AnkorSystemBuilder.class);
 
@@ -196,6 +199,53 @@ public class AnkorSystemBuilder {
         return this;
     }
 
+
+    // ------- getters
+
+    public String getSystemName() {
+        return systemName;
+    }
+
+    public Map<String, Object> getConfigValues() {
+        return configValues;
+    }
+
+    public List<ViewModelPostProcessor> getViewModelPostProcessors() {
+        return viewModelPostProcessors;
+    }
+
+    public ModelSessionFactory getModelSessionFactory() {
+        return modelSessionFactory;
+    }
+
+    public Application getApplication() {
+        return application;
+    }
+
+    public BeanResolver getBeanResolver() {
+        return beanResolver;
+    }
+
+    public SwitchboardImplementor getSwitchboard() {
+        return switchboard;
+    }
+
+    public RefContextFactoryProvider getRefContextFactoryProvider() {
+        return refContextFactoryProvider;
+    }
+
+    public RoutingLogic getRoutingLogic() {
+        return routingLogic;
+    }
+
+    public boolean isActorSystemEnabled() {
+        return actorSystemEnabled;
+    }
+
+
+
+    // ----------- build methods
+
     public AnkorSystem createServer() {
 
         SwitchboardImplementor switchboard = getServerSwitchboard();
@@ -310,14 +360,14 @@ public class AnkorSystemBuilder {
                                getConnectorLoader());
     }
 
-    private BeanFactory getBeanFactory() {
+    public BeanFactory getBeanFactory() {
         if (beanFactory == null) {
             beanFactory = new ReflectionBeanFactory(getBeanMetadataProvider());
         }
         return beanFactory;
     }
 
-    private BeanMetadataProvider getBeanMetadataProvider() {
+    public BeanMetadataProvider getBeanMetadataProvider() {
         if (beanMetadataProvider == null) {
             beanMetadataProvider = new AnnotationBeanMetadataProvider();
         }
@@ -363,7 +413,7 @@ public class AnkorSystemBuilder {
         return list;
     }
 
-    private String getClientSystemName() {
+    public String getClientSystemName() {
         if (systemName == null) {
             systemName = "Unnamed Client";
             LOG.warn("No system name specified, using default name {}", systemName);
@@ -426,7 +476,7 @@ public class AnkorSystemBuilder {
         return beanResolver;
     }
 
-    private Scheduler getScheduler() {
+    public Scheduler getScheduler() {
         if (scheduler == null) {
             ActorSystem actorSystem = getActorSystem();
             if (actorSystem == null) {
@@ -438,12 +488,12 @@ public class AnkorSystemBuilder {
         return scheduler;
     }
 
-    private Config getConfig() {
+    public Config getConfig() {
         return ConfigFactory.parseMap(configValues, "AnkorSystemBuilder")
                 .withFallback(ConfigFactory.load());
     }
 
-    private EventDispatcherFactory getEventDispatcherFactory() {
+    public EventDispatcherFactory getEventDispatcherFactory() {
         if (eventDispatcherFactory == null) {
             ActorSystem actorSystem = getActorSystem();
             if (actorSystem == null) {
@@ -500,7 +550,7 @@ public class AnkorSystemBuilder {
         return routingLogic;
     }
 
-    private ActorSystem getActorSystem() {
+    public ActorSystem getActorSystem() {
         if (actorSystemEnabled) {
             if (actorSystem == null) {
                 LOG.info("Creating Akka Actor System...");
@@ -512,7 +562,7 @@ public class AnkorSystemBuilder {
         }
     }
 
-    private AnkorSystemMonitor getMonitor() {
+    public AnkorSystemMonitor getMonitor() {
         if (monitor == null) {
             ActorSystem actorSystem = getActorSystem();
             if (actorSystem == null) {
@@ -524,7 +574,7 @@ public class AnkorSystemBuilder {
         return monitor;
     }
 
-    private AnkorSystemStats getStats() {
+    public AnkorSystemStats getStats() {
         if (stats == null) {
             stats = new AnkorSystemStats();
         }
@@ -536,7 +586,7 @@ public class AnkorSystemBuilder {
         return DefaultModelSessionManager.create();
     }
 
-    private ConnectorLoader getConnectorLoader() {
+    public ConnectorLoader getConnectorLoader() {
         if (connectorLoader == null) {
             connectorLoader = new DefaultConnectorLoader();
         }

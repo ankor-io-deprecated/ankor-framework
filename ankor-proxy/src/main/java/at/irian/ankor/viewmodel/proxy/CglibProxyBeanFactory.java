@@ -3,18 +3,23 @@ package at.irian.ankor.viewmodel.proxy;
 import at.irian.ankor.ref.Ref;
 import at.irian.ankor.viewmodel.RefAware;
 import at.irian.ankor.viewmodel.factory.AbstractBeanFactory;
+import at.irian.ankor.viewmodel.factory.ConstructionHelper;
 import at.irian.ankor.viewmodel.metadata.BeanMetadata;
 import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
 import net.sf.cglib.proxy.Enhancer;
-import org.apache.commons.lang.reflect.ConstructorUtils;
-
-import java.lang.reflect.Constructor;
 
 /**
+ * Cglib-based View Model {@link at.irian.ankor.viewmodel.factory.BeanFactory BeanFactory}.
+ * Other than the normal {@link at.irian.ankor.viewmodel.factory.ReflectionBeanFactory ReflectionBeanFactory} this
+ * factory actually creates intercepted proxies to support special enhanced Ankor features like "auto signalling",
+ * "method flood control" and "automatic RefAware mixin".
+ * @see at.irian.ankor.viewmodel.proxy.InterceptorChainFactory
+ * @see at.irian.ankor.viewmodel.proxy.AutoSignalMethodInterceptor
+ * @see at.irian.ankor.viewmodel.proxy.FloodControlMethodInterceptor
+ * @see at.irian.ankor.viewmodel.proxy.RefAwareMethodInterceptor
  * @author Manfred Geiler
  */
 public class CglibProxyBeanFactory extends AbstractBeanFactory {
-    //private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(CglibProxyBeanFactory.class);
 
     private static final Class[] INTERFACES = new Class[] {RefAware.class};
 
@@ -23,7 +28,7 @@ public class CglibProxyBeanFactory extends AbstractBeanFactory {
     }
 
     @Override
-    protected <T> T createRawInstance(Class<T> type,
+    public <T> T createRawInstance(Class<T> type,
                                       Ref ref,
                                       Object[] args) {
         BeanMetadata metadata = metadataProvider.getMetadata(type);
@@ -35,23 +40,14 @@ public class CglibProxyBeanFactory extends AbstractBeanFactory {
         CglibCallback cglibCallback = new CglibCallback(metadata, ref, interceptorChainFactory);
         e.setCallback(cglibCallback);
 
-        Class[] parameterTypes = getParameterTypes(args);
-        Constructor matchingAccessibleConstructor
-                = ConstructorUtils.getMatchingAccessibleConstructor(type, parameterTypes);
-        if (matchingAccessibleConstructor == null) {
-            StringBuilder sb = new StringBuilder();
-            for (Class parameterType : parameterTypes) {
-                if (sb.length() > 0) {
-                    sb = sb.append(',');
-                }
-                sb = sb.append(parameterType.getSimpleName());
-            }
-
-            throw new IllegalArgumentException("No matching constructor found for " + sb.toString());
-        }
+        ConstructionHelper<T> constructionHelper = new ConstructionHelper<T>(type)
+                .withArguments(args)
+                .withOptionalPrefixArguments(ref)
+                .resolve();
 
         //noinspection unchecked
-        return (T) e.create(matchingAccessibleConstructor.getParameterTypes(), args);
+        return (T) e.create(constructionHelper.getResolvedArgumentTypes(),
+                            constructionHelper.getResolvedArguments());
     }
 
 }

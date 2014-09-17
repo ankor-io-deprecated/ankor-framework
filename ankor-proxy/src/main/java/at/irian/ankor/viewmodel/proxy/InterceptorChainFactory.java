@@ -9,6 +9,16 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * Factory for creating the interceptor chain for enhancer proxies.
+ * <p>
+ * Currently supported interceptors:
+ * <ul>
+ *     <li>{@link AutoSignalMethodInterceptor}</li>
+ *     <li>{@link FloodControlMethodInterceptor}</li>
+ *     <li>{@link RefAwareMethodInterceptor}</li>
+ * </ul>
+ * </p>
+ * @see at.irian.ankor.viewmodel.proxy.CglibProxyBeanFactory
  * @author Manfred Geiler
  */
 public class InterceptorChainFactory {

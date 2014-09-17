@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-package at.irian.ankor.spring;
+package at.irian.ankor.viewmodel.factory;
 
-import at.irian.ankor.annotation.AnnotationBeanMetadataProvider;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.viewmodel.factory.ReflectionBeanFactory;
 import at.irian.ankor.viewmodel.metadata.BeanMetadata;
-import org.springframework.beans.BeansException;
+import at.irian.ankor.viewmodel.metadata.BeanMetadataProvider;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.stereotype.Component;
 
 /**
  * Implementation of a {@link at.irian.ankor.viewmodel.factory.BeanFactory BeanFactory} providing basic Spring
@@ -36,25 +32,24 @@ import org.springframework.stereotype.Component;
  * {@link org.springframework.beans.factory.config.BeanPostProcessor BeanPostProcessors} are called.
  *
  */
-@Component
-public class SpringBasedBeanFactory extends ReflectionBeanFactory implements ApplicationContextAware {
+public class SpringBasedBeanFactory extends AbstractBeanFactory {
 
-    private ApplicationContext applicationContext;
+    private final AbstractBeanFactory delegateBeanFactory;
+    private final ApplicationContext springApplicationContext;
 
-    public SpringBasedBeanFactory() {
-        super(new AnnotationBeanMetadataProvider());
-    }
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
+    public SpringBasedBeanFactory(BeanMetadataProvider beanMetadataProvider,
+                                  AbstractBeanFactory baseBeanFactory,
+                                  ApplicationContext springApplicationContext) {
+        super(beanMetadataProvider);
+        this.delegateBeanFactory = baseBeanFactory;
+        this.springApplicationContext = springApplicationContext;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    protected <T> T createRawInstance(Class<T> type, Ref ref, Object[] constructorArgs) {
-        T bean = super.createRawInstance(type, ref, constructorArgs);
-        applicationContext.getAutowireCapableBeanFactory().autowireBean(bean);
+    public <T> T createRawInstance(Class<T> type, Ref ref, Object[] constructorArgs) {
+        T bean = delegateBeanFactory.createRawInstance(type, ref, constructorArgs);
+        springApplicationContext.getAutowireCapableBeanFactory().autowireBean(bean);
         return bean;
 
     }
@@ -62,8 +57,8 @@ public class SpringBasedBeanFactory extends ReflectionBeanFactory implements App
     @SuppressWarnings("UnnecessaryLocalVariable")
     @Override
     public Object initializeInstance(Object instance, Ref ref, BeanMetadata metadata) {
-        Object ankorInitializedBean = super.initializeInstance(instance, ref, metadata);
-        Object springInitializedBean = applicationContext.getAutowireCapableBeanFactory()
+        Object ankorInitializedBean = delegateBeanFactory.initializeInstance(instance, ref, metadata);
+        Object springInitializedBean = springApplicationContext.getAutowireCapableBeanFactory()
                                                          .initializeBean(ankorInitializedBean, ref.propertyName());
         return springInitializedBean;
     }

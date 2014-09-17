@@ -14,53 +14,30 @@
  * limitations under the License.
  */
 
-package at.irian.ankor.spring;
+package at.irian.ankor.application;
 
-import at.irian.ankor.application.Application;
 import at.irian.ankor.ref.RefContext;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 
-import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Ankor Application implementation in Spring Bean style.
+ * Convenient {@link Application} implementation, that is easily configurable and implements reasonable default behaviour.
  */
 @SuppressWarnings("UnusedDeclaration")
-public class SpringBasedAnkorApplication implements Application, ApplicationContextAware {
+public class GenericApplication implements Application {
 
+    public static final String DEFAULT_APPLICATION_NAME = "unnamed";
     public static final String DEFAULT_MODEL_ROOT_NAME = "root";
-    public static final String DEFAULT_MODEL_INSTANCE_ID_PARAM = "at.irian.ankor.MODEL_INSTANCE_ID";
+    public static final String DEFAULT_MODEL_INSTANCE_ID_PARAM = CollaborationSingleRootApplication.MODEL_INSTANCE_ID_PARAM;
     private static final Object[] EMPTY_CONSTRUCTOR_ARGS = new Object[0];
 
-    private ApplicationContext applicationContext;
-    private String name = null;
+    private String name = DEFAULT_APPLICATION_NAME;
     private boolean stateless = false;
     private String modelInstanceIdParam = DEFAULT_MODEL_INSTANCE_ID_PARAM;
-    private Map<String, Class<?>> modelTypes = null;
-    private Map<String, Map<String, Object>> modelMap = null;
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
-
-    @PostConstruct
-    protected void init() {
-        if (name == null) {
-            name = applicationContext.getApplicationName();
-        }
-        if (modelTypes.isEmpty()) {
-            throw new IllegalStateException("No model names and types defined");
-        }
-        modelMap = new HashMap<String, Map<String, Object>>(modelTypes.size());
-        for (String modelName : modelTypes.keySet()) {
-            modelMap.put(modelName, new ConcurrentHashMap<String, Object>());
-        }
-    }
+    private Map<String, Class<?>> modelTypes = new HashMap<String, Class<?>>();
+    private Map<String, Map<String, Object>> modelMap = new HashMap<String, Map<String, Object>>();
+    private Map<String, Object[]> modelRootConstructorArgs = null;
 
     public void setName(String name) {
         this.name = name;
@@ -94,18 +71,34 @@ public class SpringBasedAnkorApplication implements Application, ApplicationCont
 
     public void setModelTypes(Map<String, Class<?>> modelTypes) {
         this.modelTypes = modelTypes;
+        initModelMap();
     }
 
     public void setDefaultModelType(Class modelType) {
-        if (modelTypes == null) {
-            modelTypes = new HashMap<String, Class<?>>();
-        }
         modelTypes.put(DEFAULT_MODEL_ROOT_NAME, modelType);
+        initModelMap();
+    }
+
+    private void initModelMap() {
+        for (String modelName : modelTypes.keySet()) {
+            modelMap.put(modelName, new ConcurrentHashMap<String, Object>());
+        }
+    }
+
+    public void setModelConstructorArgs(Map<String, Object[]> modelRootConstructorArgs) {
+        this.modelRootConstructorArgs = modelRootConstructorArgs;
+    }
+
+    public void setDefaultModelConstructorArgs(Object... args) {
+        if (modelRootConstructorArgs == null) {
+            modelRootConstructorArgs = new HashMap<String, Object[]>();
+        }
+        modelRootConstructorArgs.put(DEFAULT_MODEL_ROOT_NAME, args);
     }
 
     @Override
     public Set<String> getKnownModelNames() {
-        return modelMap.keySet();
+        return modelTypes.keySet();
     }
 
     @Override
@@ -131,9 +124,17 @@ public class SpringBasedAnkorApplication implements Application, ApplicationCont
             throw new IllegalArgumentException("Unexpected model name " + modelName + " - expected one of: " + sb.toString());
         }
 
+        Object[] constructorArgs = null;
+        if (modelRootConstructorArgs != null) {
+            constructorArgs = modelRootConstructorArgs.get(modelName);
+        }
+        if (constructorArgs == null) {
+            constructorArgs = EMPTY_CONSTRUCTOR_ARGS;
+        }
+
         Object modelRoot = refContext.beanFactory().createAndInitializeInstance(modelType,
                                                                                 refContext.refFactory().ref(modelName),
-                                                                                EMPTY_CONSTRUCTOR_ARGS);
+                                                                                constructorArgs);
 
         String instanceId = getInstanceId(connectParameters);
 

@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Method interceptor that implements the "flood control" feature.
+ *
  * @author Manfred Geiler
  */
 public class FloodControlMethodInterceptor implements MethodInterceptor {
