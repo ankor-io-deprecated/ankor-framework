@@ -14,7 +14,7 @@ SRC_FILES=$(shell find ankor -type f -name "*.js")
 BUILD_OPTIONS=build.js
 RJS=node_modules/requirejs/bin/r.js
 
-all: build min
+all: build min jquery jquery-min react react-min
 
 build: $(TARGET)
 

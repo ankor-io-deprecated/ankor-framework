@@ -3,14 +3,14 @@
  */
 define([
     './adapters/react/AnkorMixin',
-    './adapters/react/React',
+    './adapters/react/initReact',
     './ankor'
 ], function (AnkorMixin,
-             React,
+             initReact,
              ankor) {
-    ankor.adapters.react = {};
-    ankor.adapters.react.AnkorMixin = AnkorMixin;
-    ankor.adapters.react.React = React;
+    ankor.adapters.React = {};
+    ankor.adapters.React.init = initReact;
+    ankor.adapters.React.AnkorMixin = AnkorMixin;
     return ankor;
 });
 

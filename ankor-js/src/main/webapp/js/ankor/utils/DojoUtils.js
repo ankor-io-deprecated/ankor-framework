@@ -4,7 +4,7 @@ define([
     "dojo/json",
     "dojo/request/xhr"
 ], function(uuid, lang, json, xhr) {
-    return function(jquery) {
+    return function() {
         this.uuid = uuid;
         this.hitch = lang.hitch;
         this.jsonParse = json.parse;

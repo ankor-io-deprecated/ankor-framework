@@ -21,7 +21,7 @@ define([
     WebSocketTransport.prototype = new BaseTransport();
 
     WebSocketTransport.prototype.init = function (ankorSystem) {
-        BaseTransport.prototype.init(ankorSystem);
+        BaseTransport.prototype.init.call(this, ankorSystem);
 
         this.endpoint = this.endpointUri + "/" + ankorSystem.senderId;
         if (this.ankorSystem.debug) {

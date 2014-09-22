@@ -6,7 +6,6 @@ define([
     './utils/JQueryUtils',
     './ankor'
 ], function (JQueryAdapter, JQueryUtils, ankor) {
-    ankor.adapters.JQueryAdapter = JQueryAdapter;
-    ankor.utils.JQueryUtils = JQueryUtils;
+    ankor.adapters.jQuery.init = JQueryAdapter;
     return ankor;
 });
