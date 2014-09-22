@@ -26,6 +26,9 @@ public abstract class BaseApplication implements Application {
         return name;
     }
 
+    /**
+     * @return always false (maybe overwritten by derived classes)
+     */
     @Override
     public boolean isStateless() {
         return false;

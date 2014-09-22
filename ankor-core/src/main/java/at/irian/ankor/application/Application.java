@@ -6,6 +6,15 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * By means of an {@link Application} the developer tells the Ankor framework the main infos about
+ * his Ankor application, like:
+ * <ul>
+ *     <li>name of the application (for logging)</li>
+ *     <li>model lookup behaviour</li>
+ *     <li>init/cleanup behaviour</li>
+ *     <li>stateless/stateful</li>
+ * </ul>
+ *
  * @author Manfred Geiler
  */
 public interface Application {
@@ -15,8 +24,14 @@ public interface Application {
      */
     String getName();
 
+    /**
+     * @return true, if Ankor shall drive in stateless mode
+     */
     boolean isStateless();
 
+    /**
+     * @return a list of model names this application supports
+     */
     Set<String> getKnownModelNames();
 
     /**
@@ -51,14 +66,14 @@ public interface Application {
     Object createModel(String modelName, Map<String, Object> connectParameters, RefContext refContext);
 
     /**
-     * Free all resources that might have been allocated for the given model.
+     * Free all resources that might have been allocated for the given model instance.
      * @param modelName    name of model
      * @param modelRoot    root of model instance to free
      */
     void releaseModel(String modelName, Object modelRoot);
 
     /**
-     * Free all resources associated by this Application.
+     * Free all resources associated by this Ankor application.
      */
     void shutdown();
 

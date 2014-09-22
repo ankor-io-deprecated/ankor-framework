@@ -23,6 +23,16 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Convenient {@link Application} implementation, that is easily configurable and implements reasonable default behaviour.
+ * This implementation is ideal for those who want to configure their {@link Application} in Bean style by creating a
+ * {@link GenericApplication} object and then setting several properties.
+ * <p>
+ * Defaults are:
+ * <ul>
+ *     <li>Name: "unnamed"</li>
+ *     <li>Known model names: "root"</li>
+ *     <li>stateless: no</li>
+ * </ul>
+ * </p>
  */
 @SuppressWarnings("UnusedDeclaration")
 public class GenericApplication implements Application {
