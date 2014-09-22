@@ -33,7 +33,10 @@ define([
         modelId: "root",
         utils: new ankor.utils.BaseUtils(),
         transport: new ankor.transport.WebSocketTransport("/websocket/ankor", {
-            connectProperty: "root"
+            connectProperty: "root",
+            connectParams : {
+                "at.irian.ankor.MODEL_INSTANCE_ID" : "collaborationTest"
+            }
         })
     });
 
