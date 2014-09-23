@@ -26,7 +26,11 @@
     <artifactId>ankor-bundle-websocket-java-client</artifactId>
     <packaging>pom</packaging>
     <name>Ankor Bundle - WebSocket-based Java Client</name>
-    <description>Bundle dependencies for a general WebSocket based Java Client (such as a batch application or a Swing client)</description>
+    <description>
+        Bundle dependencies for a general WebSocket based Java Client (such as a batch application or a Swing client).
+        Use this bundle if your client is based on Java and either has no user interface or you want to use a
+        UI technology other than JavaFX.
+    </description>
 
     <dependencies>
 

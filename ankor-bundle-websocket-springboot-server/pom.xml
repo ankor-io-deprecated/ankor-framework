@@ -26,7 +26,11 @@
     <artifactId>ankor-bundle-websocket-springboot-server</artifactId>
     <packaging>jar</packaging>
     <name>Ankor Bundle - WebSocket-based Spring Boot Server</name>
-    <description>Bundle dependencies for a WebSocket-based server that starts by means of Spring Boot.</description>
+    <description>
+        Bundle dependencies for a WebSocket-based Spring Boot server.
+        Use this bundle for an Ankor server that communicates with it's clients over WebSocket connections and
+        is started on top of Spring Boot.
+    </description>
 
     <dependencies>
 

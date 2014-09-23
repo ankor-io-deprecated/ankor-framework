@@ -26,7 +26,12 @@
     <artifactId>ankor-bundle-js-client</artifactId>
     <packaging>pom</packaging>
     <name>Ankor Bundle - JavaScript Client</name>
-    <description>Bundle dependencies (overlay) for a JavaScript Client.</description>
+    <description>
+        Bundle dependencies (overlay) for a JavaScript Client.
+        This can be used to include the Ankor Javascript resources in your web application by means of
+        the Maven dependency mechanism. Think of bower (see Ankor manual) as an alternative for including
+        Ankor Javascript resources in your HTML5 client application.
+    </description>
 
     <dependencies>
 

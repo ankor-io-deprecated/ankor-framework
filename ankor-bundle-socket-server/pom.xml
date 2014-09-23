@@ -26,7 +26,11 @@
     <artifactId>ankor-bundle-socket-server</artifactId>
     <packaging>pom</packaging>
     <name>Ankor Bundle - Socket-based Standalone Server</name>
-    <description>Bundle dependencies for a socket based standalone server.</description>
+    <description>
+        Bundle dependencies for a socket based standalone server.
+        Use this bundle for an Ankor server that communicates with it's clients over raw socket connections.
+        Please note, that socket-based Ankor communication is a proof-of-concept and not meant for production!
+    </description>
 
     <dependencies>
 

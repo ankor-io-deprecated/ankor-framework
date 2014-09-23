@@ -26,8 +26,11 @@
     <artifactId>ankor-bundle-server-viewmodel</artifactId>
     <packaging>pom</packaging>
     <name>Ankor Bundle - Server-side ViewModel Support</name>
-    <description>Bundle for server-side ViewModel.
+    <description>
+        Bundle for server-side ViewModel modules.
         All Ankor base classes, utilities, helpers and annotations needed for Ankor-enriched view models.
+        Use this bundle if you have a separate module for your view model in your application and you want
+        to keep the Ankor dependencies of this module to a minimum.
     </description>
 
     <dependencies>

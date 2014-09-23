@@ -26,7 +26,11 @@
     <artifactId>ankor-bundle-socket-fx-client</artifactId>
     <packaging>pom</packaging>
     <name>Ankor Bundle - Socket-based JavaFX Client</name>
-    <description>Bundle dependencies for a socket based JavaFX Client</description>
+    <description>
+        Bundle dependencies for a socket based JavaFX Client.
+        Use this bundle for a JavaFX based Ankor client that communicates with a server over a raw socket connection.
+        Please note, that socket-based Ankor communication is a proof-of-concept and not meant for production!
+    </description>
 
     <dependencies>
 

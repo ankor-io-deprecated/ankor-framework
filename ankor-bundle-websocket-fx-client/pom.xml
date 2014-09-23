@@ -26,7 +26,11 @@
     <artifactId>ankor-bundle-websocket-fx-client</artifactId>
     <packaging>pom</packaging>
     <name>Ankor Bundle - WebSocket-based JavaFX Client</name>
-    <description>Bundle dependencies for a WebSocket based JavaFX Client</description>
+    <description>
+        Bundle dependencies for a WebSocket based JavaFX Client.
+        Use this bundle for a JavaFX based Ankor client that communicates with a server over
+        a bi-directional WebSocket connection.
+    </description>
 
     <dependencies>
 

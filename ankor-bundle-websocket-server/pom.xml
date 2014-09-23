@@ -26,7 +26,10 @@
     <artifactId>ankor-bundle-websocket-server</artifactId>
     <packaging>pom</packaging>
     <name>Ankor Bundle - WebSocket-based Server-Endpoint</name>
-    <description>Bundle dependencies for a WebSocket based server endpoint.</description>
+    <description>
+        Bundle dependencies for a WebSocket based server endpoint.
+        Use this bundle for an Ankor server that communicates with it's clients over WebSocket connections.
+    </description>
 
     <dependencies>
 
