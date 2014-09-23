@@ -23,7 +23,7 @@
         <dependency>
             <groupId>at.irian.ankor</groupId>
             <artifactId>ankor-bundle-websocket-springboot-server</artifactId>
-            <version>${project.version}</version>
+            <type>pom</type>
         </dependency>
 
         <dependency>
@@ -36,13 +36,66 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <!--
+                Define additional resources folder for inherited static web resources from:
+                  ankor-js          ... basic Ankor Javascript support
+                  animals-js-client ... Animals Javascript client resources
+                These resources are getting including by means of the maven-dependency-plugin (see below)
+                -->
+                <directory>${project.build.directory}/inherited-resources</directory>
+            </resource>
+        </resources>
+
         <plugins>
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>1.1.5.RELEASE</version>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <!-- copy Ankor Javascript Support resources -->
+                                    <groupId>at.irian.ankor</groupId>
+                                    <artifactId>ankor-js</artifactId>
+                                    <!-- Ankor version is defined via BOM in parent pom.xml -->
+                                    <type>war</type>
+                                    <outputDirectory>${project.build.directory}/inherited-resources/static</outputDirectory>
+                                    <excludes>WEB-INF/**,META-INF/**</excludes>
+                                </artifactItem>
+                                <artifactItem>
+                                    <!-- copy Animals Javascript Client resources -->
+                                    <groupId>at.irian.ankorsamples</groupId>
+                                    <artifactId>todo-js-client</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>war</type>
+                                    <outputDirectory>${project.build.directory}/inherited-resources/static</outputDirectory>
+                                    <excludes>WEB-INF/**,META-INF/**</excludes>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
+
     </build>
 
 </project>

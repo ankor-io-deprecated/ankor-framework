@@ -33,8 +33,7 @@
         <dependency>
             <groupId>at.irian.ankor</groupId>
             <artifactId>ankor-bundle-websocket-springboot-server</artifactId>
-            <version>0.4-SNAPSHOT</version>
-            <type>jar</type>
+            <type>pom</type>
         </dependency>
 
         <dependency>
@@ -52,18 +51,6 @@
 
     </dependencies>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>at.irian.ankorsamples</groupId>
-                <artifactId>animals-js-client</artifactId>
-                <scope>runtime</scope>
-                <type>war</type>
-                <version>${project.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
     <build>
 
         <resources>
@@ -71,7 +58,13 @@
                 <directory>src/main/resources</directory>
             </resource>
             <resource>
-                <directory>${project.build.directory}/animals-js-client-resources</directory>
+                <!--
+                Define additional resources folder for inherited static web resources from:
+                  ankor-js          ... basic Ankor Javascript support
+                  animals-js-client ... Animals Javascript client resources
+                These resources are getting including by means of the maven-dependency-plugin (see below)
+                -->
+                <directory>${project.build.directory}/inherited-resources</directory>
             </resource>
         </resources>
 
@@ -89,10 +82,21 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
+                                    <!-- copy Ankor Javascript Support resources -->
+                                    <groupId>at.irian.ankor</groupId>
+                                    <artifactId>ankor-js</artifactId>
+                                    <!-- Ankor version is defined via BOM in parent pom.xml -->
+                                    <type>war</type>
+                                    <outputDirectory>${project.build.directory}/inherited-resources/static</outputDirectory>
+                                    <excludes>WEB-INF/**,META-INF/**</excludes>
+                                </artifactItem>
+                                <artifactItem>
+                                    <!-- copy Animals Javascript Client resources -->
                                     <groupId>at.irian.ankorsamples</groupId>
                                     <artifactId>animals-js-client</artifactId>
+                                    <version>${project.version}</version>
                                     <type>war</type>
-                                    <outputDirectory>${project.build.directory}/animals-js-client-resources/static</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/inherited-resources/static</outputDirectory>
                                     <excludes>WEB-INF/**,META-INF/**</excludes>
                                 </artifactItem>
                             </artifactItems>
