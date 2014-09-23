@@ -57,8 +57,7 @@ public class ConstructionHelper<T> {
     private final Class<T> beanType;
     private final Object[] args;
     private final Object[] optionalPrefixArgs;
-    // TODO: Can't compile. Shouldn't it be `Constructor<T>`? 
-    private Constructor resolvedConstructor;
+    private Constructor<T> resolvedConstructor;
     private Object[] resolvedArguments;
 
     public ConstructionHelper(Class<T> beanType) {

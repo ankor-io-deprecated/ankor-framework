@@ -190,12 +190,39 @@ Use this bundle for an Ankor server that communicates with it's clients over Web
 
 ### Bower
 
-To include the Ankor Javascript resources in your HTML5 client you can use [Bower](bower). Make sure that [Bower](bower) is installed on your system.
+To include the Ankor Javascript resources in your HTML5 client you can use [Bower](bower). 
+Make sure that [`bower`](bower) is installed on your system.
 
-Install Ankor with:
+Add Ankor with:
 
 	$ bower install ankor-js
+	
+#### Example usage
 
+Somewhere in your main `.html` file, before your other code, add:
+
+    <script src="path/to/bower_components/ankor-js/ankor.js"></script>
+    
+This will define a global `ankor` namespace object (you can also include it with requirejs).
+
+Create a basic ankor system that connects to a WebSocket endpoint:
+
+    var ankorSystem = new ankor.AnkorSystem({
+        modelId: "root",
+        utils: new ankor.utils.BaseUtils(),
+        transport: new ankor.transport.WebSocketTransport("/websocket/ankor", {
+          connectProperty: "root"
+        }),
+        debug: true
+    });
+    
+Get the root ref via:
+    
+    rootRef = ankorSystem.getRef("root");
+    
+and listen for changes:
+
+    rootRef.addPropChangeListener(function (ref) { ... });
 
 ## Getting started
 
