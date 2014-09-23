@@ -8,9 +8,9 @@ define([
 ], function (AnkorMixin,
              initReact,
              ankor) {
-    ankor.adapters.React = {};
-    ankor.adapters.React.init = initReact;
-    ankor.adapters.React.AnkorMixin = AnkorMixin;
+    ankor.adapters.react = {};
+    ankor.adapters.react.init = initReact;
+    ankor.adapters.react.AnkorMixin = AnkorMixin;
     return ankor;
 });
 
