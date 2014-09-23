@@ -53,16 +53,10 @@ The following question arise when using the MVVM pattern in a client-server envi
 
 Ankor enhances the MVVM pattern by closing the client-server gap an thus building an extended pattern that we call *MVSVM* - the *Model View with Sync'ed ViewModel* pattern.
 
-The Ankor framework promises to take over all that cumbersome tasks for making client and server to communicate.
+The Ankor framework promises to take over all that cumbersome tasks for making client and server to communicate. This is achieved by implementing the ViewModel on the server-side and letting Ankor automatically synchronize the ViewModel to the client. The ViewModel behaviour is defined on the server-side, the client-side ViewModel only holds the data. The synchronization is done bi-directionally by means of change events.
 
 
-## Overview
-
-### Features
-
-TBD
-
-### Use-cases
+## Ankor Use-cases
 
 * Complex user interface with sophisticated validation and behaviour
 * High-performance reactive user interface with asynchronous server communication
@@ -149,14 +143,14 @@ Bundle for server-side ViewModel modules.
 
 All Ankor base classes, utilities, helpers and annotations needed for Ankor-enriched view models. Use this bundle if you have a separate module for your view model in your application and you want to keep the Ankor dependencies of this module to a minimum.
 
-#### Socket JavaFX Client (ankor-bundle-socket-fx-client)
+#### Socket JavaFX Client Bundle (ankor-bundle-socket-fx-client)
 
 Bundle dependencies for a socket based JavaFX Client.
 
 Use this bundle for a JavaFX based Ankor client that communicates with a server over a raw socket connection.
 > Please note, that socket-based Ankor communication is a proof-of-concept and not meant for production!
 
-#### Socket Server (ankor-bundle-socket-server)
+#### Socket Server Bundle (ankor-bundle-socket-server)
 
 Bundle dependencies for a socket based standalone server.
 
@@ -164,31 +158,31 @@ Use this bundle for an Ankor server that communicates with it's clients over raw
 
 > Please note, that socket-based Ankor communication is a proof-of-concept and not meant for production!
 
-#### WebSocket JavaFX Client (ankor-bundle-websocket-fx-client)
+#### WebSocket JavaFX Client Bundle (ankor-bundle-websocket-fx-client)
 
 Bundle dependencies for a WebSocket based JavaFX Client.
 
 Use this bundle for a JavaFX based Ankor client that communicates with a server over a bi-directional WebSocket connection.
 
-#### Custom WebSocket Client (ankor-bundle-websocket-java-client)
+#### Custom WebSocket Client Bundle (ankor-bundle-websocket-java-client)
 
 Bundle dependencies for a general WebSocket based Java Client (such as a batch application or a Swing client).
 
 Use this bundle if your client is based on Java and either has no user interface or you want to use a UI technology other than JavaFX.
 
-#### WebSocket Server (ankor-bundle-websocket-server)
+#### WebSocket Server Bundle (ankor-bundle-websocket-server)
 
 Bundle dependencies for a WebSocket based server endpoint.
 
 Use this bundle for an Ankor server that communicates with it's clients over WebSocket connections.
 
-#### WebSocket SpringBoot Server (ankor-bundle-websocket-springboot-server)
+#### WebSocket SpringBoot Server Bundle (ankor-bundle-websocket-springboot-server)
 
 Bundle dependencies for a WebSocket-based Spring Boot server.
 
 Use this bundle for an Ankor server that communicates with it's clients over WebSocket connections and        is started on top of [Spring Boot][spring-boot].
 
-### Bower
+### Ankor Bower Package "ankor-js"
 
 To include the Ankor Javascript resources in your HTML5 client you can use [Bower](bower). 
 Make sure that [`bower`](bower) is installed on your system.
@@ -270,7 +264,7 @@ This snippet is taken form the [`hello-ankor`][helloankor] sample.
 
 The best way to get an idea of how applications can be written using Ankor is stepping through the [tutorials](/tutorials).
 
-# General
+# Ankor Terms and Concepts
 
 ## What is a Ref?
 
@@ -279,17 +273,70 @@ It represents a reference to a view model.
 All view model properties are ordered in a hierarchical tree structure.
 The Ref object allows us to navigate this tree structure and manipulate the underlying properties.
 
+You can also think in terms of paths. A Ref is a path in the view model tree.
+
+Example:
+	
+	root: {
+		prop1: "hello",
+		prop2: "world",
+		people: [{id: 1, name: "foo"}, {id: 2, name: "bar"}],
+		attributes: {
+			color: "red",
+			size: "big"
+		}
+	}
+	
+### Creating a Ref
+
+	Ref prop1Ref = refFactory.ref("root.prop1");
+	Ref user1NameRef = refFactory.ref("root.people[1].name");
+	Ref colorRef = refFactory.ref("root.attributes.color");
+	
+### Obtaining the value of a Ref
+
+	System.out.println(prop1Ref.getValue());      //prints "hello"
+	System.out.println(user1NameRef.getValue());  //prints "foo"
+	System.out.println(colorRef.getValue());      //prints "red"
+	
+### Changing the value of a view model property by means of a Ref
+
+	prop1Ref.setValue("hi");
+	user1NameRef.setValue("baz");
+	colorRef.setValue("blue");
+	
+### View Model Tree traversal by means of a Ref
+
+	Ref rootRef = prop1Ref.parent();
+	
+	Ref attrRef = colorRef.parent();
+	Ref sizeRef = attrRef.appendLiteralKey("size");
+	
+	Ref peopleRef = rooRef.appendPath("people");
+	Ref user2Ref = peopleRef.appendIndex(2);
+	
+
 ## Change Events
 
-TBD
+An Ankor change event has the following attributes:
+
+* the changed view model property, represented by a Ref
+* the change, consisting of
+	* type of change (value change, array item deletion, list insertion, etc.)
+	* new value
+
 
 ## Action Events
 
-TBD
+An Ankor action event has the following attributes:
 
-# Frequently Asked Questions
+* the view model property, on which the action has happened
+* the action, consisting of
+	* the name of the action
+	* optional action parameters
 
-TBD
+
+
 
 [ref]: http://ankor.io/static/javadoc/apidocs-0.3/at/irian/ankor/ref/Ref.html
 [helloankor]: https://github.com/ankor-io/hello-ankor
