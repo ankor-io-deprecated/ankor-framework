@@ -53,10 +53,9 @@ Open `App.java` and add the following lines:
 
 This assumes that you have an Ankor server with WebSocket endpoint running on your local machine at port 8080.
 If you've already done the [Server Tutorial][servertutorial] you can use that one you implemented yourself.
+
 Otherwise you can use the one provided with this repository.
-You can start it by invoking `mvn install` in the root directory.
-Note that you might run into problems if you have a newer version of Maven installed.
-Maven 3.0.5 is known to work though.
+You can start it by invoking `mvn spring-boot:run` in the `todo-servlet` directory.
 
 #### Adding JavaFX to the classpath
 

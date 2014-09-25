@@ -37,11 +37,23 @@ Ankor does not re-invent the wheel. Therefore:
     (Well: depending on your client technology you might actually be forced to use code generation and templating,
     but this is out of scope for Ankor)
 
+## Ankor Use Cases
+
+Ankor.io is not meant as the framework or tool that is always the right choice and beats everything. For simple form-based applications using Ankor is like taking the sledgehammer to crack a nut.
+
+The following use cases and scenarious are those where Ankor.io comes into play:
+
+* **Complex** user interface with sophisticated validation and behaviour
+* High-performance **reactive** user interface with **asynchronous** server communication
+* Complex view model with various GUIs on **different platforms and devices**
+
 ## Architectural Pattern
 
 ### MVVM - Model View ViewModel
 
 Ankor is largely influenced by the well-known MVVM pattern. See [Wikipedia][mvvm-wikipedia] for a good overview of this pattern.
+
+<img src="/static/images/manual/mvvm.png" style="width:600px" title="Classical MVVM"/>
 
 ### MVSVM - Model View with Sync'ed ViewModel
 
@@ -51,64 +63,96 @@ The following question arise when using the MVVM pattern in a client-server envi
 * What communication channels and service calls do I need to build my ViewModel on the client?
 * How can my ViewModel (dynamically) react on Model changes on the server?
 
-Ankor enhances the MVVM pattern by closing the client-server gap an thus building an extended pattern that we call *MVSVM* - the *Model View with Sync'ed ViewModel* pattern.
+Ankor enhances the MVVM pattern by closing the client-server gap and thus building an extended pattern that we call *MVSVM* - the *Model View with Sync'ed ViewModel* pattern. The idea is to have the ViewModel on both sides of the "wire" so that both the client and the server can access and manipulate the ViewModel data.
 
-The Ankor framework promises to take over all that cumbersome tasks for making client and server to communicate. This is achieved by implementing the ViewModel on the server-side and letting Ankor automatically synchronize the ViewModel to the client. The ViewModel behaviour is defined on the server-side, the client-side ViewModel only holds the data. The synchronization is done bi-directionally by means of change events.
+<img src="/static/images/manual/mvsvm.png" style="width:600px" title="Model View with Sync'ed ViewModel"/>
 
+The Ankor framework promises to take over all that cumbersome tasks for making client and server communicate. This is achieved by implementing the ViewModel on the server-side and letting Ankor automatically synchronize the ViewModel to the client. The ViewModel behaviour is defined on the server-side, the client-side ViewModel only holds the data. The synchronization is done bi-directionally by means of change events and action events.
 
-## Ankor Use-cases
+<img src="/static/images/manual/ankor-mvsvm-events.png" style="width:600px" title="Ankor MVSVM Events"/>
 
-* Complex user interface with sophisticated validation and behaviour
-* High-performance reactive user interface with asynchronous server communication
-* Complex view model with various GUIs on various platforms and devices
+Keep in mind that technically speaking the ViewModel may totally differ on the client and the server side. Only the structure and the primitive values are the same on both sides. On the server side the ViewModel is normally implemented by means of JavaBeans in a tree structure.
+
+On the client side the ViewModel is type-less and can be implemented as:
+
+* a Java data structure consisting of nested Maps, Lists and Primitives (JavaFX)
+* a Javascript data structure consisting of nested Dictionaries, Arrays and Primitives (HTML5)
+* an Objective-C data structure consisting of nested Dictionaries, Arrays and Primitives (iOS, OS X)
+* a C# data structure consisting of nested Dynamics, Lists and Primitives (.NET)
+
+<img src="/static/images/manual/ankor-viewmodel.png" style="width:600px" title="Ankor ViewModel"/>
+
 
 ## Ankor Modules
 
 The Ankor framework consists of several modules from which you probably only need some of them.
 
-#### ankor-actor
+#### Core Module (ankor-core)
 
-Actor support using Akka as dispatcher for message and event handling on the server side.
+Core Module, defining all basic Ankor types like Ref, Events, etc.
 
-#### ankor-annotation
+This is a mandatory module for Ankor-based servers and Java clients.
 
-Annotation support for providing model metadata by means of Java annotations.
-
-#### ankor-core
-
-Core Module, needed in every Ankor server and (Java based) client application.
-
-#### ankor-el
+#### Unified EL Support (ankor-el)
 
 Java Unified Expression Language (JSR-245) support for Ref path syntax.
 
-#### ankor-fx
+This is the default module for Ankor Ref path parsing and is currently mandatory for Ankor-based servers and Java clients.
 
-Java FX client support.
-
-#### ankor-js
-
-Javascript client support overlay war for Ankor based web-server.
-
-#### ankor-json
+#### Json Support (ankor-json)
 
 Json serialization/deserialization support using Jackson as underlying implementation.
 
-#### ankor-proxy
+This is the default module for message serialization/deserialization and is currently mandatory for Ankor-based servers and Java clients.
 
-Proxy support for automatic change event firing on setter calls.
-
-#### ankor-service
+#### Service (ankor-service)
 
 AnkorSystem builder and helper classes for starting up Ankor servers and clients.
 
-#### ankor-socket-connector
+This is an optional module that is highly recommended for simplified set up of Ankor-based servers and Java clients.
 
-Messaging via simple socket connections (only for testing, not meant for production).
+#### Annotation Support (ankor-annotation)
 
-#### ankor-websocket-connector
+Annotation support for providing model metadata by means of Java annotations.
 
-Messaging via WebSocket (preferred default messaging implementation for Ankor).
+This is the default module for ViewModel metadata definition and is currently mandatory for Ankor-based servers.
+
+#### Javascript Client (ankor-js)
+
+Javascript client support overlay war for Ankor based web-servers.
+
+This is a mandatory module for Ankor-based HTML5 clients.
+
+#### Ankor JavaFX Support (ankor-fx)
+
+Java FX client support.
+
+This is a mandatory module for Ankor-based JavaFX clients.
+
+#### Actor Support (ankor-actor)
+
+Actor support using Akka as dispatcher for message and event handling on the server side.
+
+This is the default module for event dispatching and concurrency control and is highly recommended to be used instead of the "simple synchronized event dispatching" on Ankor-based servers. On Java-based Ankor clients the Actor-based event dispatching is not necessary.
+
+#### WebSocket Connector (ankor-websocket-connector)
+
+Messaging via WebSocket.
+
+This is the preferred messaging implementation for Ankor and is a mandatory module for Ankor-based servers and Java clients.
+
+#### Socket Connector (ankor-socket-connector)
+
+Messaging via simple socket connections.
+
+In (unit) testing environments this connector may be used instead of the "Websocket Connector" as a simpler to set up network communication. Both the server and the client have dedicated socket ports where they can receive messages from the other party. These fixed port numbers have to be specified in the settings and known by each communicating party.
+
+#### Auto Proxies (ankor-proxy)
+
+Proxy support for automatic change event firing on setter calls.
+
+This is an experimental module that enhances server-side ViewModel beans by means of CGLib proxies that automatically fire change events on every bean setter call.
+
 
 ## Setting up an Ankor application
 
@@ -182,9 +226,10 @@ Bundle dependencies for a WebSocket-based Spring Boot server.
 
 Use this bundle for an Ankor server that communicates with it's clients over WebSocket connections and        is started on top of [Spring Boot][spring-boot].
 
-### Ankor Bower Package "ankor-js"
+<a id="bower"/>
+### Ankor Bower Package "ankor-js" 
 
-To include the Ankor Javascript resources in your HTML5 client you can use [Bower](bower). 
+To include the Ankor Javascript resources in your HTML5 client you can use [Bower][bower]. 
 Make sure that [`bower`](bower) is installed on your system.
 
 Add Ankor with:
@@ -338,7 +383,7 @@ An Ankor action event has the following attributes:
 
 
 
-[ref]: http://ankor.io/static/javadoc/apidocs-0.3/at/irian/ankor/ref/Ref.html
+[ref]: http://ankor.io/static/javadoc/apidocs-0.4/at/irian/ankor/ref/Ref.html
 [helloankor]: https://github.com/ankor-io/hello-ankor
 [bower]: http://bower.io
 [spring-boot]: http://projects.spring.io/spring-boot/

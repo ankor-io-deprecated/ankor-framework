@@ -6,8 +6,8 @@ from django.core.files import File
 
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 
-ANKOR_STABLE_VERSION = "0.3.0"
-ANKOR_LATEST_VERSION = "0.3.0"
+ANKOR_STABLE_VERSION = "0.4.0"
+ANKOR_LATEST_VERSION = "0.4.0"
 
 
 def path_to_steps(type, step):
@@ -175,7 +175,7 @@ def documentation(request):
     context = RequestContext(request, {
         'activeMenu': 'documentation',
         'activeMenuText': 'Documentation',
-        'releaseVersions': ['0.3', '0.2'],
+        'releaseVersions': ['0.4', '0.3', '0.2'],
         'stableVersion': ANKOR_STABLE_VERSION,
         'latestVersion': ANKOR_LATEST_VERSION
     })

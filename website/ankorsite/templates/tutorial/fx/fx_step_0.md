@@ -68,7 +68,13 @@ This is how you may switch between tutorial steps later.
 
 Now you got a maven project based on these modules:
 
-    todo-fx      : Todo Sample - JavaFX Client
-    todo-server  : Todo Sample - Server
-    todo-servlet : Todo Sample - Servlet
+    todo-fx        : Todo Sample - JavaFX Client
+    todo-js-client : Todo Sample - JavaFX Client
+    todo-server    : Todo Sample - Ankor Application Implementation
+    todo-servlet   : Todo Sample - Spring Boot Server Starter
+
+The `todo-server` project contains the view model and its associated behaviour.
+The `todo-servlet` project will start a server and expose the view model to clients via WebSocket.
+The `todo-js-client` project contains a JavaScript client to test your setup.
+The `todo-fx` project is the module we'll be working on.
 

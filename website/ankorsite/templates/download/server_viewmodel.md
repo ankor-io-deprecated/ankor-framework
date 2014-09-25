@@ -13,7 +13,7 @@ Exemplary `pom.xml`:
         <dependency>
             <groupId>at.irian.ankor</groupId>
             <artifactId>ankor-bundle-server-viewmodel</artifactId>
-            <version>0.3.0</version>
+            <version>0.4.0</version>
             <type>pom</type>
         </dependency>
     </dependencies>

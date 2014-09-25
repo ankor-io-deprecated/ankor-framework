@@ -73,8 +73,9 @@ This is how you may switch between tutorial steps later.
 
 Now you got a maven project based on these modules:
 
-    todo-fx      : Todo Sample - JavaFX Client
-    todo-server  : Todo Sample - Server
-    todo-servlet : Todo Sample - Servlet
+The `todo-server` project contains the view model and its associated behaviour.
+The `todo-servlet` project will start a server and expose the view model to clients via WebSocket.
+The `todo-js-client` is the module we'll be working on.
+The `todo-fx` project contains a JavaFX client to test your setup.
 
 [1]: http://facebook.github.io/react/

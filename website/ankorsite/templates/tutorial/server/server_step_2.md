@@ -30,15 +30,15 @@ Here is how `ModelRoot` should look like:
     public class ModelRoot {
         private TaskListModel model;
 
-        public ModelRoot(Ref rootRef, TaskRepository taskRepository) {
+        public ModelRoot(Ref rootRef) {
             AnkorPatterns.initViewModel(this, rootRef);
-            this.model = new TaskListModel(rootRef.appendPath("model"), taskRepository);
+            this.model = new TaskListModel(rootRef.appendPath("model"), new TaskRepository());
         }
     }
     
 #### Constructor parameters
 
-The constructor takes a Ankor [`Ref`][2] and a [`TaskRepository`][3] as parameters.
+The constructor takes a Ankor [`Ref`][2] as parameters.
 
 ##### References
 
@@ -52,7 +52,8 @@ So in a sense it refers to itself.
 ##### TaskRepository
 
 The `TaskRepository` is already implemented for this tutorial.
-Think of it as the service layer of the application.
+Think of it as the service layer of the application, 
+which is actually just a in-memory store for your todo items.
 
 #### Constructor body
 
