@@ -20,7 +20,7 @@
     <parent>
         <groupId>at.irian.ankor</groupId>
         <artifactId>ankor-project</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <version>0.4.0</version>
     </parent>
 
     <artifactId>ankor-annotation</artifactId>
