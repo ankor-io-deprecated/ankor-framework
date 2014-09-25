@@ -20,7 +20,7 @@
     <parent>
         <groupId>at.irian.ankor</groupId>
         <artifactId>ankor-project</artifactId>
-        <version>0.4.0</version>
+        <version>0.5-SNAPSHOT</version>
     </parent>
 
     <artifactId>ankor-websocket-connector</artifactId>
