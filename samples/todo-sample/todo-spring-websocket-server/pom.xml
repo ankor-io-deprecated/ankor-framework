@@ -5,7 +5,7 @@
     <parent>
         <groupId>at.irian.ankorsamples</groupId>
         <artifactId>todo-sample</artifactId>
-        <version>0.4.0</version>
+        <version>0.5-SNAPSHOT</version>
     </parent>
     
     <artifactId>todo-spring-websocket-server</artifactId>
