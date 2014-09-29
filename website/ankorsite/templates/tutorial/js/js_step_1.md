@@ -8,9 +8,9 @@ In order to achieve a common tasks like modularization we have settled with the 
 
 #### Project structure
 
-We will put our code in the `todo-servlet` module. 
-As you might know from other tutorials, the servlet module is simply a WebSocket endpoint for the `todo-server` application.
-Since  GlassFish instance is running anyway we use it to serve the static files for our web app as well.
+We will put our JavaScript code in the `todo-js-client` module. 
+During the build process of the `todo-servlet` module the contents of this module will be copied to the right location.
+For more information on how to start the servlet, please refer to the [server tutorial][servertutorial].
 
 #### Purpose of the React transformer
 
@@ -91,3 +91,4 @@ In the next step we will start an Ankor system that connects to a server.
 [bower]: http://bower.io/
 [4]: http://facebook.github.io/react/docs/jsx-in-depth.html
 [5]: https://github.com/ankor-io/ankor-todo-tutorial/tree/js-step-1/todo-servlet/src/main/webapp/js
+[servertutorial]: http://ankor.io/tutorials/server/1

@@ -123,4 +123,4 @@ with:
     updateItemsCount();
 
 
-[1]: http://ankor.io/static/javadoc/apidocs-0.3/at/irian/ankor/annotation/ChangeListener.html
+[1]: http://ankor.io/static/javadoc/apidocs-0.4/at/irian/ankor/annotation/ChangeListener.html
