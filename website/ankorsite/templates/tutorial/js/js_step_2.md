@@ -62,4 +62,4 @@ In the next step we will implement the render function.
 In order to do so we will have to learn a little bit more about React though. 
 
 [servertutorial]: http://ankor.io/tutorials/server
-[ref]: https://github.com/ankor-io/ankor-framework/blob/ankor-0.2/ankor-js/src/main/webapp/js/ankor/Ref.js
+[ref]: https://github.com/ankor-io/ankor-framework/blob/ankor-0.4/ankor-js/src/main/webapp/js/ankor/Ref.js

@@ -78,6 +78,3 @@ But we still need to link our view models with the servlet.
 Restart the servlet (using your favourite method) and 
 point your browser to [`http://localhost:8080`](http://localhost:8080).
 Your dummy text should appear in the footer.
-
-[1]: http://ankor.io/static/javadoc/apidocs-0.3/at/irian/ankor/system/WebSocketServerEndpoint.html
-[2]: http://docs.oracle.com/javaee/7/api/javax/websocket/Endpoint.html

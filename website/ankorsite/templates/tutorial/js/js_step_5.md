@@ -90,5 +90,5 @@ Note that it is safe to use `e.which` because React implements it's own event sy
 
 This completes step 5. In the next step we will implement the `TodoItem` and `TodoFooter` components which complete the app.
 
-[actionevent]: https://github.com/ankor-io/ankor-framework/blob/ankor-0.2/ankor-js/src/main/webapp/js/ankor/events/ActionEvent.js
+[actionevent]: https://github.com/ankor-io/ankor-framework/blob/ankor-0.4/ankor-js/src/main/webapp/js/ankor/events/ActionEvent.js
 [servertutorial]: http://ankor.io/tutorials/server
