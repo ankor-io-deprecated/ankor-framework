@@ -19,6 +19,8 @@ import java.util.*;
 public class DefaultServerRoutingLogic implements RoutingLogic {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(DefaultServerRoutingLogic.class);
 
+    private final Object MODEL_SESSION_CREATION_LOCK = new Object();
+
     private final ModelSessionFactory modelSessionFactory;
     private final ModelSessionManager modelSessionManager;
     private final List<Application> applications;
@@ -95,23 +97,40 @@ public class DefaultServerRoutingLogic implements RoutingLogic {
                                                     Map<String, Object> connectParameters,
                                                     Application application) {
         Object modelRoot = application.lookupModel(modelName, connectParameters);
-        ModelSession modelSession;
-        //todo  check if we have a concurrency issue here
         if (modelRoot == null) {
-            modelSession = modelSessionFactory.createModelSession();
-            modelRoot = application.createModel(modelName, connectParameters, modelSession.getRefContext());
-            modelSession.setModelRoot(modelName, modelRoot);
-            modelSessionManager.add(modelSession);
-        } else {
-            modelSession = modelSessionManager.findByModelRoot(modelRoot);
-            if (modelSession == null) {
-                LOG.warn("Could not find ModelSession for model root {} - most likely a timeout had happened, creating a new session...",
-                         modelRoot);
-                modelSession = modelSessionFactory.createModelSession();
-                modelSession.setModelRoot(modelName, modelRoot);
-                modelSessionManager.add(modelSession);
+            // there is no model instance with that name and connect params
+            synchronized (MODEL_SESSION_CREATION_LOCK) {
+                // however, to avoid a race condition here we have to lookup
+                // once again within this synchronized block:
+                modelRoot = application.lookupModel(modelName, connectParameters);
+                if (modelRoot == null) {
+                    // now we can be sure that nobody has created this model instance yet
+                    // let's create it:
+                    return createStatefulModelSession(modelName, connectParameters, application);
+                }
             }
         }
+
+        // we found an already existing model instance with that name and connect params
+        ModelSession modelSession = modelSessionManager.findByModelRoot(modelRoot);
+        if (modelSession == null) {
+            LOG.warn("Could not find ModelSession for model root {} - most likely a timeout had happened, creating a new session...",
+                     modelRoot);
+            modelSession = modelSessionFactory.createModelSession();
+            modelSession.setModelRoot(modelName, modelRoot);
+            modelSessionManager.add(modelSession);
+        }
+
+        return modelSession;
+    }
+
+    private ModelSession createStatefulModelSession(String modelName,
+                                                    Map<String, Object> connectParameters,
+                                                    Application application) {
+        ModelSession modelSession = modelSessionFactory.createModelSession();
+        Object modelRoot = application.createModel(modelName, connectParameters, modelSession.getRefContext());
+        modelSession.setModelRoot(modelName, modelRoot);
+        modelSessionManager.add(modelSession);
         return modelSession;
     }
 
