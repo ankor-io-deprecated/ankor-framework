@@ -3,9 +3,11 @@ import os.path
 from django.http import HttpResponse, HttpResponseNotFound
 from django.template import RequestContext, loader
 from django.core.files import File
+from django.shortcuts import redirect
 
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 
+ANKOR_MAJOR_VERSION  = "0.4"
 ANKOR_STABLE_VERSION = "0.4.0"
 ANKOR_LATEST_VERSION = "0.4.0"
 
@@ -249,3 +251,6 @@ def stateless(request):
 
     return HttpResponse(template.render(context))
 
+
+def javadoc(request, apiurl):
+    return redirect('/static/javadoc/apidocs-' + ANKOR_MAJOR_VERSION + '/' + apiurl)

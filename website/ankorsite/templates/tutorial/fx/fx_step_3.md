@@ -112,6 +112,6 @@ This is how bindings are done in JavaFX. Unfortunately we still won't be able to
 since nothing will change until we add some todos to the list.
 
 [2]: https://github.com/ankor-io/ankor-todo-tutorial/blob/fx-step-3/todo-fx/src/main/resources/tasks.fxml
-[3]: http://ankor.io/static/javadoc/apidocs-0.4/at/irian/ankor/fx/binding/fxref/FxRef.html
+[3]: http://ankor.io/javadoc/at/irian/ankor/fx/binding/fxref/FxRef.html
 [4]: http://docs.oracle.com/javafx/2/api/javafx/beans/property/Property.html
 [5]: http://docs.oracle.com/javafx/2/api/javafx/fxml/FXML.html
