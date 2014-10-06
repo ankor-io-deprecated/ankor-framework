@@ -26,6 +26,6 @@ urlpatterns = patterns('',
     url(r'^manual/(?P<version>[0-9\.]+)', views.manual),
     url(r'^spidoc/(?P<version>[0-9\.]+)', views.spidoc),
     url(r'^contribute', views.contribute),
-    url(r'^javadoc', 'javadoc/index.html'),
+    url(r'^javadoc/(?P<apiurl>.*)', views.javadoc),
     url(r'^.*', views.index),
 )

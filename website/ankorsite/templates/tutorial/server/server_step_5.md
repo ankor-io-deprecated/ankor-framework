@@ -113,4 +113,4 @@ Now that we know about `CollectionRef`s we can also implement the `deleteTask` m
         tasksRef().delete(index);
     }
 
-[1]: http://ankor.io/static/javadoc/apidocs-0.4/at/irian/ankor/ref/CollectionRef.html
+[1]: http://ankor.io/javadoc/at/irian/ankor/ref/CollectionRef.html

@@ -383,7 +383,7 @@ An Ankor action event has the following attributes:
 
 
 
-[ref]: http://ankor.io/static/javadoc/apidocs-0.4/at/irian/ankor/ref/Ref.html
+[ref]: http://ankor.io/javadoc/at/irian/ankor/ref/Ref.html
 [helloankor]: https://github.com/ankor-io/hello-ankor
 [bower]: http://bower.io
 [spring-boot]: http://projects.spring.io/spring-boot/

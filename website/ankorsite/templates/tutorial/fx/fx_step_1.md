@@ -90,6 +90,6 @@ styled for you. Building an JavaFX app from ground up is outside the scope of th
 
 ![fx-step-1-1](http://ankor.io/static/images/tutorial/fx-step-1-1.png)
 
-[1]: http://ankor.io/static/javadoc/apidocs-0.4/at/irian/ankor/system/WebSocketFxClient.html
+[1]: http://ankor.io/javadoc/at/irian/ankor/system/WebSocketFxClient.html
 [servertutorial]: http://ankor.io/tutorials/server
 [3]: http://docs.oracle.com/javafx/2/api/javafx/application/Application.html
