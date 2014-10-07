@@ -5,6 +5,8 @@ import at.irian.ankor.event.EventListeners;
 import at.irian.ankor.event.EventListener;
 
 /**
+ * Simple thread-unsafe(!) EventDispatcher implementation that just calls all appropriate listeners for a given event.
+ *
  * @author Manfred Geiler
  */
 public class SimpleEventDispatcher implements EventDispatcher {

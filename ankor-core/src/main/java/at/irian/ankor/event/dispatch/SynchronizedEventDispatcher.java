@@ -4,6 +4,8 @@ import at.irian.ankor.event.Event;
 import at.irian.ankor.session.ModelSession;
 
 /**
+ * EventDispatcher that synchronizes the actual (delegated) dispatching on the corresponding ModelSession.
+ *
  * @author Manfred Geiler
  */
 public class SynchronizedEventDispatcher implements EventDispatcher {

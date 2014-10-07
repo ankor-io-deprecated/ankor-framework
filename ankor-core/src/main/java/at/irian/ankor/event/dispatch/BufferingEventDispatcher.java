@@ -7,6 +7,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * Special purpose EventDispatcher that actually does not dispatch the given Events but rather holds them
+ * back in an internal buffer that may be accessed with {@link #getBufferedEvents()}.
+ *
+ * @see at.irian.ankor.ref.impl.RefBase
  * @author Manfred Geiler
  */
 public class BufferingEventDispatcher implements EventDispatcher {
