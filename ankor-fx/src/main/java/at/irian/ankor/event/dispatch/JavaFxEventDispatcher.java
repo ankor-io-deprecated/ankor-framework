@@ -20,6 +20,8 @@ import at.irian.ankor.event.Event;
 import javafx.application.Platform;
 
 /**
+ * EventDispatcher that hands over the actual dispatching to the JavaFX Application Thread.
+ *
  * @author Manfred Geiler
  */
 public class JavaFxEventDispatcher implements EventDispatcher {
