@@ -7,6 +7,7 @@ import at.irian.ankor.session.ModelSessionFactory;
 import at.irian.ankor.session.ModelSessionManager;
 import at.irian.ankor.switching.connector.local.StatefulSessionModelAddress;
 import at.irian.ankor.switching.connector.local.StatelessSessionModelAddress;
+import at.irian.ankor.viewmodel.InitializableViewModelBase;
 
 import java.util.*;
 
@@ -110,6 +111,10 @@ public class DefaultServerRoutingLogic implements RoutingLogic {
                 modelSession = modelSessionFactory.createModelSession();
                 modelSession.setModelRoot(modelName, modelRoot);
                 modelSessionManager.add(modelSession);
+            }
+            if (modelRoot instanceof InitializableViewModelBase) {
+                InitializableViewModelBase initModelRoot = (InitializableViewModelBase)modelRoot;
+                initModelRoot.initializeRef(modelSession.getRefContext().refFactory().ref(modelName));
             }
         }
         return modelSession;

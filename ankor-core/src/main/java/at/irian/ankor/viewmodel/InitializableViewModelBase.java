@@ -1,12 +1,20 @@
 package at.irian.ankor.viewmodel;
 
+import at.irian.ankor.application.Application;
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.switching.routing.DefaultServerRoutingLogic;
 
 /**
- * Auto-initializing convenient base class for view model objects implementing
- * {@link RefAware}
+ * Auto-initializing base class for stateful application view model objects
+ * that need to be {@link RefAware}. 
  * 
+ * It gets re-initialized with a new {@link Ref} every time {@link Application#lookupModel}
+ * is called by {@link DefaultServerRoutingLogic} to establish a new model session.
+ * 
+ * Extends {@link ViewModelBase}, so it is {@link RefAware} and allows reseting its {@link Ref}
+ * when new Ankor sessions are established.
+ *
  * A subclass must call {@link #InitializableViewModelBase(Ref) super(ref)} in
  * order to auto-initialize {@link at.irian.ankor.ref.Ref} via
  * {@link AnkorPatterns#initViewModel}
@@ -16,8 +24,8 @@ import at.irian.ankor.ref.Ref;
  * 
  * 
  * @author Andy Maleh
- * @see CompositeViewModelBase
- * @see ViewModelBase
+ * @see {@link CompositeViewModelBase}
+ * @see {@link ViewModelBase}
  */
 public abstract class InitializableViewModelBase extends ViewModelBase {
 

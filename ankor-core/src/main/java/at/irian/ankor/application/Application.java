@@ -1,9 +1,10 @@
 package at.irian.ankor.application;
 
-import at.irian.ankor.ref.RefContext;
-
 import java.util.Map;
 import java.util.Set;
+
+import at.irian.ankor.ref.RefContext;
+import at.irian.ankor.viewmodel.InitializableViewModelBase;
 
 /**
  * By means of an {@link Application} the developer tells the Ankor framework the main infos about
@@ -14,8 +15,14 @@ import java.util.Set;
  *     <li>init/cleanup behaviour</li>
  *     <li>stateless/stateful</li>
  * </ul>
+ * 
+ * When building a stateful application, it is highly recommended that the developer have his
+ * view models be a subtype of {@link InitializableViewModelBase} to ensure stored view models
+ * are re-initialized whenever a new Ankor session is established.
  *
  * @author Manfred Geiler
+ * @author Andy Maleh
+ * @see {@link InitializableViewModelBase}
  */
 public interface Application {
 

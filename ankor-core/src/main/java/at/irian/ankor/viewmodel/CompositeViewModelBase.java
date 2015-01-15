@@ -4,11 +4,15 @@ import java.util.List;
 
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
+import at.irian.ankor.switching.routing.DefaultServerRoutingLogic;
 
 /**
- * Composite auto-initializing convenient base class for view model objects
- * implementing {@link RefAware} composed of other child view model objects
- * {@link #children()}
+ * Composite auto-initializing convenient base class for stateful application
+ * view models that are composed of other child view models {@link #children()}
+ * 
+ * Extends {@link ViewModelBase}, so it is {@link RefAware} and will automatically
+ * get its {@link Ref} re-initialized by {@link DefaultServerRoutingLogic} upon establishing 
+ * a new Ankor session.
  * 
  * A subclass must override {@link #children()} to pass a list of child view
  * model objects of type {@link InitializableViewModelBase} to be used by call
