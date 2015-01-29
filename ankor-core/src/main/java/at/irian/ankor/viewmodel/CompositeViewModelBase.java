@@ -4,23 +4,17 @@ import java.util.List;
 
 import at.irian.ankor.pattern.AnkorPatterns;
 import at.irian.ankor.ref.Ref;
-import at.irian.ankor.switching.routing.DefaultServerRoutingLogic;
+
 
 /**
- * Composite auto-initializing convenient base class for stateful application
- * view models that are composed of other child view models {@link #children()}
+ * Composite auto-initializing convenient base class for view model objects implementing {@link RefAware}
+ * composed of other child view model objects {@link #children()}
  * 
- * Extends {@link ViewModelBase}, so it is {@link RefAware} and will automatically
- * get its {@link Ref} re-initialized by {@link DefaultServerRoutingLogic} upon establishing 
- * a new Ankor session.
- * 
- * A subclass must override {@link #children()} to pass a list of child view
- * model objects of type {@link InitializableViewModelBase} to be used by call
- * to {@link #CompositeViewModelBase(Ref) super(ref)} in order to
- * auto-initialize {@link at.irian.ankor.ref.Ref} via
- * {@link AnkorPatterns#initViewModel}, including all children in a recursive
- * fashion.
- * 
+ * A subclass must override {@link #children()} to pass a list of child view model objects of type
+ * {@link InitializableViewModelBase} to be used by call to {@link #CompositeViewModelBase(Ref) super(ref)}
+ * in order to auto-initialize {@link at.irian.ankor.ref.Ref} via {@link AnkorPatterns#initViewModel}, 
+ * including all children in a recursive fashion.
+ *  
  * Inspired by {@link ViewModelBase}
  * 
  * @author Andy Maleh
@@ -29,45 +23,50 @@ import at.irian.ankor.switching.routing.DefaultServerRoutingLogic;
  */
 public abstract class CompositeViewModelBase extends InitializableViewModelBase {
 
-    /**
-     * Subclasses must call via {@link #InitializableViewModelBase(Ref)
-     * super(ref)} in order to auto-initialize, including children (child view
-     * models).
-     * 
-     * @param ref Ankor ref for view model remote syncing
-     */
-    protected CompositeViewModelBase(Ref ref) {
-	super(ref);
-    }
+   /**
+    * Subclasses must call via {@link #InitializableViewModelBase(Ref) super(ref)} in order
+    * to auto-initialize, including children (child view models).
+    *     
+    * @param ref Ankor ref for view model remote syncing
+    */
+   protected CompositeViewModelBase(Ref ref) {
+      super(ref);
+   }
+   
+   /**
+    * Optional no-arg constructor in case the ref is to be provided later
+    * via {@link CompositeViewModelBase#initializeRef(Ref)}
+    * 
+    */
+   protected CompositeViewModelBase() {
+      //NOOP
+   }
 
-    /**
-     * Returns child view models. Subclasses must override to run initializeRef
-     * on all children recursively.
-     * 
-     * It assumes ref is initialized already, so implementation can call
-     * {@link #getRef()} in order to build child view model refs via
-     * {@link at.irian.ankor.ref.Ref#appendPath(String)}
-     * 
-     * @return children of ref model if any or an empty list otherwise
-     */
-    protected abstract List<InitializableViewModelBase> children();
+   /**
+    * Returns child view models. Subclasses must override to run
+    * initializeRef on all children recursively.
+    * 
+    * It assumes ref is initialized already, so implementation can
+    * call {@link #getRef()} in order to build child view model refs via
+    * {@link at.irian.ankor.ref.Ref#appendPath(String)}
+    * 
+    * @return children of ref model if any or an empty list otherwise
+    */
+   protected abstract List<? extends InitializableViewModelBase> children();
 
-    /**
-     * Initializes this Ankor ViewModel children (child view models) 
-     * recursively as part of calling {@link super#initializeRef(Ref)}
-     * 
-     * Assumes {@link Ref} instance has already been set and is
-     * accessible via {@link super#getRef} 
-     */
-    @Override
-    protected void initializePropertiesBeforeFirstSync() {
-	Ref ref = getRef();
-	for (InitializableViewModelBase childViewModel : children()) {
-	    String childViewModelRefPath = childViewModel.getRef().path();
-	    String childViewModelRelativeRefPath = childViewModelRefPath.replaceFirst(ref.path() + ".", "");
-	    Ref childViewModelRef = ref.appendPath(childViewModelRelativeRefPath);
-	    childViewModel.initializeRef(childViewModelRef);
-	}
-    }
+   /**
+    * Initializes this Ankor ViewModel with a new Ref as well as all its
+    * children (child view models)
+    * 
+    * @param ref Ankor ref for view model remote syncing
+    */
+   public void initializeRef(Ref ref) {
+      this.ref = ref;
+      for (InitializableViewModelBase childViewModel : children()) {
+         Ref childViewModelRef = ref.appendPath(childViewModel.getRef().path().replaceFirst(ref.path() + ".", "")); 
+         childViewModel.initializeRef(childViewModelRef);
+      }
+      AnkorPatterns.initViewModel(this, getRef());
+   }
 
 }
