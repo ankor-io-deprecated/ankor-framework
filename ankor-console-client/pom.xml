@@ -20,7 +20,7 @@
     <parent>
         <groupId>at.irian.ankor</groupId>
         <artifactId>ankor-project</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <version>0.4.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>ankor-console-client</artifactId>
@@ -28,23 +28,6 @@
     <name>Ankor - Console Client</name>
     <description>Java FX client for the console (supporting socket and websocket connection).</description>
 
-    <profiles>
-        <profile>
-            <id>java17</id>
-            <activation>
-                <jdk>1.7</jdk>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>javafx</groupId>
-                    <artifactId>jfxrt</artifactId>
-                    <version>2.2.21</version>
-                    <scope>system</scope>
-                    <systemPath>${java.home}/lib/jfxrt.jar</systemPath>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
 
     <dependencies>
         <dependency>
@@ -85,7 +68,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.0.7</version>
+            <version>1.2.3</version>
             <scope>runtime</scope>
         </dependency>
 
@@ -98,8 +81,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
         </plugins>

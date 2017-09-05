@@ -20,14 +20,17 @@
     <parent>
         <groupId>at.irian.ankor</groupId>
         <artifactId>ankor-project</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <version>0.4.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>ankor-spring</artifactId>
     <packaging>jar</packaging>
     <name>Ankor - Spring Support</name>
     <description>Spring Framework support</description>
-
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <spring-framework.version>4.3.10.RELEASE</spring-framework.version>
+    </properties>
     <dependencies>
 
         <dependency>
@@ -47,7 +50,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>4.0.6.RELEASE</version>
+            <version>${spring-framework.version}</version>
             <scope>compile</scope>
         </dependency>
 

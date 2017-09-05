@@ -30,5 +30,5 @@
     <root level="INFO">
         <appender-ref ref="STDOUT" />
     </root>
-
+    <!--<logger name="at.irian.ankorsamples" level="DEBUG" />-->
 </configuration>
