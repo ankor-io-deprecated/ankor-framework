@@ -31,7 +31,6 @@ import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 import org.springframework.web.socket.server.standard.ServerEndpointRegistration;
 
 import javax.servlet.ServletContext;
-import java.util.Map;
 
 /**
  * Websocket-based Spring Boot Standalone Server.
@@ -42,7 +41,7 @@ import java.util.Map;
  * Ankor Spring Boot Applications are typically started in a main method like so:
  * <pre>
  *
- *     @<span/>Bean
+ *     @Bean
  *     public final Application application() {
  *         SpringBasedAnkorApplication application = new SpringBasedAnkorApplication();
  *         application.setDefaultModelType(MyRootModel.class);
@@ -87,12 +86,7 @@ public abstract class WebSocketSpringBootServer extends WebSocketServerEndpoint
             }
 
             private void registerAllServerEndpoints(ServerEndpointExporter serverEndpointExporter) {
-                Map<String, ServerEndpointRegistration> serverEndpointRegistrations =
-                        applicationContext.getBeansOfType(ServerEndpointRegistration.class);
-
-                for (String name : serverEndpointRegistrations.keySet()) {
-                    serverEndpointExporter.postProcessAfterInitialization(serverEndpointRegistrations.get(name), name);
-                }
+                serverEndpointExporter.afterSingletonsInstantiated();
             }
         };
     }
